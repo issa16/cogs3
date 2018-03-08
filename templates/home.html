@@ -1,0 +1,16 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+{% block title %}
+{% if user.is_authenticated %}
+	Dashboard
+{% else %}
+	cogs3
+{% endif %}
+{% endblock %}
+{% block content %}
+	{% if user.is_authenticated %}
+		{% include 'dashboard.html'%}
+	{% else %}
+		{% include 'login.html'%}
+	{% endif %}
+{% endblock %}

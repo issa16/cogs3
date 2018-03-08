@@ -1,0 +1,10 @@
+<!-- templates/project/membership/form.html -->
+<form method="post" action="{% url 'project-membership-create' %}" novalidate>
+	{% csrf_token %}
+	<div class="input-group">
+		<input type="text" class="form-control" name="project_code" id="project_code" placeholder="SCW project code">
+		<div class="input-group-append">
+			<button type="submit" class="btn btn-primary">Join</button>
+		</div>
+	</div>
+</form>

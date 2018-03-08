@@ -1,0 +1,96 @@
+<!-- templates/project/application_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}Project details{% endblock %}
+{% block content %}
+	<div class="my-3 p-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4>{{project.title}}</h4>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<tbody>
+							<col width="30%">
+							<col width="70%">
+							<tr>
+								<th scope="row">Title</th>
+								<td>{{project.title}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Description</th>
+								<td>{{project.description}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Status</th>
+								<td>{{project.get_status_display}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Legacy HPC Wales ID</th>
+								<td>{{project.legacy_hpcw_id}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Legacy ARCCA ID</th>
+								<td>{{project.legacy_arcca_id}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Institution</th>
+								<td>{{project.institution}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Owning institution project reference</th>
+								<td>{{project.institution_reference}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Principal Investigator</th>
+								<td>{{project.pi}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Funding source</th>
+								<td>{{project.funding_source}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Start date</th>
+								<td>{{project.start_date}}</td>
+							</tr>
+							<tr>
+								<th scope="row">End date</th>
+								<td>{{project.end_date}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Requirements software</th>
+								<td>{{project.requirements_software}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Requirements gateways</th>
+								<td>{{project.requirements_gateways}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Requirements training</th>
+								<td>{{project.requirements_training}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Requirements onboarding</th>
+								<td>{{project.requirements_onboarding}}</td>
+							</tr>
+							<tr>
+								<th scope="row">CPU time allocation in hours</th>
+								<td>{{project.allocation_cputime}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Storage allocation in GB</th>
+								<td>{{project.allocation_storage}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
