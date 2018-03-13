@@ -2,7 +2,7 @@
 
 ### Demo
 
-[Development demo](http://safe-ridge-12092.herokuapp.com/accounts/login/)
+[Development demo](http://147.143.49.105/accounts/login/)
 
 Email aaron.owen@bangor.ac.uk for demo account access.
 
