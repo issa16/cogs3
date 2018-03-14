@@ -4,8 +4,6 @@
 
 [Development demo](http://147.143.49.105/accounts/login/)
 
-Email aaron.owen@bangor.ac.uk for demo account access.
-
 ### Flow
 
 1. A technical user logs in and completes a project application form. 
