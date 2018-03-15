@@ -22,6 +22,7 @@ class CustomUserAdmin(UserAdmin):
         'get_account_status',
         'get_scw_username',
         'get_shibboleth_username',
+        'get_institution',
         'is_staff',
     )
     list_select_related = ('profile', )
@@ -43,6 +44,11 @@ class CustomUserAdmin(UserAdmin):
         return instance.profile.scw_username
 
     get_scw_username.short_description = 'SCW Username'
+
+    def get_institution(self, instance):
+        return instance.profile.institution
+
+    get_institution.short_description = 'Institution'
 
     def get_inline_instance(self, request, obj=None):
         if not obj:
