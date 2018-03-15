@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager
 from django.db import models
 
+from institution.models import Institution
+
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -14,6 +16,11 @@ class Profile(models.Model):
         max_length=50,
         blank=True,
         verbose_name='SCW username',
+    )
+    institution = models.ForeignKey(
+        Institution,
+        on_delete=models.CASCADE,
+        help_text="Institution user is based",
     )
     AWAITING_APPROVAL = 1
     APPROVED = 2
@@ -34,9 +41,10 @@ class Profile(models.Model):
     class Meta:
         verbose_name = 'profile'
         verbose_name_plural = 'profiles'
-        
+
     def __str__(self):
         return self.user.username
+
 
 class CustomUserManager(UserManager):
     pass
