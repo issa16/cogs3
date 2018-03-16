@@ -9,10 +9,10 @@
 [Development server](http://147.143.49.105/accounts/login/)
 
 #### Sequence Diagrams
-- [User Role Sequences](docs/sequences/COGS3 User Role Sequences.pdf)
-- [Tech Lead Role Sequences](docs/sequences/COGS3 Tech Lead Role Sequences.pdf)
-- [RSE Role Sequences](docs/sequences/COGS3 RSE Role Sequences.pdf)
-- [Sysadmin Role Sequences](docs/sequences/COGS3 Sysadmin Role Sequences.pdf)
+- [User Role Sequences](https://github.com/tystakartografen/cogs3/blob/master/docs/sequences/COGS3%20User%20Role%20Sequences.pdf)
+- [Tech Lead Role Sequences](https://github.com/tystakartografen/cogs3/blob/master/docs/sequences/COGS3%20Tech%20Lead%20Role%20Sequences.pdf)
+- [RSE Role Sequences](https://github.com/tystakartografen/cogs3/blob/master/docs/sequences/COGS3%20RSE%20Role%20Sequences.pdf)
+- [Sysadmin Role Sequences](https://github.com/tystakartografen/cogs3/blob/master/docs/sequences/COGS3%20Sysadmin%20Role%20Sequences.pdf)
 
 #### Getting started
 
