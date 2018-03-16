@@ -7,3 +7,4 @@ gunicorn==19.7.1
 psycopg2==2.7.4
 python-dotenv==0.7.1
 pytz==2017.3
+django-extensions==2.0.5
