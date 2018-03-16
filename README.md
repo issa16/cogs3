@@ -9,14 +9,10 @@
 [Development server](http://147.143.49.105/accounts/login/)
 
 #### Sequence Diagrams
-- [Tech Lead Role Sequences](#tech-lead-role-sequences)
-- [User Role Sequences](#user-role-sequences)
-
-##### Tech Lead Role Sequences
-![Tech Lead Role Sequences](docs/sequences/COGS3_Tech_Lead_Role_Sequences.png?raw=true "Tech Lead Role Sequences")
-
-#### User Role Sequences
-![User Role Sequences](docs/sequences/COGS3_User_Role_Sequences.png?raw=true "User Role Sequences")
+- [User Role Sequences](docs/sequences/COGS3 User Role Sequences.pdf)
+- [Tech Lead Role Sequences](docs/sequences/COGS3 Tech Lead Role Sequences.pdf)
+- [RSE Role Sequences](docs/sequences/COGS3 RSE Role Sequences.pdf)
+- [Sysadmin Role Sequences](docs/sequences/COGS3 Sysadmin Role Sequences.pdf)
 
 #### Getting started
 
