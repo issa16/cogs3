@@ -1,19 +1,24 @@
 # cogs3
 
-### Demo
+- [Demo](#demo)
+- [Sequence Diagrams](#sequence-diagrams)
+- [Getting started](#getting-started)
 
-[Development demo](http://147.143.49.105/accounts/login/)
+#### Demo
 
-### Flow
+[Development server](http://147.143.49.105/accounts/login/)
 
-1. A technical user logs in and completes a project application form. 
-2. A SCW admin reviews the project application, if the application is successful the project is approved and assigned a project code.
-3. The technical user distributes the project code to selected users.
-4. The users log in and request membership to the project using the project code.
-5. The technical user approves the users project membership requests.
+#### Sequence Diagrams
+- [Tech Lead Role Sequences](#tech-lead-role-sequences)
+- [User Role Sequences](#user-role-sequences)
 
+##### Tech Lead Role Sequences
+![Tech Lead Role Sequences](docs/sequences/COGS3_Tech_Lead_Role_Sequences.png?raw=true "Tech Lead Role Sequences")
 
-### Development
+#### User Role Sequences
+![User Role Sequences](docs/sequences/COGS3_User_Role_Sequences.png?raw=true "User Role Sequences")
+
+#### Getting started
 
 1. Checkout the source code
 
@@ -78,7 +83,7 @@
 	```
 
 
-### TODO
+#### TODO
 
 - Unit tests
 - Shibboleth integration (Privacy Preserving Identity Management)
