@@ -26,7 +26,7 @@
 2. Create a virtual environment
 
 	```sh
-	mkdir -p ~/vens/cogs3 && cd $_
+	mkdir -p ~/venvs/cogs3 && cd $_
 	virtualenv -p /usr/local/bin/python3 .
 	source bin/activate
 	```
