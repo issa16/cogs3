@@ -9,6 +9,10 @@ from users.views import Register
 
 urlpatterns = [
     path(
+        'shib-test/',
+        include('shibboleth.urls'),
+    ),
+    path(
         '',
         include('dashboard.urls'),
     ),
