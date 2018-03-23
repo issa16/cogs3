@@ -6,7 +6,7 @@
 
 #### Demo
 
-[Development server](http://147.143.49.105/accounts/login/)
+[Development server](https://scw.bangor.ac.uk/)
 
 #### Sequence Diagrams
 - [User Role Sequences](https://github.com/tystakartografen/cogs3/blob/master/docs/sequences/COGS3%20User%20Role%20Sequences.pdf)
