@@ -1,5 +1,7 @@
 # cogs3
 
+![Travis branch](https://img.shields.io/travis/tystakartografen/cogs3/master.svg) [![codecov](https://codecov.io/gh/tystakartografen/cogs3/branch/master/graph/badge.svg)](https://codecov.io/gh/tystakartografen/cogs3) ![license](https://img.shields.io/github/license/mashape/apistatus.svg)
+
 - [Demo](#demo)
 - [Sequence Diagrams](#sequence-diagrams)
 - [Getting started](#getting-started)
