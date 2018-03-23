@@ -10,7 +10,8 @@ install:
   - pip install codecov
   - pip install Django==$DJANGO_VERSION
 
-script: 
+script:
+  - pip install -r requirements.txt
   - coverage run manage.py test
 
 after_success:
