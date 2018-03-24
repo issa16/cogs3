@@ -5,7 +5,8 @@ from django.urls import include
 from django.urls import path
 from django.views.generic.base import TemplateView
 
-from users.views import Register
+from institution.models import Institution
+from users.views import RegisterView
 
 urlpatterns = [
     path(
@@ -18,7 +19,10 @@ urlpatterns = [
     ),
     path(
         'accounts/login/',
-        auth.views.LoginView.as_view(redirect_authenticated_user=True),
+        auth.views.LoginView.as_view(
+            redirect_authenticated_user=True,
+            extra_context={'institutions': Institution.objects.all()},
+        ),
         name='login',
     ),
     path(
@@ -27,7 +31,7 @@ urlpatterns = [
     ),
     path(
         'accounts/register/',
-        Register.as_view(),
+        RegisterView.as_view(),
         name='register',
     ),
     path(

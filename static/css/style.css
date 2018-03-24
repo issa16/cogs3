@@ -1,14 +1,9 @@
-html {
+body {
+    background-color: #f3f3f3;
+    font-family: 'Open Sans', sans-serif;
     font-size: 14px;
-}
-
-body { 
-    background-color: #f5f5f5;
-}
-
-.splash{
-    padding: 3rem 1.5rem;
-    text-align: center;
+    line-height: 24px;
+    color: #445D6E;
 }
 
 .box-shadow {
@@ -23,10 +18,15 @@ body {
     color: rgba(255, 255, 255, 1);
 }
 
+.form-logo {
+    max-width: 500px;
+}
+
 .form-signin {
-    max-width: 350px;
+    max-width: 500px;
     padding: 15px;
-    margin: 50px auto;
+    box-shadow: 0 1px 2.5px 0 rgba(0, 0, 0, 0.09);
+    background-color: #ffffff;
 }
 
 .form-signin .checkbox {
@@ -64,4 +64,8 @@ body {
 
 .password_reset {
     margin-top: 65px;
+}
+
+.list-group img {
+    height: 60px;
 }

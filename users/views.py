@@ -8,7 +8,7 @@ from django.views import generic
 from .forms import CustomUserCreationForm
 
 
-class Register(generic.CreateView):
+class RegisterView(generic.CreateView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'registration/register.html'
