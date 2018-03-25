@@ -1,10 +1,15 @@
 from django.contrib.auth.models import Group
 from django.test import TestCase
 
+from institution.tests import InstitutionTests
+
 from .models import CustomUser
 
 
 class CustomUserTests(TestCase):
+
+    def setUp(self):
+        InstitutionTests().create_institution()
 
     def create_custom_user(self, username, group):
         user = CustomUser.objects.create(
@@ -30,19 +35,19 @@ class CustomUserTests(TestCase):
         return user
 
     def test_research_software_engineer_user_creation(self):
-        username = 'scw_research_software_engineer'
+        username = 'scw_research_software_engineer@bangor.ac.uk'
         user = self.create_research_software_engineer_user(username=username)
         self.assertTrue(isinstance(user, CustomUser))
         self.assertEqual(user.__str__(), username)
 
     def test_student_user_creation(self):
-        username = 'scw_student'
+        username = 'scw_student@bangor.ac.uk'
         user = self.create_student_user(username=username)
         self.assertTrue(isinstance(user, CustomUser))
         self.assertEqual(user.__str__(), username)
 
     def test_techlead_user_creation(self):
-        username = 'scw_techlead'
-        user = self.create_techlead_user(username='scw_techlead')
+        username = 'scw_techlead@bangor.ac.uk'
+        user = self.create_techlead_user(username=username)
         self.assertTrue(isinstance(user, CustomUser))
         self.assertEqual(user.__str__(), username)

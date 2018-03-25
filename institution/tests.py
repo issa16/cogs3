@@ -6,7 +6,10 @@ from .models import Institution
 class InstitutionTests(TestCase):
 
     def create_institution(self):
-        return Institution.objects.create(name='Bangor University')
+        return Institution.objects.create(
+            name='Bangor University',
+            base_domain='bangor.ac.uk',
+        )
 
     def test_institution_creation(self):
         institution = self.create_institution()

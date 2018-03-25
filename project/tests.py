@@ -43,7 +43,7 @@ class ProjectTests(TestCase):
 
     def setUp(self):
         self.institution = InstitutionTests().create_institution()
-        self.tech_lead = CustomUserTests().create_techlead_user(username='scw_techlead')
+        self.tech_lead = CustomUserTests().create_techlead_user(username='scw_techlead@bangor.ac.uk')
         self.category = ProjectCategoryTests().create_project_category()
         self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
 
