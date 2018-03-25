@@ -67,7 +67,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'shibboleth.middleware.ShibbolethRemoteUserMiddleware',
+    'users.middleware.SCWRemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -178,3 +178,6 @@ SHIBBOLETH_ATTRIBUTE_MAP = {
     "shib-sn": (True, "last_name"),
     "shib-mail": (True, "email"),
 }
+
+# Users must apply for an account
+CREATE_UNKNOWN_USER = False
