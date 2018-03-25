@@ -6,6 +6,7 @@ from django.urls import resolve
 from django.urls import reverse
 
 from shibboleth.middleware import ShibbolethRemoteUserMiddleware
+from shibboleth.middleware import ShibbolethValidationError
 
 
 class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
@@ -49,8 +50,7 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         # Add parsed attributes to the session.
         request.session['shib'] = shib_meta
         if error:
-            raise ShibbolethRemoteUserMiddleware.ShibbolethValidationError(
-                "All required Shibboleth elements not found. %s" % shib_meta)
+            raise ShibbolethValidationError("All required Shibboleth elements not found. %s" % shib_meta)
 
         # We are seeing this user for the first time in this session, attempt to authenticate
         # the user.
