@@ -1,5 +1,6 @@
 from django.contrib import auth
 from django.contrib.auth import load_backend
+from django.contrib.auth.backends import RemoteUserBackend
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.urls import resolve
