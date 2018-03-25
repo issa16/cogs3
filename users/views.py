@@ -14,6 +14,7 @@ class RegisterView(generic.CreateView):
     template_name = 'registration/register.html'
 
     def dispatch(self, *args, **kwargs):
-        if self.request.user.is_authenticated:
+        shib_username = self.request.session.get('shib_username', None)
+        if self.request.user.is_authenticated or shib_username is None:
             return redirect(reverse('home'))
         return super().dispatch(*args, **kwargs)
