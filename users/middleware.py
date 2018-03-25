@@ -25,12 +25,12 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         username = request.META.get(self.header, None)
 
         # Check the 'shib' session variable.
-        if username is None:
+        if not username:
             username = request.session.get('shib', {}).get('username', None)
 
         # If specified header or session variable doesn't exist then return
         # (leaving request.user set to AnonymousUser by the AuthenticationMiddleware).
-        if username is None:
+        if not username:
             if self.force_logout_if_no_header and request.user.is_authenticated:
                 self._remove_invalid_user(request)
             return
