@@ -37,7 +37,6 @@ body {
     position: relative;
     box-sizing: border-box;
     height: auto;
-    padding: 10px;
 }
 
 .form-signin .form-control:focus {
