@@ -172,7 +172,7 @@ EMAIL_PORT = os.environ.get("EMAIL_PORT")
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
 
 # Map Shibboleth attributes to Django User models
-SHIBBOLETH_ATTRIBUTE_MAP = {"shib-eppn": (True, "username")}
+SHIBBOLETH_ATTRIBUTE_MAP = {"eppn": (True, "username")}
 
 # Users must apply for an account
 CREATE_UNKNOWN_USER = False
