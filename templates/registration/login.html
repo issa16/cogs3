@@ -2,10 +2,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-	<div class="form-logo mx-auto mt-5">
+	<div class="form-logo mx-auto mt-4">
 		<img class="img-fluid" src="{% static "img/scw.png" %}" alt="Supercomputing Wales">
 	</div>
-	<div class="mx-auto mt-5 text-center form-signin">
+	<div class="mx-auto mt-4 text-center form-signin">
 		<h5 class="mb-4 mt-2">Which organsation would you like to sign in with?</h5>
 		<div class="list-group">
 			{% for institution in institutions %}
