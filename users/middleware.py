@@ -64,6 +64,7 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         else:
             # Redirect the user to apply for an account
             url_name = resolve(request.path_info).url_name
+            request.session['shib_username'] = username
             if url_name != 'register':
                 return HttpResponseRedirect(reverse('register'))
 
