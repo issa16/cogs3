@@ -21,19 +21,18 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
                 "'django.contrib.auth.middleware.AuthenticationMiddleware' "
                 "before the RemoteUserMiddleware class.")
 
-        # Locate the remote user header.
-        try:
-            username = request.META[self.header]
-        except KeyError:
-            # If specified header doesn't exist then return (leaving request.user set to
-            # AnonymousUser by the AuthenticationMiddleware).
+        # Check the remote user header.
+        username = request.META.get(self.header, None)
+
+        # Check the 'shib' session variable.
+        if username is None:
+            username = request.session.get('shib', {}).get('username', None)
+
+        # If specified header or session variable doesn't exist then return
+        # (leaving request.user set to AnonymousUser by the AuthenticationMiddleware).
+        if username is None:
             if self.force_logout_if_no_header and request.user.is_authenticated:
                 self._remove_invalid_user(request)
-            return
-
-        # If we got an empty value for request.META[self.header], treat it like self.header wasn't
-        # in self.META at all - it's still an anonymous user.
-        if not username:
             return
 
         # If the user is already authenticated and that user is the user we are getting passed in
@@ -50,12 +49,14 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
 
         # Add parsed attributes to the session.
         request.session['shib'] = shib_meta
+
         if error:
             raise ShibbolethValidationError("All required Shibboleth elements not found. %s" % shib_meta)
 
         # We are seeing this user for the first time in this session, attempt to authenticate
         # the user.
         user = auth.authenticate(remote_user=username, shib_meta=shib_meta)
+
         if user:
             # User is valid.  Set request.user and persist user in the session by logging the
             # user in.
@@ -64,7 +65,6 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         else:
             # Redirect the user to apply for an account
             url_name = resolve(request.path_info).url_name
-            request.session['shib_username'] = username
             if url_name != 'register':
                 return HttpResponseRedirect(reverse('register'))
 

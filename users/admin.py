@@ -19,16 +19,28 @@ class CustomUserAdmin(UserAdmin):
     inlines = (ProfileInline, )
     list_display = (
         'username',
+        'first_name',
+        'last_name',
         'get_account_status',
         'get_scw_username',
         'get_shibboleth_username',
         'get_institution',
-        'is_staff',
     )
     list_select_related = ('profile', )
     model = CustomUser
+
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
+    add_fieldsets = ((None, {
+        'classes': ('wide', ),
+        'fields': (
+            'username',
+            'first_name',
+            'last_name',
+            'password1',
+            'password2',
+        ),
+    }), )
 
     def get_account_status(self, instance):
         return Profile.STATUS_CHOICES[instance.profile.account_status - 1][1]

@@ -73,7 +73,7 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.RemoteUserBackend',
+    'shibboleth.backends.ShibbolethRemoteUserBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
