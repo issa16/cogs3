@@ -15,7 +15,18 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     base_domain = user.username.split('@')[1]
     institution = Institution.objects.get(base_domain=base_domain)
 
-    # Update the user's profile
-    profile, created = Profile.objects.get_or_create(user=user, institution=institution)
-    profile.shibboleth_username = user.username
-    profile.save()
+    try:
+        # Manually updating a user's profile via the admin screens.
+        if user.profile:
+            profile = user.profile
+            profile.user = user
+    except AttributeError:
+        # Automated create or update when a user joins via shibboleth.
+        profile, created = Profile.objects.update_or_create(
+            user=user,
+            institution=institution,
+            defaults={
+                'shibboleth_username': user.username,
+            },
+        )
+    user.profile.save()

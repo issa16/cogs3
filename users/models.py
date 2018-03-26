@@ -36,7 +36,10 @@ class Profile(models.Model):
         (SUSPENDED, 'Suspended'),
         (CLOSED, 'Closed'),
     )
-    account_status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=AWAITING_APPROVAL)
+    account_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_APPROVAL,
+    )
 
     class Meta:
         verbose_name = 'profile'
