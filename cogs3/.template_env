@@ -1,5 +1,3 @@
-LOGIN_URL=''
-
 SECRET_KEY=''
 DEBUG=True
 
