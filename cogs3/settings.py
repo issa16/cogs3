@@ -43,7 +43,6 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -110,7 +109,6 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -128,7 +126,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -154,7 +151,7 @@ LOGOUT_REDIRECT_URL = LOGIN_URL
 # Custom user model
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# messages
+# Messages
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-info',
@@ -172,7 +169,9 @@ EMAIL_PORT = os.environ.get("EMAIL_PORT")
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
 
 # Map Shibboleth attributes to Django User models
-SHIBBOLETH_ATTRIBUTE_MAP = {"eppn": (True, "username")}
+SHIBBOLETH_ATTRIBUTE_MAP = {
+    "eppn": (True, "username"),
+}
 
-# Users must apply for an account
+# Users must apply for an SCW account
 CREATE_UNKNOWN_USER = False

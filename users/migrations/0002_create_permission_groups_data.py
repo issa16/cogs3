@@ -14,13 +14,13 @@ groups = {
         'add_project',
         'change_project',
         'add_projectusermembership',
-        'changeprojectusermembership',
+        'change_projectusermembership',
     ],
     'research_software_engineer': [
         'add_project',
         'change_project',
         'add_projectusermembership',
-        'changeprojectusermembership',
+        'change_projectusermembership',
     ],
 }
 

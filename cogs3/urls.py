@@ -21,7 +21,9 @@ urlpatterns = [
         'accounts/login/',
         auth.views.LoginView.as_view(
             redirect_authenticated_user=True,
-            extra_context={'institutions': Institution.objects.all()},
+            extra_context={
+                'institutions': Institution.objects.all(),
+            },
         ),
         name='login',
     ),
