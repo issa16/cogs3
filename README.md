@@ -1,6 +1,6 @@
 # cogs3
 
-[![Build Status](https://travis-ci.org/tystakartografen/cogs3.svg?branch=master)](https://travis-ci.org/tystakartografen/cogs3) [![codecov](https://codecov.io/gh/tystakartografen/cogs3/branch/master/graph/badge.svg)](https://codecov.io/gh/tystakartografen/cogs3) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/tystakartografen/cogs3/blob/master/LICENSE.md)
+[![Build Status](https://travis-ci.org/tystakartografen/cogs3.svg?branch=master)](https://travis-ci.org/tystakartografen/cogs3) [![codecov](https://codecov.io/gh/tystakartografen/cogs3/branch/master/graph/badge.svg)](https://codecov.io/gh/tystakartografen/cogs3) 
 
 - [Demo](#demo)
 - [Sequence Diagrams](#sequence-diagrams)
@@ -79,11 +79,3 @@
 	```sh
 	python manage.py runserver
 	```
-
-
-#### TODO
-
-- Unit tests
-- Shibboleth integration (Privacy Preserving Identity Management)
-- User registration form
-
