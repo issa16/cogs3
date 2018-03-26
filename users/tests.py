@@ -1,5 +1,8 @@
 from django.contrib.auth.models import Group
+from django.contrib.sessions.middleware import SessionMiddleware
+from django.test import RequestFactory
 from django.test import TestCase
+from django.urls import reverse
 
 from institution.tests import InstitutionTests
 
@@ -9,9 +12,10 @@ from .models import CustomUser
 class CustomUserTests(TestCase):
 
     def setUp(self):
+        self.base_domain = 'bangor.ac.uk'
         InstitutionTests().create_institution(
             name='Bangor University',
-            base_domain='bangor.ac.uk',
+            base_domain=self.base_domain,
         )
 
     def create_custom_user(self, username, password, group):
@@ -53,22 +57,22 @@ class CustomUserTests(TestCase):
         return user
 
     def test_research_software_engineer_user_creation(self):
-        username = 'scw_research_software_engineer@bangor.ac.uk'
+        username = 'scw_research_software_engineer@' + self.base_domain
         user = self.create_research_software_engineer_user(username=username, password='123456')
         self.assertTrue(isinstance(user, CustomUser))
         self.assertEqual(user.__str__(), username)
         self.assertEqual(user.profile.__str__(), username)
 
-    def test_student_user_creation(self):
-        username = 'scw_student@bangor.ac.uk'
-        user = self.create_student_user(username=username, password='123456')
+    def test_techlead_user_creation(self):
+        username = 'scw_techlead@' + self.base_domain
+        user = self.create_techlead_user(username=username, password='123456')
         self.assertTrue(isinstance(user, CustomUser))
         self.assertEqual(user.__str__(), username)
         self.assertEqual(user.profile.__str__(), username)
 
-    def test_techlead_user_creation(self):
-        username = 'scw_techlead@bangor.ac.uk'
-        user = self.create_techlead_user(username=username, password='123456')
+    def test_student_user_creation(self):
+        username = 'scw_student@' + self.base_domain
+        user = self.create_student_user(username=username, password='123456')
         self.assertTrue(isinstance(user, CustomUser))
         self.assertEqual(user.__str__(), username)
         self.assertEqual(user.profile.__str__(), username)

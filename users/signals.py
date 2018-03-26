@@ -10,7 +10,10 @@ from institution.models import Institution
 
 def logout_user(sender, user, request, **kwargs):
     # Ensure we clear the shibboleth session data, otherwise the user will be logged back in.
-    request.session['shib'] = {}
+    try:
+        del request.session['shib']
+    except KeyError:
+        pass
 
 
 user_logged_out.connect(logout_user)
