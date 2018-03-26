@@ -1,11 +1,12 @@
 """cogs3 URL Configuration"""
 from django.contrib import admin
-from django.contrib import auth
+from django.contrib.auth.views import LoginView
 from django.urls import include
 from django.urls import path
 from django.views.generic.base import TemplateView
 
 from institution.models import Institution
+from users.views import LogoutView
 from users.views import RegisterView
 
 urlpatterns = [
@@ -19,13 +20,18 @@ urlpatterns = [
     ),
     path(
         'accounts/login/',
-        auth.views.LoginView.as_view(
+        LoginView.as_view(
             redirect_authenticated_user=True,
             extra_context={
                 'institutions': Institution.objects.all(),
             },
         ),
         name='login',
+    ),
+    path(
+        'accounts/logout/',
+        LogoutView.as_view(),
+        name='logout',
     ),
     path(
         'accounts/',

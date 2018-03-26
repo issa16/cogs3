@@ -9,8 +9,8 @@
 		<h5 class="mb-4 mt-2">Which organisation would you like to sign in with?</h5>
 		<div class="list-group">
 			{% for institution in institutions %}
-				{% if institution.identity_provider %}
-					<a href="{{ institution.identity_provider }}" class="list-group-item list-group-item-action flex-column align-items-start">
+				{% if institution.identity_provider_login %}
+					<a href="{{ institution.identity_provider_login }}" class="list-group-item list-group-item-action flex-column align-items-start">
 						<img class="img-fluid" src="{{ institution.logo_path }}" alt="{{institution}}">
 					</a>
 				{% endif %}
