@@ -1,5 +1,5 @@
 [run]
 omit = 
-	*vens*
+	*venvs*
 	*virtualenv*
 	manage.py
