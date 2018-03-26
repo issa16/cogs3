@@ -39,15 +39,18 @@ class CustomUserTests(TestCase):
         user = self.create_research_software_engineer_user(username=username)
         self.assertTrue(isinstance(user, CustomUser))
         self.assertEqual(user.__str__(), username)
+        self.assertEqual(user.profile.__str__(), username)
 
     def test_student_user_creation(self):
         username = 'scw_student@bangor.ac.uk'
         user = self.create_student_user(username=username)
         self.assertTrue(isinstance(user, CustomUser))
         self.assertEqual(user.__str__(), username)
+        self.assertEqual(user.profile.__str__(), username)
 
     def test_techlead_user_creation(self):
         username = 'scw_techlead@bangor.ac.uk'
         user = self.create_techlead_user(username=username)
         self.assertTrue(isinstance(user, CustomUser))
         self.assertEqual(user.__str__(), username)
+        self.assertEqual(user.profile.__str__(), username)
