@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth import load_backend
 from django.contrib.auth.backends import RemoteUserBackend
@@ -20,6 +21,13 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
                 " be installed.  Edit your MIDDLEWARE setting to insert "
                 "'django.contrib.auth.middleware.AuthenticationMiddleware' "
                 "before the RemoteUserMiddleware class.")
+
+        # To support logout, if this variable is True, do not authenticate user and return now.
+        if request.session.get(settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY, None) == True:
+            return
+        else:
+            # Delete the shib reauth session key if present.
+            request.session.pop(settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY, None)
 
         # Check the remote user header.
         username = request.META.get(self.header, None)
@@ -70,7 +78,7 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
 
     def _remove_invalid_user(self, request):
         """
-        Remove the current authenticated user in the request which is invalid but only if the 
+        Remove the current authenticated user in the request which is invalid but only if the
         user is authenticated via the RemoteUserBackend.
         """
         try:

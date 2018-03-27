@@ -171,6 +171,7 @@ EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
 SHIBBOLETH_ATTRIBUTE_MAP = {
     "eppn": (True, "username"),
 }
+SHIBBOLETH_FORCE_REAUTH_SESSION_KEY = 'scw_shib'
 
 # Users must apply for an SCW account
 CREATE_UNKNOWN_USER = False
