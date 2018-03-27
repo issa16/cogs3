@@ -1,7 +1,10 @@
+from django.conf import settings
+from django.contrib import auth
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views import generic
+from django.views.generic import TemplateView
 
 from .forms import CustomUserCreationForm
 from users.models import Profile
@@ -17,3 +20,13 @@ class RegisterView(generic.CreateView):
         if self.request.user.is_authenticated or shib_username is None:
             return redirect(reverse('home'))
         return super().dispatch(*args, **kwargs)
+
+
+class LogoutView(TemplateView):
+
+    def get(self, *args, **kwargs):
+        # Logout the user.
+        auth.logout(self.request)
+        # Force the user to reauthenticate with shibboleth.
+        self.request.session[settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY] = True
+        return redirect(reverse('login'))

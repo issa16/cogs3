@@ -22,12 +22,10 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
                 "'django.contrib.auth.middleware.AuthenticationMiddleware' "
                 "before the RemoteUserMiddleware class.")
 
-        # To support logout, if this variable is True, do not authenticate user and return now.
-        if request.session.get(settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY, None) == True:
+        # When a user logs out from the application they will be required to reauthenticate
+        # with shibboleth.
+        if request.session.get(settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY) == True:
             return
-        else:
-            # Delete the shib reauth session key if present.
-            request.session.pop(settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY, None)
 
         # Check the remote user header.
         username = request.META.get(self.header, None)
