@@ -1,10 +1,19 @@
 from django.conf import settings
+from django.contrib.auth.signals import user_logged_out
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from .models import Profile
 
 from institution.models import Institution
+
+
+def logout_user(sender, user, request, **kwargs):
+    # Clear 'shib' session data
+    request.session.pop('shib', None)
+
+
+user_logged_out.connect(logout_user)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

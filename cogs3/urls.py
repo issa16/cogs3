@@ -6,7 +6,6 @@ from django.urls import path
 from django.views.generic.base import TemplateView
 
 from institution.models import Institution
-from users.views import LogoutView
 from users.views import RegisterView
 
 urlpatterns = [
@@ -27,11 +26,6 @@ urlpatterns = [
             },
         ),
         name='login',
-    ),
-    path(
-        'accounts/logout/',
-        LogoutView.as_view(),
-        name='logout',
     ),
     path(
         'accounts/',
