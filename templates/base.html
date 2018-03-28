@@ -1,5 +1,6 @@
 <!-- templates/base.html -->
 {% load static %}
+{% load cookielaw_tags %}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -11,6 +12,7 @@
 		<link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
 		<link href="{% static "css/jquery-ui.min.css" %}" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+		<link href="{% static "cookielaw/css/cookielaw.css" %}" rel="stylesheet">
 		<link href="{% static "css/style.css" %}" rel="stylesheet">
 	</head>
 	<body>
@@ -44,9 +46,13 @@
 			{% block content %}
 			{% endblock %}
 		</main>
+		<footer class="footer">
+			{% cookielaw_banner %}
+		</footer>
 		<script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
 		<script src="{% static "js/jquery-ui.min.js" %}"></script>
 		<script src="{% static "js/bootstrap.min.js" %}"></script>
+		<script src="{% static "cookielaw/js/cookielaw.js" %}"></script>
 		<script src="{% static "js/main.js" %}"></script>
 	</body>
 </html>

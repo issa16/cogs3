@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'dashboard.apps.DashboardConfig',
     'widget_tweaks',
     'shibboleth',
+    'cookielaw',
 ]
 
 MIDDLEWARE = [

@@ -80,6 +80,3 @@
 	python manage.py runserver
 	```
 
-#### TODO
-
-- Install django-cookie-law
