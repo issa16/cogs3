@@ -8,14 +8,6 @@ from .models import Profile
 from institution.models import Institution
 
 
-def login_user(sender, user, request, **kwargs):
-    # Reauthentication via shibboleth is not required until the user logs out.
-    request.session[settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY] = False
-
-
-user_logged_in.connect(login_user)
-
-
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     user = instance

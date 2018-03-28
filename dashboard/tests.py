@@ -73,11 +73,7 @@ class DashboardViewTests(TestCase):
         # Logout the user.
         response = self.client.get(reverse('logout'))
         self.assertEqual(response.status_code, 302)
-
-        # Ensure the dashboard is no longer available.
-        response = self.client.get(reverse('home'), **headers)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/accounts/login/?next=/')
+        self.assertEqual(response.url, '/accounts/logged_out/')
 
     def test_dashboard_access_as_an_authorised_student_user(self):
         """
@@ -98,8 +94,4 @@ class DashboardViewTests(TestCase):
         # Logout the user.
         response = self.client.get(reverse('logout'))
         self.assertEqual(response.status_code, 302)
-
-        # Ensure the dashboard is no longer available.
-        response = self.client.get(reverse('home'), **headers)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/accounts/login/?next=/')
+        self.assertEqual(response.url, '/accounts/logged_out/')

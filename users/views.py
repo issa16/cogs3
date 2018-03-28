@@ -27,6 +27,4 @@ class LogoutView(TemplateView):
     def get(self, *args, **kwargs):
         # Logout the user.
         auth.logout(self.request)
-        # Force the user to reauthenticate with shibboleth.
-        self.request.session[settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY] = True
-        return redirect(reverse('login'))
+        return redirect(reverse('logged_out'))
