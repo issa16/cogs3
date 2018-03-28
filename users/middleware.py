@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import auth
+from django.contrib import messages
 from django.contrib.auth import load_backend
 from django.contrib.auth.backends import RemoteUserBackend
 from django.http import HttpResponse
@@ -21,6 +22,11 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
                 " be installed.  Edit your MIDDLEWARE setting to insert "
                 "'django.contrib.auth.middleware.AuthenticationMiddleware' "
                 "before the RemoteUserMiddleware class.")
+
+        # When a user logs out from the application they will be required to reauthenticate
+        # with shibboleth. This will require the user to close their browser.
+        if request.session.get(settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY) == True:
+            return
 
         # Check the remote user header.
         username = request.META.get(self.header, None)

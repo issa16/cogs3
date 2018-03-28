@@ -65,9 +65,9 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'users.middleware.SCWRemoteUserMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -171,7 +171,7 @@ EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
 SHIBBOLETH_ATTRIBUTE_MAP = {
     "eppn": (True, "username"),
 }
-SHIBBOLETH_FORCE_REAUTH_SESSION_KEY = 'scw_shib'
+SHIBBOLETH_FORCE_REAUTH_SESSION_KEY = 'shibboleth_reauthentication_required'
 
 # Users must apply for an SCW account
 CREATE_UNKNOWN_USER = False
