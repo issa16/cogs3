@@ -1,10 +1,12 @@
 import csv
 
-from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import Group
+from django.core.management.base import BaseCommand
+from django.core.management.base import CommandError
 
 from users.models import CustomUser
 from users.models import Profile
+
 
 class Command(BaseCommand):
     help = 'Create or update user profile data from csv file.'
@@ -31,7 +33,8 @@ class Command(BaseCommand):
                     if created:
                         user.set_password(CustomUser.objects.make_random_password())
                         user.save()
-                        self.stdout.write(self.style.SUCCESS('Successfully created user account: ' + row['institutional_address']))
+                        self.stdout.write(
+                            self.style.SUCCESS('Successfully created user account: ' + row['institutional_address']))
                     else:
                         self.stdout.write(self.style.SUCCESS(row['institutional_address'] + ' already exists!'))
 
@@ -51,7 +54,8 @@ class Command(BaseCommand):
                     profile.phone = row['phone']
                     profile.account_status = Profile.APPROVED
                     profile.save()
-                    self.stdout.write(self.style.SUCCESS('Successfully updated user profile: ' + row['institutional_address']))
+                    self.stdout.write(
+                        self.style.SUCCESS('Successfully updated user profile: ' + row['institutional_address']))
 
         except FileNotFoundError:
             self.stdout.write(self.style.ERROR('Unable to open ' + filename))
