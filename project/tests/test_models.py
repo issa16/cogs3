@@ -3,14 +3,13 @@ import datetime
 from django.test import TestCase
 
 from institution.tests import InstitutionTests
-from system.tests import SystemTests
-from users.tests import CustomUserTests
-
 from project.models import Project
 from project.models import ProjectCategory
 from project.models import ProjectFundingSource
 from project.models import ProjectSystemAllocation
 from project.models import ProjectUserMembership
+from system.tests import SystemTests
+from users.tests.test_models import CustomUserTests
 
 
 class ProjectFundingSourceTests(TestCase):

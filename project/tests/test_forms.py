@@ -12,7 +12,7 @@ from project.models import ProjectUserMembership
 from project.tests.test_models import ProjectCategoryTests
 from project.tests.test_models import ProjectFundingSourceTests
 from project.tests.test_models import ProjectTests
-from users.tests import CustomUserTests
+from users.tests.test_models import CustomUserTests
 
 
 class ProjectUserMembershipCreationFormTests(TestCase):

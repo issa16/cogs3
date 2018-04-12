@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from institution.tests import InstitutionTests
-from users.tests import CustomUserTests
+from users.tests.test_models import CustomUserTests
 
 
 class DashboardViewTests(TestCase):

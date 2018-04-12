@@ -5,8 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from institution.tests import InstitutionTests
-
-from .models import CustomUser
+from users.models import CustomUser
 
 
 class CustomUserTests(TestCase):
