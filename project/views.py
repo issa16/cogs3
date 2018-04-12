@@ -89,8 +89,8 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
         return super().form_valid(form)
 
 
-class ProjectUserRequestMembershipListView(LoginRequiredMixin, generic.ListView):
-    permission_required = 'projectusermembership.change_projectusermembership'
+class ProjectUserRequestMembershipListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListView):
+    permission_required = 'project.change_projectusermembership'
     context_object_name = 'project_user_membership_requests'
     template_name = 'project/membership/requests.html'
     model = ProjectUserMembership
@@ -104,8 +104,8 @@ class ProjectUserRequestMembershipListView(LoginRequiredMixin, generic.ListView)
         return queryset.order_by('-created_time')
 
 
-class ProjectUserRequestMembershipUpdateView(LoginRequiredMixin, generic.UpdateView):
-    permission_required = 'projectusermembership.change_projectusermembership'
+class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequiredMixin, generic.UpdateView):
+    permission_required = 'project.change_projectusermembership'
     success_url = reverse_lazy('project-user-membership-request-list')
     context_object_name = 'project_user_membership_requests'
     model = ProjectUserMembership
