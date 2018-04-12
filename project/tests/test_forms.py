@@ -123,11 +123,14 @@ class ProjectUserMembershipCreationFormTests(TestCase):
             form.errors['project_code'],
             ['You are currently a member of the project.'],
         )
+        # Ensure the project user membership status is currently set authorised.
+        membership = ProjectUserMembership.objects.get(user=self.tech_lead)
+        self.assertTrue(membership.authorised())
 
-    def test_membership_creation_form_when_a_student_already_has_a_pending_membership_request(self):
+    def test_membership_creation_form_when_a_student_has_a_membership_request_awaiting_authorisation(self):
         """
-        It should not be possible to create a project user membership when a student already has 
-        a pending project user membership request.
+        It should not be possible to create a project user membership when a student has a 
+        membership request awaiting authorisation.
         """
         self.approve_project(self.project)
 
@@ -140,6 +143,10 @@ class ProjectUserMembershipCreationFormTests(TestCase):
             date_left=datetime.datetime.now() + datetime.timedelta(days=10),
         )
         self.assertEqual(ProjectUserMembership.objects.filter(user=self.student).count(), 1)
+
+        # Ensure the project user membership status is currently set to awaiting authorisation.
+        membership = ProjectUserMembership.objects.get(user=self.student)
+        self.assertTrue(membership.awaiting_authorisation())
 
         # The second request to create a project user membership should be rejected
         form = ProjectUserMembershipCreationForm(
