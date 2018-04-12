@@ -137,6 +137,29 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         """
         self.access_view_as_unauthorisied_user(reverse('project-application-detail', args=[1]))
 
+    def test_project_detail_view_as_authorised_project_member(self):
+        """
+        Ensure only the project's technical lead user can view the details of the project.
+        """
+        project = ProjectTests().create_project(
+            title='Project Title',
+            code='scw-' + str(uuid.uuid4()),
+            institution=self.institution,
+            tech_lead=self.techlead_user,
+            category=self.category,
+            funding_source=self.funding_source,
+        )
+        headers = {
+            'REMOTE_USER': self.student_username,
+            'eppn': self.student_username,
+        }
+        response = self.client.get(
+            reverse('project-application-detail', args=[project.id]),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('project-application-list'))
+
 
 class ProjectUserMembershipFormViewTests(ProjectViewTests, TestCase):
 
