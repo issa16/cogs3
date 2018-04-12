@@ -3,11 +3,14 @@ import datetime
 from django.test import TestCase
 
 from institution.tests import InstitutionTests
+from system.tests import SystemTests
 from users.tests import CustomUserTests
 
 from project.models import Project
 from project.models import ProjectCategory
 from project.models import ProjectFundingSource
+from project.models import ProjectSystemAllocation
+from project.models import ProjectUserMembership
 
 
 class ProjectFundingSourceTests(TestCase):
@@ -96,3 +99,130 @@ class ProjectTests(TestCase):
         self.assertEqual(project.__str__(), code + ' - ' + title)
         self.assertEqual(project.status, Project.AWAITING_APPROVAL)
         self.assertTrue(project.awaiting_approval())
+
+
+class ProjectSystemAllocationTests(TestCase):
+
+    def setUp(self):
+        self.institution = InstitutionTests().create_institution(
+            name='Bangor University',
+            base_domain='bangor.ac.uk',
+        )
+        self.tech_lead = CustomUserTests().create_techlead_user(
+            username='scw_techlead@bangor.ac.uk',
+            password='123456',
+        )
+        self.category = ProjectCategoryTests().create_project_category()
+        self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
+        self.project = ProjectTests().create_project(
+            title='Project title',
+            code='SCW-12345',
+            institution=self.institution,
+            tech_lead=self.tech_lead,
+            category=self.category,
+            funding_source=self.funding_source,
+        )
+        self.system = SystemTests().create_system(
+            name='Nemesis',
+            description='Bangor University Cluster',
+            number_of_cores=10000,
+        )
+
+    def create_project_system_allocation(self):
+        project_system_allocation = ProjectSystemAllocation.objects.create(
+            project=self.project,
+            system=self.system,
+            date_allocated=datetime.datetime.now(),
+            date_unallocated=datetime.datetime.now() + datetime.timedelta(days=10),
+        )
+        return project_system_allocation
+
+    def test_project_system_allocation_creation(self):
+        project_system_allocation = self.create_project_system_allocation()
+        self.assertTrue(isinstance(project_system_allocation, ProjectSystemAllocation))
+        data = {
+            'project': self.project,
+            'system': self.system,
+            'date_allocated': project_system_allocation.date_allocated,
+            'date_unallocated': project_system_allocation.date_unallocated
+        }
+        expected = '{project} on {system} from {date_allocated} to {date_unallocated}'.format(**data)
+        self.assertEqual(project_system_allocation.__str__(), expected)
+
+
+class ProjectUserMembershipTests(TestCase):
+
+    def setUp(self):
+        self.institution = InstitutionTests().create_institution(
+            name='Bangor University',
+            base_domain='bangor.ac.uk',
+        )
+        self.tech_lead = CustomUserTests().create_techlead_user(
+            username='scw_techlead@bangor.ac.uk',
+            password='123456',
+        )
+        self.student = CustomUserTests().create_student_user(
+            username='scw_student@bangor.ac.uk',
+            password='123456',
+        )
+        self.category = ProjectCategoryTests().create_project_category()
+        self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
+        self.project = ProjectTests().create_project(
+            title='Project title',
+            code='SCW-12345',
+            institution=self.institution,
+            tech_lead=self.tech_lead,
+            category=self.category,
+            funding_source=self.funding_source,
+        )
+        self.membership = ProjectUserMembership.objects.create(
+            project=self.project,
+            user=self.student,
+            status=ProjectUserMembership.AWAITING_AUTHORISATION,
+            date_joined=datetime.datetime.now(),
+            date_left=datetime.datetime.now() + datetime.timedelta(days=10),
+        )
+        self.assertEqual(ProjectUserMembership.objects.filter(user=self.student).count(), 1)
+
+    def test_project_user_membership_awaiting_authorisation_status(self):
+        """
+        Ensure the awaiting_authorisation() method returns the correct response.
+        """
+        self.membership.status = ProjectUserMembership.AWAITING_AUTHORISATION
+        self.assertTrue(self.membership.awaiting_authorisation())
+
+        self.membership.status = ProjectUserMembership.AUTHORISED
+        self.assertFalse(self.membership.awaiting_authorisation())
+
+    def test_project_user_membership_authorised_status(self):
+        """
+        Ensure the authorised() method returns the correct response.
+        """
+        self.membership.status = ProjectUserMembership.AUTHORISED
+        self.assertTrue(self.membership.authorised())
+
+        self.membership.status = ProjectUserMembership.AWAITING_AUTHORISATION
+        self.assertFalse(self.membership.authorised())
+
+    def test_project_user_membership_unauthorised_status(self):
+        """
+        Ensure the unauthorised() method returns the correct response.
+        """
+        unauthorised_states = [
+            ProjectUserMembership.REVOKED,
+            ProjectUserMembership.SUSPENDED,
+            ProjectUserMembership.DECLINED,
+        ]
+        for status in unauthorised_states:
+            self.membership.status = status
+            self.assertTrue(self.membership.unauthorised())
+
+    def test_project_user_membership_str_representation(self):
+        data = {
+            'user': self.student,
+            'project': self.project,
+            'date_joined': self.membership.date_joined,
+            'date_left': self.membership.date_left
+        }
+        expected = '{user} on {project} from {date_joined} to {date_left}'.format(**data)
+        self.assertEqual(self.membership.__str__(), expected)
