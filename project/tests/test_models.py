@@ -2,11 +2,12 @@ import datetime
 
 from django.test import TestCase
 
-from .models import Project
-from .models import ProjectCategory
-from .models import ProjectFundingSource
 from institution.tests import InstitutionTests
 from users.tests import CustomUserTests
+
+from project.models import Project
+from project.models import ProjectCategory
+from project.models import ProjectFundingSource
 
 
 class ProjectFundingSourceTests(TestCase):
@@ -53,19 +54,19 @@ class ProjectTests(TestCase):
         self.category = ProjectCategoryTests().create_project_category()
         self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
 
-    def test_project_creation(self):
+    def create_project(self, title, code, institution, tech_lead, category, funding_source):
         project = Project.objects.create(
-            title='Project title',
+            title=title,
             description='Project description',
             legacy_hpcw_id='HPCW-12345',
             legacy_arcca_id='ARCCA-12345',
-            code='SCW-12345',
-            institution=self.institution,
+            code=code,
+            institution=institution,
             institution_reference='BW-12345',
             pi='Project Principal Investigator',
-            tech_lead=self.tech_lead,
-            category=self.category,
-            funding_source=self.funding_source,
+            tech_lead=tech_lead,
+            category=category,
+            funding_source=funding_source,
             start_date=datetime.datetime.now(),
             end_date=datetime.datetime.now() + datetime.timedelta(days=10),
             economic_user=True,
@@ -78,6 +79,20 @@ class ProjectTests(TestCase):
             allocation_storage='1000',
             notes='Project notes',
         )
+        return project
+
+    def test_project_creation(self):
+        title = 'Project title'
+        code = 'SCW-12345'
+        project = self.create_project(
+            title=title,
+            code=code,
+            institution=self.institution,
+            tech_lead=self.tech_lead,
+            category=self.category,
+            funding_source=self.funding_source,
+        )
         self.assertTrue(isinstance(project, Project))
-        self.assertEqual(project.__str__(), 'SCW-12345 - Project title')
+        self.assertEqual(project.__str__(), code + ' - ' + title)
         self.assertEqual(project.status, Project.AWAITING_APPROVAL)
+        self.assertTrue(project.awaiting_approval())
