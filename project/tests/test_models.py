@@ -42,19 +42,31 @@ class ProjectCategoryTests(TestCase):
         self.assertEqual(project_category.__str__(), project_category.name)
 
 
-class ProjectTests(TestCase):
+class ProjectModelTests(TestCase):
 
     def setUp(self):
+        # Create an institution
         self.institution = InstitutionTests().create_institution(
             name='Bangor University',
             base_domain='bangor.ac.uk',
         )
+
+        # Create a technical lead user account
         self.tech_lead = CustomUserTests().create_techlead_user(
             username='scw_techlead@bangor.ac.uk',
             password='123456',
         )
+
+        # Create a student user account
+        self.student = CustomUserTests().create_student_user(
+            username='scw_student@bangor.ac.uk',
+            password='123456',
+        )
         self.category = ProjectCategoryTests().create_project_category()
         self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
+
+
+class ProjectTests(ProjectModelTests, TestCase):
 
     def create_project(self, title, code, institution, tech_lead, category, funding_source):
         project = Project.objects.create(
@@ -100,19 +112,10 @@ class ProjectTests(TestCase):
         self.assertTrue(project.awaiting_approval())
 
 
-class ProjectSystemAllocationTests(TestCase):
+class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
 
     def setUp(self):
-        self.institution = InstitutionTests().create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-        )
-        self.tech_lead = CustomUserTests().create_techlead_user(
-            username='scw_techlead@bangor.ac.uk',
-            password='123456',
-        )
-        self.category = ProjectCategoryTests().create_project_category()
-        self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
+        super(ProjectSystemAllocationTests, self).setUp()
         self.project = ProjectTests().create_project(
             title='Project title',
             code='SCW-12345',
@@ -121,6 +124,7 @@ class ProjectSystemAllocationTests(TestCase):
             category=self.category,
             funding_source=self.funding_source,
         )
+
         self.system = SystemTests().create_system(
             name='Nemesis',
             description='Bangor University Cluster',
@@ -149,23 +153,10 @@ class ProjectSystemAllocationTests(TestCase):
         self.assertEqual(project_system_allocation.__str__(), expected)
 
 
-class ProjectUserMembershipTests(TestCase):
+class ProjectUserMembershipTests(ProjectModelTests, TestCase):
 
     def setUp(self):
-        self.institution = InstitutionTests().create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-        )
-        self.tech_lead = CustomUserTests().create_techlead_user(
-            username='scw_techlead@bangor.ac.uk',
-            password='123456',
-        )
-        self.student = CustomUserTests().create_student_user(
-            username='scw_student@bangor.ac.uk',
-            password='123456',
-        )
-        self.category = ProjectCategoryTests().create_project_category()
-        self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
+        super(ProjectUserMembershipTests, self).setUp()
         self.project = ProjectTests().create_project(
             title='Project title',
             code='SCW-12345',

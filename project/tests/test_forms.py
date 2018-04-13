@@ -53,6 +53,24 @@ class ProjectFormTests(TestCase):
         self.assertEqual(ProjectUserMembership.objects.count(), 0)
 
 
+class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
+
+    def test_request_membership_form_with_invalid_user_id(self):
+        """
+        Ensure it is not possible to create a project user request membership with an invalid user id.
+        """
+        pass
+
+    def test_request_membership_form_with_invalid_project_id(self):
+        """
+        Ensure it is not possible to create a project user request membership with an project id.
+        """
+        pass
+
+    def test_request_membership_form_with_valid_data(self):
+        pass
+
+
 class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
 
     def approve_project(self, project):
@@ -63,6 +81,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         Args:
             path (Project): Project to approve.
         """
+        self.assertEqual(ProjectUserMembership.objects.count(), 0)
         project.status = Project.APPROVED
         project.save()
         self.assertEqual(ProjectUserMembership.objects.count(), 1)
@@ -75,9 +94,11 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.student,
-            }, data={
+            },
+            data={
                 'project_code': self.code,
-            })
+            },
+        )
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors['project_code'],
@@ -93,9 +114,11 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.student,
-            }, data={
+            },
+            data={
                 'project_code': self.code,
-            })
+            },
+        )
         self.assertTrue(form.is_valid())
 
     def test_membership_creation_form_with_invalid_project_code(self):
@@ -107,9 +130,11 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.student,
-            }, data={
+            },
+            data={
                 'project_code': 'invalid-project-code',
-            })
+            },
+        )
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors['project_code'],
@@ -128,9 +153,11 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.tech_lead,
-            }, data={
-                'project_code': self.code
-            })
+            },
+            data={
+                'project_code': self.code,
+            },
+        )
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors['project_code'],
@@ -141,7 +168,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         membership = ProjectUserMembership.objects.get(user=self.tech_lead)
         self.assertTrue(membership.authorised())
 
-    def test_membership_creation_form_when_a_student_has_a_membership_request_awaiting_authorisation(self):
+    def test_membership_creation_form_when_a_student_has_a_request_awaiting_authorisation(self):
         """
         Ensure it is not possible to create a project user membership when a student has a 
         membership request awaiting authorisation.
@@ -165,9 +192,11 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.student,
-            }, data={
-                'project_code': self.code
-            })
+            },
+            data={
+                'project_code': self.code,
+            },
+        )
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors['project_code'],
