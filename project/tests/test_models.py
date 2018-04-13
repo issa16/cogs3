@@ -8,7 +8,7 @@ from project.models import ProjectCategory
 from project.models import ProjectFundingSource
 from project.models import ProjectSystemAllocation
 from project.models import ProjectUserMembership
-from system.tests import SystemTests
+from system.tests.test_models import SystemTests
 from users.tests.test_models import CustomUserTests
 
 

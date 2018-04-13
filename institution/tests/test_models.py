@@ -11,7 +11,7 @@ class InstitutionTests(TestCase):
 
         Args:
             name (str): Name of the institution
-            base_domain (str): Base domain if the institution, example bangor.ac.uk
+            base_domain (str): Base domain of the institution, example bangor.ac.uk
         """
         return Institution.objects.create(
             name=name,
