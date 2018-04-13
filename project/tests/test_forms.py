@@ -82,7 +82,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         technical lead user see project/signals.py.
 
         Args:
-            path (Project): Project to approve.
+            project (Project): Project to approve.
         """
         project.status = Project.APPROVED
         project.save()
@@ -122,7 +122,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         )
         self.assertTrue(form.is_valid())
 
-    def test_membership_creation_form_with_invalid_project_code(self):
+    def test_membership_creation_form_with_an_invalid_project_code(self):
         """
         Ensure it is not possible to create a project user membership using an invalid project code.
         """
@@ -142,32 +142,48 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
             ['Invalid SCW project code.'],
         )
 
-    def test_membership_creation_form_when_a_techlead_is_already_a_member(self):
+    def test_membership_creation_form_when_a_user_is_an_authorised_member(self):
         """
-        Ensure it is not possible to create a project user membership when a technical lead is
-        already a member of the project. By default, when the project is approved, a project user
+        Ensure it is not possible to create a project user membership when a user is an 
+        authorised member of the project. By default, when the project is approved, a project user
         membership will be created for the technical lead.
         """
-        self.approve_project(self.project)
+        accounts = [
+            self.student,
+            self.techlead,
+        ]
 
-        # A request to create a project user membership should be rejected.
-        form = ProjectUserMembershipCreationForm(
-            initial={
-                'user': self.techlead,
-            },
-            data={
-                'project_code': self.code,
-            },
-        )
-        self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors['project_code'],
-            ['You are currently a member of the project.'],
-        )
+        for account in accounts:
+            # Create a project
+            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            project = ProjectTests().create_project(
+                title=self.title,
+                code='scw-' + code,
+                institution=self.institution,
+                tech_lead=account,
+                category=self.category,
+                funding_source=self.funding_source,
+            )
+            self.approve_project(project)
 
-        # Ensure the project user membership status is currently set authorised.
-        membership = ProjectUserMembership.objects.get(user=self.techlead)
-        self.assertTrue(membership.authorised())
+            # A request to create a project user membership should be rejected.
+            form = ProjectUserMembershipCreationForm(
+                initial={
+                    'user': account,
+                },
+                data={
+                    'project_code': project.code,
+                },
+            )
+            self.assertFalse(form.is_valid())
+            self.assertEqual(
+                form.errors['project_code'],
+                ['You are currently a member of the project.'],
+            )
+
+            # Ensure the project user membership status is currently set authorised.
+            membership = ProjectUserMembership.objects.get(user=account)
+            self.assertTrue(membership.authorised())
 
     def test_membership_creation_form_when_a_user_has_a_request_awaiting_authorisation(self):
         """
