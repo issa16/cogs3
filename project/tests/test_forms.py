@@ -3,7 +3,7 @@ import datetime
 from django import forms
 from django.test import TestCase
 
-from institution.tests import InstitutionTests
+from institution.tests.test_models import InstitutionTests
 from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
 from project.models import ProjectCategory

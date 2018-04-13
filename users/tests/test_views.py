@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from django.urls import reverse
 
-from institution.tests import InstitutionTests
+from institution.tests.test_models import InstitutionTests
 from users.tests.test_models import CustomUserTests
 from users.views import RegisterView
 

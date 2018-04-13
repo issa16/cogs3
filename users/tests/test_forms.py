@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from institution.tests import InstitutionTests
+from institution.tests.test_models import InstitutionTests
 from users.forms import CustomUserCreationForm
 from users.models import CustomUser
 
