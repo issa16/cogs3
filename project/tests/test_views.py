@@ -1,3 +1,5 @@
+import random
+import string
 import uuid
 
 from django.contrib.auth.models import Permission
@@ -6,10 +8,18 @@ from django.test import TestCase
 from django.urls import reverse
 
 from institution.tests.test_models import InstitutionTests
+from project.forms import ProjectCreationForm
+from project.forms import ProjectUserMembershipCreationForm
 from project.tests.test_models import ProjectCategoryTests
 from project.tests.test_models import ProjectFundingSourceTests
 from project.tests.test_models import ProjectTests
 from project.tests.test_models import ProjectUserMembershipTests
+from project.views import ProjectCreateView
+from project.views import ProjectDetailView
+from project.views import ProjectListView
+from project.views import ProjectUserMembershipFormView
+from project.views import ProjectUserMembershipListView
+from project.views import ProjectUserRequestMembershipListView
 from users.tests.test_models import CustomUserTests
 
 
@@ -55,7 +65,7 @@ class ProjectViewTests(TestCase):
         }
         response = self.client.get(path, **headers)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/accounts/register/')
+        self.assertEqual(response.url, reverse('register'))
 
 
 class ProjectCreateViewTests(ProjectViewTests, TestCase):
@@ -84,6 +94,8 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
                 **headers,
             )
             self.assertEqual(response.status_code, account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('form'), ProjectCreationForm))
+            self.assertTrue(isinstance(response.context_data.get('view'), ProjectCreateView))
 
     def test_project_create_view_as_an_unauthorised_user(self):
         """
@@ -118,6 +130,7 @@ class ProjectListViewTests(ProjectViewTests, TestCase):
                 **headers,
             )
             self.assertEqual(response.status_code, account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('view'), ProjectListView))
 
     def test_project_list_view_as_an_unauthorised_user(self):
         """
@@ -162,6 +175,7 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
             )
             self.assertEqual(response.status_code, account.get('expected_status_code'))
             self.assertEqual(response.context_data.get('project'), project)
+            self.assertTrue(isinstance(response.context_data.get('view'), ProjectDetailView))
 
     def test_project_detail_view_as_an_unauthorised_user(self):
         """
@@ -174,9 +188,10 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         Ensure only the project's technical lead user can view the details of the project.
         """
         # Create a project using the technical lead account.
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
         project = ProjectTests().create_project(
             title='Project Title',
-            code='scw-' + str(uuid.uuid4()),
+            code='scw-' + code,
             institution=self.institution,
             tech_lead=self.techlead_user,
             category=self.category,
@@ -221,6 +236,8 @@ class ProjectUserMembershipFormViewTests(ProjectViewTests, TestCase):
                 **headers,
             )
             self.assertEqual(response.status_code, account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('form'), ProjectUserMembershipCreationForm))
+            self.assertTrue(isinstance(response.context_data.get('view'), ProjectUserMembershipFormView))
 
     def test_project_user_membership_form_view_as_an_unauthorised_user(self):
         """
@@ -255,6 +272,8 @@ class ProjectUserRequestMembershipListViewTests(ProjectViewTests, TestCase):
                 **headers,
             )
             self.assertEqual(response.status_code, account.get('expected_status_code'))
+            if response.status_code == 200:
+                self.assertTrue(isinstance(response.context_data.get('view'), ProjectUserRequestMembershipListView))
 
     def test_project_user_request_membership_list_view_as_an_unauthorised_user(self):
         """
@@ -289,6 +308,7 @@ class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
                 **headers,
             )
             self.assertEqual(response.status_code, account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('view'), ProjectUserMembershipListView))
 
     def test_project_user_membership_list_view_as_an_unauthorised_user(self):
         """

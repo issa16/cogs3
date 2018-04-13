@@ -62,6 +62,7 @@ class ProjectModelTests(TestCase):
             username='scw_student@bangor.ac.uk',
             password='123456',
         )
+
         self.category = ProjectCategoryTests().create_project_category()
         self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
 
