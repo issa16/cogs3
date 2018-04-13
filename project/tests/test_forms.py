@@ -236,13 +236,13 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         """
         self.approve_project(self.project)
 
-        invalid_proect_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=21))
+        invalid_project_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=21))
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.techlead,
             },
             data={
-                'project_code': invalid_proect_code,
+                'project_code': invalid_project_code,
             },
         )
         self.assertFalse(form.is_valid())
