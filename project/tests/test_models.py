@@ -174,14 +174,21 @@ class ProjectUserMembershipTests(TestCase):
             category=self.category,
             funding_source=self.funding_source,
         )
-        self.membership = ProjectUserMembership.objects.create(
-            project=self.project,
+        self.membership = self.create_project_user_membership(
             user=self.student,
+            project=self.project,
+        )
+        self.assertEqual(ProjectUserMembership.objects.filter(user=self.student).count(), 1)
+
+    def create_project_user_membership(self, user, project):
+        project_user_membership = ProjectUserMembership.objects.create(
+            project=project,
+            user=user,
             status=ProjectUserMembership.AWAITING_AUTHORISATION,
             date_joined=datetime.datetime.now(),
             date_left=datetime.datetime.now() + datetime.timedelta(days=10),
         )
-        self.assertEqual(ProjectUserMembership.objects.filter(user=self.student).count(), 1)
+        return project_user_membership
 
     def test_project_user_membership_awaiting_authorisation_status(self):
         """

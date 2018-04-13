@@ -9,6 +9,7 @@ from institution.tests import InstitutionTests
 from project.tests.test_models import ProjectCategoryTests
 from project.tests.test_models import ProjectFundingSourceTests
 from project.tests.test_models import ProjectTests
+from project.tests.test_models import ProjectUserMembershipTests
 from users.tests.test_models import CustomUserTests
 
 
@@ -42,6 +43,12 @@ class ProjectViewTests(TestCase):
         self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
 
     def access_view_as_unauthorisied_user(self, path):
+        """
+        Ensure an unauthorised user can not access a particular view.
+
+        Args:
+            path (str): Path to view.
+        """
         headers = {
             'REMOTE_USER': 'invalid-remote-user',
             'eppn': 'invald-eppn',
@@ -55,19 +62,28 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
 
     def test_project_create_view_as_an_authorised_user(self):
         """
-        Ensure both student and technical lead accounts can access the project create view.
+        Ensure the correct account types can access the project create view.
         """
         accounts = [
-            self.student_username,
-            self.techlead_username,
+            {
+                'username': self.student_username,
+                'expected_status_code': 200,
+            },
+            {
+                'username': self.techlead_username,
+                'expected_status_code': 200,
+            },
         ]
         for account in accounts:
             headers = {
-                'REMOTE_USER': account,
-                'eppn': account,
+                'REMOTE_USER': account.get('username'),
+                'eppn': account.get('username'),
             }
-            response = self.client.get(reverse('create-project'), **headers)
-            self.assertEqual(response.status_code, 200)
+            response = self.client.get(
+                reverse('create-project'),
+                **headers,
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
 
     def test_project_create_view_as_an_unauthorised_user(self):
         """
@@ -80,19 +96,28 @@ class ProjectListViewTests(ProjectViewTests, TestCase):
 
     def test_project_list_view_as_an_authorised_user(self):
         """
-        Ensure both student and technical lead accounts can access the project list view.
+        Ensure the correct account types can access the project list view.
         """
         accounts = [
-            self.student_username,
-            self.techlead_username,
+            {
+                'username': self.student_username,
+                'expected_status_code': 200,
+            },
+            {
+                'username': self.techlead_username,
+                'expected_status_code': 200,
+            },
         ]
         for account in accounts:
             headers = {
-                'REMOTE_USER': account,
-                'eppn': account,
+                'REMOTE_USER': account.get('username'),
+                'eppn': account.get('username'),
             }
-            response = self.client.get(reverse('project-application-list'), **headers)
-            self.assertEqual(response.status_code, 200)
+            response = self.client.get(
+                reverse('project-application-list'),
+                **headers,
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
 
     def test_project_list_view_as_an_unauthorised_user(self):
         """
@@ -105,30 +130,37 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
 
     def test_project_detail_view_as_an_authorised_user(self):
         """
-        Ensure both student and technical lead accounts can access the project detail view.
+        Ensure the correct account types can access the details of projects they have created.
         """
         accounts = [
-            self.student_user,
-            self.techlead_user,
+            {
+                'user': self.student_user,
+                'expected_status_code': 200,
+            },
+            {
+                'user': self.techlead_user,
+                'expected_status_code': 200,
+            },
         ]
         for account in accounts:
+            # Create a project for the user
             project = ProjectTests().create_project(
                 title='Project Title',
                 code='scw-' + str(uuid.uuid4()),
                 institution=self.institution,
-                tech_lead=account,
+                tech_lead=account.get('user'),
                 category=self.category,
                 funding_source=self.funding_source,
             )
             headers = {
-                'REMOTE_USER': account.username,
-                'eppn': account.username,
+                'REMOTE_USER': account.get('user').username,
+                'eppn': account.get('user').username,
             }
             response = self.client.get(
                 reverse('project-application-detail', args=[project.id]),
                 **headers,
             )
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
             self.assertEqual(response.context_data.get('project'), project)
 
     def test_project_detail_view_as_an_unauthorised_user(self):
@@ -137,10 +169,11 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         """
         self.access_view_as_unauthorisied_user(reverse('project-application-detail', args=[1]))
 
-    def test_project_detail_view_as_authorised_project_member(self):
+    def test_project_detail_view_as_unauthorised_project_member(self):
         """
         Ensure only the project's technical lead user can view the details of the project.
         """
+        # Create a project using the technical lead account.
         project = ProjectTests().create_project(
             title='Project Title',
             code='scw-' + str(uuid.uuid4()),
@@ -149,6 +182,7 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
             category=self.category,
             funding_source=self.funding_source,
         )
+        # Attempt to access the project's detail view as a different user.
         headers = {
             'REMOTE_USER': self.student_username,
             'eppn': self.student_username,
@@ -165,19 +199,28 @@ class ProjectUserMembershipFormViewTests(ProjectViewTests, TestCase):
 
     def test_project_user_membership_form_view_as_an_authorised_user(self):
         """
-        Ensure both student and technical lead accounts can access the project user membership form.
+        Ensure the correct account types can access the project user membership form.
         """
         accounts = [
-            self.student_username,
-            self.techlead_username,
+            {
+                'username': self.student_username,
+                'expected_status_code': 200,
+            },
+            {
+                'username': self.techlead_username,
+                'expected_status_code': 200,
+            },
         ]
         for account in accounts:
             headers = {
-                'REMOTE_USER': account,
-                'eppn': account,
+                'REMOTE_USER': account.get('username'),
+                'eppn': account.get('username'),
             }
-            response = self.client.get(reverse('project-membership-create'), **headers)
-            self.assertEqual(response.status_code, 200)
+            response = self.client.get(
+                reverse('project-membership-create'),
+                **headers,
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
 
     def test_project_user_membership_form_view_as_an_unauthorised_user(self):
         """
@@ -190,21 +233,28 @@ class ProjectUserRequestMembershipListViewTests(ProjectViewTests, TestCase):
 
     def test_project_user_request_membership_list_view_as_an_authorised_user(self):
         """
-        Ensure student accounts can not access the project user request membership list view.
-        Ensure technical lead accounts can access the project user request membership list view.
+        Ensure the correct accounts types can access the project user request membership list view.
         """
         accounts = [
-            (self.student_username, 302),
-            (self.techlead_username, 200),
+            {
+                'username': self.student_username,
+                'expected_status_code': 302,
+            },
+            {
+                'username': self.techlead_username,
+                'expected_status_code': 200,
+            },
         ]
         for account in accounts:
-            username = account[0]
             headers = {
-                'REMOTE_USER': username,
-                'eppn': username,
+                'REMOTE_USER': account.get('username'),
+                'eppn': account.get('username'),
             }
-            response = self.client.get(reverse('project-user-membership-request-list'), **headers)
-            self.assertEqual(response.status_code, account[1])
+            response = self.client.get(
+                reverse('project-user-membership-request-list'),
+                **headers,
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
 
     def test_project_user_request_membership_list_view_as_an_unauthorised_user(self):
         """
@@ -217,20 +267,28 @@ class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
 
     def test_project_user_membership_list_view_as_an_authorised_user(self):
         """
-        Ensure both student and technical lead accounts can access the project user membership 
-        list view.
+        Ensure the correct account types can access the project user membership list view.
         """
         accounts = [
-            self.student_username,
-            self.techlead_username,
+            {
+                'username': self.student_username,
+                'expected_status_code': 200,
+            },
+            {
+                'username': self.techlead_username,
+                'expected_status_code': 200,
+            },
         ]
         for account in accounts:
             headers = {
-                'REMOTE_USER': account,
-                'eppn': account,
+                'REMOTE_USER': account.get('username'),
+                'eppn': account.get('username'),
             }
-            response = self.client.get(reverse('project-membership-list'), **headers)
-            self.assertEqual(response.status_code, 200)
+            response = self.client.get(
+                reverse('project-membership-list'),
+                **headers,
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
 
     def test_project_user_membership_list_view_as_an_unauthorised_user(self):
         """
