@@ -126,7 +126,7 @@ class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequi
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
-            return HttpResponse(reverse('project-user-membership-request-list'))
+            return HttpResponseRedirect(reverse('project-user-membership-request-list'))
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):

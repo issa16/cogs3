@@ -15,28 +15,33 @@ from project.tests.test_models import ProjectTests
 from users.tests.test_models import CustomUserTests
 
 
-class ProjectUserMembershipCreationFormTests(TestCase):
+class ProjectFormTests(TestCase):
 
     def setUp(self):
+        # Create an institution
         self.institution = InstitutionTests().create_institution(
             name='Bangor University',
             base_domain='bangor.ac.uk',
         )
 
-        self.student = CustomUserTests().create_student_user(
-            username='scw_student@bangor.ac.uk',
-            password='123456',
-        )
+        # Create a technical lead user account
         self.tech_lead = CustomUserTests().create_techlead_user(
             username='scw_techlead@bangor.ac.uk',
+            password='123456',
+        )
+
+        # Create a student user account
+        self.student = CustomUserTests().create_student_user(
+            username='scw_student@bangor.ac.uk',
             password='123456',
         )
 
         self.category = ProjectCategoryTests().create_project_category()
         self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
 
+        # Create a project
         self.title = 'Project title'
-        self.code = 'SCW-12345'
+        self.code = 'scw-00001',
         self.project = ProjectTests().create_project(
             title=self.title,
             code=self.code,
@@ -47,9 +52,16 @@ class ProjectUserMembershipCreationFormTests(TestCase):
         )
         self.assertEqual(ProjectUserMembership.objects.count(), 0)
 
+
+class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
+
     def approve_project(self, project):
         """
-        The approval process will trigger the creation of a project user membership for the tech lead.
+        The approval process will trigger the creation of a project user membership for the 
+        technical lead user.
+
+        Args:
+            path (Project): Project to approve.
         """
         project.status = Project.APPROVED
         project.save()
@@ -57,7 +69,7 @@ class ProjectUserMembershipCreationFormTests(TestCase):
 
     def test_membership_creation_form_whilst_project_is_awaiting_approval(self):
         """
-        It should not be possible to create a project user membership whilst the project is 
+        Ensure it is not possible to create a project user membership whilst the project is 
         currently awaiting approval.
         """
         form = ProjectUserMembershipCreationForm(
@@ -74,10 +86,10 @@ class ProjectUserMembershipCreationFormTests(TestCase):
 
     def test_membership_creation_form_after_the_project_has_been_approved(self):
         """
-        It should be possible to create a project user membership after the project has 
-        been approved.
+        Ensure it is possible to create a project user membership after the project has been approved.
         """
         self.approve_project(self.project)
+
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.student,
@@ -88,10 +100,10 @@ class ProjectUserMembershipCreationFormTests(TestCase):
 
     def test_membership_creation_form_with_invalid_project_code(self):
         """
-        It should not be possible to create a project user membership using an invalid 
-        project code.
+        Ensure it is not possible to create a project user membership using an invalid project code.
         """
         self.approve_project(self.project)
+
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.student,
@@ -106,12 +118,13 @@ class ProjectUserMembershipCreationFormTests(TestCase):
 
     def test_membership_creation_form_when_a_techlead_is_already_a_member(self):
         """
-        It should not be possible to create a project user membership when a techlead is 
-        already a member of the project.
+        Ensure it is not possible to create a project user membership when a technical lead is 
+        already a member of the project. By default, when the project is approved, a project user
+        membership will be created for the technical lead.
         """
         self.approve_project(self.project)
 
-        # The second request to create a project user membership should be rejected
+        # A request to create a project user membership should be rejected.
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.tech_lead,
@@ -123,13 +136,14 @@ class ProjectUserMembershipCreationFormTests(TestCase):
             form.errors['project_code'],
             ['You are currently a member of the project.'],
         )
+
         # Ensure the project user membership status is currently set authorised.
         membership = ProjectUserMembership.objects.get(user=self.tech_lead)
         self.assertTrue(membership.authorised())
 
     def test_membership_creation_form_when_a_student_has_a_membership_request_awaiting_authorisation(self):
         """
-        It should not be possible to create a project user membership when a student has a 
+        Ensure it is not possible to create a project user membership when a student has a 
         membership request awaiting authorisation.
         """
         self.approve_project(self.project)
@@ -142,13 +156,12 @@ class ProjectUserMembershipCreationFormTests(TestCase):
             date_joined=datetime.datetime.now(),
             date_left=datetime.datetime.now() + datetime.timedelta(days=10),
         )
-        self.assertEqual(ProjectUserMembership.objects.filter(user=self.student).count(), 1)
 
         # Ensure the project user membership status is currently set to awaiting authorisation.
         membership = ProjectUserMembership.objects.get(user=self.student)
         self.assertTrue(membership.awaiting_authorisation())
 
-        # The second request to create a project user membership should be rejected
+        # A request to create a project user membership should be rejected
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.student,
