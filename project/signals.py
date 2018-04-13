@@ -10,10 +10,13 @@ from .models import ProjectUserMembership
 @receiver(post_save, sender=Project)
 def update_project_membership(sender, instance, created, **kwargs):
     if not created:
-        # If the project has been set to approved, create or update a ProjectUserMembership entry for the tech lead
+        """
+        If the project has been set to approved, create or update a ProjectUserMembership 
+        entry for the technical lead.
+        """
         project = instance
         if (project.status == Project.APPROVED):
-            obj, created = ProjectUserMembership.objects.update_or_create(
+            ProjectUserMembership.objects.update_or_create(
                 project=project,
                 user=project.tech_lead,
                 defaults={
