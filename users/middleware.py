@@ -19,7 +19,7 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         if not hasattr(request, 'user'):
             raise ImproperlyConfigured(
                 "The Django remote user auth middleware requires the authentication middleware to "
-                " be installed.  Edit your MIDDLEWARE setting to insert "
+                " be installed. Edit your MIDDLEWARE setting to insert "
                 "'django.contrib.auth.middleware.AuthenticationMiddleware' "
                 "before the RemoteUserMiddleware class.")
 

@@ -5,6 +5,7 @@ from django.dispatch import receiver
 
 from .models import Profile
 
+from institution.exceptions import InvalidInstitution
 from institution.models import Institution
 
 
@@ -21,8 +22,11 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     user = instance
 
     # Determine the user's institution
-    base_domain = user.username.split('@')[1]
-    institution = Institution.objects.get(base_domain=base_domain)
+    try:
+        base_domain = user.username.split('@')[1]
+        institution = Institution.objects.get(base_domain=base_domain)
+    except Institution.DoesNotExist:
+        raise InvalidInstitution(base_domain)
 
     try:
         # Manually updating a user's profile via the admin screens.

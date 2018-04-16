@@ -1,0 +1,2 @@
+class InvalidInstitution(Exception):
+    pass
