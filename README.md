@@ -1,5 +1,6 @@
 # cogs3
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e041aee6a4846089f8aedc228c56254)](https://app.codacy.com/app/tystakartografen/cogs3?utm_source=github.com&utm_medium=referral&utm_content=tystakartografen/cogs3&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/tystakartografen/cogs3.svg?branch=master)](https://travis-ci.org/tystakartografen/cogs3) [![codecov](https://codecov.io/gh/tystakartografen/cogs3/branch/master/graph/badge.svg)](https://codecov.io/gh/tystakartografen/cogs3) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/tystakartografen/cogs3/blob/master/LICENSE.md)
 
 - [Demo](#demo)
