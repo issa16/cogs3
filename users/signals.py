@@ -31,6 +31,7 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     try:
         # Manually updating a user's profile via the admin screens.
         if user.profile:
+            # Assign the user to the profile.
             profile = user.profile
             profile.user = user
     except AttributeError:

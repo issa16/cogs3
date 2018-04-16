@@ -15,15 +15,15 @@ class Command(BaseCommand):
         parser.add_argument('csv_filename')
 
     def handle(self, *args, **options):
-        # Users will be added to the student user group by default
+        # Users will be added to the student user group by default.
         group = Group.objects.get(name='student')
         filename = options['csv_filename']
         try:
-            # Open input csv file
+            # Open input csv file.
             with open(filename, newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
-                    # Get or create user
+                    # Get or create a user.
                     user, created = CustomUser.objects.get_or_create(
                         username=row['institutional_address'],
                         email=row['institutional_address'],
@@ -38,10 +38,10 @@ class Command(BaseCommand):
                     else:
                         self.stdout.write(self.style.SUCCESS(row['institutional_address'] + ' already exists!'))
 
-                    # Assign the user to a group
+                    # Assign the user to a group.
                     user.groups.add(group)
 
-                    # Update user profile
+                    # Update user profile.
                     profile = user.profile
                     profile.shibboleth_username = row['institutional_address']
                     profile.scw_username = row['new_scw_username']

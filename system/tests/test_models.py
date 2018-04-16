@@ -21,6 +21,9 @@ class SystemTests(TestCase):
         )
 
     def test_system_creation(self):
+        """
+        Ensure we can create a System instance.
+        """
         system = self.create_system(
             name='Nemesis',
             description='Bangor University Cluster',

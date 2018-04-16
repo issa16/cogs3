@@ -10,8 +10,8 @@ class InstitutionTests(TestCase):
         Create an Institution instance.
 
         Args:
-            name (str): Name of the institution
-            base_domain (str): Base domain of the institution, example bangor.ac.uk
+            name (str): Name of the institution.
+            base_domain (str): Base domain of the institution.
         """
         return Institution.objects.create(
             name=name,
@@ -19,6 +19,9 @@ class InstitutionTests(TestCase):
         )
 
     def test_institution_creation(self):
+        """
+        Ensure we can create an Institution instance.
+        """
         institution = self.create_institution(
             name='Bangor University',
             base_domain='bangor.ac.uk',
