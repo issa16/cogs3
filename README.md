@@ -49,32 +49,37 @@
 
 	Update .env
 
-6. Create the database
+5. Create the database
 
 	```sh
 	python manage.py migrate
 	```
 
-5. Create an admin user
+6. Load institution data into the database, default institution data is available in fixtures
+
+	```sh
+	python manage.py loaddata institutions.yaml
+	```
+7. Create an admin user
 
 	```sh
 	python manage.py createsuperuser
 	```
 
-6. Run the unit tests
+8. Run the unit tests
 
 	```sh
 	python manage.py test
 	```
 
-7. Generate coverage report
+9. Generate coverage report
 
 	```sh
 	coverage run manage.py test
 	coverage html
 	```
 
-8. Start the development server
+10. Start the development server
 
 	```sh
 	python manage.py runserver
