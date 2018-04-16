@@ -1,7 +1,7 @@
 exclude_paths:
   - **/tests/**
-  - *.min.js
-  - *.min.css
+  - '*.min.js'
+  - '*.min.css'
 
 engines:
   coverage:
