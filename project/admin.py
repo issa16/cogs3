@@ -9,7 +9,10 @@ from .models import ProjectUserMembership
 
 @admin.register(ProjectFundingSource)
 class ProjectFundingSourceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
+    list_display = (
+        'name',
+        'description',
+    )
 
 
 @admin.register(ProjectCategory)
@@ -19,14 +22,27 @@ class ProjectCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'code', 'institution', 'tech_lead', 'status')
+    list_display = (
+        'title',
+        'code',
+        'institution',
+        'tech_lead',
+        'status',
+    )
 
 
 @admin.register(ProjectSystemAllocation)
 class ProjectSystemAllocationAdmin(admin.ModelAdmin):
-    list_display = ('project', 'system')
+    list_display = (
+        'project',
+        'system',
+    )
 
 
 @admin.register(ProjectUserMembership)
 class ProjectUserMembershipAdmin(admin.ModelAdmin):
-    list_display = ('project', 'user', 'status')
+    list_display = (
+        'project',
+        'user',
+        'status',
+    )

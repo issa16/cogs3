@@ -21,19 +21,19 @@ from users.tests.test_models import CustomUserTests
 class ProjectFormTests(TestCase):
 
     def setUp(self):
-        # Create an institution
+        # Create an institution.
         self.institution = InstitutionTests().create_institution(
             name='Bangor University',
             base_domain='bangor.ac.uk',
         )
 
-        # Create a technical lead user account
+        # Create a technical lead user account.
         self.techlead = CustomUserTests().create_techlead_user(
             username='scw_techlead@bangor.ac.uk',
             password='123456',
         )
 
-        # Create a student user account
+        # Create a student user account.
         self.student = CustomUserTests().create_student_user(
             username='scw_student@bangor.ac.uk',
             password='123456',
@@ -42,7 +42,7 @@ class ProjectFormTests(TestCase):
         self.category = ProjectCategoryTests().create_project_category()
         self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
 
-        # Create a project
+        # Create a project.
         self.title = 'Project title'
         self.code = 'scw-00001',
         self.project = ProjectTests().create_project(
@@ -53,24 +53,26 @@ class ProjectFormTests(TestCase):
             category=self.category,
             funding_source=self.funding_source,
         )
+
+        # Ensure no project user membership requests have been created.
         self.assertEqual(ProjectUserMembership.objects.count(), 0)
 
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
 
-    def test_request_membership_form_with_invalid_user_id(self):
+    def test_request_membership_form_with_valid_data(self):
+        pass
+
+    def test_request_membership_form_with_an_invalid_user_id(self):
         """
         Ensure it is not possible to create a project user request membership with an invalid user id.
         """
         pass
 
-    def test_request_membership_form_with_invalid_project_id(self):
+    def test_request_membership_form_with_an_invalid_project_id(self):
         """
         Ensure it is not possible to create a project user request membership with an project id.
         """
-        pass
-
-    def test_request_membership_form_with_valid_data(self):
         pass
 
 
@@ -154,7 +156,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         ]
 
         for account in accounts:
-            # Create a project
+            # Create a project.
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
             project = ProjectTests().create_project(
                 title=self.title,
@@ -202,7 +204,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         ]
 
         for account in accounts:
-            # Create a project
+            # Create a project.
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
             project = ProjectTests().create_project(
                 title=self.title,
@@ -214,7 +216,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
             )
             self.approve_project(project)
 
-            # Create a project user membership
+            # Create a project user membership.
             ProjectUserMembership.objects.create(
                 project=project,
                 user=account.get('user_submitting_request'),
@@ -230,7 +232,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
             )
             self.assertTrue(membership.awaiting_authorisation())
 
-            # A request to create a project user membership should be rejected
+            # A request to create a project user membership should be rejected.
             form = ProjectUserMembershipCreationForm(
                 initial={
                     'user': account.get('user_submitting_request'),

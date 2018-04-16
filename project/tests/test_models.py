@@ -15,6 +15,9 @@ from users.tests.test_models import CustomUserTests
 class ProjectFundingSourceTests(TestCase):
 
     def create_project_funding_source(self):
+        """
+        Create a ProjectFundingSource instance.
+        """
         project_funding_source = ProjectFundingSource.objects.create(
             name='A project function source name',
             description='A project funding source description',
@@ -22,6 +25,9 @@ class ProjectFundingSourceTests(TestCase):
         return project_funding_source
 
     def test_project_funding_source_creation(self):
+        """
+        Ensure we can create a ProjectFundingSource instance.
+        """
         project_funding_source = self.create_project_funding_source()
         self.assertTrue(isinstance(project_funding_source, ProjectFundingSource))
         self.assertEqual(project_funding_source.__str__(), project_funding_source.name)
@@ -30,6 +36,9 @@ class ProjectFundingSourceTests(TestCase):
 class ProjectCategoryTests(TestCase):
 
     def create_project_category(self):
+        """
+        Create a ProjectCategory instance.
+        """
         project_category = ProjectCategory.objects.create(
             name='A project category name',
             description='A project category description',
@@ -37,6 +46,9 @@ class ProjectCategoryTests(TestCase):
         return project_category
 
     def test_project_category_creation(self):
+        """
+        Ensure we can create a ProjectCategory instance.
+        """
         project_category = self.create_project_category()
         self.assertTrue(isinstance(project_category, ProjectCategory))
         self.assertEqual(project_category.__str__(), project_category.name)
@@ -45,19 +57,19 @@ class ProjectCategoryTests(TestCase):
 class ProjectModelTests(TestCase):
 
     def setUp(self):
-        # Create an institution
+        # Create an institution.
         self.institution = InstitutionTests().create_institution(
             name='Bangor University',
             base_domain='bangor.ac.uk',
         )
 
-        # Create a technical lead user account
+        # Create a technical lead user account.
         self.tech_lead = CustomUserTests().create_techlead_user(
             username='scw_techlead@bangor.ac.uk',
             password='123456',
         )
 
-        # Create a student user account
+        # Create a student user account.
         self.student = CustomUserTests().create_student_user(
             username='scw_student@bangor.ac.uk',
             password='123456',
@@ -70,6 +82,17 @@ class ProjectModelTests(TestCase):
 class ProjectTests(ProjectModelTests, TestCase):
 
     def create_project(self, title, code, institution, tech_lead, category, funding_source):
+        """
+        Create a Project instance.
+
+        Args:
+            title (str): Project title.
+            code (str): Project code.
+            institution (Institution): Institution project is based.
+            tech_lead (settings.AUTH_USER_MODEL): Project technical lead user.
+            category (ProjectCategory): Project category.
+            funding_source (ProjectFundingSource): Project funding source.
+        """
         project = Project.objects.create(
             title=title,
             description='Project description',
@@ -97,6 +120,9 @@ class ProjectTests(ProjectModelTests, TestCase):
         return project
 
     def test_project_creation(self):
+        """
+        Ensure we can create a Project instance.
+        """
         title = 'Project title'
         code = 'SCW-12345'
         project = self.create_project(
@@ -117,6 +143,8 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
 
     def setUp(self):
         super(ProjectSystemAllocationTests, self).setUp()
+
+        # Create a project.
         self.project = ProjectTests().create_project(
             title='Project title',
             code='SCW-12345',
@@ -126,6 +154,7 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
             funding_source=self.funding_source,
         )
 
+        # Create a system.
         self.system = SystemTests().create_system(
             name='Nemesis',
             description='Bangor University Cluster',
@@ -133,6 +162,9 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
         )
 
     def create_project_system_allocation(self):
+        """
+        Create a ProjectSystemAllocation instance.
+        """
         project_system_allocation = ProjectSystemAllocation.objects.create(
             project=self.project,
             system=self.system,
@@ -142,6 +174,9 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
         return project_system_allocation
 
     def test_project_system_allocation_creation(self):
+        """
+        Ensure we can create an ProjectSystemAllocation instance.
+        """
         project_system_allocation = self.create_project_system_allocation()
         self.assertTrue(isinstance(project_system_allocation, ProjectSystemAllocation))
         data = {
@@ -158,6 +193,8 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
 
     def setUp(self):
         super(ProjectUserMembershipTests, self).setUp()
+
+        # Create a project.
         self.project = ProjectTests().create_project(
             title='Project title',
             code='SCW-12345',
@@ -166,13 +203,23 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
             category=self.category,
             funding_source=self.funding_source,
         )
+
+        # Create a project user membership.
         self.membership = self.create_project_user_membership(
             user=self.student,
             project=self.project,
         )
+
         self.assertEqual(ProjectUserMembership.objects.filter(user=self.student).count(), 1)
 
     def create_project_user_membership(self, user, project):
+        """
+        Create a ProjectUserMembership instance.
+
+        Args:
+            user (settings.AUTH_USER_MODEL): The user requesting to join the project.
+            project (Project): The project the user is requesting to join.
+        """
         project_user_membership = ProjectUserMembership.objects.create(
             project=project,
             user=user,

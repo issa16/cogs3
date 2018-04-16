@@ -25,12 +25,12 @@ class ProjectUserMembershipCreationForm(forms.Form):
     project_code = forms.CharField(max_length=20)
 
     def clean_project_code(self):
-        # Verify the project code is valid and the project has been approved
+        # Verify the project code is valid and the project has been approved.
         project_code = self.cleaned_data['project_code']
         try:
             project = Project.objects.get(code=project_code)
             user = self.initial.get('user', None)
-            # The technical lead will automatically be added as a member of the of project
+            # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:
                 raise forms.ValidationError("You are currently a member of the project.")
             if project.awaiting_approval():
