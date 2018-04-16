@@ -2,7 +2,6 @@ import csv
 
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
 
 from users.models import CustomUser
 from users.models import Profile

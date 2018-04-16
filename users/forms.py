@@ -1,6 +1,3 @@
-from django import forms
-from django.conf import settings
-from django.contrib import auth
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.forms import UserCreationForm
 

@@ -2,8 +2,6 @@ import random
 import string
 import uuid
 
-from django.contrib.auth.models import Permission
-
 from django.test import TestCase
 from django.urls import reverse
 
@@ -13,7 +11,6 @@ from project.forms import ProjectUserMembershipCreationForm
 from project.tests.test_models import ProjectCategoryTests
 from project.tests.test_models import ProjectFundingSourceTests
 from project.tests.test_models import ProjectTests
-from project.tests.test_models import ProjectUserMembershipTests
 from project.views import ProjectCreateView
 from project.views import ProjectDetailView
 from project.views import ProjectListView

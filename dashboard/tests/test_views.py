@@ -47,7 +47,7 @@ class DashboardViewTests(TestCase):
 
     def test_dashboard_view_as_an_authorised_shibboleth_user_and_unregistered_application_user(self):
         """
-        If the REMOTE_USER and eppn header is present and the user is not a registered application 
+        If the REMOTE_USER and eppn header is present and the user is not a registered application
         user, then the user should be redirected to the account registration page.
         """
         headers = {
@@ -63,7 +63,7 @@ class DashboardViewTests(TestCase):
 
     def test_dashboard_view_as_an_authorised_shibboleth_and_registered_technical_lead_user(self):
         """
-        If the REMOTE_USER and eppn header is present and the user is a registered application user, 
+        If the REMOTE_USER and eppn header is present and the user is a registered application user,
         then the user should be redirected to the dashboard page and have the option to logout.
         """
         headers = {

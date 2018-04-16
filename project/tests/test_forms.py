@@ -1,16 +1,12 @@
 import datetime
 import random
 import string
-import uuid
 
-from django import forms
 from django.test import TestCase
 
 from institution.tests.test_models import InstitutionTests
 from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
-from project.models import ProjectCategory
-from project.models import ProjectFundingSource
 from project.models import ProjectUserMembership
 from project.tests.test_models import ProjectCategoryTests
 from project.tests.test_models import ProjectFundingSourceTests

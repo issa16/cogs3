@@ -1,12 +1,9 @@
 import datetime
 
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.urls import reverse
@@ -81,7 +78,7 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
 
     def form_valid(self, form):
         project_code = form.cleaned_data['project_code']
-        project = ProjectUserMembership.objects.create(
+        ProjectUserMembership.objects.create(
             project=Project.objects.get(code=project_code, status=Project.APPROVED),
             user=self.request.user,
             date_joined=datetime.date.today(),

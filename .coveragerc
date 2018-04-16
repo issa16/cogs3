@@ -3,3 +3,6 @@ omit =
 	*venvs*
 	*virtualenv*
 	manage.py
+	*/wsgi.py
+	*/migrations/*
+	*/__init__.py

@@ -1,8 +1,5 @@
 from django.contrib.auth.models import Group
-from django.contrib.sessions.middleware import SessionMiddleware
-from django.test import RequestFactory
 from django.test import TestCase
-from django.urls import reverse
 
 from institution.tests.test_models import InstitutionTests
 from users.models import CustomUser

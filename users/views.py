@@ -7,7 +7,6 @@ from django.views import generic
 from django.views.generic import TemplateView
 
 from .forms import CustomUserCreationForm
-from users.models import Profile
 
 
 class RegisterView(generic.CreateView):

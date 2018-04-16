@@ -1,7 +1,6 @@
 from django.test import TestCase
 
 from institution.exceptions import InvalidInstitution
-from institution.models import Institution
 from institution.tests.test_models import InstitutionTests
 from users.forms import CustomUserCreationForm
 from users.models import CustomUser
@@ -17,6 +16,9 @@ class CustomUserCreationFormTests(TestCase):
         )
 
     def test_user_creation_form_with_valid_data(self):
+        """
+        Ensure the user creation form works with valid data.
+        """
         form = CustomUserCreationForm(
             data={
                 'username': 'test_username@' + self.base_domain,
@@ -40,6 +42,9 @@ class CustomUserCreationFormTests(TestCase):
             form.save()
 
     def test_user_creation_form_without_required_fields(self):
+        """
+        Ensure a user account can not be created without the required form fields.
+        """
         form = CustomUserCreationForm(data={})
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['username'], ['This field is required.'])
@@ -47,6 +52,9 @@ class CustomUserCreationFormTests(TestCase):
         self.assertEqual(form.errors['last_name'], ['This field is required.'])
 
     def test_user_creation_form_generates_passwords_on_save(self):
+        """
+        Ensure a password is genereted upon user account creation.
+        """
         username = 'test_username@' + self.base_domain
         form = CustomUserCreationForm(data={
             'username': username,
@@ -55,6 +63,5 @@ class CustomUserCreationFormTests(TestCase):
         })
         self.assertTrue(form.is_valid())
         form.save()
-        # Ensure the user has been created and a password has been generated for the account.
         self.assertEqual(CustomUser.objects.filter(username=username).count(), 1)
         self.assertIsNotNone(CustomUser.objects.get(username=username).password)
