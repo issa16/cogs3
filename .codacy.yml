@@ -1,0 +1,7 @@
+exclude_paths:
+  - **/tests/**
+  - *.min.js
+
+engines:
+  coverage:
+    enabled: true
