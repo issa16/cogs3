@@ -1,4 +1,9 @@
 ---
 exclude_paths:
-  - '**/tests/**'
-  - '*.min.js'
+ - '**/tests/**'
+ - '*.min.js'
+
+engines:
+ pylint:
+  enabled: true
+  python_version: 3
