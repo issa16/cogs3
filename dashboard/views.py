@@ -13,11 +13,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         if self.request.user.has_perm('project.change_projectusermembership'):
             # How many project user membership requests are awaiting authorisation?
-            projects = Project.objects.filter(tech_lead=self.request.user)
-            project_user_memberships_count = ProjectUserMembership.objects.filter(
-                project__in=projects,
-                status=ProjectUserMembership.AWAITING_AUTHORISATION,
-            ).count()
-            context['project_user_requests_count'] = project_user_memberships_count
+            num_requests = ProjectUserMembership.objects.awaiting_authorisation(self.request.user).count()
+            context['project_user_requests_count'] = num_requests
 
         return context

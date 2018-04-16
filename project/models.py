@@ -125,6 +125,17 @@ class ProjectSystemAllocation(models.Model):
         verbose_name_plural = 'Project System Allocations'
 
 
+class ProjectUserMembershipManager(models.Manager):
+
+    def awaiting_authorisation(self, user):
+        projects = Project.objects.filter(tech_lead=user)
+        project_user_memberships = ProjectUserMembership.objects.filter(
+            project__in=projects,
+            status=ProjectUserMembership.AWAITING_AUTHORISATION,
+        )
+        return project_user_memberships
+
+
 class ProjectUserMembership(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -145,6 +156,8 @@ class ProjectUserMembership(models.Model):
     date_left = models.DateField(default=datetime.date.max)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+
+    objects = ProjectUserMembershipManager()
 
     def awaiting_authorisation(self):
         return True if self.status == ProjectUserMembership.AWAITING_AUTHORISATION else False
