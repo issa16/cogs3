@@ -11,11 +11,11 @@ var Cookielaw = {
         document.cookie = name + "=" + value + expires + "; path=/";
     },
     createCookielawCookie: function() {
-        this.createCookie('cookielaw_accepted', '1', 10 * 365);
-        if (typeof(window.jQuery) === 'function') {
-            jQuery('#CookielawBanner').hide();
+        this.createCookie("cookielaw_accepted", '1', 10 * 365);
+        if (typeof(window.jQuery) === "function") {
+            jQuery("#CookielawBanner").hide();
         } else {
-            document.getElementById('CookielawBanner').style.display = 'none';
+            document.getElementById("CookielawBanner").style.display = 'none';
         }
     }
 };

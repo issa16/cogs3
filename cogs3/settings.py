@@ -16,8 +16,6 @@ import dj_database_url
 
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
-from os.path import dirname
-from os.path import join
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
