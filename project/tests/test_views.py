@@ -46,8 +46,8 @@ class ProjectViewTests(TestCase):
             password=self.student_password,
         )
 
-        self.category = ProjectCategoryTests().create_project_category()
-        self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
+        self.category = ProjectCategoryTests.create_project_category()
+        self.funding_source = ProjectFundingSourceTests.create_project_funding_source()
 
     def access_view_as_unauthorisied_user(self, path):
         """
@@ -154,7 +154,7 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         ]
         for account in accounts:
             # Create a project for the user
-            project = ProjectTests().create_project(
+            project = ProjectTests.create_project(
                 title='Project Title',
                 code='scw-' + str(uuid.uuid4()),
                 institution=self.institution,
@@ -186,7 +186,7 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         """
         # Create a project using the technical lead account.
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        project = ProjectTests().create_project(
+        project = ProjectTests.create_project(
             title='Project Title',
             code='scw-' + code,
             institution=self.institution,

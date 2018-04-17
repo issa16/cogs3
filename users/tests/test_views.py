@@ -26,14 +26,14 @@ class UserViewTests(TestCase):
 
 class RegisterViewTests(UserViewTests, TestCase):
 
-    def test_register_view_as_unauthorised_user(self):
+    def test_register_view_as_an_unauthorised_user(self):
         """
         Ensure an unauthorised user can access the register view.
         """
-        unauthorised_user_username = 'scw-user@bangor.ac.uk'
+        unauthorised_username = 'unauthorised-user@bangor.ac.uk'
         headers = {
-            'REMOTE_USER': unauthorised_user_username,
-            'eppn': unauthorised_user_username,
+            'REMOTE_USER': unauthorised_username,
+            'eppn': unauthorised_username,
         }
         response = self.client.get(
             reverse('register'),
@@ -42,7 +42,7 @@ class RegisterViewTests(UserViewTests, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data['view'], RegisterView))
 
-    def test_register_view_as_authorised_user(self):
+    def test_register_view_as_an_authorised_user(self):
         """
         Ensure an authorised user is redirected to the dashboard and can not access
         the register view.
@@ -61,14 +61,14 @@ class RegisterViewTests(UserViewTests, TestCase):
 
 class LogoutViewTests(UserViewTests, TestCase):
 
-    def test_logout_view_as_unauthorised_user(self):
+    def test_logout_view_as_an_unauthorised_user(self):
         """
         Ensure an unauthorised user is redirected to the register view.
         """
-        unauthorised_user_username = 'scw-user@bangor.ac.uk'
+        unauthorised_username = 'unauthorised-user@bangor.ac.uk'
         headers = {
-            'REMOTE_USER': unauthorised_user_username,
-            'eppn': unauthorised_user_username,
+            'REMOTE_USER': unauthorised_username,
+            'eppn': unauthorised_username,
         }
         response = self.client.get(
             reverse('logout'),
@@ -77,7 +77,7 @@ class LogoutViewTests(UserViewTests, TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('register'))
 
-    def test_logout_view_as_authorised_user(self):
+    def test_logout_view_as_an_authorised_user(self):
         """
         Ensure an authorised user can access the logout view.
         """

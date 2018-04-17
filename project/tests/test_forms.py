@@ -35,13 +35,13 @@ class ProjectFormTests(TestCase):
             password='123456',
         )
 
-        self.category = ProjectCategoryTests().create_project_category()
-        self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
+        self.category = ProjectCategoryTests.create_project_category()
+        self.funding_source = ProjectFundingSourceTests.create_project_funding_source()
 
         # Create a project.
         self.title = 'Project title'
         self.code = 'scw-00001',
-        self.project = ProjectTests().create_project(
+        self.project = ProjectTests.create_project(
             title=self.title,
             code=self.code,
             institution=self.institution,
@@ -154,7 +154,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         for account in accounts:
             # Create a project.
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            project = ProjectTests().create_project(
+            project = ProjectTests.create_project(
                 title=self.title,
                 code='scw-' + code,
                 institution=self.institution,
@@ -202,7 +202,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         for account in accounts:
             # Create a project.
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            project = ProjectTests().create_project(
+            project = ProjectTests.create_project(
                 title=self.title,
                 code='scw-' + code,
                 institution=self.institution,

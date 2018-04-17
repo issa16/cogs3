@@ -10,7 +10,7 @@ class CustomUserCreationFormTests(TestCase):
 
     def setUp(self):
         self.base_domain = 'bangor.ac.uk'
-        self.institution = InstitutionTests().create_institution(
+        self.institution = InstitutionTests.create_institution(
             name='Bangor University',
             base_domain=self.base_domain,
         )
