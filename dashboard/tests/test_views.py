@@ -10,7 +10,7 @@ class DashboardViewTests(TestCase):
     def setUp(self):
         # Create an institution.
         base_domain = 'bangor.ac.uk'
-        InstitutionTests().create_institution(
+        InstitutionTests.create_institution(
             name='Bangor University',
             base_domain=base_domain,
         )
@@ -18,7 +18,7 @@ class DashboardViewTests(TestCase):
         # Create a technical lead user account.
         self.techlead_username = 'scw_techlead@' + base_domain
         self.techlead_password = '123456'
-        self.techlead_user = CustomUserTests().create_techlead_user(
+        self.techlead_user = CustomUserTests.create_techlead_user(
             username=self.techlead_username,
             password=self.techlead_password,
         )
@@ -26,7 +26,7 @@ class DashboardViewTests(TestCase):
         # Create a student user account.
         self.student_username = 'scw_student@' + base_domain
         self.student_password = '789123'
-        self.student_user = CustomUserTests().create_student_user(
+        self.student_user = CustomUserTests.create_student_user(
             username=self.student_username,
             password=self.student_password,
         )

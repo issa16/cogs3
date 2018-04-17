@@ -18,19 +18,19 @@ class ProjectFormTests(TestCase):
 
     def setUp(self):
         # Create an institution.
-        self.institution = InstitutionTests().create_institution(
+        self.institution = InstitutionTests.create_institution(
             name='Bangor University',
             base_domain='bangor.ac.uk',
         )
 
         # Create a technical lead user account.
-        self.techlead = CustomUserTests().create_techlead_user(
+        self.techlead = CustomUserTests.create_techlead_user(
             username='scw_techlead@bangor.ac.uk',
             password='123456',
         )
 
         # Create a student user account.
-        self.student = CustomUserTests().create_student_user(
+        self.student = CustomUserTests.create_student_user(
             username='scw_student@bangor.ac.uk',
             password='123456',
         )

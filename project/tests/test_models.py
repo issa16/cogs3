@@ -14,7 +14,8 @@ from users.tests.test_models import CustomUserTests
 
 class ProjectFundingSourceTests(TestCase):
 
-    def create_project_funding_source(self):
+    @classmethod
+    def create_project_funding_source(cls):
         """
         Create a ProjectFundingSource instance.
         """
@@ -35,7 +36,8 @@ class ProjectFundingSourceTests(TestCase):
 
 class ProjectCategoryTests(TestCase):
 
-    def create_project_category(self):
+    @classmethod
+    def create_project_category(cls):
         """
         Create a ProjectCategory instance.
         """
@@ -58,30 +60,31 @@ class ProjectModelTests(TestCase):
 
     def setUp(self):
         # Create an institution.
-        self.institution = InstitutionTests().create_institution(
+        self.institution = InstitutionTests.create_institution(
             name='Bangor University',
             base_domain='bangor.ac.uk',
         )
 
         # Create a technical lead user account.
-        self.tech_lead = CustomUserTests().create_techlead_user(
+        self.tech_lead = CustomUserTests.create_techlead_user(
             username='scw_techlead@bangor.ac.uk',
             password='123456',
         )
 
         # Create a student user account.
-        self.student = CustomUserTests().create_student_user(
+        self.student = CustomUserTests.create_student_user(
             username='scw_student@bangor.ac.uk',
             password='123456',
         )
 
-        self.category = ProjectCategoryTests().create_project_category()
-        self.funding_source = ProjectFundingSourceTests().create_project_funding_source()
+        self.category = ProjectCategoryTests.create_project_category()
+        self.funding_source = ProjectFundingSourceTests.create_project_funding_source()
 
 
 class ProjectTests(ProjectModelTests, TestCase):
 
-    def create_project(self, title, code, institution, tech_lead, category, funding_source):
+    @classmethod
+    def create_project(cls, title, code, institution, tech_lead, category, funding_source):
         """
         Create a Project instance.
 
@@ -145,7 +148,7 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
         super(ProjectSystemAllocationTests, self).setUp()
 
         # Create a project.
-        self.project = ProjectTests().create_project(
+        self.project = ProjectTests.create_project(
             title='Project title',
             code='SCW-12345',
             institution=self.institution,
@@ -155,7 +158,7 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
         )
 
         # Create a system.
-        self.system = SystemTests().create_system(
+        self.system = SystemTests.create_system(
             name='Nemesis',
             description='Bangor University Cluster',
             number_of_cores=10000,
@@ -195,7 +198,7 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
         super(ProjectUserMembershipTests, self).setUp()
 
         # Create a project.
-        self.project = ProjectTests().create_project(
+        self.project = ProjectTests.create_project(
             title='Project title',
             code='SCW-12345',
             institution=self.institution,

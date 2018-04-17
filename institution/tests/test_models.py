@@ -5,7 +5,8 @@ from institution.models import Institution
 
 class InstitutionTests(TestCase):
 
-    def create_institution(self, name, base_domain):
+    @classmethod
+    def create_institution(cls, name, base_domain):
         """
         Create an Institution instance.
 

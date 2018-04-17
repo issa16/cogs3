@@ -5,7 +5,8 @@ from system.models import System
 
 class SystemTests(TestCase):
 
-    def create_system(self, name, description, number_of_cores):
+    @classmethod
+    def create_system(cls, name, description, number_of_cores):
         """
         Create a System instance.
 

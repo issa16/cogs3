@@ -12,13 +12,13 @@ class UserViewTests(TestCase):
     def setUp(self):
         # Create an institution
         base_domain = 'bangor.ac.uk'
-        self.institution = InstitutionTests().create_institution(
+        self.institution = InstitutionTests.create_institution(
             name='Bangor University',
             base_domain=base_domain,
         )
 
         # Create a student user account
-        self.student_user = CustomUserTests().create_student_user(
+        self.student_user = CustomUserTests.create_student_user(
             username='scw_student@' + base_domain,
             password='654321',
         )

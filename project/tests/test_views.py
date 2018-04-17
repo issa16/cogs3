@@ -25,7 +25,7 @@ class ProjectViewTests(TestCase):
     def setUp(self):
         # Create an institution
         base_domain = 'bangor.ac.uk'
-        self.institution = InstitutionTests().create_institution(
+        self.institution = InstitutionTests.create_institution(
             name='Bangor University',
             base_domain=base_domain,
         )
@@ -33,7 +33,7 @@ class ProjectViewTests(TestCase):
         # Create a technical lead user account
         self.techlead_username = 'scw_techlead@' + base_domain
         self.techlead_password = '123456'
-        self.techlead_user = CustomUserTests().create_techlead_user(
+        self.techlead_user = CustomUserTests.create_techlead_user(
             username=self.techlead_username,
             password=self.techlead_password,
         )
@@ -41,7 +41,7 @@ class ProjectViewTests(TestCase):
         # Create a student user account
         self.student_username = 'scw_student@' + base_domain
         self.student_password = '654321'
-        self.student_user = CustomUserTests().create_student_user(
+        self.student_user = CustomUserTests.create_student_user(
             username=self.student_username,
             password=self.student_password,
         )
