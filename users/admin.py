@@ -42,22 +42,26 @@ class CustomUserAdmin(UserAdmin):
         ),
     }), )
 
-    def get_account_status(self, instance):
+    @classmethod
+    def get_account_status(cls, instance):
         return Profile.STATUS_CHOICES[instance.profile.account_status - 1][1]
 
     get_account_status.short_description = 'Account Status'
 
-    def get_shibboleth_username(self, instance):
+    @classmethod
+    def get_shibboleth_username(cls, instance):
         return instance.profile.shibboleth_username
 
     get_shibboleth_username.short_description = 'Shibboleth Username'
 
-    def get_scw_username(self, instance):
+    @classmethod
+    def get_scw_username(cls, instance):
         return instance.profile.scw_username
 
     get_scw_username.short_description = 'SCW Username'
 
-    def get_institution(self, instance):
+    @classmethod
+    def get_institution(cls, instance):
         return instance.profile.institution
 
     get_institution.short_description = 'Institution'
