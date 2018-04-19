@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.test import TestCase
 
 from institution.exceptions import InvalidInstitution
@@ -26,6 +27,7 @@ class CustomUserCreationFormTests(TestCase):
                 'last_name': 'test_lastname',
             }, )
         self.assertTrue(form.is_valid())
+        self.assertTrue(isinstance(form.save(), CustomUser))
 
     def test_user_creation_form_with_an_invalid_username(self):
         """
@@ -50,6 +52,8 @@ class CustomUserCreationFormTests(TestCase):
         self.assertEqual(form.errors['username'], ['This field is required.'])
         self.assertEqual(form.errors['first_name'], ['This field is required.'])
         self.assertEqual(form.errors['last_name'], ['This field is required.'])
+        with self.assertRaises(ValueError):
+            form.save()
 
     def test_user_creation_form_generates_passwords_on_save(self):
         """
@@ -62,6 +66,7 @@ class CustomUserCreationFormTests(TestCase):
             'last_name': 'test_lastname',
         })
         self.assertTrue(form.is_valid())
-        form.save()
+        result = form.save()
+        self.assertTrue(isinstance(result, CustomUser))
         self.assertEqual(CustomUser.objects.filter(username=username).count(), 1)
         self.assertIsNotNone(CustomUser.objects.get(username=username).password)
