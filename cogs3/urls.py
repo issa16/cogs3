@@ -11,6 +11,10 @@ from users.views import RegisterView
 
 urlpatterns = [
     path(
+        'queue/',
+        include('django_rq.urls'),
+    ),
+    path(
         'shib/',
         include('shibboleth.urls', namespace='shibboleth'),
     ),

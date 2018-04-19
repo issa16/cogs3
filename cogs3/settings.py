@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'shibboleth',
     'cookielaw',
+    'django_rq',
 ]
 
 MIDDLEWARE = [
@@ -174,3 +175,14 @@ SHIBBOLETH_FORCE_REAUTH_SESSION_KEY = 'shibboleth_reauthentication_required'
 
 # Users must apply for an SCW account
 CREATE_UNKNOWN_USER = False
+
+# Redis Queue
+RQ_QUEUES = {
+    'default': {
+        'HOST': os.environ.get("RQ_HOST"),
+        'PORT': os.environ.get("RQ_PORT"),
+        'DB': os.environ.get("RQ_DB"),
+        'PASSWORD': os.environ.get("RQ_PASSWORD"),
+        'DEFAULT_TIMEOUT': os.environ.get("RQ_DEFAULT_TIMEOUT"),
+    }
+}
