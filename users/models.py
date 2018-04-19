@@ -43,6 +43,10 @@ class Profile(models.Model):
         on_delete=models.CASCADE,
         help_text="Institution user is based",
     )
+    department = models.CharField(
+        max_length=128,
+        blank=True,
+    )
     description = models.CharField(
         max_length=200,
         blank=True,

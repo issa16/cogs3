@@ -104,6 +104,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             code=code,
             institution=institution,
             institution_reference='BW-12345',
+            department='School of Chemistry',
             pi='Project Principal Investigator',
             tech_lead=tech_lead,
             category=category,
