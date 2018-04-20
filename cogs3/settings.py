@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'shibboleth',
     'cookielaw',
     'django_rq',
+    'security',
 ]
 
 MIDDLEWARE = [
