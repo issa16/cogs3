@@ -27,7 +27,7 @@ urlpatterns = [
         LoginView.as_view(
             redirect_authenticated_user=True,
             extra_context={
-                'institutions': Institution.objects.all(),
+                'institutions': Institution.objects.order_by('name'),
             },
         ),
         name='login',
