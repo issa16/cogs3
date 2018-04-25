@@ -178,6 +178,7 @@ SHIBBOLETH_FORCE_REAUTH_SESSION_KEY = 'shibboleth_reauthentication_required'
 CREATE_UNKNOWN_USER = False
 
 # Redis Queue
+RQ_SHOW_ADMIN_LINK = True
 RQ_QUEUES = {
     'default': {
         'HOST': os.environ.get("RQ_HOST"),
