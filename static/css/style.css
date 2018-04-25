@@ -1,9 +1,9 @@
 body {
-    background-color: #f3f3f3;
+    background-color: #F2F2F2;
     font-family: 'Open Sans', sans-serif;
     font-size: 15px;
     line-height: 24px;
-    color: #445D6E;
+    color: #2F3B3F;
 }
 
 main{
@@ -11,9 +11,12 @@ main{
 }
 
 .box-shadow {
-    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .05);
+    box-shadow: 0 1px 2.5px 0 rgba(0, 0, 0, 0.09);
 }
 
+.navbar {
+    background-color: #192022;
+}
 .navbar-dark .navbar-nav .nav-link {
     color: rgba(255, 255, 255, .7);
 }
@@ -23,11 +26,11 @@ main{
 }
 
 .form-logo {
-    max-width: 500px;
+    max-width: 440px;
 }
 
 .form-signin {
-    max-width: 500px;
+    max-width: 440px;
     padding: 15px;
     box-shadow: 0 1px 2.5px 0 rgba(0, 0, 0, 0.09);
     background-color: #ffffff;
@@ -70,7 +73,7 @@ main{
 }
 
 .list-group img {
-    height: 60px;
+    height: 50px;
 }
 
 .footer {

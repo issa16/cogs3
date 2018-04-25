@@ -2,26 +2,20 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-	<div class="form-logo mx-auto mt-4">
-		<img class="img-fluid" src="{% static "img/scw.png" %}" alt="Supercomputing Wales">
-	</div>
-	<div class="mx-auto mt-4 text-center form-signin">
-	{% if request.session.shibboleth_reauthentication_required %}
-		<div class="mx-auto mt-4">
-			<p>You must close this web browser (including all tabs and windows) before logging in.</p>
-		</div>
-	{% else %}
-		<h5 class="mb-4 mt-2">Which organisation would you like to sign in with?</h5>
-		<div class="list-group">
-			{% for institution in institutions %}
-				{% if institution.identity_provider_login %}
-					<a href="{{ institution.identity_provider_login }}" class="list-group-item list-group-item-action flex-column align-items-start">
-						<img class="img-fluid" src="{{ institution.logo_path }}" alt="{{institution}}">
-					</a>
-				{% endif %}
-			{% endfor %}
-			<p class="mt-3 mb-1 text-muted">© cogs3</p>
-		</div>
-	</div>
-	{% endif %}
+    <div class="form-logo mx-auto mt-4">
+        <img class="img-fluid" src="{% static "img/scw.png" %}" alt="Supercomputing Wales">
+    </div>
+    <div class="mx-auto mt-4 form-signin">
+        {% block form_content %}
+            {% if request.session.shibboleth_reauthentication_required %}
+                <div class="mx-auto mt-4">
+                    <p>You must close this web browser (including all tabs and windows) before logging in.</p>
+                </div>
+            {% else %}
+                {% block login_form %}
+                {% endblock %}
+            {% endif %}
+        {% endblock %}
+        <p class="mt-3 mb-1 text-center text-muted">© cogs3</p>
+    </div>
 {% endblock %}

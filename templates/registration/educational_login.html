@@ -1,0 +1,22 @@
+<!-- templates/registration/educational_login.html -->
+{% extends 'registration/login.html' %}
+{% block login_form %}
+    <ul class="nav nav-pills nav-fill mb-3">
+        <li class="nav-item">
+            <a href="{% url 'login' %}" class="nav-link active">Educational Institution</a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'external-login' %}" class="nav-link">External Collaborators</a>
+        </li>
+    </ul>
+    <h6 class="mt-4 text-center">Which institution would you like to sign in with?</h6>
+    <div class="list-group">
+        {% for institution in institutions %}
+            {% if institution.identity_provider_login %}
+                <a href="{{ institution.identity_provider_login }}" class="border-0 mt-3 list-group-item list-group-item-action flex-column align-items-start box-shadow">
+                    <img class="img-fluid" src="{{ institution.logo_path }}" alt="{{institution}}">
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

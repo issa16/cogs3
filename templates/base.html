@@ -14,46 +14,50 @@
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 		<link href="{% static "cookielaw/css/cookielaw.css" %}" rel="stylesheet">
 		<link href="{% static "css/style.css" %}" rel="stylesheet">
+		{% block custom_css %}
+		{% endblock %}
 	</head>
 	<body>
 		{% if user.is_authenticated %}
 			{% if perms.project.add_project %}
-				<nav class="navbar navbar-expand-md navbar-dark bg-dark">
-			{% else %}
-				<nav class="navbar navbar-expand-md navbar-dark bg-primary">
-			{% endif %}
-				<div class="container">
-					<a class="navbar-brand" href="{% url 'home' %}">
-						<img src="{% static "img/scw_small.png" %}" height="30" alt="SuperComputing Wales">
-						cogs3
-					</a>
-					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-					</button>
-					<div class="collapse navbar-collapse" id="navbarCollapse">
-						<ul class="navbar-nav ml-auto">
-							<li class="nav-item">
-								<a class="nav-link" href="{% url 'home' %}">Dashboard</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="{% url 'logout' %}">Logout</a>
-							</li>
-						</ul>
+				<nav class="navbar navbar-expand-md navbar-dark">
+				{% else %}
+					<nav class="navbar navbar-expand-md navbar-dark bg-primary">
+					{% endif %}
+					<div class="container">
+						<a class="navbar-brand" href="{% url 'home' %}">
+							<img src="{% static "img/scw_small.png" %}" height="30" alt="SuperComputing Wales">
+							cogs3
+						</a>
+						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="collapse navbar-collapse" id="navbarCollapse">
+							<ul class="navbar-nav ml-auto">
+								<li class="nav-item">
+									<a class="nav-link" href="{% url 'home' %}">Dashboard</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="{% url 'logout' %}">Logout</a>
+								</li>
+							</ul>
+						</div>
 					</div>
-				</div>
-			</nav>
-		{% endif %}
-		<main class="container">
-			{% block content %}
+				</nav>
+			{% endif %}
+			<main class="container">
+				{% block content %}
+				{% endblock %}
+			</main>
+			<footer class="fixed-bottom">
+				{% cookielaw_banner %}
+			</footer>
+			<script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
+			<script src="{% static "js/jquery-ui.min.js" %}"></script>
+			<script src="{% static "js/bootstrap.min.js" %}"></script>
+			<script src="{% static "cookielaw/js/cookielaw.js" %}"></script>
+			<script src="{% static "js/main.js" %}"></script>
+			{% block custom_js %}
 			{% endblock %}
-		</main>
-		<footer class="fixed-bottom">
-			{% cookielaw_banner %}
-		</footer>
-		<script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
-		<script src="{% static "js/jquery-ui.min.js" %}"></script>
-		<script src="{% static "js/bootstrap.min.js" %}"></script>
-		<script src="{% static "cookielaw/js/cookielaw.js" %}"></script>
-		<script src="{% static "js/main.js" %}"></script>
-	</body>
-</html>
+		</body>
+	</html>
