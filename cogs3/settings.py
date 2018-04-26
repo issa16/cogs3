@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'cookielaw',
     'django_rq',
     'security',
+    'openldap',
 ]
 
 MIDDLEWARE = [
