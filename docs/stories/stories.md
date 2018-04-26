@@ -1,13 +1,13 @@
 # COGS User Stories
 
 ## Roles:
-User
-Project owner
-Principal Investigator
-Project Authoriser
-Attribution Authoriser
-RSE
-System Administrator
+- User
+- Project owner
+- Principal Investigator
+- Project Authoriser
+- Attribution Authoriser
+- RSE
+- System Administrator
 
 ## Stories
 ### Project creation
@@ -18,7 +18,7 @@ System Administrator
 - New projects must have a name, description, project owner and institution
  
 ### Project administration
-- Principal investigators can associate new/existing users to an existing projects by email address
+- Project owner can associate new/existing users to an existing projects by email address
 - Associating users to a project should fail after a specified number of user has been reached (to avoid excessive disk space to a project)
 - The associated user limit should be set on a per-project basis and have a per-institution limit
 - Users associated with a project should be required to click a link in a confirm email before being added
