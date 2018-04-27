@@ -1,4 +1,4 @@
-#![cogs3](cogs3.svg) cogs3
+# ![cogs3](cogs3.svg) cogs3
 
 [![Build Status](https://travis-ci.org/tystakartografen/cogs3.svg?branch=master)](https://travis-ci.org/tystakartografen/cogs3) [![codecov](https://codecov.io/gh/tystakartografen/cogs3/branch/master/graph/badge.svg)](https://codecov.io/gh/tystakartografen/cogs3) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c98d95ae20094f32aea3f40dd83f55e0)](https://www.codacy.com/app/tystakartografen/cogs3?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tystakartografen/cogs3&amp;utm_campaign=Badge_Grade) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/tystakartografen/cogs3/blob/master/LICENSE.md)
 
