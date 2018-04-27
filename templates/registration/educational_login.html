@@ -13,7 +13,7 @@
     <div class="list-group">
         {% for institution in institutions %}
             {% if institution.identity_provider_login %}
-                <a href="{{ institution.identity_provider_login }}" class="border-0 mt-3 list-group-item list-group-item-action flex-column align-items-start box-shadow">
+                <a href="{{ institution.identity_provider_login }}" class="text-center border-0 mt-3 list-group-item list-group-item-action flex-column align-items-start box-shadow">
                     <img class="img-fluid" src="{{ institution.logo_path }}" alt="{{institution}}">
                 </a>
             {% endif %}
