@@ -29,8 +29,17 @@ urlpatterns = [
             extra_context={
                 'institutions': Institution.objects.order_by('name'),
             },
+            template_name="registration/educational_login.html",
         ),
         name='login',
+    ),
+    path(
+        'accounts/external/login/',
+        LoginView.as_view(
+            redirect_authenticated_user=True,
+            template_name="registration/external_login.html",
+        ),
+        name='external-login',
     ),
     path(
         'accounts/logout/',
