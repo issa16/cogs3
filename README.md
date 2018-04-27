@@ -99,7 +99,7 @@
    >>> PONG
    ```
 
-12. Start the development server.
+13. Start the development server.
 
   ```sh
   python manage.py runserver
