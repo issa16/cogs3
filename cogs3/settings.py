@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django_rq',
     'security',
     'openldap',
+    'notification',
 ]
 
 MIDDLEWARE = [
