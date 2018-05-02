@@ -7,21 +7,10 @@ from django.contrib.auth.models import Permission
 from django.db import migrations
 
 groups = {
-    'student': [
-        'add_projectusermembership',
-    ],
-    'technical_lead': [
-        'add_project',
-        'change_project',
+    'project_owner': [
         'add_projectusermembership',
         'change_projectusermembership',
-    ],
-    'research_software_engineer': [
-        'add_project',
-        'change_project',
-        'add_projectusermembership',
-        'change_projectusermembership',
-    ],
+    ]
 }
 
 

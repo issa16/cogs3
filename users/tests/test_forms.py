@@ -11,62 +11,74 @@ class CustomUserCreationFormTests(TestCase):
 
     def setUp(self):
         self.base_domain = 'bangor.ac.uk'
-        self.institution = InstitutionTests.create_institution(
+        InstitutionTests.create_institution(
             name='Bangor University',
             base_domain=self.base_domain,
         )
 
-    def test_user_creation_form_with_valid_data(self):
+    def test_create_shibboleth_user(self):
         """
-        Ensure the user creation form works with valid data.
+        Ensure the user creation form works for a shibboleth user.
         """
         form = CustomUserCreationForm(
             data={
-                'username': 'test_username@' + self.base_domain,
-                'first_name': 'test_firstname',
-                'last_name': 'test_lastname',
+                'email': '@'.join(['joe.bloggs', self.base_domain]),
+                'first_name': 'Joe',
+                'last_name': 'Bloggs',
+                'is_shibboleth_login_required': True,
             }, )
         self.assertTrue(form.is_valid())
-        self.assertTrue(isinstance(form.save(), CustomUser))
 
-    def test_user_creation_form_with_an_invalid_username(self):
+    def test_create_non_shibboleth_user(self):
         """
-        Ensure an InvalidInstitution error is returned if a user tries to create an account
-        with a username that does not contain a valid institution base domain.
+        Ensure the user creation form works for a non shibboleth user.
         """
         form = CustomUserCreationForm(
             data={
-                'username': 'test_username@invalid_base_domain.com',
-                'first_name': 'test_firstname',
-                'last_name': 'test_lastname',
+                'email': '@'.join(['joe.bloggs', self.base_domain]),
+                'first_name': 'Joe',
+                'last_name': 'Bloggs',
+                'is_shibboleth_login_required': False,
             }, )
-        with self.assertRaises(InvalidInstitution):
-            form.save()
+        self.assertTrue(form.is_valid())
 
-    def test_user_creation_form_without_required_fields(self):
+    def test_invalid_institution_email(self):
         """
-        Ensure a user account can not be created without the required form fields.
+        Ensure an email address from an unsupported institution domain is caught via the
+        CustomUserCreationForm if the user is required to login via a shibboleth IDP.
+        """
+        form = CustomUserCreationForm(
+            data={
+                'email': 'joe.bloggs@invalid_base_domain.com',
+                'first_name': 'Joe',
+                'last_name': 'Bloggs',
+                'is_shibboleth_login_required': True,
+            }, )
+        self.assertFalse(form.is_valid())
+
+    def test_without_required_fields(self):
+        """
+        Ensure a CustomUser instance can not be created without the required form fields.
         """
         form = CustomUserCreationForm(data={})
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['username'], ['This field is required.'])
+        self.assertEqual(form.errors['email'], ['This field is required.'])
         self.assertEqual(form.errors['first_name'], ['This field is required.'])
         self.assertEqual(form.errors['last_name'], ['This field is required.'])
-        with self.assertRaises(ValueError):
-            form.save()
 
-    def test_user_creation_form_generates_passwords_on_save(self):
+    def test_password_generation_for_shibboleth_user(self):
         """
-        Ensure a password is genereted upon user account creation.
+        Ensure a random password is genereted for a shibboleth user.
         """
-        username = 'test_username@' + self.base_domain
-        form = CustomUserCreationForm(data={
-            'username': username,
-            'first_name': 'test_firstname',
-            'last_name': 'test_lastname',
-        })
+        email = '@'.join(['joe.bloggs', self.base_domain])
+        form = CustomUserCreationForm(
+            data={
+                'email': email,
+                'first_name': 'Joe',
+                'last_name': 'Bloggs',
+                'is_shibboleth_login_required': True,
+            }, )
         self.assertTrue(form.is_valid())
         result = form.save()
-        self.assertTrue(isinstance(result, CustomUser))
-        self.assertEqual(CustomUser.objects.filter(username=username).count(), 1)
-        self.assertIsNotNone(CustomUser.objects.get(username=username).password)
+        self.assertEqual(CustomUser.objects.filter(email=email).count(), 1)
+        self.assertIsNotNone(CustomUser.objects.get(email=email).password)

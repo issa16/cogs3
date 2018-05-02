@@ -1,43 +1,66 @@
+from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import CustomUser
+from institution.exceptions import InvalidInstitution
+from institution.models import Institution
+from users.models import CustomUser
 
 
-class CustomUserCreationForm(UserCreationForm):
+class CustomUserCreationForm(forms.ModelForm):
+    """
+    Form for creating a CustomUser instance.
+    """
 
-    class Meta(UserCreationForm.Meta):
+    class Meta:
         model = CustomUser
         fields = (
-            'username',
             'email',
+            'is_staff',
+            'is_active',
+            'is_shibboleth_login_required',
             'first_name',
             'last_name',
-            'password1',
-            'password2',
         )
 
     def __init__(self, *args, **kwargs):
         super(CustomUserCreationForm, self).__init__(*args, **kwargs)
-        # Required attributes
-        self.fields['username'].required = True
+
+        # Additionally required attributes
+        self.fields['email'].required = True
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
-        # The application will generate the required passwords
-        self.fields['password1'].required = False
-        self.fields['password2'].required = False
 
     def save(self, commit=True):
         user = super(CustomUserCreationForm, self).save(commit=False)
         user.set_password(CustomUser.objects.make_random_password(length=30))
         if commit:
-            user.email = self.cleaned_data['username']
+            user.username = user.email
             user.save()
         return user
 
+    def clean(self):
+        cleaned_data = super().clean()
+        is_shibboleth_login_required = cleaned_data.get('is_shibboleth_login_required')
+        email = cleaned_data.get('email')
+        if is_shibboleth_login_required:
+            try:
+                Institution.is_valid_email_address(email)
+            except InvalidInstitution as e:
+                raise forms.ValidationError(str(e))
+
 
 class CustomUserChangeForm(UserChangeForm):
+    """
+    Form for updating CustomUser instances.
+    """
 
-    class Meta:
-        model = CustomUser
-        fields = UserChangeForm.Meta.fields
+    def clean(self):
+        cleaned_data = super().clean()
+        is_shibboleth_login_required = cleaned_data.get('is_shibboleth_login_required')
+        email = cleaned_data.get('email')
+        if is_shibboleth_login_required:
+            try:
+                Institution.is_valid_email_address(email)
+            except InvalidInstitution as e:
+                raise forms.ValidationError(str(e))

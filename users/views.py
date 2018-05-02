@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import TemplateView
 
-from .forms import CustomUserCreationForm
+from users.forms import CustomUserCreationForm
 
 
 class RegisterView(generic.CreateView):
@@ -24,9 +24,13 @@ class RegisterView(generic.CreateView):
 class LogoutView(TemplateView):
 
     def get(self, *args, **kwargs):
+        # If the user has logged in via a shibboleth identity provider, then they must
+        # reauthenticate with the identity provider after logging out of the django application.
+        if self.request.user.is_shibboleth_login_required:
+            self.request.session[settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY] = True
+            self.request.session.set_expiry(0)
+
         # Logout the user.
         auth.logout(self.request)
-        # Force the user to reauthenticate with shibboleth, they must close their browser.
-        self.request.session[settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY] = True
-        self.request.session.set_expiry(0)
+
         return redirect(reverse('logged_out'))

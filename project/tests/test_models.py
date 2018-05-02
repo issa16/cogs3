@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from institution.tests.test_models import InstitutionTests
@@ -60,22 +61,23 @@ class ProjectModelTests(TestCase):
 
     def setUp(self):
         # Create an institution.
+        base_domain = 'bangor.ac.uk'
         self.institution = InstitutionTests.create_institution(
             name='Bangor University',
-            base_domain='bangor.ac.uk',
+            base_domain=base_domain,
         )
 
-        # Create a technical lead user account.
-        self.tech_lead = CustomUserTests.create_techlead_user(
-            username='scw_techlead@bangor.ac.uk',
-            password='123456',
+        # Create a project owner.
+        group = Group.objects.get(name='project_owner')
+        project_owner_email = '@'.join(['project_owner', base_domain])
+        self.project_owner = CustomUserTests.create_custom_user(
+            email=project_owner_email,
+            group=group,
         )
 
-        # Create a student user account.
-        self.student = CustomUserTests.create_student_user(
-            username='scw_student@bangor.ac.uk',
-            password='123456',
-        )
+        # Create a project applicant.
+        project_applicant_email = '@'.join(['project_applicant', base_domain])
+        self.project_applicant = CustomUserTests.create_custom_user(email=project_applicant_email)
 
         self.category = ProjectCategoryTests.create_project_category()
         self.funding_source = ProjectFundingSourceTests.create_project_funding_source()
@@ -133,7 +135,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             title=title,
             code=code,
             institution=self.institution,
-            tech_lead=self.tech_lead,
+            tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,
         )
@@ -153,7 +155,7 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
             title='Project title',
             code='SCW-12345',
             institution=self.institution,
-            tech_lead=self.tech_lead,
+            tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,
         )
@@ -203,18 +205,18 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
             title='Project title',
             code='SCW-12345',
             institution=self.institution,
-            tech_lead=self.tech_lead,
+            tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,
         )
 
         # Create a project user membership.
         self.membership = self.create_project_user_membership(
-            user=self.student,
+            user=self.project_applicant,
             project=self.project,
         )
 
-        self.assertEqual(ProjectUserMembership.objects.filter(user=self.student).count(), 1)
+        self.assertEqual(ProjectUserMembership.objects.filter(user=self.project_applicant).count(), 1)
 
     def create_project_user_membership(self, user, project):
         """
@@ -268,7 +270,7 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
 
     def test_project_user_membership_str_representation(self):
         data = {
-            'user': self.student,
+            'user': self.project_applicant,
             'project': self.project,
             'date_joined': self.membership.date_joined,
             'date_left': self.membership.date_left

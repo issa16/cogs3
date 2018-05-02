@@ -1,6 +1,5 @@
 exclude_paths:
   - '**/migrations/**'
-  - '**/tests/**'
   - '**/*.min.js'
   - '**/*.min.css'
 

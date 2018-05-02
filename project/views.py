@@ -17,8 +17,7 @@ from .models import Project
 from .models import ProjectUserMembership
 
 
-class ProjectCreateView(SuccessMessageMixin, PermissionRequiredMixin, LoginRequiredMixin, generic.CreateView):
-    permission_required = 'project.add_project'
+class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     form_class = ProjectCreationForm
     success_url = reverse_lazy('project-application-list')
     success_message = "Successfully submitted a project application."
@@ -29,8 +28,7 @@ class ProjectCreateView(SuccessMessageMixin, PermissionRequiredMixin, LoginRequi
         return super().form_valid(form)
 
 
-class ProjectListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListView):
-    permission_required = 'project.add_project'
+class ProjectListView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'projects'
     template_name = 'project/applications.html'
     model = Project
@@ -43,8 +41,7 @@ class ProjectListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListV
         return queryset.order_by('-created_time')
 
 
-class ProjectDetailView(PermissionRequiredMixin, LoginRequiredMixin, generic.DetailView):
-    permission_required = 'project.add_project'
+class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
     context_object_name = 'project'
     template_name = 'project/application_detail.html'
     model = Project

@@ -13,6 +13,12 @@ from shibboleth.middleware import ShibbolethValidationError
 class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
 
     def process_request(self, request):
+        # The identity of external collaborators is managed within the django application.
+        # Therefore, exclude the external collaborator login form from the SCW Remote User
+        # Middleware.
+        if request.path.startswith(reverse('external-login')):
+            return
+
         # AuthenticationMiddleware is required so that request.user exists.
         if not hasattr(request, 'user'):
             raise ImproperlyConfigured(
@@ -21,8 +27,9 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
                 "'django.contrib.auth.middleware.AuthenticationMiddleware' "
                 "before the RemoteUserMiddleware class.")
 
-        # When a user logs out from the application they will be required to reauthenticate
-        # with shibboleth. This will require the user to close their browser.
+        # Prevent the user from logging in if the application requires the user to
+        # reauthenticate with their shibboleth identity provider.
+        # This will require the user to close their browser
         if request.session.get(settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY) == True:
             return
 
@@ -49,14 +56,14 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
             else:
                 self._remove_invalid_user(request)
 
-        # Make sure we have all required Shiboleth elements before proceeding.
+        # Make sure we have all required Shibboleth elements before proceeding.
         shib_meta, error = ShibbolethRemoteUserMiddleware.parse_attributes(request)
 
         # Add parsed attributes to the session.
         request.session['shib'] = shib_meta
 
         if error:
-            raise ShibbolethValidationError("All required Shibboleth elements not found. %s" % shib_meta)
+            raise ShibbolethValidationError('All required Shibboleth elements not found. %s' % shib_meta)
 
         # We are seeing this user for the first time in this session, attempt to authenticate
         # the user.
@@ -81,7 +88,7 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         try:
             stored_backend = load_backend(request.session.get(auth.BACKEND_SESSION_KEY, ''))
         except ImportError:
-            # backend failed to load
+            # Backend failed to load
             auth.logout(request)
         else:
             if isinstance(stored_backend, RemoteUserBackend):
