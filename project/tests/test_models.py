@@ -218,7 +218,8 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
 
         self.assertEqual(ProjectUserMembership.objects.filter(user=self.project_applicant).count(), 1)
 
-    def create_project_user_membership(self, user, project):
+    @classmethod
+    def create_project_user_membership(cls, user, project):
         """
         Create a ProjectUserMembership instance.
 

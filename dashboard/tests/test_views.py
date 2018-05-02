@@ -17,7 +17,7 @@ class DashboardViewTests(TestCase):
 
     def test_empty_remote_user_header(self):
         """
-        If the REMOTE_USER header is not present then the user should be redirected to the 
+        If the REMOTE_USER header is not present then the user should be redirected to the
         login page.
         """
         headers = {'REMOTE_USER': None}
@@ -50,7 +50,7 @@ class DashboardViewTests(TestCase):
         then the user should be redirected to the dashboard page and have the option to logout.
         """
         email = '@'.join(['user', self.base_domain])
-        application_user = CustomUserTests.create_shibboleth_user(email=email)
+        CustomUserTests.create_shibboleth_user(email=email)
         headers = {
             'REMOTE_USER': email,
             'eppn': email,

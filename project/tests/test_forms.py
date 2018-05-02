@@ -76,7 +76,8 @@ class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
 
 class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
 
-    def approve_project(self, project):
+    @classmethod
+    def approve_project(cls, project):
         """
         The approval process will trigger the creation of a project user membership for the
         technical lead user see project/signals.py.

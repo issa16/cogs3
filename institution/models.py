@@ -15,7 +15,7 @@ class Institution(models.Model):
     @classmethod
     def is_valid_email_address(cls, email):
         try:
-            username, domain = email.split('@')
+            _, domain = email.split('@')
             Institution.objects.get(base_domain=domain)
         except Exception:
             raise InvalidInstitution('Email address domain is not supported.')

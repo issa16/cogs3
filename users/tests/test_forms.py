@@ -1,7 +1,5 @@
-from django.conf import settings
 from django.test import TestCase
 
-from institution.exceptions import InvalidInstitution
 from institution.tests.test_models import InstitutionTests
 from users.forms import CustomUserCreationForm
 from users.models import CustomUser
@@ -79,6 +77,6 @@ class CustomUserCreationFormTests(TestCase):
                 'is_shibboleth_login_required': True,
             }, )
         self.assertTrue(form.is_valid())
-        result = form.save()
+        form.save()
         self.assertEqual(CustomUser.objects.filter(email=email).count(), 1)
         self.assertIsNotNone(CustomUser.objects.get(email=email).password)

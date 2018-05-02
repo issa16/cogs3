@@ -80,7 +80,8 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
             if url_name != 'register':
                 return HttpResponseRedirect(reverse('register'))
 
-    def _remove_invalid_user(self, request):
+    @classmethod
+    def _remove_invalid_user(cls, request):
         """
         Remove the current authenticated user in the request which is invalid but only if the
         user is authenticated via the RemoteUserBackend.
