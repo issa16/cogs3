@@ -172,7 +172,7 @@ EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
 
 # Map Shibboleth attributes to Django User models
 SHIBBOLETH_ATTRIBUTE_MAP = {
-    "eppn": (True, "username"),
+    "eppn": (True, "email"),
 }
 SHIBBOLETH_FORCE_REAUTH_SESSION_KEY = 'shibboleth_reauthentication_required'
 
@@ -188,5 +188,162 @@ RQ_QUEUES = {
         'DB': os.environ.get("RQ_DB"),
         'PASSWORD': os.environ.get("RQ_PASSWORD"),
         'DEFAULT_TIMEOUT': os.environ.get("RQ_DEFAULT_TIMEOUT"),
+    }
+}
+
+# Logging
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue'
+        }
+    },
+    'formatters': {
+        'general': {
+            'format':
+            '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
+            '(EXCEPTION: %(exc_info)s)',
+            'datefmt':
+            '%d/%b/%Y %H:%M:%S'
+        },
+        'request': {
+            'format':
+            '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
+            '(STATUS: %(status_code)s; REQUEST: %(request)s; EXCEPTION: %(exc_info)s)',
+            'datefmt':
+            '%d/%b/%Y %H:%M:%S'
+        },
+        'db': {
+            'format':
+            '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
+            '(DURATION: %(duration)s; SQL: %(sql)s; PARAMS: %(params)s; EXCEPTION: %(exc_info)s)',
+            'datefmt':
+            '%d/%b/%Y %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'null': {
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'general',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        },
+        'django': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGS_DIR, 'django.log'),
+            'maxBytes': 16 * 1024 * 1024,  # 16 MB
+            'backupCount': 5,
+            'formatter': 'general',
+        },
+        'security': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGS_DIR, 'security.log'),
+            'maxBytes': 16 * 1024 * 1024,  # 16 MB
+            'backupCount': 5,
+            'formatter': 'general',
+        },
+        'db': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGS_DIR, 'db.log'),
+            'maxBytes': 16 * 1024 * 1024,  # 16 MB
+            'backupCount': 5,
+            'formatter': 'db',
+        },
+        'request': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGS_DIR, 'request.log'),
+            'maxBytes': 16 * 1024 * 1024,  # 16 MB
+            'backupCount': 5,
+            'formatter': 'request',
+        },
+        'queue': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGS_DIR, 'queue.log'),
+            'maxBytes': 16 * 1024 * 1024,  # 16 MB
+            'backupCount': 5,
+            'formatter': 'general',
+        },
+        'apps': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGS_DIR, 'apps.log'),
+            'maxBytes': 16 * 1024 * 1024,  # 16 MB
+            'backupCount': 5,
+            'formatter': 'general',
+        },
+        'ldap': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGS_DIR, 'ldap.log'),
+            'maxBytes': 16 * 1024 * 1024,  # 16 MB
+            'backupCount': 5,
+            'formatter': 'general',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['django'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['request', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['security', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['db', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'queue': {
+            'handlers': ['queue'],
+            'level': 'WARNING',
+        },
+        'apps': {
+            'handlers': ['apps'],
+            'level': 'WARNING',
+        },
+        'common': {
+            'handlers': ['apps'],
+            'level': 'WARNING',
+        },
+        'ldap': {
+            'handlers': ['ldap'],
+            'level': 'WARNING',
+        },
+        'py.warnings': {
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        '': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
     }
 }
