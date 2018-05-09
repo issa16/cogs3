@@ -8,10 +8,11 @@ from users.models import CustomUser
 class CustomUserCreationFormTests(TestCase):
 
     def setUp(self):
-        self.base_domain = 'bangor.ac.uk'
-        InstitutionTests.create_institution(
+        # Create an institution
+        self.institution = InstitutionTests.create_institution(
             name='Bangor University',
-            base_domain=self.base_domain,
+            base_domain='bangor.ac.uk',
+            identity_provider='https://idp.bangor.ac.uk/shibboleth',
         )
 
     def test_create_shibboleth_user(self):
@@ -20,7 +21,7 @@ class CustomUserCreationFormTests(TestCase):
         """
         form = CustomUserCreationForm(
             data={
-                'email': '@'.join(['joe.bloggs', self.base_domain]),
+                'email': '@'.join(['joe.bloggs', self.institution.base_domain]),
                 'first_name': 'Joe',
                 'last_name': 'Bloggs',
                 'is_shibboleth_login_required': True,
@@ -33,7 +34,7 @@ class CustomUserCreationFormTests(TestCase):
         """
         form = CustomUserCreationForm(
             data={
-                'email': '@'.join(['joe.bloggs', self.base_domain]),
+                'email': '@'.join(['joe.bloggs', self.institution.base_domain]),
                 'first_name': 'Joe',
                 'last_name': 'Bloggs',
                 'is_shibboleth_login_required': False,
@@ -68,7 +69,7 @@ class CustomUserCreationFormTests(TestCase):
         """
         Ensure a random password is genereted for a shibboleth user.
         """
-        email = '@'.join(['joe.bloggs', self.base_domain])
+        email = '@'.join(['joe.bloggs', self.institution.base_domain])
         form = CustomUserCreationForm(
             data={
                 'email': email,

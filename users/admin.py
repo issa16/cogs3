@@ -48,11 +48,12 @@ class CustomUserAdmin(UserAdmin):
     # Fields to be used when displaying a CustomUser model.
     list_display = (
         'email',
+        'created_at',
+        'get_account_status',
         'first_name',
         'last_name',
         'is_staff',
         'is_shibboleth_login_required',
-        'get_account_status',
     )
 
     readonly_fields = (
@@ -105,7 +106,14 @@ class CustomUserAdmin(UserAdmin):
     }), )
 
     search_fields = ('email', )
-    ordering = ('email', )
+    ordering = ('created_at', )
+    list_filter = (
+        'is_shibboleth_login_required',
+        'is_staff',
+        'is_superuser',
+        'is_active',
+        'groups',
+    )
 
     @classmethod
     def get_account_status(cls, instance):

@@ -12,10 +12,10 @@ class CustomUserTests(TestCase):
 
     def setUp(self):
         # Create an institution
-        self.base_domain = 'bangor.ac.uk'
         self.institution = InstitutionTests.create_institution(
             name='Bangor University',
-            base_domain=self.base_domain,
+            base_domain='bangor.ac.uk',
+            identity_provider='https://idp.bangor.ac.uk/shibboleth',
         )
 
     @classmethod
@@ -75,6 +75,7 @@ class CustomUserTests(TestCase):
         self.assertEqual(user.__str__(), user.email)
         self.assertEqual(user.get_full_name(), user.email)
         self.assertEqual(user.get_short_name(), user.email)
+        self.assertEqual(user.username, user.email)
         self.assertEqual(user.groups.get(), Group.objects.get(name='project_owner'))
 
     def test_shibboleth_user_creation(self):
@@ -82,7 +83,8 @@ class CustomUserTests(TestCase):
         Ensure a shibboleth custom user is created correctly.
         """
         username = 'joe.bloggs'
-        user = self.create_shibboleth_user(email='@'.join([username, self.base_domain]))
+        email = '@'.join([username, self.institution.base_domain])
+        user = self.create_shibboleth_user(email=email)
 
         # User
         self.verify_user_data(user)
@@ -93,7 +95,7 @@ class CustomUserTests(TestCase):
         self.assertTrue(isinstance(profile, ShibbolethProfile))
         self.assertEqual(CustomUserAdmin.get_scw_username(user), profile.scw_username)
         self.assertEqual(CustomUserAdmin.get_account_status(user), profile.get_account_status_display())
-        self.assertEqual(profile.shibboleth_id, username)
+        self.assertEqual(profile.shibboleth_id, email)
         self.assertEqual(profile.institution, self.institution)
         self.assertEqual(profile.department, '')
         self.assertEqual(profile.orcid, '')
@@ -105,7 +107,8 @@ class CustomUserTests(TestCase):
         """
         Ensure a non shibboleth custom user is created correctly.
         """
-        user = self.create_non_shibboleth_user(email='joe.bloggs@' + self.base_domain)
+        email = '@'.join(['joe.bloggs', self.institution.base_domain])
+        user = self.create_non_shibboleth_user(email=email)
 
         # User
         self.verify_user_data(user)

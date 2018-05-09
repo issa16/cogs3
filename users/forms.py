@@ -33,8 +33,8 @@ class CustomUserCreationForm(forms.ModelForm):
     def save(self, commit=True):
         user = super(CustomUserCreationForm, self).save(commit=False)
         user.set_password(CustomUser.objects.make_random_password(length=30))
+        user.username = user.email
         if commit:
-            user.username = user.email
             user.save()
         return user
 

@@ -7,8 +7,7 @@
     "base_domain": "swansea.ac.uk",
     "created_time": "2018-04-16T12:00:28Z",
     "modified_time": "2018-05-02T10:41:45.591Z",
-    "identity_provider_login": "https://scw.bangor.ac.uk/Shibboleth.sso/Login?SAMLDS=1&entityID=https://iss-openathensla-runtime.swan.ac.uk/oala/metadata",
-    "identity_provider_logout": "https://scw.bangor.ac.uk/Shibboleth.sso/Logout",
+    "identity_provider": "https://iss-openathensla-runtime.swan.ac.uk/oala/metadata",
     "logo_path": "/static/img/swansea_logo.png"
   }
 },
@@ -20,8 +19,7 @@
     "base_domain": "bangor.ac.uk",
     "created_time": "2018-04-16T12:00:28Z",
     "modified_time": "2018-05-02T10:41:26.874Z",
-    "identity_provider_login": "https://scw.bangor.ac.uk/Shibboleth.sso/Login?entityID=https://idp.bangor.ac.uk/shibboleth",
-    "identity_provider_logout": "https://scw.bangor.ac.uk/Shibboleth.sso/Logout",
+    "identity_provider": "https://idp.bangor.ac.uk/shibboleth",
     "logo_path": "/static/img/bangor_logo.svg"
   }
 },
@@ -33,8 +31,7 @@
     "base_domain": "cardiff.ac.uk",
     "created_time": "2018-04-16T12:00:28Z",
     "modified_time": "2018-05-02T10:41:13.329Z",
-    "identity_provider_login": "https://scw.bangor.ac.uk/Shibboleth.sso/Login?entityID=https://idp.cardiff.ac.uk/shibboleth",
-    "identity_provider_logout": "https://scw.bangor.ac.uk/Shibboleth.sso/Logout",
+    "identity_provider": "https://idp.cardiff.ac.uk/shibboleth",
     "logo_path": "/static/img/cardiff_logo.svg"
   }
 },
@@ -46,8 +43,7 @@
     "base_domain": "aber.ac.uk",
     "created_time": "2018-04-16T12:00:28Z",
     "modified_time": "2018-05-02T10:40:56.816Z",
-    "identity_provider_login": "https://scw.bangor.ac.uk/Shibboleth.sso/Login?entityID=https://shibboleth.aber.ac.uk/shibboleth",
-    "identity_provider_logout": "https://scw.bangor.ac.uk/Shibboleth.sso/Logout",
+    "identity_provider": "https://shibboleth.aber.ac.uk/shibboleth",
     "logo_path": "/static/img/aberystwyth_logo.png"
   }
 }

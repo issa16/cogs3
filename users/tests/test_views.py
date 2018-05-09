@@ -11,10 +11,10 @@ class UserViewTests(TestCase):
 
     def setUp(self):
         # Create an institution
-        self.base_domain = 'bangor.ac.uk'
-        InstitutionTests.create_institution(
+        self.institution = InstitutionTests.create_institution(
             name='Bangor University',
-            base_domain=self.base_domain,
+            base_domain='bangor.ac.uk',
+            identity_provider='https://idp.bangor.ac.uk/shibboleth',
         )
 
 
@@ -24,10 +24,10 @@ class RegisterViewTests(UserViewTests, TestCase):
         """
         Ensure an unauthorised user can access the register view.
         """
-        unauthorised_email = 'unauthorised-user@bangor.ac.uk'
+        email = '@'.join(['unauthorised-user', self.institution.base_domain])
         headers = {
-            'REMOTE_USER': unauthorised_email,
-            'eppn': unauthorised_email,
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
         }
         response = self.client.get(
             reverse('register'),
@@ -41,10 +41,11 @@ class RegisterViewTests(UserViewTests, TestCase):
         Ensure an authorised user is redirected to the dashboard and can not access
         the register view.
         """
-        user = CustomUserTests.create_shibboleth_user(email='@'.join(['user', self.base_domain]))
+        email = '@'.join(['user', self.institution.base_domain])
+        CustomUserTests.create_shibboleth_user(email=email)
         headers = {
-            'REMOTE_USER': user.username,
-            'eppn': user.username,
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
         }
         response = self.client.get(
             reverse('register'),
@@ -60,10 +61,10 @@ class LogoutViewTests(UserViewTests, TestCase):
         """
         Ensure an unauthorised user is redirected to the register view.
         """
-        unauthorised_email = 'unauthorised-user@' + self.base_domain
+        email = '@'.join(['unauthorised-user', self.institution.base_domain])
         headers = {
-            'REMOTE_USER': unauthorised_email,
-            'eppn': unauthorised_email,
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
         }
         response = self.client.get(
             reverse('logout'),
@@ -76,10 +77,11 @@ class LogoutViewTests(UserViewTests, TestCase):
         """
         Ensure an authorised user can access the logout view.
         """
-        user = CustomUserTests.create_shibboleth_user(email='@'.join(['user', self.base_domain]))
+        email = '@'.join(['user', self.institution.base_domain])
+        CustomUserTests.create_shibboleth_user(email=email)
         headers = {
-            'REMOTE_USER': user.email,
-            'eppn': user.email,
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
         }
         response = self.client.get(
             reverse('logout'),

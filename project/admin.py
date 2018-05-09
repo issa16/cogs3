@@ -7,27 +7,16 @@ from .models import ProjectSystemAllocation
 from .models import ProjectUserMembership
 
 
+@admin.register(ProjectCategory)
+class ProjectCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', )
+
+
 @admin.register(ProjectFundingSource)
 class ProjectFundingSourceAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'description',
-    )
-
-
-@admin.register(ProjectCategory)
-class ProjectCategoryAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
-    list_display = (
-        'title',
-        'code',
-        'institution',
-        'tech_lead',
-        'status',
     )
 
 
@@ -44,5 +33,16 @@ class ProjectUserMembershipAdmin(admin.ModelAdmin):
     list_display = (
         'project',
         'user',
+        'status',
+    )
+
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'code',
+        'institution',
+        'tech_lead',
         'status',
     )

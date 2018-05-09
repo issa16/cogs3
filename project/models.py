@@ -7,22 +7,6 @@ from institution.models import Institution
 from system.models import System
 
 
-class ProjectFundingSource(models.Model):
-    name = models.CharField(
-        max_length=128,
-        unique=True,
-    )
-    description = models.CharField(max_length=512)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = 'Project Funding Sources'
-
-
 class ProjectCategory(models.Model):
     name = models.CharField(
         max_length=128,
@@ -37,6 +21,22 @@ class ProjectCategory(models.Model):
 
     class Meta:
         verbose_name_plural = 'Project Categories'
+
+
+class ProjectFundingSource(models.Model):
+    name = models.CharField(
+        max_length=128,
+        unique=True,
+    )
+    description = models.CharField(max_length=512)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'Project Funding Sources'
 
 
 class Project(models.Model):

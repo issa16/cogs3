@@ -9,18 +9,17 @@ class DashboardViewTests(TestCase):
 
     def setUp(self):
         # Create an institution.
-        self.base_domain = 'bangor.ac.uk'
-        InstitutionTests.create_institution(
+        self.institution = InstitutionTests.create_institution(
             name='Bangor University',
-            base_domain=self.base_domain,
+            base_domain='bangor.ac.uk',
+            identity_provider='https://idp.bangor.ac.uk/shibboleth',
         )
 
-    def test_empty_remote_user_header(self):
+    def test_view_without_required_headers(self):
         """
-        If the REMOTE_USER header is not present then the user should be redirected to the
-        login page.
+        If the required headers are not present then the user should be redirected to the login page.
         """
-        headers = {'REMOTE_USER': None}
+        headers = {}
         response = self.client.get(
             reverse('home'),
             **headers,
@@ -28,14 +27,14 @@ class DashboardViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/accounts/login/?next=/')
 
-    def test_as_authorised_shibboleth_user_and_unregistered_application_user(self):
+    def test_view_as_an_authorised_shibboleth_user_and_an_unregistered_application_user(self):
         """
-        If the REMOTE_USER and eppn header are present and the user is not a registered application
+        If the required headers are present and the user is not a registered application
         user, then the user should be redirected to the account registration page.
         """
         headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
             'REMOTE_USER': 'unregistered-application-user@bangor.ac.uk',
-            'eppn': 'unregistered-application-user@bangor.ac.uk',
         }
         response = self.client.get(
             reverse('home'),
@@ -44,16 +43,16 @@ class DashboardViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('register'))
 
-    def test_as_authorised_shibboleth_user_and_registered_application_user(self):
+    def test_view_as_an_authorised_shibboleth_user_and_a_registered_application_user(self):
         """
-        If the REMOTE_USER and eppn header is present and the user is a registered application user,
+        If the required headers are present and the user is a registered application user,
         then the user should be redirected to the dashboard page and have the option to logout.
         """
-        email = '@'.join(['user', self.base_domain])
+        email = '@'.join(['user', self.institution.base_domain])
         CustomUserTests.create_shibboleth_user(email=email)
         headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
             'REMOTE_USER': email,
-            'eppn': email,
         }
         response = self.client.get(
             reverse('home'),

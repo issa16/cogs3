@@ -1,3 +1,5 @@
+import re
+
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth import load_backend
@@ -6,6 +8,8 @@ from django.http import HttpResponseRedirect
 from django.urls import resolve
 from django.urls import reverse
 
+from institution.exceptions import InvalidIndentityProvider
+from institution.models import Institution
 from shibboleth.middleware import ShibbolethRemoteUserMiddleware
 from shibboleth.middleware import ShibbolethValidationError
 
@@ -27,25 +31,39 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
                 "'django.contrib.auth.middleware.AuthenticationMiddleware' "
                 "before the RemoteUserMiddleware class.")
 
-        # Prevent the user from logging in if the application requires the user to
+        # Prevent the user from logging in if the django application requires the user to
         # reauthenticate with their shibboleth identity provider.
-        # This will require the user to close their browser
+        # This will require the user to close their browser.
         if request.session.get(settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY) == True:
             return
 
-        # Check the remote user header.
-        username = request.META.get(self.header, None)
+        # Locate the required headers.
+        try:
+            username = request.META[self.header]
+            identity_provider = request.META['Shib-Identity-Provider']
+        except KeyError:
+            # If the required headers do not exist then return, leaving request.user set to
+            # AnonymousUser by the AuthenticationMiddleware.
+            return
 
-        # Check the 'shib' session variable.
-        if not username:
-            username = request.session.get('shib', {}).get('username', None)
-
-        # If specified header or session variable doesn't exist then return
-        # (leaving request.user set to AnonymousUser by the AuthenticationMiddleware).
+        # If we got an empty value for REMOTE USER header, it's an anonymous user.
         if not username:
             if self.force_logout_if_no_header and request.user.is_authenticated:
                 self._remove_invalid_user(request)
             return
+
+        # Ensure the Shib-Identity-Provider is supported / valid.
+        try:
+            Institution.is_valid_identity_provider(identity_provider)
+        except InvalidIndentityProvider:
+            return
+
+        # The REMOTE USER header may return the authenticated user's email address or username.
+        email_regex = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
+        if not re.match(email_regex, username):
+            # Must append the institutions base domain to the username.
+            institution = Institution.objects.get(identity_provider=identity_provider)
+            username = '@'.join([username, institution.base_domain])
 
         # If the user is already authenticated and that user is the user we are getting passed in
         # the headers, then the correct user is already persisted in the session and we don't need
@@ -61,6 +79,7 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
 
         # Add parsed attributes to the session.
         request.session['shib'] = shib_meta
+        request.session['shib']['username'] = username  # Override
 
         if error:
             raise ShibbolethValidationError('All required Shibboleth elements not found. %s' % shib_meta)
@@ -68,14 +87,12 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         # We are seeing this user for the first time in this session, attempt to authenticate
         # the user.
         user = auth.authenticate(remote_user=username, shib_meta=shib_meta)
-
         if user:
-            # User is valid. Set request.user and persist user in the session by logging the
-            # user in.
+            # Set request.user and persist user in the session by logging the user in.
             request.user = user
             auth.login(request, user)
         else:
-            # Redirect the user to apply for an account
+            # Redirect the user to apply for an account.
             url_name = resolve(request.path_info).url_name
             if url_name != 'register':
                 return HttpResponseRedirect(reverse('register'))

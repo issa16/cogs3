@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # load environment variables from .env
-dotenv_file = os.path.join(BASE_DIR, "cogs3", ".env")
+dotenv_file = os.path.join(BASE_DIR, 'cogs3', '.env')
 if os.path.isfile(dotenv_file):
     load_dotenv(dotenv_file)
 
@@ -29,10 +29,10 @@ if os.path.isfile(dotenv_file):
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", False)
+DEBUG = os.environ.get('DEBUG', False)
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -164,30 +164,31 @@ MESSAGE_TAGS = {
 }
 
 # Email
-EMAIL_HOST = os.environ.get("EMAIL_HOST")
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = os.environ.get("EMAIL_PORT")
-EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
 
-# Map Shibboleth attributes to Django User models
+# Shibboleth
+SHIBBOLETH_IDENTITY_PROVIDER_LOGIN = os.environ.get('SHIBBOLETH_IDENTITY_PROVIDER_LOGIN')
+SHIBBOLETH_IDENTITY_PROVIDER_LOGOUT = os.environ.get('SHIBBOLETH_IDENTITY_PROVIDER_LOGOUT')
 SHIBBOLETH_ATTRIBUTE_MAP = {
-    "eppn": (True, "email"),
+    'REMOTE_USER': (True, 'username'),
 }
-SHIBBOLETH_FORCE_REAUTH_SESSION_KEY = 'shibboleth_reauthentication_required'
-
-# Users must apply for an SCW account
+SHIBBOLETH_FORCE_REAUTH_SESSION_KEY = 'shib_force_reauth'
+# Shibboleth users must apply for an account
 CREATE_UNKNOWN_USER = False
 
 # Redis Queue
 RQ_SHOW_ADMIN_LINK = True
 RQ_QUEUES = {
     'default': {
-        'HOST': os.environ.get("RQ_HOST"),
-        'PORT': os.environ.get("RQ_PORT"),
-        'DB': os.environ.get("RQ_DB"),
-        'PASSWORD': os.environ.get("RQ_PASSWORD"),
-        'DEFAULT_TIMEOUT': os.environ.get("RQ_DEFAULT_TIMEOUT"),
+        'HOST': os.environ.get('RQ_HOST'),
+        'PORT': os.environ.get('RQ_PORT'),
+        'DB': os.environ.get('RQ_DB'),
+        'PASSWORD': os.environ.get('RQ_PASSWORD'),
+        'DEFAULT_TIMEOUT': os.environ.get('RQ_DEFAULT_TIMEOUT'),
     }
 }
 

@@ -25,26 +25,39 @@ class ProjectViewTests(TestCase):
 
     def setUp(self):
         # Create an institution
-        base_domain = 'bangor.ac.uk'
         self.institution = InstitutionTests.create_institution(
             name='Bangor University',
-            base_domain=base_domain,
+            base_domain='bangor.ac.uk',
+            identity_provider='https://idp.bangor.ac.uk/shibboleth',
         )
 
         # Create a project owner
         group = Group.objects.get(name='project_owner')
-        self.project_owner_email = '@'.join(['project_owner', base_domain])
+        self.project_owner_email = '@'.join(['project_owner', self.institution.base_domain])
         self.project_owner = CustomUserTests.create_custom_user(
             email=self.project_owner_email,
             group=group,
         )
 
         # Create a project applicant
-        self.project_applicant_email = '@'.join(['project_applicant', base_domain])
+        self.project_applicant_email = '@'.join(['project_applicant', self.institution.base_domain])
         self.project_applicant = CustomUserTests.create_custom_user(email=self.project_applicant_email)
 
-        self.category = ProjectCategoryTests.create_project_category()
-        self.funding_source = ProjectFundingSourceTests.create_project_funding_source()
+        # Create a project category
+        name = 'A project category name'
+        description = 'A project category description'
+        self.category = ProjectCategoryTests.create_project_category(
+            name=name,
+            description=description,
+        )
+
+        # Create a funding source
+        name = 'A project function source name'
+        description = 'A project funding source description'
+        self.funding_source = ProjectFundingSourceTests.create_project_funding_source(
+            name=name,
+            description=description,
+        )
 
     def access_view_as_unauthorisied_user(self, path):
         """
@@ -54,8 +67,8 @@ class ProjectViewTests(TestCase):
             path (str): Path to view.
         """
         headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
             'REMOTE_USER': 'invalid-remote-user',
-            'eppn': 'invald-eppn',
         }
         response = self.client.get(path, **headers)
         self.assertEqual(response.status_code, 302)
@@ -80,8 +93,8 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
         ]
         for account in accounts:
             headers = {
+                'Shib-Identity-Provider': self.institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
-                'eppn': account.get('email'),
             }
             response = self.client.get(
                 reverse('create-project'),
@@ -91,7 +104,7 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
             self.assertTrue(isinstance(response.context_data.get('form'), ProjectCreationForm))
             self.assertTrue(isinstance(response.context_data.get('view'), ProjectCreateView))
 
-    def test_project_create_view_as_an_unauthorised_user(self):
+    def test_view_as_an_unauthorised_user(self):
         """
         Ensure unauthorised users can not access the project create view.
         """
@@ -116,8 +129,8 @@ class ProjectListViewTests(ProjectViewTests, TestCase):
         ]
         for account in accounts:
             headers = {
+                'Shib-Identity-Provider': self.institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
-                'eppn': account.get('email'),
             }
             response = self.client.get(
                 reverse('project-application-list'),
@@ -126,7 +139,7 @@ class ProjectListViewTests(ProjectViewTests, TestCase):
             self.assertEqual(response.status_code, account.get('expected_status_code'))
             self.assertTrue(isinstance(response.context_data.get('view'), ProjectListView))
 
-    def test_project_list_view_as_an_unauthorised_user(self):
+    def test_view_as_an_unauthorised_user(self):
         """
         Ensure unauthorised users can not access the project list view.
         """
@@ -160,8 +173,8 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
                 funding_source=self.funding_source,
             )
             headers = {
+                'Shib-Identity-Provider': self.institution.identity_provider,
                 'REMOTE_USER': account.get('user').email,
-                'eppn': account.get('user').email,
             }
             response = self.client.get(
                 reverse('project-application-detail', args=[project.id]),
@@ -171,7 +184,7 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
             self.assertEqual(response.context_data.get('project'), project)
             self.assertTrue(isinstance(response.context_data.get('view'), ProjectDetailView))
 
-    def test_project_detail_view_as_an_unauthorised_user(self):
+    def test_view_as_an_unauthorised_user(self):
         """
         Ensure unauthorised users can not access the project detail view.
         """
@@ -193,8 +206,8 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         )
         # Attempt to access the project's detail view as a different user.
         headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
             'REMOTE_USER': self.project_applicant_email,
-            'eppn': self.project_applicant_email,
         }
         response = self.client.get(
             reverse('project-application-detail', args=[project.id]),
@@ -222,8 +235,8 @@ class ProjectUserMembershipFormViewTests(ProjectViewTests, TestCase):
         ]
         for account in accounts:
             headers = {
+                'Shib-Identity-Provider': self.institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
-                'eppn': account.get('email'),
             }
             response = self.client.get(
                 reverse('project-membership-create'),
@@ -233,7 +246,7 @@ class ProjectUserMembershipFormViewTests(ProjectViewTests, TestCase):
             self.assertTrue(isinstance(response.context_data.get('form'), ProjectUserMembershipCreationForm))
             self.assertTrue(isinstance(response.context_data.get('view'), ProjectUserMembershipFormView))
 
-    def test_project_user_membership_form_view_as_an_unauthorised_user(self):
+    def test_view_as_an_unauthorised_user(self):
         """
         Ensure unauthorised users can not access the project user membership form.
         """
@@ -258,8 +271,8 @@ class ProjectUserRequestMembershipListViewTests(ProjectViewTests, TestCase):
         ]
         for account in accounts:
             headers = {
+                'Shib-Identity-Provider': self.institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
-                'eppn': account.get('email'),
             }
             response = self.client.get(
                 reverse('project-user-membership-request-list'),
@@ -269,7 +282,7 @@ class ProjectUserRequestMembershipListViewTests(ProjectViewTests, TestCase):
             if response.status_code == 200:
                 self.assertTrue(isinstance(response.context_data.get('view'), ProjectUserRequestMembershipListView))
 
-    def test_project_user_request_membership_list_view_as_an_unauthorised_user(self):
+    def test_view_as_an_unauthorised_user(self):
         """
         Ensure unauthorised users can not access the project user request membership list view.
         """
@@ -294,8 +307,8 @@ class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
         ]
         for account in accounts:
             headers = {
+                'Shib-Identity-Provider': self.institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
-                'eppn': account.get('email'),
             }
             response = self.client.get(
                 reverse('project-membership-list'),
@@ -304,7 +317,7 @@ class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
             self.assertEqual(response.status_code, account.get('expected_status_code'))
             self.assertTrue(isinstance(response.context_data.get('view'), ProjectUserMembershipListView))
 
-    def test_project_user_membership_list_view_as_an_unauthorised_user(self):
+    def test_view_as_an_unauthorised_user(self):
         """
         Ensure unauthorised users can not access the project user membership list view.
         """

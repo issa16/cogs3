@@ -18,27 +18,40 @@ from users.tests.test_models import CustomUserTests
 class ProjectFormTests(TestCase):
 
     def setUp(self):
-        # Create an institution.
-        base_domain = 'bangor.ac.uk'
+        # Create an institution
         self.institution = InstitutionTests.create_institution(
             name='Bangor University',
-            base_domain=base_domain,
+            base_domain='bangor.ac.uk',
+            identity_provider='https://idp.bangor.ac.uk/shibboleth',
         )
 
         # Create a project owner.
         group = Group.objects.get(name='project_owner')
-        project_owner_email = '@'.join(['project_owner', base_domain])
+        project_owner_email = '@'.join(['project_owner', self.institution.base_domain])
         self.project_owner = CustomUserTests.create_custom_user(
             email=project_owner_email,
             group=group,
         )
 
         # Create a project applicant.
-        project_applicant_email = '@'.join(['project_applicant', base_domain])
+        project_applicant_email = '@'.join(['project_applicant', self.institution.base_domain])
         self.project_applicant = CustomUserTests.create_custom_user(email=project_applicant_email)
 
-        self.category = ProjectCategoryTests.create_project_category()
-        self.funding_source = ProjectFundingSourceTests.create_project_funding_source()
+        # Create a project category
+        name = 'A project category name'
+        description = 'A project category description'
+        self.category = ProjectCategoryTests.create_project_category(
+            name=name,
+            description=description,
+        )
+
+        # Create a funding source
+        name = 'A project function source name'
+        description = 'A project funding source description'
+        self.funding_source = ProjectFundingSourceTests.create_project_funding_source(
+            name=name,
+            description=description,
+        )
 
         # Create a project.
         self.title = 'Project title'

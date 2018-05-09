@@ -13,16 +13,52 @@ from system.tests.test_models import SystemTests
 from users.tests.test_models import CustomUserTests
 
 
+class ProjectCategoryTests(TestCase):
+
+    @classmethod
+    def create_project_category(cls, name, description):
+        """
+        Create a ProjectCategory instance.
+
+        Args:
+            name (str): Project category name.
+            description (str): Project category description.
+        """
+        return ProjectCategory.objects.create(
+            name=name,
+            description=description,
+        )
+
+    def test_project_category_creation(self):
+        """
+        Ensure we can create a ProjectCategory instance.
+        """
+        name = 'A project category name'
+        description = 'A project category description'
+        project_category = self.create_project_category(
+            name=name,
+            description=description,
+        )
+        self.assertTrue(isinstance(project_category, ProjectCategory))
+        self.assertEqual(project_category.__str__(), project_category.name)
+        self.assertEqual(project_category.name, name)
+        self.assertEqual(project_category.description, description)
+
+
 class ProjectFundingSourceTests(TestCase):
 
     @classmethod
-    def create_project_funding_source(cls):
+    def create_project_funding_source(cls, name, description):
         """
         Create a ProjectFundingSource instance.
+
+        Args:
+            name (str): Project funding source name.
+            description (str): Project funding source description.
         """
         project_funding_source = ProjectFundingSource.objects.create(
-            name='A project function source name',
-            description='A project funding source description',
+            name=name,
+            description=description,
         )
         return project_funding_source
 
@@ -30,57 +66,55 @@ class ProjectFundingSourceTests(TestCase):
         """
         Ensure we can create a ProjectFundingSource instance.
         """
-        project_funding_source = self.create_project_funding_source()
+        name = 'A project function source name'
+        description = 'A project funding source description'
+        project_funding_source = self.create_project_funding_source(
+            name=name,
+            description=description,
+        )
         self.assertTrue(isinstance(project_funding_source, ProjectFundingSource))
         self.assertEqual(project_funding_source.__str__(), project_funding_source.name)
-
-
-class ProjectCategoryTests(TestCase):
-
-    @classmethod
-    def create_project_category(cls):
-        """
-        Create a ProjectCategory instance.
-        """
-        project_category = ProjectCategory.objects.create(
-            name='A project category name',
-            description='A project category description',
-        )
-        return project_category
-
-    def test_project_category_creation(self):
-        """
-        Ensure we can create a ProjectCategory instance.
-        """
-        project_category = self.create_project_category()
-        self.assertTrue(isinstance(project_category, ProjectCategory))
-        self.assertEqual(project_category.__str__(), project_category.name)
+        self.assertEqual(project_funding_source.name, name)
+        self.assertEqual(project_funding_source.description, description)
 
 
 class ProjectModelTests(TestCase):
 
     def setUp(self):
-        # Create an institution.
-        base_domain = 'bangor.ac.uk'
+        # Create an institution
         self.institution = InstitutionTests.create_institution(
             name='Bangor University',
-            base_domain=base_domain,
+            base_domain='bangor.ac.uk',
+            identity_provider='https://idp.bangor.ac.uk/shibboleth',
         )
 
         # Create a project owner.
         group = Group.objects.get(name='project_owner')
-        project_owner_email = '@'.join(['project_owner', base_domain])
+        project_owner_email = '@'.join(['project_owner', self.institution.base_domain])
         self.project_owner = CustomUserTests.create_custom_user(
             email=project_owner_email,
             group=group,
         )
 
         # Create a project applicant.
-        project_applicant_email = '@'.join(['project_applicant', base_domain])
+        project_applicant_email = '@'.join(['project_applicant', self.institution.base_domain])
         self.project_applicant = CustomUserTests.create_custom_user(email=project_applicant_email)
 
-        self.category = ProjectCategoryTests.create_project_category()
-        self.funding_source = ProjectFundingSourceTests.create_project_funding_source()
+        # Create a project category
+        name = 'A project category name'
+        description = 'A project category description'
+        self.category = ProjectCategoryTests.create_project_category(
+            name=name,
+            description=description,
+        )
+
+        # Create a funding source
+        name = 'A project function source name'
+        description = 'A project funding source description'
+        self.funding_source = ProjectFundingSourceTests.create_project_funding_source(
+            name=name,
+            description=description,
+        )
 
 
 class ProjectTests(ProjectModelTests, TestCase):
@@ -142,6 +176,8 @@ class ProjectTests(ProjectModelTests, TestCase):
         self.assertTrue(isinstance(project, Project))
         self.assertEqual(project.__str__(), code + ' - ' + title)
         self.assertEqual(project.status, Project.AWAITING_APPROVAL)
+        self.assertEqual(project.title, title)
+        self.assertEqual(project.code, code)
         self.assertTrue(project.awaiting_approval())
 
 

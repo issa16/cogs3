@@ -7,7 +7,7 @@
     </div>
     <div class="mx-auto mt-4 form-signin">
         {% block form_content %}
-            {% if request.session.shibboleth_reauthentication_required %}
+            {% if request.session.shib_force_reauth %}
                 <div class="mx-auto mt-4">
                     <p>You must close this web browser (including all tabs and windows) before logging in.</p>
                 </div>

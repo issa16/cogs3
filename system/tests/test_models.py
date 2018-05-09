@@ -25,10 +25,16 @@ class SystemTests(TestCase):
         """
         Ensure we can create a System instance.
         """
+        name = 'Nemesis'
+        description = 'Bangor University Cluster'
+        number_of_cores = 10000
         system = self.create_system(
-            name='Nemesis',
-            description='Bangor University Cluster',
-            number_of_cores=10000,
+            name=name,
+            description=description,
+            number_of_cores=number_of_cores,
         )
         self.assertTrue(isinstance(system, System))
         self.assertEqual(system.__str__(), system.name)
+        self.assertEqual(system.name, name)
+        self.assertEqual(system.description, description)
+        self.assertEqual(system.number_of_cores, number_of_cores)

@@ -21,12 +21,12 @@ user_logged_in.connect(login_user)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     user = instance
     if user.is_shibboleth_login_required:
-        username, domain = user.email.split('@')
+        _, domain = user.email.split('@')
         institution = Institution.objects.get(base_domain=domain)
         ShibbolethProfile.objects.update_or_create(
             user=user,
             defaults={
-                'shibboleth_id': username,
+                'shibboleth_id': user.email,
                 'institution': institution,
             },
         )

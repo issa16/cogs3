@@ -1,4 +1,5 @@
 """cogs3 URL Configuration"""
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.views import LoginView
 from django.urls import include
@@ -28,6 +29,7 @@ urlpatterns = [
             redirect_authenticated_user=True,
             extra_context={
                 'institutions': Institution.objects.order_by('name'),
+                'shibboleth_idp_login': settings.SHIBBOLETH_IDENTITY_PROVIDER_LOGIN,
             },
             template_name="registration/educational_login.html",
         ),
