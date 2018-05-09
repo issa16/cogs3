@@ -26,7 +26,7 @@ class Institution(models.Model):
     def is_valid_identity_provider(cls, identity_provider):
         try:
             Institution.objects.get(identity_provider=identity_provider)
-        except Exception as e:
+        except Exception:
             raise InvalidIndentityProvider('Identity provider is not supported.')
         else:
             return True

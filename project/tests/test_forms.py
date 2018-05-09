@@ -158,7 +158,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
 
     def test_form_with_an_authorised_project_member(self):
         """
-        Ensure it is not possible to create a project user membership when a user is an 
+        Ensure it is not possible to create a project user membership when a user is an
         authorised member of the project. By default, when the project is approved, a project user
         membership will be created for the technical lead.
         """
