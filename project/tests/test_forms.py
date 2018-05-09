@@ -153,7 +153,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors['project_code'],
-            ['Invalid SCW project code.'],
+            ['Invalid Project Code.'],
         )
 
     def test_form_with_an_authorised_project_member(self):

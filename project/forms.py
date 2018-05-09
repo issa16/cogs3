@@ -38,5 +38,5 @@ class ProjectUserMembershipCreationForm(forms.Form):
             if ProjectUserMembership.objects.filter(project=project, user=user).exists():
                 raise forms.ValidationError("A membership request for this project already exists.")
         except Project.DoesNotExist:
-            raise forms.ValidationError("Invalid SCW project code.")
+            raise forms.ValidationError("Invalid Project Code.")
         return project_code

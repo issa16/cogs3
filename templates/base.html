@@ -9,6 +9,8 @@
 		<meta name="description" content="">
 		<meta name="author" content="">
 		<title>{% block title %}cogs3{% endblock %}</title>
+		<link rel="shortcut icon" href="{% static "img/favicon.ico" %}" type="image/x-icon">
+		<link rel="icon" href="{% static "img/favicon.ico" %}" type="image/x-icon">
 		<link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
 		<link href="{% static "css/jquery-ui.min.css" %}" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
@@ -19,32 +21,28 @@
 	</head>
 	<body>
 		{% if user.is_authenticated %}
-			{% if perms.project.add_project %}
-				<nav class="navbar navbar-expand-md navbar-dark">
-				{% else %}
-					<nav class="navbar navbar-expand-md navbar-dark bg-primary">
-					{% endif %}
-					<div class="container">
-						<a class="navbar-brand" href="{% url 'home' %}">
-							<img src="{% static "img/scw_small.png" %}" height="30" alt="SuperComputing Wales">
-							cogs3
-						</a>
-						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-						<span class="navbar-toggler-icon"></span>
-						</button>
-						<div class="collapse navbar-collapse" id="navbarCollapse">
-							<ul class="navbar-nav ml-auto">
-								<li class="nav-item">
-									<a class="nav-link" href="{% url 'home' %}">Dashboard</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" href="{% url 'logout' %}">Logout</a>
-								</li>
-							</ul>
-						</div>
+			<nav class="navbar navbar-expand-md navbar-dark">
+				<div class="container">
+					<a class="navbar-brand" href="{% url 'home' %}">
+						<img src="{% static "img/scw_small.png" %}" height="30" alt="SuperComputing Wales">
+						cogs3
+					</a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse" id="navbarCollapse">
+						<ul class="navbar-nav ml-auto">
+							<li class="nav-item">
+								<a class="nav-link" href="{% url 'home' %}">Dashboard</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="{% url 'logout' %}">Logout</a>
+							</li>
+						</ul>
 					</div>
-				</nav>
-			{% endif %}
+				</div>
+			</nav>
+		{% endif %}
 			<main class="container">
 				{% block content %}
 				{% endblock %}

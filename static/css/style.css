@@ -6,7 +6,7 @@ body {
     color: #2F3B3F;
 }
 
-main{
+main {
     margin-bottom: 70px;
 }
 
@@ -15,8 +15,9 @@ main{
 }
 
 .navbar {
-    background-color: #192022;
+    background-color: #243858;
 }
+
 .navbar-dark .navbar-nav .nav-link {
     color: rgba(255, 255, 255, .7);
 }

@@ -6,6 +6,9 @@
         <img class="img-fluid" src="{% static "img/scw.png" %}" alt="Supercomputing Wales">
     </div>
     <div class="mx-auto mt-4 form-signin">
+        <div class="alert alert-success" role="alert">
+            Service Status: Beta Testing.
+        </div>
         {% block form_content %}
             {% if request.session.shib_force_reauth %}
                 <div class="mx-auto mt-4">

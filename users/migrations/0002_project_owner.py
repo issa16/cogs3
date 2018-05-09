@@ -8,6 +8,8 @@ from django.db import migrations
 
 groups = {
     'project_owner': [
+        'add_project',
+        'change_project',
         'add_projectusermembership',
         'change_projectusermembership',
     ]
