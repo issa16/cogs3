@@ -9,6 +9,7 @@ env:
 install: 
   - pip install codecov
   - pip install Django==$DJANGO_VERSION
+  - mkdir -vp /home/travis/build/tystakartografen/cogs3/logs
 
 script:
   - pip install -r requirements.txt
