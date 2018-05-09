@@ -198,3 +198,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.email
+
+    class Meta:
+        verbose_name_plural = 'Users'
