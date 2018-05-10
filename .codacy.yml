@@ -2,6 +2,7 @@ exclude_paths:
   - '**/migrations/**'
   - '**/*.min.js'
   - '**/*.min.css'
+  - '**/tests/**'
 
 engines:
   coverage:
