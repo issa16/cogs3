@@ -8,5 +8,5 @@ class JSONWebToken(object):
         return jwt.encode(data, key, algorithm='HS256')
 
     @classmethod
-    def decode(cls, data, key):
-        return jwt.decode(data, key, algorithms=['HS256'])
+    def decode(cls, data, key, audience=None, algorithms=['HS256']):
+        return jwt.decode(data, key, audience=audience, algorithms=algorithms)

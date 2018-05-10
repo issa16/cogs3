@@ -192,6 +192,13 @@ RQ_QUEUES = {
     }
 }
 
+# OpenLDAP
+OPENLDAP_HOST = os.environ.get('OPENLDAP_HOST')
+OPENLDAP_JWT_KEY = os.environ.get('OPENLDAP_JWT_KEY')
+OPENLDAP_JWT_ISSUER = os.environ.get('OPENLDAP_JWT_ISSUER')
+OPENLDAP_JWT_AUDIENCE = os.environ.get('OPENLDAP_JWT_AUDIENCE')
+OPENLDAP_JWT_ALGORITHM = os.environ.get('OPENLDAP_JWT_ALGORITHM')
+
 # Logging
 LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 LOGGING = {
@@ -292,10 +299,10 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'general',
         },
-        'ldap': {
+        'openldap': {
             'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOGS_DIR, 'ldap.log'),
+            'filename': os.path.join(LOGS_DIR, 'openldap.log'),
             'maxBytes': 16 * 1024 * 1024,  # 16 MB
             'backupCount': 5,
             'formatter': 'general',
@@ -334,8 +341,8 @@ LOGGING = {
             'handlers': ['apps'],
             'level': 'WARNING',
         },
-        'ldap': {
-            'handlers': ['ldap'],
+        'openldap': {
+            'handlers': ['openldap', 'mail_admins'],
             'level': 'WARNING',
         },
         'py.warnings': {

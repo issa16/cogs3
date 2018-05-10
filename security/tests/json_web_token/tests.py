@@ -17,9 +17,9 @@ class JSONWebTokenTests(TestCase):
                     'KTKkHQm6y79TfqMI0eUsIAFZMwfyYb_0LwIpQQqAQOQ')
 
     def test_json_web_token_encode(self):
-        result = JSONWebToken.encode(self.data, self.key)
+        result = JSONWebToken.encode(data=self.data, key=self.key)
         self.assertEqual(result.decode(), self.jwt)
 
     def test_json_web_token_decode(self):
-        result = JSONWebToken.decode(self.jwt, self.key)
+        result = JSONWebToken.decode(data=self.jwt, key=self.key)
         self.assertEqual(result, self.data)
