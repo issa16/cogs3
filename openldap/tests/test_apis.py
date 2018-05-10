@@ -5,7 +5,7 @@ import requests
 from django.conf import settings
 from django.test import TestCase
 
-from openldap.apis import OpenLDAPUserAPI
+from openldap import user_api
 
 
 class OpenLDAPUserAPITests(TestCase):
@@ -53,7 +53,7 @@ class OpenLDAPUserAPITests(TestCase):
                 "count": 1
             }
         }
-        result = OpenLDAPUserAPI.list_users()
+        result = user_api.list_users()
         self.assertEqual(result, expected_response)
 
     @mock.patch('requests.get')
@@ -73,7 +73,7 @@ class OpenLDAPUserAPITests(TestCase):
         mock_get.return_value = mock_resp
 
         with self.assertRaises(jsonschema.exceptions.ValidationError):
-            OpenLDAPUserAPI.list_users()
+            user_api.list_users()
 
     @mock.patch('requests.get')
     def test_list_users_query_with_connection_error(self, mock_get):
@@ -87,7 +87,7 @@ class OpenLDAPUserAPITests(TestCase):
         mock_get.return_value = mock_resp
 
         with self.assertRaises(requests.exceptions.ConnectionError):
-            OpenLDAPUserAPI.list_users()
+            user_api.list_users()
 
     @mock.patch('requests.get')
     def test_list_users_query_with_timeout_error(self, mock_get):
@@ -101,7 +101,7 @@ class OpenLDAPUserAPITests(TestCase):
         mock_get.return_value = mock_resp
 
         with self.assertRaises(requests.exceptions.Timeout):
-            OpenLDAPUserAPI.list_users()
+            user_api.list_users()
 
     @mock.patch('requests.get')
     def test_list_users_query_with_http_error(self, mock_get):
@@ -115,4 +115,4 @@ class OpenLDAPUserAPITests(TestCase):
         mock_get.return_value = mock_resp
 
         with self.assertRaises(requests.exceptions.HTTPError):
-            OpenLDAPUserAPI.list_users()
+            user_api.list_users()
