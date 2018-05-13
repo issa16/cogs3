@@ -2,6 +2,8 @@ import jsonschema
 import mock
 import requests
 
+from unittest import skip
+
 from django.conf import settings
 from django.test import TestCase
 
@@ -31,7 +33,7 @@ class OpenLDAPUserAPITests(TestCase):
     @mock.patch('requests.get')
     def test_list_users_query(self, mock_get):
         """
-        Ensure a successful query to list all users returns correct and valid data.
+        Retrieve a list of all users.
         """
         jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4Y'
                'W1wbGUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0Ijo'
@@ -59,7 +61,7 @@ class OpenLDAPUserAPITests(TestCase):
     @mock.patch('requests.get')
     def test_get_user_by_id(self, mock_get):
         """
-        Ensure the retrieval of a user via user id returns correct and valid data.
+        Retrieve a user via their user id.
         """
         jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4Y'
                'W1wbGUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0Ijo'
@@ -113,7 +115,7 @@ class OpenLDAPUserAPITests(TestCase):
     @mock.patch('requests.get')
     def test_get_user_by_email_address(self, mock_get):
         """
-        Ensure the retrieval of a user via email address returns correct and valid data.
+        Retrieve a user via their email address.
         """
         jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbG'
                'UuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI1OTY3M'
@@ -164,6 +166,30 @@ class OpenLDAPUserAPITests(TestCase):
         result = user_api.test_get_user_by_email_address('joe.bloggs@bangor.ac.uk')
         self.assertEqual(result, expected_response)
 
+    @skip("Pending implementation")
+    @mock.patch('requests.get')
+    def test_delete_user(self, mock_get):
+        """
+        Delete (deactivated) a user via the user's email address.
+        """
+        pass
+
+    @skip("Pending implementation")
+    @mock.patch('requests.get')
+    def test_reset_user_password(self, mock_get):
+        """
+        Reset a user's password.
+        """
+        pass
+
+    @skip("Pending implementation")
+    @mock.patch('requests.get')
+    def test_enable_user_account(self, mock_get):
+        """
+        Enable a user's account.
+        """
+        pass
+
     def test_query_exceptions(self):
         """
         Ensure each query raises the correct error/exception.
@@ -172,6 +198,9 @@ class OpenLDAPUserAPITests(TestCase):
             (user_api.list_users, None),
             (user_api.get_user_by_id, 'x.joe.bloggs'),
             (user_api.test_get_user_by_email_address, 'joe.bloggs@bangor.ac.uk'),
+            #(user_api.test_delete_user, 'joe.bloggs@bangor.ac.uk'),
+            #(user_api.test_reset_user_password, 'joe.bloggs@bangor.ac.uk'),
+            #(user_api.test_enable_user_account, 'joe.bloggs@bangor.ac.uk'),
         ]
         for query, args in queries:
             self._test_query_with_invalid_json_schema(query=query, query_args=args)

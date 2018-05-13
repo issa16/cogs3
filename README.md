@@ -70,7 +70,7 @@
 8. Run the unit tests.
 
   ```sh
-  python manage.py test
+  python manage.py test -v 3
   ```
 
 9. Generate coverage report.

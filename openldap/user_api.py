@@ -1,4 +1,3 @@
-import json
 import jsonschema
 import logging
 import requests
@@ -7,7 +6,7 @@ from django.conf import settings
 
 from openldap import schemas
 from openldap.decorators import OpenLDAPException
-from security.json_web_token import JSONWebToken
+from openldap.util import decode_response
 
 logger = logging.getLogger('openldap')
 
@@ -18,23 +17,14 @@ def list_users():
     List all users.
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/'])
-    headers = {
-        'Cache-Control': 'no-cache',
-    }
+    headers = {'Cache-Control': 'no-cache'}
     response = requests.get(
         url,
         headers=headers,
         timeout=5,
     )
     response.raise_for_status()
-    # Decode JWT
-    response = JSONWebToken.decode(
-        data=response.content,
-        key=settings.OPENLDAP_JWT_KEY,
-        audience=settings.OPENLDAP_JWT_AUDIENCE,
-        algorithms=[settings.OPENLDAP_JWT_ALGORITHM],
-    )
-    # Validate json schema
+    response = decode_response(response)
     jsonschema.validate(response, schemas.list_users_schema)
     return response
 
@@ -65,23 +55,14 @@ def get_user_by_id(user_id):
         user_id (str): User id - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', user_id, '/'])
-    headers = {
-        'Cache-Control': 'no-cache',
-    }
+    headers = {'Cache-Control': 'no-cache'}
     response = requests.get(
         url,
         headers=headers,
         timeout=5,
     )
     response.raise_for_status()
-    # Decode JWT
-    response = JSONWebToken.decode(
-        data=response.content,
-        key=settings.OPENLDAP_JWT_KEY,
-        audience=settings.OPENLDAP_JWT_AUDIENCE,
-        algorithms=[settings.OPENLDAP_JWT_ALGORITHM],
-    )
-    # Validate json schema
+    response = decode_response(response)
     jsonschema.validate(response, schemas.get_user_schema)
     return response
 
@@ -95,23 +76,14 @@ def test_get_user_by_email_address(email_address):
         email_address (str): Email address - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', email_address, '/'])
-    headers = {
-        'Cache-Control': 'no-cache',
-    }
+    headers = {'Cache-Control': 'no-cache'}
     response = requests.get(
         url,
         headers=headers,
         timeout=5,
     )
     response.raise_for_status()
-    # Decode JWT
-    response = JSONWebToken.decode(
-        data=response.content,
-        key=settings.OPENLDAP_JWT_KEY,
-        audience=settings.OPENLDAP_JWT_AUDIENCE,
-        algorithms=[settings.OPENLDAP_JWT_ALGORITHM],
-    )
-    # Validate json schema
+    response = decode_response(response)
     jsonschema.validate(response, schemas.get_user_schema)
     return response
 
@@ -119,12 +91,23 @@ def test_get_user_by_email_address(email_address):
 @OpenLDAPException(logger)
 def delete_user(email_address):
     """
-    Delete an existing user.
+    Delete (deactivate) an existing user.
 
     Args:
         email_address (str): Email address - required
     """
-    pass
+    url = ''.join([settings.OPENLDAP_HOST, 'user/', email_address, '/'])
+    headers = {'Cache-Control': 'no-cache'}
+    response = requests.delete(
+        url,
+        headers=headers,
+        timeout=5,
+    )
+    response.raise_for_status()
+    response = decode_response(response)
+    # Pending implementation
+    #jsonschema.validate(response, schemas.get_user_schema)
+    return response
 
 
 @OpenLDAPException(logger)
@@ -135,7 +118,15 @@ def reset_user_password(email_address):
     Args:
         email_address (str): Email address - required
     """
-    pass
+    url = ''.join([settings.OPENLDAP_HOST, 'user/resetPassword/', email_address, '/'])
+    headers = {'Cache-Control': 'no-cache'}
+    response = requests.post(
+        url,
+        headers=headers,
+        timeout=5,
+    )
+    response.raise_for_status()
+    response = decode_response(response)
 
 
 @OpenLDAPException(logger)
@@ -146,4 +137,15 @@ def enable_user_account(email_address):
     Args:
         email_address (str): Email address - required
     """
-    pass
+    url = ''.join([settings.OPENLDAP_HOST, 'user/enable/', email_address, '/'])
+    headers = {'Cache-Control': 'no-cache'}
+    response = requests.put(
+        url,
+        headers=headers,
+        timeout=5,
+    )
+    response.raise_for_status()
+    response = decode_response(response)
+    # Pending implementation
+    #jsonschema.validate(response, schemas.get_user_schema)
+    return response
