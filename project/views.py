@@ -47,14 +47,10 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
     model = Project
 
     def user_passes_test(self, request):
-        try:
-            project_id = self.kwargs['pk']
-            user = self.request.user
-            Project.objects.get(id=project_id, tech_lead=user)
-        except Exception:
-            return False
-        else:
+        if Project.objects.filter(id=self.kwargs['pk'], tech_lead=self.request.user).exists():
             return True
+        else:
+            return False
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
@@ -75,8 +71,12 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
 
     def form_valid(self, form):
         project_code = form.cleaned_data['project_code']
+        project = Project.objects.get(
+            code=project_code,
+            status=Project.APPROVED,
+        )
         ProjectUserMembership.objects.create(
-            project=Project.objects.get(code=project_code, status=Project.APPROVED),
+            project=project,
             user=self.request.user,
             date_joined=datetime.date.today(),
         )
@@ -92,9 +92,13 @@ class ProjectUserRequestMembershipListView(PermissionRequiredMixin, LoginRequire
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        projects = Project.objects.filter(tech_lead=self.request.user, status=Project.APPROVED)
+        projects = Project.objects.filter(
+            tech_lead=self.request.user,
+            status=Project.APPROVED,
+        )
         queryset = queryset.filter(project__in=projects)
-        queryset = queryset.exclude(user=self.request.user)  # Omit the user's own membership request
+        # Omit the user's membership request
+        queryset = queryset.exclude(user=self.request.user)
         return queryset.order_by('-created_time')
 
 
@@ -113,10 +117,9 @@ class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequi
             user = self.request.user
             project = Project.objects.get(id=project_id, tech_lead=user)
             ProjectUserMembership.objects.get(id=request_id, project=project)
+            return True
         except Exception:
             return False
-        else:
-            return True
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):

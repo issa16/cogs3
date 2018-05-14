@@ -30,7 +30,6 @@ class LogoutView(TemplateView):
             self.request.session[settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY] = True
             self.request.session.set_expiry(0)
 
-        # Logout the user.
         auth.logout(self.request)
 
         return redirect(reverse('logged_out'))
