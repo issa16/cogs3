@@ -44,37 +44,37 @@ class ProjectFundingSource(models.Model):
 class Project(models.Model):
     title = models.CharField(
         max_length=256,
-        verbose_name="Project Title",
+        verbose_name='Project Title',
     )
     description = models.TextField(
         max_length=1024,
-        verbose_name="Project Description",
+        verbose_name='Project Description',
     )
     legacy_hpcw_id = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name="Legacy HPC Wales ID",
-        help_text="Project legacy ID from HPC Wales",
+        verbose_name='Legacy HPC Wales ID',
+        help_text='Project legacy ID from HPC Wales',
     )
     legacy_arcca_id = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name="Legacy ARCCA ID",
-        help_text="Project legacy ID ARCCA",
+        verbose_name='Legacy ARCCA ID',
+        help_text='Project legacy ID ARCCA',
     )
     code = models.CharField(
         max_length=20,
         unique=True,
-        verbose_name="Project code assigned by SCW",
+        verbose_name='Project code assigned by SCW',
     )
     institution = models.ForeignKey(
         Institution,
         on_delete=models.CASCADE,
-        help_text="Institution project is based",
+        help_text='Institution project is based',
     )
     institution_reference = models.CharField(
         max_length=128,
-        verbose_name="Owning institution project reference",
+        verbose_name='Owning institution project reference',
     )
     department = models.CharField(
         max_length=128,
@@ -82,13 +82,13 @@ class Project(models.Model):
     )
     pi = models.CharField(
         max_length=256,
-        verbose_name="Principal Investigator",
+        verbose_name='Principal Investigator',
     )
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='project_as_tech_lead',
         on_delete=models.CASCADE,
-        verbose_name="Technical Lead",
+        verbose_name='Technical Lead',
     )
     category = models.ForeignKey(
         ProjectCategory,
@@ -104,20 +104,22 @@ class Project(models.Model):
     economic_user = models.BooleanField(default=False)
     requirements_software = models.TextField(
         max_length=512,
-        help_text="Software name and versions",
+        help_text='Software name and versions',
     )
     requirements_gateways = models.TextField(
         max_length=512,
-        help_text="Gateway name and versions",
+        help_text='Web gateway or portal name and versions',
     )
     requirements_training = models.TextField(max_length=512)
     requirements_onboarding = models.TextField(max_length=512)
     allocation_rse = models.BooleanField(
         default=False,
-        verbose_name="RSE available to?",
+        verbose_name='RSE available to?',
     )
-    allocation_cputime = models.PositiveIntegerField(verbose_name="CPU time allocation in hours")
-    allocation_storage = models.PositiveIntegerField(verbose_name="Project group storage allocation in GB")
+    allocation_cputime = models.PositiveIntegerField(verbose_name='CPU time allocation in hours')
+    allocation_memory = models.PositiveIntegerField(verbose_name='RAM allocation in GB')
+    allocation_storage_home = models.PositiveIntegerField(verbose_name='Home storage in GB')
+    allocation_storage_scartch = models.PositiveIntegerField(verbose_name='Scratch storage in GB')
     allocation_systems = models.ManyToManyField(
         System,
         through='ProjectSystemAllocation',
