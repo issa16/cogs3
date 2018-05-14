@@ -21,6 +21,7 @@ class ProjectCategory(models.Model):
 
     class Meta:
         verbose_name_plural = 'Project Categories'
+        ordering = ('name', )
 
 
 class ProjectFundingSource(models.Model):
