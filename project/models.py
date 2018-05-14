@@ -37,6 +37,7 @@ class ProjectFundingSource(models.Model):
 
     class Meta:
         verbose_name_plural = 'Project Funding Sources'
+        ordering = ('name', )
 
 
 class Project(models.Model):
