@@ -20,6 +20,10 @@ class RegisterView(generic.CreateView):
             return redirect(reverse('home'))
         return super().dispatch(*args, **kwargs)
 
+    def form_valid(self, form):
+        form.instance.is_shibboleth_login_required = True
+        return super().form_valid(form)
+
 
 class LogoutView(TemplateView):
 
