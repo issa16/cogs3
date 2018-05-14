@@ -15,12 +15,12 @@ class RegisterView(generic.CreateView):
     template_name = 'registration/register.html'
 
     def dispatch(self, *args, **kwargs):
-        shib_username = self.request.session.get('shib', {}).get('username', None)
-        if self.request.user.is_authenticated or shib_username is None:
+        if self.request.user.is_authenticated:
             return redirect(reverse('home'))
         return super().dispatch(*args, **kwargs)
 
     def form_valid(self, form):
+        form.instance.is_active = True
         form.instance.is_shibboleth_login_required = True
         return super().form_valid(form)
 
