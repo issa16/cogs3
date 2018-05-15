@@ -34,7 +34,7 @@ class ProjectUserMembershipCreationForm(forms.Form):
             # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:
                 raise forms.ValidationError("You are currently a member of the project.")
-            if project.awaiting_approval():
+            if project.is_awaiting_approval():
                 raise forms.ValidationError("The project is currently awaiting approval.")
             if ProjectUserMembership.objects.filter(project=project, user=user).exists():
                 raise forms.ValidationError("A membership request for this project already exists.")

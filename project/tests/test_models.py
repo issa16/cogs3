@@ -180,7 +180,7 @@ class ProjectTests(ProjectModelTests, TestCase):
         self.assertEqual(project.status, Project.AWAITING_APPROVAL)
         self.assertEqual(project.title, title)
         self.assertEqual(project.code, code)
-        self.assertTrue(project.awaiting_approval())
+        self.assertTrue(project.is_awaiting_approval())
 
 
 class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
@@ -276,23 +276,23 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
 
     def test_project_user_membership_awaiting_authorisation_status(self):
         """
-        Ensure the awaiting_authorisation() method returns the correct response.
+        Ensure the is_awaiting_authorisation() method returns the correct response.
         """
         self.membership.status = ProjectUserMembership.AWAITING_AUTHORISATION
-        self.assertTrue(self.membership.awaiting_authorisation())
+        self.assertTrue(self.membership.is_awaiting_authorisation())
 
         self.membership.status = ProjectUserMembership.AUTHORISED
-        self.assertFalse(self.membership.awaiting_authorisation())
+        self.assertFalse(self.membership.is_awaiting_authorisation())
 
     def test_project_user_membership_authorised_status(self):
         """
         Ensure the authorised() method returns the correct response.
         """
         self.membership.status = ProjectUserMembership.AUTHORISED
-        self.assertTrue(self.membership.authorised())
+        self.assertTrue(self.membership.is_authorised())
 
         self.membership.status = ProjectUserMembership.AWAITING_AUTHORISATION
-        self.assertFalse(self.membership.authorised())
+        self.assertFalse(self.membership.is_authorised())
 
     def test_project_user_membership_unauthorised_status(self):
         """
@@ -305,7 +305,7 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
         ]
         for status in unauthorised_states:
             self.membership.status = status
-            self.assertTrue(self.membership.unauthorised())
+            self.assertTrue(self.membership.is_unauthorised())
 
     def test_project_user_membership_str_representation(self):
         data = {
