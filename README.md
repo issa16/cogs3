@@ -73,7 +73,7 @@
   python manage.py createsuperuser
   ```
 
-8. Run the unit tests.
+9. Run the unit tests.
 
   ```sh
   python manage.py test -v 3
