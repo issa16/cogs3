@@ -146,7 +146,13 @@ class Project(models.Model):
         choices=STATUS_CHOICES,
         default=AWAITING_APPROVAL,
     )
-    notes = models.TextField(max_length=512, blank=True)
+    reason_decision = models.TextField(
+        max_length=256,
+        blank=True,
+        verbose_name='Reason for the project status decision:',
+        help_text='The reason will be emailed to the project\'s technical lead upon project status update.',
+    )
+    notes = models.TextField(max_length=512, blank=True, help_text='Internal project notes')
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 

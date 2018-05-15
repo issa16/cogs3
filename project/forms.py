@@ -18,6 +18,7 @@ class ProjectCreationForm(forms.ModelForm):
             'notes',
             'economic_user',
             'allocation_rse',
+            'reason_decision',
         ]
 
 
