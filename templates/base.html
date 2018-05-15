@@ -1,5 +1,6 @@
 <!-- templates/base.html -->
 {% load static %}
+{% load i18n %}
 {% load cookielaw_tags %}
 <!DOCTYPE html>
 <html>
@@ -8,7 +9,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<meta name="description" content="">
 		<meta name="author" content="">
-		<title>{% block title %}cogs3{% endblock %}</title>
+		<title>{% block title %}{% trans "cogs3" %}{% endblock %}</title>
 		<link rel="shortcut icon" href="{% static "img/favicon.ico" %}" type="image/x-icon">
 		<link rel="icon" href="{% static "img/favicon.ico" %}" type="image/x-icon">
 		<link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
@@ -24,8 +25,8 @@
 			<nav class="navbar navbar-expand-md navbar-dark">
 				<div class="container">
 					<a class="navbar-brand" href="{% url 'home' %}">
-						<img src="{% static "img/scw_small.png" %}" height="30" alt="SuperComputing Wales">
-						cogs3
+						<img src="{% static "img/scw_small.png" %}" height="30" alt="{% trans "Supercomputing Wales" %}">
+						{% trans "cogs3" %}
 					</a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
@@ -33,10 +34,10 @@
 					<div class="collapse navbar-collapse" id="navbarCollapse">
 						<ul class="navbar-nav ml-auto">
 							<li class="nav-item">
-								<a class="nav-link" href="{% url 'home' %}">Dashboard</a>
+								<a class="nav-link" href="{% url 'home' %}">{% trans "Dashboard" %}</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" href="{% url 'logout' %}">Logout</a>
+								<a class="nav-link" href="{% url 'logout' %}">{% trans "Logout" %}</a>
 							</li>
 						</ul>
 					</div>

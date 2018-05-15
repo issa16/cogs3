@@ -8,7 +8,7 @@
 	<div class="mx-auto mt-4 form-signin">
 		<form method="post">
 			{% csrf_token %}
-			<h5 class="text-center mb-4 mt-2">Create a SuperComputing Wales account</h5>
+			<h5 class="text-center mb-4 mt-2">Create a Supercomputing Wales account</h5>
 			{% include 'includes/errors.html' %}
 			<div class="form-group mb-3">
 				<label for="email">Email</label>
@@ -30,8 +30,8 @@
 					</label>
 				</div>
 			</div>
-			<button class="btn btn-primary btn-block" type="submit">Create a SuperComputing Wales account</button>
-			<p class="mt-3 mb-1 text-center text-muted">© cogs3</p>
+			<button class="btn btn-primary btn-block" type="submit">Create a Supercomputing Wales account</button>
+			<p class="mt-3 mb-1 text-center text-muted">© {% trans "cogs3" %}</p>
 		</form>
 	</div>
 {% endblock %}
