@@ -33,6 +33,9 @@
   source bin/activate
   ```
 
+  Replace `/usr/local/bin/python3` with the path to a Python 3 executable.
+  On macOS this should be installed from Homebrew.
+
 3. Install the requirements.
 
   ```sh
@@ -47,21 +50,24 @@
   mv .template_env .env
   ```
 
-  Update .env
+5. Edit `.env` to include, at a minimum, an arbitrary `SECRET_KEY`.
+   Email, RQ, OpenLDAP, and Shibboleth can be configured if desired, but
+   are not required for development and testing not touching those features.
 
-5. Create the database.
+6. Create the database.
 
   ```sh
+  cd ..
   python manage.py migrate
   ```
 
-6. Load institution data into the database, default institution data is available in fixtures.
+7. Load institution data into the database, default institution data is available in fixtures.
 
   ```sh
   python manage.py loaddata institutions.yaml
   ```
 
-7. Create an admin user.
+8. Create an admin user.
 
   ```sh
   python manage.py createsuperuser
@@ -73,33 +79,40 @@
   python manage.py test -v 3
   ```
 
-9. Generate coverage report.
+10. Generate coverage report.
 
   ```sh
   coverage run manage.py test
   coverage html
   ```
 
-10. Install redis.
+11. Install redis.
 
   ```sh
   brew install redis
   ```
 
-11. Start the redis server.
+  Replace `brew` with your package manager. On Debian and Ubuntu, the package
+  is named `redis-server`; i.e.
 
   ```sh
-  redis-server
+  sudo apt install redis-server
   ```
 
-12. Test redis server is running.
+12. Start the redis server.
+
+  ```sh
+  redis-server &
+  ```
+
+13. Test redis server is running.
 
    ```sh
    redis-cli ping
    >>> PONG
    ```
 
-13. Start the development server.
+14. Start the development server.
 
   ```sh
   python manage.py runserver
