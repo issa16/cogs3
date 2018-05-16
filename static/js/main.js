@@ -1,7 +1,8 @@
 $(document).ready(function() {
-	// Initialise date pickers
-	$("#id_start_date").datepicker();
-	$("#id_end_date").datepicker();
+	// Initialise date picker
+	$('.datepicker').datepicker({
+		dateFormat: 'yy-mm-dd'
+	});
 
 	// Handle user membership request update
 	$(".membership-status").change(function() {
