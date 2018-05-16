@@ -34,5 +34,8 @@ class Institution(models.Model):
     def __str__(self):
         return self.name
 
+    def id_str(self):
+        return self.name.lower().replace(" ", "-")
+
     class Meta:
         ordering = ('name', )
