@@ -73,20 +73,7 @@
   python manage.py createsuperuser
   ```
 
-9. Run the unit tests.
-
-  ```sh
-  python manage.py test -v 3
-  ```
-
-10. Generate coverage report.
-
-  ```sh
-  coverage run manage.py test
-  coverage html
-  ```
-
-11. Install geckodriver.
+9. Install geckodriver.
 
   macOS
   ```sh
@@ -100,6 +87,19 @@
   chmod +x geckodriver
   sudo mv geckodriver /usr/local/bin
   rm geckodriver-v0.20.1-linux64.tar.gz
+  ```
+
+10. Run the unit tests.
+
+  ```sh
+  python manage.py test -v 3
+  ```
+
+11. Generate coverage report.
+
+  ```sh
+  coverage run manage.py test
+  coverage html
   ```
 
 12. Install redis.
