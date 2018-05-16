@@ -13,8 +13,8 @@ before_install:
 
   # Install geckodriver
   - wget https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz
-  - tar -xzf geckodriver-v0.20.1-linux64.tar.gz
-  - chmod +x geckodriver
+  - mkdir geckodriver
+  - tar -xzf geckodriver-v0.20.1-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
 
 install: 
