@@ -156,7 +156,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             allocation_cputime='1000000',
             allocation_memory='100',
             allocation_storage_home='5000',
-            allocation_storage_scartch='1000',
+            allocation_storage_scratch='1000',
             notes='Project notes',
         )
         return project
