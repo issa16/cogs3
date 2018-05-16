@@ -1,18 +1,22 @@
-from selenium import webdriver
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 from users.models import CustomUser
 
 webdriver = webdriver.Firefox
 
+
 class SeleniumTestsBase(StaticLiveServerTestCase):
-    fixtures = [ 'institution/fixtures/institutions.yaml', 'project/fixtures/funding_sources.yaml', ]
+    fixtures = [
+        'institution/fixtures/institutions.yaml',
+        'project/fixtures/funding_sources.yaml',
+    ]
 
     serialized_rollback = True
 
     def get_url(self, url):
-        self.selenium.get(self.live_server_url+url)
+        self.selenium.get(self.live_server_url + url)
 
     def fill_form_by_id(self, fields):
         for field, value in fields.items():
@@ -20,7 +24,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             element.send_keys(value)
 
     def click_by_text(self, text):
-        button = self.selenium.find_element_by_xpath("//*[text()='"+text+"']")
+        button = self.selenium.find_element_by_xpath("//*[text()='" + text + "']")
         button.click()
 
     def select_from_dropdown(self, id, index):
@@ -31,18 +35,19 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         """
         Sign in as a preexisting test user
         """
-        # Sign in using the admin page
+        # Sign in using the external collaborators login form
         self.get_url("/accounts/external/login/")
 
         form_fields = {
-        "id_username": self.user_email,
-        "id_password": self.user_password
+            "id_username": self.user_email,
+            "id_password": self.user_password,
         }
         self.fill_form_by_id(form_fields)
         self.click_by_text('Login')
 
     def scroll_bottom(self):
         self.selenium.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
     def tearDown(self):
         super(SeleniumTestsBase, self).tearDown()
         self.selenium.quit()
@@ -55,7 +60,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             username=self.user_email,
             email=self.user_email,
             first_name='Joe',
-            last_name='Blogs',
+            last_name='Bloggs',
             is_shibboleth_login_required=False,
         )
         self.user.set_password(self.user_password)

@@ -1,14 +1,14 @@
-from selenium_base import SeleniumTestsBase
 from project.models import ProjectFundingSource
+from selenium_base import SeleniumTestsBase
+
 
 class ProjectIntegrationTests(SeleniumTestsBase):
 
     def test_create_project(self):
-        '''
+        """
         Create a new project
-        Before running this a funding source called test must be added to the
-        database
-        '''
+        Before running this a funding source called test must be added to the database.
+        """
         self.sign_in()
         self.click_by_text('Create Project Application')
 
@@ -28,7 +28,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             "id_allocation_cputime": "200",
             "id_allocation_memory": "1",
             "id_allocation_storage_home": "200",
-            "id_allocation_storage_scartch": "1"  # NOTE: typo
+            "id_allocation_storage_scratch": "1",
         }
         self.fill_form_by_id(form_fields)
 
