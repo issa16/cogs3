@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 from users.models import CustomUser
 
-webdriver = webdriver.Firefox
+from cogs3.settings import SELENIUM_WEBDRIVER
 
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
@@ -23,10 +23,6 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             element = self.selenium.find_element_by_id(field)
             element.send_keys(value)
 
-    def click_by_text(self, text):
-        button = self.selenium.find_element_by_xpath("//*[text()='" + text + "']")
-        button.click()
-
     def select_from_dropdown(self, id, index):
         element = Select(self.selenium.find_element_by_id(id))
         element.select_by_index(index)
@@ -43,7 +39,14 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             "id_password": self.user_password,
         }
         self.fill_form_by_id(form_fields)
-        self.click_by_text('Login')
+        self.submit_form(form_fields)
+
+    def submit_form(self, form_fields):
+        key = list(form_fields.keys())[0]
+        self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
+
+    def click_by_id(self, text):
+        self.selenium.find_element_by_id(text).click()
 
     def scroll_bottom(self):
         self.selenium.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -69,5 +72,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.user.save()
 
         # Setup selenium
-        self.selenium = webdriver()
+        self.selenium = SELENIUM_WEBDRIVER()
         self.selenium.implicitly_wait(10)
+        self.get_url("")
+        self.selenium.add_cookie({'name': 'cookielaw_accepted', 'value': '1'})
