@@ -4,11 +4,11 @@
 {% load widget_tweaks %}
 {% block title %}Project details{% endblock %}
 {% block content %}
-	<div class="my-3 p-3 bg-white rounded box-shadow">
+	<div class="my-3 px-3 pt-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>{{project.title}}</h4>
+					<h4>Project: {{project.title}}</h4>
 				</div>
 			</div>
 		</div>
@@ -18,8 +18,8 @@
 					<table class="table table-bordered">
 						<tbody>
 							<tr>
-								<th scope="row">Title</th>
-								<td>{{project.title}}</td>
+								<th scope="row" style="width:25%">Title</th>
+								<td style="width:75%">{{project.title}}</td>
 							</tr>
 							<tr>
 								<th scope="row">Description</th>
@@ -42,7 +42,7 @@
 								<td>{{project.institution}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Owning institution project reference</th>
+								<th scope="row">Institution project reference</th>
 								<td>{{project.institution_reference}}</td>
 							</tr>
 							<tr>
@@ -82,8 +82,16 @@
 								<td>{{project.allocation_cputime}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Storage allocation in GB</th>
-								<td>{{project.allocation_storage}}</td>
+								<th scope="row">RAM allocation in GB</th>
+								<td>{{project.allocation_memory}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Home storage in GB</th>
+								<td>{{project.allocation_storage_home}}</td>
+							</tr>
+							<tr>
+								<th scope="row">Scratch storage in GB</th>
+								<td>{{project.allocation_storage_scratch}}</td>
 							</tr>
 						</tbody>
 					</table>
