@@ -20,6 +20,14 @@ class ProjectCreationForm(forms.ModelForm):
             'allocation_rse',
             'reason_decision',
         ]
+        widgets = {
+            'start_date': forms.DateInput(attrs={
+                'class': 'datepicker'
+            }),
+            'end_date': forms.DateInput(attrs={
+                'class': 'datepicker'
+            }),
+        }
 
 
 class ProjectUserMembershipCreationForm(forms.Form):
