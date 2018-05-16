@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'security',
     'openldap',
     'notification',
+    'hreflang',
 ]
 
 MIDDLEWARE = [
@@ -134,6 +135,10 @@ LANGUAGE_CODE = 'en-gb'
 LOCALE_PATHS = (
     'locale',
 )
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.template.context_processors.i18n',
+)
+
 
 TIME_ZONE = 'UTC'
 
