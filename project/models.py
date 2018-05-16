@@ -64,7 +64,6 @@ class Project(models.Model):
     )
     code = models.CharField(
         max_length=20,
-        unique=True,
         verbose_name='Project code assigned by SCW',
     )
     institution = models.ForeignKey(

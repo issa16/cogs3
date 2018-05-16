@@ -1,7 +1,25 @@
 from django import forms
 
-from .models import Project
-from .models import ProjectUserMembership
+from project.models import Project
+from project.models import ProjectUserMembership
+
+
+class ProjectAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+    def clean_code(self):
+        """
+        Ensure the project code is unique.
+        """
+        current_code = self.instance.code
+        updated_code = self.cleaned_data['code']
+        if current_code != updated_code:
+            if Project.objects.filter(code=updated_code).exists():
+                raise forms.ValidationError('Project code must be unique.')
+        return updated_code
 
 
 class ProjectCreationForm(forms.ModelForm):
