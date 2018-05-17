@@ -17,7 +17,7 @@ def list_users():
     List all users.
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/'])
-    logger.info('Calling', url)
+    logger.info('OpenLDAP User API :: GET ::', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.get(
         url,
@@ -45,7 +45,7 @@ def create_user(email, title, first_name, surname, department, telephone, uid_nu
         uid_number (str): Override uidNumber/gidNumber - optional
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/'])
-    logger.info('Calling', url)
+    logger.info('OpenLDAP User API :: POST ::', url)
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cache-Control': 'no-cache',
@@ -84,7 +84,7 @@ def get_user_by_id(user_id):
         user_id (str): User id - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', user_id, '/'])
-    logger.info('Calling', url)
+    logger.info('OpenLDAP User API :: GET ::', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.get(
         url,
@@ -106,7 +106,7 @@ def test_get_user_by_email_address(email_address):
         email_address (str): Email address - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', email_address, '/'])
-    logger.info('Calling', url)
+    logger.info('OpenLDAP User API :: GET ::', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.get(
         url,
@@ -128,7 +128,7 @@ def delete_user(email_address):
         email_address (str): Email address - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', email_address, '/'])
-    logger.info('Calling', url)
+    logger.info('OpenLDAP User API :: DELETE ::', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.delete(
         url,
@@ -151,7 +151,7 @@ def reset_user_password(email_address):
         email_address (str): Email address - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/resetPassword/', email_address, '/'])
-    logger.info('Calling', url)
+    logger.info('OpenLDAP User API :: POST ::', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.post(
         url,
@@ -174,7 +174,7 @@ def enable_user_account(email_address):
         email_address (str): Email address - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/enable/', email_address, '/'])
-    logger.info('Calling', url)
+    logger.info('OpenLDAP User API :: PUT ::', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.put(
         url,
