@@ -358,4 +358,4 @@ LOGGING = {
     }
 }
 
-SELENIUM_WEBDRIVER = webdriver.Chrome
+SELENIUM_WEBDRIVER = webdriver.Firefox

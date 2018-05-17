@@ -28,7 +28,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         Create a new project
         Before running this a funding source called test must be added to the database.
         """
-        self.sign_in()
+        self.sign_in( self.user )
         self.click_by_id("create-project-application-button")
 
         self.fill_form_by_id(self.default_project_form_fields)

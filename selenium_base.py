@@ -27,7 +27,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         element = Select(self.selenium.find_element_by_id(id))
         element.select_by_index(index)
 
-    def sign_in(self):
+    def sign_in(self, user):
         """
         Sign in as a preexisting test user
         """
@@ -35,7 +35,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.get_url("/accounts/external/login/")
 
         form_fields = {
-            "id_username": self.user_email,
+            "id_username": user.email,
             "id_password": self.user_password,
         }
         self.fill_form_by_id(form_fields)
@@ -51,25 +51,67 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
     def scroll_bottom(self):
         self.selenium.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
+    def create_test_user(self, user):
+        user.set_password(self.user_password)
+        user.save()
+        user.profile.account_status = user.profile.APPROVED
+        user.save()
+
     def tearDown(self):
         super(SeleniumTestsBase, self).tearDown()
         self.selenium.quit()
 
     def setUp(self):
-        # Create a user
-        self.user_email = "joe@swansea.ac.uk"
         self.user_password = "password"
         self.user = CustomUser(
-            username=self.user_email,
-            email=self.user_email,
-            first_name='Joe',
-            last_name='Bloggs',
+            username="user@swansea.ac.uk",
+            email="user@swansea.ac.uk",
+            first_name='User',
+            last_name='User',
+            is_staff=True,
             is_shibboleth_login_required=False,
         )
-        self.user.set_password(self.user_password)
-        self.user.save()
-        self.user.profile.account_status = self.user.profile.APPROVED
-        self.user.save()
+        self.create_test_user(self.user)
+
+        self.external = CustomUser(
+            username="external@gmail.com",
+            email="external@gmail.com",
+            first_name='External',
+            last_name='External',
+            is_shibboleth_login_required=False,
+        )
+        self.create_test_user(self.user)
+
+        self.student = CustomUser(
+            username="student@swansea.ac.uk",
+            email="student@swansea.ac.uk",
+            first_name='Student',
+            last_name='Student',
+            is_shibboleth_login_required=False,
+        )
+        self.create_test_user(self.student)
+
+        self.rse = CustomUser(
+            username="rse@swansea.ac.uk",
+            email="rse@swansea.ac.uk",
+            first_name='Rse',
+            last_name='Rse',
+            is_staff=True,
+            is_superuser=True,
+            is_shibboleth_login_required=False,
+        )
+        self.create_test_user(self.rse)
+
+        self.admin = CustomUser(
+            username="admin@swansea.ac.uk",
+            email="admin@swansea.ac.uk",
+            first_name='Admin',
+            last_name='Admin',
+            is_staff=True,
+            is_superuser=True,
+            is_shibboleth_login_required=False,
+        )
+        self.create_test_user(self.admin)
 
         # Setup selenium
         self.selenium = SELENIUM_WEBDRIVER()
