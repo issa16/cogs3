@@ -37,10 +37,10 @@ def create_project(code, category, title, technical_lead):
     Create a project.
 
     Args:
-            code (str): Project code (prefix_00001) - required
-            category (str): Project category [1,2,3,4,5] - required
-            title (str): Project title - required
-            technical_lead (str): Project technical lead (institution.username) - required
+        code (str): Project code (prefix_00001) - required
+        category (str): Project category [1,2,3,4,5] - required
+        title (str): Project title - required
+        technical_lead (str): Project technical lead (prefix.username) - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'project/'])
     logger.info('OpenLDAP Project API :: POST ::', url)
