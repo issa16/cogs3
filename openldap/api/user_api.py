@@ -17,6 +17,7 @@ def list_users():
     List all users.
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/'])
+    logger.info('Calling', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.get(
         url,
@@ -43,7 +44,35 @@ def create_user(email, title, first_name, surname, department, telephone, uid_nu
         telephone (str): telephone - optional
         uid_number (str): Override uidNumber/gidNumber - optional
     """
-    pass
+    url = ''.join([settings.OPENLDAP_HOST, 'user/'])
+    logger.info('Calling', url)
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cache-Control': 'no-cache',
+    }
+    payload = {
+        'email': email,
+        'title': title,
+        'firstName': first_name,
+        'surname': surname,
+    }
+    if department:
+        payload.update({'department': department})
+    if telephone:
+        payload.update({'telephone': telephone})
+    if uidNumber:
+        payload.update({'uid_number': uidNumber})
+    response = requests.post(
+        url,
+        headers=headers,
+        params=payload,
+        timeout=5,
+    )
+    response.raise_for_status()
+    response = decode_response(response)
+    # TODO - Pending implementation
+    #jsonschema.validate(response, schemas.create_user_schema)
+    return response
 
 
 @OpenLDAPException(logger)
@@ -55,6 +84,7 @@ def get_user_by_id(user_id):
         user_id (str): User id - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', user_id, '/'])
+    logger.info('Calling', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.get(
         url,
@@ -76,6 +106,7 @@ def test_get_user_by_email_address(email_address):
         email_address (str): Email address - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', email_address, '/'])
+    logger.info('Calling', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.get(
         url,
@@ -97,6 +128,7 @@ def delete_user(email_address):
         email_address (str): Email address - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', email_address, '/'])
+    logger.info('Calling', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.delete(
         url,
@@ -105,8 +137,8 @@ def delete_user(email_address):
     )
     response.raise_for_status()
     response = decode_response(response)
-    # Pending implementation
-    #jsonschema.validate(response, schemas.get_user_schema)
+    # TODO - Pending implementation
+    #jsonschema.validate(response, schemas.delete_user_schema)
     return response
 
 
@@ -119,6 +151,7 @@ def reset_user_password(email_address):
         email_address (str): Email address - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/resetPassword/', email_address, '/'])
+    logger.info('Calling', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.post(
         url,
@@ -127,6 +160,9 @@ def reset_user_password(email_address):
     )
     response.raise_for_status()
     response = decode_response(response)
+    # TODO - Pending implementation
+    #jsonschema.validate(response, schemas.reset_user_password_schema)
+    return response
 
 
 @OpenLDAPException(logger)
@@ -138,6 +174,7 @@ def enable_user_account(email_address):
         email_address (str): Email address - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/enable/', email_address, '/'])
+    logger.info('Calling', url)
     headers = {'Cache-Control': 'no-cache'}
     response = requests.put(
         url,
@@ -146,6 +183,6 @@ def enable_user_account(email_address):
     )
     response.raise_for_status()
     response = decode_response(response)
-    # Pending implementation
-    #jsonschema.validate(response, schemas.get_user_schema)
+    # TODO - Pending implementation
+    #jsonschema.validate(response, schemas.enable_user_account_schema)
     return response

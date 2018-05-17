@@ -7,7 +7,7 @@ from unittest import skip
 from django.conf import settings
 from django.test import TestCase
 
-from openldap import user_api
+from openldap.api import user_api
 
 
 class OpenLDAPUserAPITests(TestCase):
@@ -58,8 +58,16 @@ class OpenLDAPUserAPITests(TestCase):
         result = user_api.list_users()
         self.assertEqual(result, expected_response)
 
+    @skip("Pending implementation")
+    @mock.patch('requests.post')
+    def test_create_user_query(self, mock_get):
+        """
+        Create a User.
+        """
+        pass
+
     @mock.patch('requests.get')
-    def test_get_user_by_id(self, mock_get):
+    def test_get_user_by_id_query(self, mock_get):
         """
         Retrieve a user via their user id.
         """
@@ -113,7 +121,7 @@ class OpenLDAPUserAPITests(TestCase):
         self.assertEqual(result, expected_response)
 
     @mock.patch('requests.get')
-    def test_get_user_by_email_address(self, mock_get):
+    def test_get_user_by_email_address_query(self, mock_get):
         """
         Retrieve a user via their email address.
         """
@@ -168,7 +176,7 @@ class OpenLDAPUserAPITests(TestCase):
 
     @skip("Pending implementation")
     @mock.patch('requests.get')
-    def test_delete_user(self, mock_get):
+    def test_delete_user_query(self, mock_get):
         """
         Delete (deactivated) a user via the user's email address.
         """
@@ -176,7 +184,7 @@ class OpenLDAPUserAPITests(TestCase):
 
     @skip("Pending implementation")
     @mock.patch('requests.get')
-    def test_reset_user_password(self, mock_get):
+    def test_reset_user_password_query(self, mock_get):
         """
         Reset a user's password.
         """
@@ -184,7 +192,7 @@ class OpenLDAPUserAPITests(TestCase):
 
     @skip("Pending implementation")
     @mock.patch('requests.get')
-    def test_enable_user_account(self, mock_get):
+    def test_enable_user_account_query(self, mock_get):
         """
         Enable a user's account.
         """
@@ -196,6 +204,7 @@ class OpenLDAPUserAPITests(TestCase):
         """
         queries = [
             (user_api.list_users, None),
+            #(user_api.test_create_user, None),
             (user_api.get_user_by_id, 'x.joe.bloggs'),
             (user_api.test_get_user_by_email_address, 'joe.bloggs@bangor.ac.uk'),
             #(user_api.test_delete_user, 'joe.bloggs@bangor.ac.uk'),
