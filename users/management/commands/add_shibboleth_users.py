@@ -27,6 +27,8 @@ class Command(BaseCommand):
                         is_shibboleth_login_required=True,
                     )
                     if created:
+                        user.set_password(CustomUser.objects.make_random_password())
+                        user.save()
                         self.stdout.write(
                             self.style.SUCCESS('Successfully created user account: ' + row['institutional_address']))
                     else:
