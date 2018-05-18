@@ -36,7 +36,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         #Check that the project does not exist yet
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
-        print(matching_projects)
         assert matching_projects.count() == 0
 
         self.submit_form(self.default_project_form_fields)
@@ -46,8 +45,44 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         #Check that the project was created
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
-        print(matching_projects)
         assert matching_projects.count() == 1
+
+        #Check that the technical lead is the user
+        tech_lead_id = matching_projects.values_list('tech_lead', flat=True).get(pk=1)
+        user_id = self.user.id
+        assert tech_lead_id == user_id
+
+    def test_create_project_student(self):
+        """
+        Try to create a project as an external user
+        """
+        self.sign_in( self.student )
+        self.click_by_id("create-project-application-button")
+
+        self.fill_form_by_id(self.default_project_form_fields)
+        self.select_from_dropdown('id_funding_source', 1)
+
+        self.submit_form(self.default_project_form_fields)
+
+        assert "This field is required." not in self.selenium.page_source
+        assert "Successfully submitted a project application." not in self.selenium.page_source
+
+    def test_create_project_external(self):
+        """
+        Try to create a project as an external user
+        """
+        self.sign_in( self.external )
+        assert "Please enter a correct email and password" not in  self.selenium.page_source
+        self.click_by_id("create-project-application-button")
+
+        self.fill_form_by_id(self.default_project_form_fields)
+        self.select_from_dropdown('id_funding_source', 1)
+
+        self.submit_form(self.default_project_form_fields)
+
+        assert "This field is required." not in self.selenium.page_source
+        assert "Successfully submitted a project application." not in self.selenium.page_source
+
 
     def test_create_project_unauthorized(self):
         """
