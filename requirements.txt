@@ -12,7 +12,7 @@ Django==2.0.2
 django-classy-tags==0.8.0
 django-cookie-law==1.0.13
 django-extensions==2.0.5
-git+https://bitbucket.org/edbennett/django_hreflang.git
+django-hreflang==2.2
 django-rq==1.1.0
 git+https://github.com/Brown-University-Library/django-shibboleth-remoteuser.git
 django-widget-tweaks==1.4.1
