@@ -73,20 +73,37 @@
   python manage.py createsuperuser
   ```
 
-9. Run the unit tests.
+9. Install geckodriver.
+
+  macOS
+  ```sh
+  brew install geckodriver
+  ```
+
+  Linux
+
+  ```sh
+  wget https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz
+  tar -xzf geckodriver-v0.20.1-linux64.tar.gz
+  chmod +x geckodriver
+  sudo mv geckodriver /usr/local/bin
+  rm geckodriver-v0.20.1-linux64.tar.gz
+  ```
+
+10. Run the unit tests.
 
   ```sh
   python manage.py test -v 3
   ```
 
-10. Generate coverage report.
+11. Generate coverage report.
 
   ```sh
   coverage run manage.py test
   coverage html
   ```
 
-11. Install redis.
+12. Install redis.
 
   ```sh
   brew install redis
@@ -99,20 +116,20 @@
   sudo apt install redis-server
   ```
 
-12. Start the redis server.
+13. Start the redis server.
 
   ```sh
   redis-server &
   ```
 
-13. Test redis server is running.
+14. Test redis server is running.
 
    ```sh
    redis-cli ping
    >>> PONG
    ```
 
-14. Start the development server.
+15. Start the development server.
 
   ```sh
   python manage.py runserver

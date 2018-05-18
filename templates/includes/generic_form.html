@@ -25,7 +25,13 @@
                 {% render_field field class="form-control is-valid" %}
             {% endif %}
         {% else %}
-            {% render_field field class="form-control" %}
+            {% if field.field.widget.attrs.class %}
+               {% with "form-control "|add:field.field.widget.attrs.class as classnames %}
+                     {% render_field field class=classnames%}
+               {% endwith %}
+            {% else %}
+               {% render_field field class="form-control"%}
+            {% endif %}
         {% endif %}
         {% if field.help_text %}
             <small class="form-text text-muted">{{ field.help_text }}</small>

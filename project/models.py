@@ -64,7 +64,6 @@ class Project(models.Model):
     )
     code = models.CharField(
         max_length=20,
-        unique=True,
         verbose_name='Project code assigned by SCW',
     )
     institution = models.ForeignKey(
@@ -119,7 +118,7 @@ class Project(models.Model):
     allocation_cputime = models.PositiveIntegerField(verbose_name='CPU time allocation in hours')
     allocation_memory = models.PositiveIntegerField(verbose_name='RAM allocation in GB')
     allocation_storage_home = models.PositiveIntegerField(verbose_name='Home storage in GB')
-    allocation_storage_scartch = models.PositiveIntegerField(verbose_name='Scratch storage in GB')
+    allocation_storage_scratch = models.PositiveIntegerField(verbose_name='Scratch storage in GB')
     allocation_systems = models.ManyToManyField(
         System,
         through='ProjectSystemAllocation',

@@ -19,7 +19,7 @@
 					</div>
 				{% endif %}
 			</div>
-			<div class="col-md-4 col-sm-12 mb-3 pr-0">
+			<div class="col-md-4 col-sm-12 mb-3 pr-md-0">
 				<div class="row">
 					<div class="col">
 						<div class="card">
@@ -56,10 +56,12 @@
 						<b>Summary</b>
 					</div>
 					<ul class="list-group list-group-flush">
+						{% if perms.project.add_project %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="{% url 'project-user-membership-request-list' %}">Project User Requests</a>
 							<span class="badge badge-primary badge-pill float-right">{{ project_user_requests_count }}</span>
 						</li>
+						{% endif %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="{% url 'project-application-list' %}">Project Applications</a>
 						</li>
