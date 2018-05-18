@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-16 11:01+0000\n"
+"POT-Creation-Date: 2018-05-18 13:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,7 +108,7 @@ msgstr ""
 msgid "Institution project is based"
 msgstr ""
 
-#: project/models.py:78 templates/project/application_detail.html:46
+#: project/models.py:78
 msgid "Owning institution project reference"
 msgstr ""
 
@@ -177,15 +177,15 @@ msgstr ""
 msgid "CPU time allocation in hours"
 msgstr ""
 
-#: project/models.py:139
+#: project/models.py:139 templates/project/application_detail.html:86
 msgid "RAM allocation in GB"
 msgstr ""
 
-#: project/models.py:140
+#: project/models.py:140 templates/project/application_detail.html:90
 msgid "Home storage in GB"
 msgstr ""
 
-#: project/models.py:141
+#: project/models.py:141 templates/project/application_detail.html:94
 msgid "Scratch storage in GB"
 msgstr ""
 
@@ -295,12 +295,12 @@ msgstr ""
 #: templates/registration/login.html:23
 #: templates/registration/password_reset_done.html:18
 #: templates/registration/password_reset_form.html:22
-#: templates/registration/register.html:34
+#: templates/registration/register.html:35
 msgid "cogs3"
 msgstr ""
 
 #: templates/base.html:30 templates/registration/logged_out.html:7
-#: templates/registration/login.html:7
+#: templates/registration/login.html:7 templates/registration/register.html:7
 msgid "Supercomputing Wales"
 msgstr ""
 
@@ -351,17 +351,17 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
-#: templates/dashboard.html:61 templates/project/membership/requests.html:6
+#: templates/dashboard.html:62 templates/project/membership/requests.html:6
 #: templates/project/membership/requests.html:12
 msgid "Project User Requests"
 msgstr ""
 
-#: templates/dashboard.html:65 templates/project/applications.html:6
+#: templates/dashboard.html:67 templates/project/applications.html:6
 #: templates/project/applications.html:12
 msgid "Project Applications"
 msgstr ""
 
-#: templates/dashboard.html:68 templates/project/memberships.html:6
+#: templates/dashboard.html:70 templates/project/memberships.html:6
 #: templates/project/memberships.html:12
 msgid "Project Memberships"
 msgstr ""
@@ -392,8 +392,8 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: templates/project/application_detail.html:86
-msgid "Storage allocation in GB"
+#: templates/project/application_detail.html:46
+msgid "Institution project reference"
 msgstr ""
 
 #: templates/project/applications.html:30
@@ -570,4 +570,25 @@ msgstr ""
 #: templates/registration/password_reset_form.html:16
 #: templates/registration/password_reset_form.html:17
 msgid "Email address"
+msgstr ""
+
+#: templates/registration/register.html:12
+#: templates/registration/register.html:34
+msgid "Create a Supercomputing Wales account"
+msgstr ""
+
+#: templates/registration/register.html:15
+msgid "Identifier"
+msgstr ""
+
+#: templates/registration/register.html:19
+msgid "First name"
+msgstr ""
+
+#: templates/registration/register.html:23
+msgid "Last name"
+msgstr ""
+
+#: templates/registration/register.html:30
+msgid "I agree to the Terms and Conditions."
 msgstr ""
