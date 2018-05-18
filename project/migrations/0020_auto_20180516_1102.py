@@ -12,11 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='project',
-            old_name='allocation_storage_scartch',
-            new_name='allocation_storage_scratch',
-        ),
         migrations.AlterField(
             model_name='project',
             name='allocation_systems',

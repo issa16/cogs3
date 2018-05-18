@@ -37,6 +37,7 @@ PyYAML==3.12
 redis==2.10.6
 requests==2.18.4
 rq==0.10.0
+selenium==3.12.0
 six==1.11.0
 urllib3==1.22
 whitenoise==3.3.1
