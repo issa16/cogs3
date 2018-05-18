@@ -40,6 +40,8 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         }
         self.fill_form_by_id(form_fields)
         self.submit_form(form_fields)
+        # Check that we didn't get the fail response
+        assert "Please enter a correct email and password" not in  self.selenium.page_source
 
     def submit_form(self, form_fields):
         key = list(form_fields.keys())[0]
@@ -83,8 +85,8 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.create_test_user(self.user)
 
         self.student = CustomUser(
-            username="student@swansea.ac.uk",
-            email="student@swansea.ac.uk",
+            username="123456@swansea.ac.uk",
+            email="123456@swansea.ac.uk",
             first_name='Student',
             last_name='Student',
             is_shibboleth_login_required=False,
