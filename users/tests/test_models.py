@@ -48,10 +48,8 @@ class CustomUserTests(TestCase):
         Args:
             email (str): Email address.
         """
-        group = Group.objects.get(name='project_owner')
         return CustomUserTests.create_custom_user(
             email=email,
-            group=group,
             is_shibboleth_login_required=True,
         )
 
@@ -63,10 +61,8 @@ class CustomUserTests(TestCase):
         Args:
             email (str): Email address.
         """
-        group = Group.objects.get(name='project_owner')
         return CustomUserTests.create_custom_user(
             email=email,
-            group=group,
             is_shibboleth_login_required=False,
         )
 
@@ -76,7 +72,6 @@ class CustomUserTests(TestCase):
         self.assertEqual(user.get_full_name(), user.email)
         self.assertEqual(user.get_short_name(), user.email)
         self.assertEqual(user.username, user.email)
-        self.assertEqual(user.groups.get(), Group.objects.get(name='project_owner'))
 
     def test_shibboleth_user_creation(self):
         """

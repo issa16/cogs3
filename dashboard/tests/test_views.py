@@ -59,7 +59,6 @@ class DashboardViewTests(TestCase):
             **headers,
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context_data.get('project_user_requests_count'), 0)
 
         # Logout the user.
         response = self.client.get(reverse('logout'))
