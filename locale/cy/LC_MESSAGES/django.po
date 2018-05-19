@@ -1,0 +1,594 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-18 13:10+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != "
+"11) ? 2 : 3;\n"
+
+#: dashboard/views.py:21
+msgid ""
+"Your account is currently being configured. You should receive an email "
+"shortly with instructions on how to access the compute cluster."
+msgstr ""
+
+#: institutions_to_translate.py:1
+msgid "Swansea University"
+msgstr ""
+
+#: institutions_to_translate.py:2
+msgid "Bangor University"
+msgstr ""
+
+#: institutions_to_translate.py:3
+msgid "Cardiff University"
+msgstr ""
+
+#: institutions_to_translate.py:4
+msgid "Aberystwyth University"
+msgstr ""
+
+#: project/forms.py:23
+msgid "Project code must be unique."
+msgstr ""
+
+#: project/forms.py:61 project/models.py:74
+#: templates/project/application_detail.html:42
+#: templates/project/applications.html:32
+#: templates/project/memberships.html:32
+msgid "Institution"
+msgstr ""
+
+#: project/forms.py:76
+msgid "You are currently a member of the project."
+msgstr ""
+
+#: project/forms.py:78
+msgid "The project is currently awaiting approval."
+msgstr ""
+
+#: project/forms.py:80
+msgid "A membership request for this project already exists."
+msgstr ""
+
+#: project/forms.py:82
+msgid "Invalid Project Code."
+msgstr ""
+
+#: project/models.py:24
+msgid "Project Categories"
+msgstr ""
+
+#: project/models.py:41
+msgid "Project Funding Sources"
+msgstr ""
+
+#: project/models.py:48
+msgid "Project Title"
+msgstr ""
+
+#: project/models.py:52
+msgid "Project Description"
+msgstr ""
+
+#: project/models.py:57 templates/project/application_detail.html:34
+msgid "Legacy HPC Wales ID"
+msgstr ""
+
+#: project/models.py:58
+msgid "Project legacy ID from HPC Wales"
+msgstr ""
+
+#: project/models.py:63 templates/project/application_detail.html:38
+msgid "Legacy ARCCA ID"
+msgstr ""
+
+#: project/models.py:64
+msgid "Project legacy ID ARCCA"
+msgstr ""
+
+#: project/models.py:68
+msgid "Project code assigned by SCW"
+msgstr ""
+
+#: project/models.py:73
+msgid "Institution project is based"
+msgstr ""
+
+#: project/models.py:78
+msgid "Owning institution project reference"
+msgstr ""
+
+#: project/models.py:83
+msgid "Department"
+msgstr ""
+
+#: project/models.py:87 templates/project/application_detail.html:50
+#: templates/project/memberships.html:33
+msgid "Principal Investigator"
+msgstr ""
+
+#: project/models.py:93
+msgid "Technical Lead"
+msgstr ""
+
+#: project/models.py:99
+msgid "Category"
+msgstr ""
+
+#: project/models.py:104 templates/project/application_detail.html:54
+msgid "Funding source"
+msgstr ""
+
+#: project/models.py:107 templates/project/application_detail.html:58
+msgid "Start date"
+msgstr ""
+
+#: project/models.py:110 templates/project/application_detail.html:62
+msgid "End date"
+msgstr ""
+
+#: project/models.py:114
+msgid "Economic user"
+msgstr ""
+
+#: project/models.py:118
+msgid "Software name and versions"
+msgstr ""
+
+#: project/models.py:119 templates/project/application_detail.html:66
+msgid "Requirements software"
+msgstr ""
+
+#: project/models.py:123
+msgid "Web gateway or portal name and versions"
+msgstr ""
+
+#: project/models.py:124 templates/project/application_detail.html:70
+msgid "Requirements gateways"
+msgstr ""
+
+#: project/models.py:128 templates/project/application_detail.html:74
+msgid "Requirements training"
+msgstr ""
+
+#: project/models.py:132 templates/project/application_detail.html:78
+msgid "Requirements onboarding"
+msgstr ""
+
+#: project/models.py:136
+msgid "RSE available to?"
+msgstr ""
+
+#: project/models.py:138 templates/project/application_detail.html:82
+msgid "CPU time allocation in hours"
+msgstr ""
+
+#: project/models.py:139 templates/project/application_detail.html:86
+msgid "RAM allocation in GB"
+msgstr ""
+
+#: project/models.py:140 templates/project/application_detail.html:90
+msgid "Home storage in GB"
+msgstr ""
+
+#: project/models.py:141 templates/project/application_detail.html:94
+msgid "Scratch storage in GB"
+msgstr ""
+
+#: project/models.py:145
+msgid "Allocation systems"
+msgstr ""
+
+#: project/models.py:150
+msgid "Members"
+msgstr ""
+
+#: project/models.py:159
+msgid "Awaiting Approval"
+msgstr ""
+
+#: project/models.py:160
+msgid "Approved"
+msgstr ""
+
+#: project/models.py:161 project/models.py:255
+msgid "Declined"
+msgstr ""
+
+#: project/models.py:162 project/models.py:256
+msgid "Revoked"
+msgstr ""
+
+#: project/models.py:163 project/models.py:257
+msgid "Suspended"
+msgstr ""
+
+#: project/models.py:164
+msgid "Closed"
+msgstr ""
+
+#: project/models.py:169 templates/project/application_detail.html:30
+#: templates/project/membership/requests.html:32
+msgid "Status"
+msgstr ""
+
+#: project/models.py:174
+msgid "Reason for the project status decision:"
+msgstr ""
+
+#: project/models.py:175
+msgid ""
+"The reason will be emailed to the project's technical lead upon project "
+"status update."
+msgstr ""
+
+#: project/models.py:180
+msgid "Internal project notes"
+msgstr ""
+
+#: project/models.py:181
+msgid "Notes"
+msgstr ""
+
+#: project/models.py:183
+msgid "Created time"
+msgstr ""
+
+#: project/models.py:184
+msgid "Modified time"
+msgstr ""
+
+#: project/models.py:197
+msgid "Projects"
+msgstr ""
+
+#: project/models.py:221
+#, python-brace-format
+msgid "{project} on {system} from {date_allocated} to {date_unallocated}"
+msgstr ""
+
+#: project/models.py:224
+msgid "Project System Allocations"
+msgstr ""
+
+#: project/models.py:253
+msgid "Awaiting Authorisation"
+msgstr ""
+
+#: project/models.py:254
+msgid "Authorised"
+msgstr ""
+
+#: project/models.py:291
+#, python-brace-format
+msgid "{user} on {project} from {date_joined} to {date_left}"
+msgstr ""
+
+#: project/models.py:294
+msgid "Project User Memberships"
+msgstr ""
+
+#: project/views.py:24
+msgid "Successfully submitted a project application."
+msgstr ""
+
+#: project/views.py:65
+msgid "Successfully submitted a project membership request."
+msgstr ""
+
+#: templates/base.html:14 templates/base.html:31
+#: templates/registration/logged_out.html:12
+#: templates/registration/login.html:23
+#: templates/registration/password_reset_done.html:18
+#: templates/registration/password_reset_form.html:22
+#: templates/registration/register.html:35
+msgid "cogs3"
+msgstr ""
+
+#: templates/base.html:30 templates/registration/logged_out.html:7
+#: templates/registration/login.html:7 templates/registration/register.html:7
+msgid "Supercomputing Wales"
+msgstr ""
+
+#: templates/base.html:48 templates/dashboard.html:4
+#: templates/dashboard.html:10
+msgid "Dashboard"
+msgstr ""
+
+#: templates/base.html:51
+msgid "Logout"
+msgstr ""
+
+#: templates/cookielaw/banner.html:3
+msgid ""
+"This website uses cookies. By continuing to use this website, you are giving "
+"constent to cookies being used."
+msgstr ""
+
+#: templates/cookielaw/banner.html:4
+msgid "Okay, thanks."
+msgstr ""
+
+#: templates/dashboard.html:11
+msgid "Create Project Application"
+msgstr ""
+
+#: templates/dashboard.html:28 templates/project/membership/create.html:6
+#: templates/project/membership/create.html:12
+msgid "Join a project"
+msgstr ""
+
+#: templates/dashboard.html:40
+msgid "Quick links"
+msgstr ""
+
+#: templates/dashboard.html:44
+msgid "Access SCW Cluster"
+msgstr ""
+
+#: templates/dashboard.html:47
+#: templates/registration/password_reset_done.html:8
+#: templates/registration/password_reset_form.html:10
+#: templates/registration/password_reset_form.html:18
+msgid "Reset Password"
+msgstr ""
+
+#: templates/dashboard.html:57
+msgid "Summary"
+msgstr ""
+
+#: templates/dashboard.html:62 templates/project/membership/requests.html:6
+#: templates/project/membership/requests.html:12
+msgid "Project User Requests"
+msgstr ""
+
+#: templates/dashboard.html:67 templates/project/applications.html:6
+#: templates/project/applications.html:12
+msgid "Project Applications"
+msgstr ""
+
+#: templates/dashboard.html:70 templates/project/memberships.html:6
+#: templates/project/memberships.html:12
+msgid "Project Memberships"
+msgstr ""
+
+#: templates/includes/messages.html:5
+msgid "Close"
+msgstr ""
+
+#: templates/includes/pagination.html:7 templates/includes/pagination.html:11
+msgid "Previous"
+msgstr ""
+
+#: templates/includes/pagination.html:27 templates/includes/pagination.html:31
+msgid "Next"
+msgstr ""
+
+#: templates/project/application_detail.html:6
+msgid "Project details"
+msgstr ""
+
+#: templates/project/application_detail.html:22
+#: templates/project/applications.html:31
+#: templates/project/memberships.html:31
+msgid "Title"
+msgstr ""
+
+#: templates/project/application_detail.html:26
+msgid "Description"
+msgstr ""
+
+#: templates/project/application_detail.html:46
+msgid "Institution project reference"
+msgstr ""
+
+#: templates/project/applications.html:30
+#: templates/project/membership/form.html:6
+#: templates/project/memberships.html:30
+msgid "Project Code"
+msgstr ""
+
+#: templates/project/applications.html:33
+msgid "Application Status"
+msgstr ""
+
+#: templates/project/applications.html:41
+#, python-format
+msgid "%(institution)s"
+msgstr ""
+
+#: templates/project/membership/form.html:8
+msgid "Join"
+msgstr ""
+
+#: templates/project/membership/requests.html:29
+msgid "Project"
+msgstr ""
+
+#: templates/project/membership/requests.html:30
+msgid "User"
+msgstr ""
+
+#: templates/project/membership/requests.html:31
+msgid "Issued"
+msgstr ""
+
+#: templates/project/membership/requests.html:45
+#: templates/project/membership/requests.html:51
+msgid "Authorise"
+msgstr ""
+
+#: templates/project/membership/requests.html:46
+msgid "Decline"
+msgstr ""
+
+#: templates/project/membership/requests.html:48
+msgid "Revoke"
+msgstr ""
+
+#: templates/project/membership/requests.html:49
+msgid "Suspend"
+msgstr ""
+
+#: templates/project/memberships.html:34
+msgid "Membership Status"
+msgstr ""
+
+#: templates/project/memberships.html:46
+msgid "Project Owner"
+msgstr ""
+
+#: templates/registration/educational_login.html:7
+#: templates/registration/external_login.html:7
+msgid "Educational Institution"
+msgstr ""
+
+#: templates/registration/educational_login.html:10
+#: templates/registration/external_login.html:10
+msgid "External Collaborators"
+msgstr ""
+
+#: templates/registration/educational_login.html:13
+msgid "Which institution would you like to sign in with?"
+msgstr ""
+
+#: templates/registration/educational_login.html:18
+msgid "{{institution}}"
+msgstr ""
+
+#: templates/registration/external_login.html:15
+msgid "External Collaborators Login"
+msgstr ""
+
+#: templates/registration/external_login.html:18
+msgid "Forgotten Password?"
+msgstr ""
+
+#: templates/registration/external_login.html:20
+msgid "Login"
+msgstr ""
+
+#: templates/registration/logged_out.html:10
+msgid "To log out please do the following:"
+msgstr ""
+
+#: templates/registration/logged_out.html:11
+msgid "Close this web browser (including all tabs and windows)."
+msgstr ""
+
+#: templates/registration/login.html:11
+msgid "Service Status"
+msgstr ""
+
+#: templates/registration/login.html:11
+msgid "Beta Testing"
+msgstr ""
+
+#: templates/registration/login.html:16
+msgid ""
+"You must close this web browser (including all tabs and windows) before "
+"logging in."
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:8
+msgid "Password Reset"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:10
+msgid "Your password has been changed."
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:13
+#: templates/registration/password_reset_done.html:16
+#: templates/registration/password_reset_form.html:20
+msgid "Back to login page"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:11
+msgid "Create a new password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:20
+msgid "Please enter (and confirm) your new password."
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:23
+msgid "New Password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:25
+msgid "Confirm Password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:26
+msgid "Change Password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:32
+msgid "Password reset failed"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:34
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used."
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:37
+msgid "Please request a new password reset."
+msgstr ""
+
+#: templates/registration/password_reset_done.html:10
+msgid "We've emailed you instructions for setting your password."
+msgstr ""
+
+#: templates/registration/password_reset_done.html:13
+msgid "If they haven't arrived in a few minutes, check your spam folder."
+msgstr ""
+
+#: templates/registration/password_reset_email.html:2
+#, python-format
+msgid ""
+"Someone asked for password reset for email %(email)s. Follow\n"
+"the link below:"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:16
+#: templates/registration/password_reset_form.html:17
+msgid "Email address"
+msgstr ""
+
+#: templates/registration/register.html:12
+#: templates/registration/register.html:34
+msgid "Create a Supercomputing Wales account"
+msgstr ""
+
+#: templates/registration/register.html:15
+msgid "Identifier"
+msgstr ""
+
+#: templates/registration/register.html:19
+msgid "First name"
+msgstr ""
+
+#: templates/registration/register.html:23
+msgid "Last name"
+msgstr ""
+
+#: templates/registration/register.html:30
+msgid "I agree to the Terms and Conditions."
+msgstr ""

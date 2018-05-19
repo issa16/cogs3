@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic.edit import FormView
+from django.utils.translation import gettext_lazy as _
 
 from .forms import ProjectCreationForm
 from .forms import ProjectUserMembershipCreationForm
@@ -20,7 +21,7 @@ from .models import ProjectUserMembership
 class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     form_class = ProjectCreationForm
     success_url = reverse_lazy('project-application-list')
-    success_message = "Successfully submitted a project application."
+    success_message = _("Successfully submitted a project application.")
     template_name = 'project/create.html'
 
     def form_valid(self, form):
@@ -61,7 +62,7 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
 class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, FormView):
     form_class = ProjectUserMembershipCreationForm
     success_url = reverse_lazy('project-membership-list')
-    success_message = "Successfully submitted a project membership request."
+    success_message = _("Successfully submitted a project membership request.")
     template_name = 'project/membership/create.html'
 
     def get_initial(self):
