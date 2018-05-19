@@ -1,9 +1,12 @@
+from unittest import skip
+
 from project.models import ProjectFundingSource
 from selenium_base import SeleniumTestsBase
 
 
 class ProjectIntegrationTests(SeleniumTestsBase):
 
+    @skip('Pending merge of intergration_tests branch')
     def test_create_project(self):
         """
         Create a new project

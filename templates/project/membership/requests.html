@@ -1,14 +1,15 @@
 <!-- templates/project/membership/requests.html -->
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 {% load widget_tweaks %}
-{% block title %}Project User Requests{% endblock %}
+{% block title %}{% trans "Project User Requests" %}{% endblock %}
 {% block content %}
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>Project User Requests</h4>
+					<h4>{% trans "Project User Requests" %}</h4>
 				</div>
 			</div>
 		</div>
@@ -25,10 +26,10 @@
 		<table class="table table-bordered">
 			<thead class="thead-light">
 				<tr>
-					<th scope="col">Project</th>
-					<th scope="col">User</th>
-					<th scope="col">Issued</th>
-					<th scope="col">Status</th>
+					<th scope="col">{% trans "Project" %}</th>
+					<th scope="col">{% trans "User" %}</th>
+					<th scope="col">{% trans "Issued" %}</th>
+					<th scope="col">{% trans "Status" %}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -41,13 +42,13 @@
 							<select class="membership-status form-control form-control-sm">
 								<option value="0" selected>{{project_request.get_status_display}}</option>
 								{% if project_request.awaiting_authorisation %}
-									<option value="{{project_request.AUTHORISED}}">Authorise</option>
-									<option value="{{project_request.DECLINED}}">Decline</option>
+									<option value="{{project_request.AUTHORISED}}">{% trans "Authorise" %}</option>
+									<option value="{{project_request.DECLINED}}">{% trans "Decline" %}</option>
 								{% elif project_request.authorised %}
-									<option value="{{project_request.REVOKED}}">Revoke</option>
-									<option value="{{project_request.SUSPENDED}}">Suspend</option>
+									<option value="{{project_request.REVOKED}}">{% trans "Revoke" %}</option>
+									<option value="{{project_request.SUSPENDED}}">{% trans "Suspend" %}</option>
 								{% elif project_request.unauthorised %}
-									<option value="{{project_request.AUTHORISED}}">Authorise</option>
+									<option value="{{project_request.AUTHORISED}}">{% trans "Authorise" %}</option>
 								{% endif %}
 							</select>
 							<input name="request" type="hidden" value="{{project_request.id}}">

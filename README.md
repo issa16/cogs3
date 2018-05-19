@@ -61,10 +61,11 @@
   python manage.py migrate
   ```
 
-7. Load institution data into the database, default institution data is available in fixtures.
+7. Load data fixtures into the database.
 
   ```sh
   python manage.py loaddata institutions.yaml
+  python manage.py loaddata systems.yaml
   ```
 
 8. Create an admin user.
