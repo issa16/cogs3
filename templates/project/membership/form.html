@@ -1,10 +1,11 @@
 <!-- templates/project/membership/form.html -->
+{% load i18n %}
 <form method="post" action="{% url 'project-membership-create' %}" novalidate>
 	{% csrf_token %}
 	<div class="input-group">
-		<input type="text" class="form-control" name="project_code" id="project_code" placeholder="Project Code">
+		<input type="text" class="form-control" name="project_code" id="project_code" placeholder="{% trans "Project Code" %}">
 		<div class="input-group-append">
-			<button type="submit" class="btn btn-primary">Join</button>
+			<button type="submit" class="btn btn-primary">{% trans "Join" %}</button>
 		</div>
 	</div>
 </form>
