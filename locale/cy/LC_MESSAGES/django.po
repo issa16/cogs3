@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-18 13:10+0000\n"
+"POT-Creation-Date: 2018-05-19 11:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,8 +47,7 @@ msgstr ""
 
 #: project/forms.py:61 project/models.py:74
 #: templates/project/application_detail.html:42
-#: templates/project/applications.html:32
-#: templates/project/memberships.html:32
+#: templates/project/applications.html:32 templates/project/memberships.html:32
 msgid "Institution"
 msgstr ""
 
@@ -383,8 +382,7 @@ msgid "Project details"
 msgstr ""
 
 #: templates/project/application_detail.html:22
-#: templates/project/applications.html:31
-#: templates/project/memberships.html:31
+#: templates/project/applications.html:31 templates/project/memberships.html:31
 msgid "Title"
 msgstr ""
 

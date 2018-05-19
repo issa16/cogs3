@@ -132,13 +132,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 LANGUAGE_CODE = 'en-gb'
-LOCALE_PATHS = (
-    'locale',
-)
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.template.context_processors.i18n',
-)
-
+LOCALE_PATHS = ('locale', )
+TEMPLATE_CONTEXT_PROCESSORS = ('django.template.context_processors.i18n', )
 
 TIME_ZONE = 'UTC'
 
