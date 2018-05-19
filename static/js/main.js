@@ -6,19 +6,19 @@ $(document).ready(function() {
 
 	// Handle user membership request update
 	$(".membership-status").change(function() {
-		var request = $(this).nextAll("input[name='request']").first().val();
-		var project = $(this).nextAll("input[name='project']").first().val();
-		var status = $(this).val();
+		var request_id = $(this).nextAll("input[name='request']").first().val();
+		var project_id = $(this).nextAll("input[name='project']").first().val();
+		var status_id = $(this).val();
 		var csrf_token = $("#csrf_token").val();
 		var data = {
-			"request_id": request,
-			"project_id": project,
-			"status": status,
+			"request_id": request_id,
+			"project_id": project_id,
+			"status": status_id,
 			"csrfmiddlewaretoken": csrf_token
 		};
 		$.ajax({
 			type: "POST",
-			url: "/projects/memberships/user-requests/update/" + request + "/",
+			url: $(location).attr('href') + "update/" + request_id + "/",
 			data: data,
 			dataType: "json",
 			success: function() {
