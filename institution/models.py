@@ -2,6 +2,7 @@ from django.db import models
 
 from institution.exceptions import InvalidIndentityProvider
 from institution.exceptions import InvalidInstitution
+from django.utils.translation import gettext as _
 
 
 class Institution(models.Model):
@@ -32,7 +33,7 @@ class Institution(models.Model):
             return True
 
     def __str__(self):
-        return self.name
+        return _(self.name)
 
     class Meta:
         ordering = ('name', )

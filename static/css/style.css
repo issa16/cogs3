@@ -26,6 +26,11 @@ main {
     color: rgba(255, 255, 255, 1);
 }
 
+.language-select {
+    float: right;
+    margin-right: 24px;
+}
+
 .form-logo {
     max-width: 440px;
 }

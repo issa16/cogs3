@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils.translation import activate
 
 from institution.tests.test_models import InstitutionTests
 from users.forms import CustomUserCreationForm
@@ -60,6 +61,7 @@ class CustomUserCreationFormTests(TestCase):
         Ensure a CustomUser instance can not be created without the required form fields.
         """
         form = CustomUserCreationForm(data={})
+        activate('en')
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['email'], ['This field is required.'])
         self.assertEqual(form.errors['first_name'], ['This field is required.'])

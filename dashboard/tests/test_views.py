@@ -25,7 +25,7 @@ class DashboardViewTests(TestCase):
             **headers,
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/accounts/login/?next=/')
+        self.assertEqual(response.url, '/en-gb/accounts/login/?next=/en-gb/')
 
     def test_view_as_an_authorised_shibboleth_user_and_an_unregistered_application_user(self):
         """
