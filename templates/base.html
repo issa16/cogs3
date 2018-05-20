@@ -54,7 +54,6 @@
 					</div>
 				</div>
 			</nav>
-
 		{% else %}
 			<nav class="language-select">
 				<ul class="navbar-nav ml-auto">
@@ -69,20 +68,20 @@
 					{% endif %}
 				</ul>
 			</nav>
-			{% endif %}
-			<main class="container">
-				{% block content %}
-				{% endblock %}
-			</main>
-			<footer class="fixed-bottom">
-				{% cookielaw_banner %}
-			</footer>
-			<script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
-			<script src="{% static "js/jquery-ui.min.js" %}"></script>
-			<script src="{% static "js/bootstrap.min.js" %}"></script>
-			<script src="{% static "cookielaw/js/cookielaw.js" %}"></script>
-			<script src="{% static "js/main.js" %}"></script>
-			{% block custom_js %}
+		{% endif %}
+		<main class="container">
+			{% block content %}
 			{% endblock %}
-		</body>
-	</html>
+		</main>
+		<footer class="fixed-bottom">
+			{% cookielaw_banner %}
+		</footer>
+		<script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
+		<script src="{% static "js/jquery-ui.min.js" %}"></script>
+		<script src="{% static "js/bootstrap.min.js" %}"></script>
+		<script src="{% static "cookielaw/js/cookielaw.js" %}"></script>
+		<script src="{% static "js/main.js" %}"></script>
+		{% block custom_js %}
+		{% endblock %}
+	</body>
+</html>
