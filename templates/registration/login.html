@@ -3,16 +3,16 @@
 {% load i18n %}
 {% load static %}
 {% block content %}
-    <div class="form-logo mx-auto mt-4">
+    <div class="form-logo mx-auto mt-3">
         <img class="img-fluid" src="{% static "img/scw.png" %}" alt="{% trans "Supercomputing Wales" %}">
     </div>
-    <div class="mx-auto mt-4 form-signin">
+    <div class="mx-auto mt-3 form-signin">
         <div class="alert alert-success" role="alert">
             {% trans "Service Status" %}: {% trans "Beta Testing" %}.
         </div>
         {% block form_content %}
             {% if request.session.shib_force_reauth %}
-                <div class="mx-auto mt-4">
+                <div class="mx-auto mt-3">
                     <p>{% trans "You must close this web browser (including all tabs and windows) before logging in." %}</p>
                 </div>
             {% else %}
