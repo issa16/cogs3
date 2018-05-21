@@ -95,7 +95,6 @@ class ProjectUserMembershipCreationForm(forms.Form):
         try:
             project = Project.objects.get(
                 Q(code=project_code) | Q(legacy_hpcw_id=project_code) | Q(legacy_arcca_id=project_code))
-            print(project)
             user = self.initial.get('user', None)
             # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:
