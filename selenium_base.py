@@ -23,8 +23,12 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             element = self.selenium.find_element_by_id(field)
             element.send_keys(value)
 
-    def select_from_dropdown(self, id, index):
+    def select_from_dropdown_by_id(self, id, index):
         element = Select(self.selenium.find_element_by_id(id))
+        element.select_by_index(index)
+
+    def select_from_first_dropdown(self, index):
+        element = Select(self.selenium.find_element_by_xpath("//select[1]"))
         element.select_by_index(index)
 
     def sign_in(self, user):

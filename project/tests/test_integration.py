@@ -32,21 +32,19 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         # Fill the project form with a field missing
         for missing_field in ['id_title','id_description','id_institution']:
-            self.get_url("")
-            self.click_by_id("create-project-application-button")
+            self.get_url("/projects/create/")
             form_field = dict(self.default_project_form_fields)
             form_field.pop(missing_field)
             self.fill_form_by_id(form_field)
-            self.select_from_dropdown('id_funding_source', 1)
+            self.select_from_dropdown_by_id('id_funding_source', 1)
             self.submit_form(self.default_project_form_fields)
             assert "This field is required." in self.selenium.page_source
 
-        self.get_url("")
-        self.click_by_id("create-project-application-button")
+        self.get_url("/projects/create/")
 
         # Correctly fill the form
         self.fill_form_by_id(self.default_project_form_fields)
-        self.select_from_dropdown('id_funding_source', 1)
+        self.select_from_dropdown_by_id('id_funding_source', 1)
 
         # Check that the project does not exist yet
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
@@ -72,10 +70,10 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         Try to create a project as an external user
         """
         self.sign_in( self.student )
-        self.click_by_id("create-project-application-button")
+        self.get_url("/projects/create/")
 
         self.fill_form_by_id(self.default_project_form_fields)
-        self.select_from_dropdown('id_funding_source', 1)
+        self.select_from_dropdown_by_id('id_funding_source', 1)
 
         self.submit_form(self.default_project_form_fields)
 
@@ -87,10 +85,10 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         Try to create a project as an external user
         """
         self.sign_in( self.external )
-        self.click_by_id("create-project-application-button")
+        self.get_url("/projects/create/")
 
         self.fill_form_by_id(self.default_project_form_fields)
-        self.select_from_dropdown('id_funding_source', 1)
+        self.select_from_dropdown_by_id('id_funding_source', 1)
 
         self.submit_form(self.default_project_form_fields)
 
