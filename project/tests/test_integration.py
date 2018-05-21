@@ -75,6 +75,19 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         project.code = 'code1'
         project.save()
 
+        #Try the Project Applications and Project Memberships pages
+        self.get_url("/projects/applications/")
+        assert 'code1' in self.selenium.page_source
+        assert self.default_project_form_fields["id_title"] in self.selenium.page_source
+
+        self.get_url("/projects/applications/1/")
+        assert self.default_project_form_fields["id_description"] in self.selenium.page_source
+
+        self.get_url("/projects/memberships/")
+        assert 'code1' in self.selenium.page_source
+        assert self.default_project_form_fields["id_title"] in self.selenium.page_source
+        assert 'Project Owner' in self.selenium.page_source
+
         # Login with a different user (student) and add the project
         self.log_out()
         self.sign_in(self.student)
