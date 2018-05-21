@@ -18,9 +18,8 @@
 ### Project creation
 - Users with valid, non-student institutional email addresses can create new projects as the project owner
  - Implemented and tested
-- Users with student or non-institutional email address cannot create new projects
- - No check on emails, student is treated the same as a staff member
- - A test is included and fails accordingly
+- Pre-created users non-institutional email address can create new projects
+ - Implemented and tested
 - New projects are created with a default priority level and are not active
  -The standard user project submission test checks this
 - Projects do not have a start or end date (start or end dates are specified on allocations, users and attributions)

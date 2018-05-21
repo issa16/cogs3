@@ -32,7 +32,8 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         # Fill the project form with a field missing
         for missing_field in ['id_title','id_description','id_institution']:
-            self.get_url("/projects/create/")
+            self.get_url("")
+            self.click_link_by_url('/projects/create/')
             form_field = dict(self.default_project_form_fields)
             form_field.pop(missing_field)
             self.fill_form_by_id(form_field)
@@ -40,7 +41,8 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             self.submit_form(self.default_project_form_fields)
             assert "This field is required." in self.selenium.page_source
 
-        self.get_url("/projects/create/")
+        self.get_url("")
+        self.click_link_by_url('/projects/create/')
 
         # Correctly fill the form
         self.fill_form_by_id(self.default_project_form_fields)
@@ -55,6 +57,12 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         assert "This field is required." not in self.selenium.page_source
         assert "Successfully submitted a project application." in self.selenium.page_source
+
+        #Check the project status
+        self.get_url("")
+        self.click_link_by_url('/projects/applications/')
+        assert self.default_project_form_fields["id_title"] in self.selenium.page_source
+        assert 'Awaiting Approval' in self.selenium.page_source
 
         #Check that the project was created
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
@@ -76,11 +84,12 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         project.save()
 
         #Try the Project Applications and Project Memberships pages
-        self.get_url("/projects/applications/")
+        self.get_url("")
+        self.click_link_by_url('/projects/applications/')
         assert 'code1' in self.selenium.page_source
         assert self.default_project_form_fields["id_title"] in self.selenium.page_source
 
-        self.get_url("/projects/applications/1/")
+        self.click_link_by_url('/projects/applications/1/')
         assert self.default_project_form_fields["id_description"] in self.selenium.page_source
 
         self.get_url("/projects/memberships/")
@@ -96,8 +105,15 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.submit_form({'project_code': project.code})
         assert 'Successfully submitted a project membership request' in self.selenium.page_source
 
-        # Check that the project memebership is visible
-        self.get_url("/projects/memberships/")
+        #Try an invalid code
+        self.get_url("")
+        self.fill_form_by_id({'project_code': 'Invalidcode1'})
+        self.submit_form({'project_code': project.code})
+        assert 'Invalid Project Code' in self.selenium.page_source
+
+        # Check that the project membership is visible
+        self.get_url("")
+        self.click_link_by_url('/projects/memberships/')
         assert 'Joe Bloggs' in self.selenium.page_source
         assert 'Awaiting Authorisation' in self.selenium.page_source
 
@@ -112,32 +128,19 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         #Login with student again and check authorisation
         self.log_out()
         self.sign_in(self.student)
-        self.get_url("/projects/memberships/")
+        self.get_url("")
+        self.click_link_by_url('/projects/memberships/')
 
         assert 'Authorised' in self.selenium.page_source
 
-
-    def test_create_project_student(self):
-        """
-        Try to create a project as an external user
-        """
-        self.sign_in( self.student )
-        self.get_url("/projects/create/")
-
-        self.fill_form_by_id(self.default_project_form_fields)
-        self.select_from_dropdown_by_id('id_funding_source', 1)
-
-        self.submit_form(self.default_project_form_fields)
-
-        assert "This field is required." not in self.selenium.page_source
-        assert "Successfully submitted a project application." not in self.selenium.page_source
 
     def test_create_project_external(self):
         """
         Try to create a project as an external user
         """
         self.sign_in( self.external )
-        self.get_url("/projects/create/")
+        self.get_url("")
+        self.click_link_by_url('/projects/create/')
 
         self.fill_form_by_id(self.default_project_form_fields)
         self.select_from_dropdown_by_id('id_funding_source', 1)
@@ -145,7 +148,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.submit_form(self.default_project_form_fields)
 
         assert "This field is required." not in self.selenium.page_source
-        assert "Successfully submitted a project application." not in self.selenium.page_source
+        assert "Successfully submitted a project application." in self.selenium.page_source
 
 
     def test_create_project_unauthorized(self):

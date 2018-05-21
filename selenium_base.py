@@ -18,6 +18,10 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
     def get_url(self, url):
         self.selenium.get(self.live_server_url + url)
 
+    def click_link_by_url(self, url):
+        link = self.selenium.find_element_by_css_selector('a[href*="'+url+'"]')
+        link.click()
+
     def fill_form_by_id(self, fields):
         for field, value in fields.items():
             element = self.selenium.find_element_by_id(field)
@@ -91,7 +95,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             last_name='External',
             is_shibboleth_login_required=False,
         )
-        self.create_test_user(self.user)
+        self.create_test_user(self.external)
 
         self.student = CustomUser(
             username="123456@swansea.ac.uk",
