@@ -1,14 +1,15 @@
 <!-- templates/project/application_detail.html -->
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 {% load widget_tweaks %}
-{% block title %}Project details{% endblock %}
+{% block title %}{% trans "Project details" %}{% endblock %}
 {% block content %}
-	<div class="my-3 p-3 bg-white rounded box-shadow">
+	<div class="my-3 px-3 pt-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>{{project.title}}</h4>
+					<h4>Project: {{project.title}}</h4>
 				</div>
 			</div>
 		</div>
@@ -18,72 +19,80 @@
 					<table class="table table-bordered">
 						<tbody>
 							<tr>
-								<th scope="row">Title</th>
-								<td>{{project.title}}</td>
+								<th scope="row" style="width:25%">{% trans "Title" %}</th>
+								<td style="width:75%">{{project.title}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Description</th>
+								<th scope="row">{% trans "Description" %}</th>
 								<td>{{project.description}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Status</th>
+								<th scope="row">{% trans "Status" %}</th>
 								<td>{{project.get_status_display}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Legacy HPC Wales ID</th>
+								<th scope="row">{% trans "Legacy HPC Wales ID" %}</th>
 								<td>{{project.legacy_hpcw_id}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Legacy ARCCA ID</th>
+								<th scope="row">{% trans "Legacy ARCCA ID" %}</th>
 								<td>{{project.legacy_arcca_id}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Institution</th>
+								<th scope="row">{% trans "Institution" %}</th>
 								<td>{{project.institution}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Owning institution project reference</th>
+								<th scope="row">{% trans "Institution project reference" %}</th>
 								<td>{{project.institution_reference}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Principal Investigator</th>
+								<th scope="row">{% trans "Principal Investigator" %}</th>
 								<td>{{project.pi}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Funding source</th>
+								<th scope="row">{% trans "Funding source" %}</th>
 								<td>{{project.funding_source}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Start date</th>
+								<th scope="row">{% trans "Start date" %}</th>
 								<td>{{project.start_date}}</td>
 							</tr>
 							<tr>
-								<th scope="row">End date</th>
+								<th scope="row">{% trans "End date" %}</th>
 								<td>{{project.end_date}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Requirements software</th>
+								<th scope="row">{% trans "Requirements software" %}</th>
 								<td>{{project.requirements_software}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Requirements gateways</th>
+								<th scope="row">{% trans "Requirements gateways" %}</th>
 								<td>{{project.requirements_gateways}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Requirements training</th>
+								<th scope="row">{% trans "Requirements training" %}</th>
 								<td>{{project.requirements_training}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Requirements onboarding</th>
+								<th scope="row">{% trans "Requirements onboarding" %}</th>
 								<td>{{project.requirements_onboarding}}</td>
 							</tr>
 							<tr>
-								<th scope="row">CPU time allocation in hours</th>
+								<th scope="row">{% trans "CPU time allocation in hours" %}</th>
 								<td>{{project.allocation_cputime}}</td>
 							</tr>
 							<tr>
-								<th scope="row">Storage allocation in GB</th>
-								<td>{{project.allocation_storage}}</td>
+								<th scope="row">{% trans "RAM allocation in GB" %}</th>
+								<td>{{project.allocation_memory}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Home storage in GB" %}</th>
+								<td>{{project.allocation_storage_home}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Scratch storage in GB" %}</th>
+								<td>{{project.allocation_storage_scratch}}</td>
 							</tr>
 						</tbody>
 					</table>

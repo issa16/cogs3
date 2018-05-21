@@ -1,14 +1,15 @@
 <!-- templates/project/applications.html -->
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 {% load widget_tweaks %}
-{% block title %}Project Applications{% endblock %}
+{% block title %}{% trans "Project Applications" %}{% endblock %}
 {% block content %}
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>Project Applications</h4>
+					<h4>{% trans "Project Applications" %}</h4>
 				</div>
 			</div>
 		</div>
@@ -26,10 +27,10 @@
 			<table class="table table-bordered">
 				<thead class="thead-light">
 					<tr>
-						<th scope="col">Project Code</th>
-						<th scope="col">Title</th>
-						<th scope="col">Institution</th>
-						<th scope="col">Application Status</th>
+						<th scope="col">{% trans "Project Code" %}</th>
+						<th scope="col">{% trans "Title" %}</th>
+						<th scope="col">{% trans "Institution" %}</th>
+						<th scope="col">{% trans "Application Status" %}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -37,7 +38,7 @@
 						<tr>
 							<td>{{project.code}}</td>
 							<td><a href="{% url 'project-application-detail' project.pk %}">{{project.title}}</a></td>
-							<td>{{project.institution}}</td>
+							<td>{% blocktrans with institution=project.institution %}{{institution}}{% endblocktrans %}</td>
 							<td>{{project.get_status_display}}</td>
 						</tr>
 					{% endfor %}

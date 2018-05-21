@@ -1,21 +1,22 @@
 <!-- templates/registration/external_login.html -->
 {% extends 'registration/login.html' %}
+{% load i18n %}
 {% block login_form %}
     <ul class="nav nav-pills nav-fill mb-3">
         <li class="nav-item">
-            <a href="{% url 'login' %}" class="nav-link">Educational Institution</a>
+            <a href="{% url 'login' %}" class="nav-link">{% trans "Educational Institution" %}</a>
         </li>
         <li class="nav-item">
-            <a href="{% url 'external-login' %}" class="nav-link active">External Collaborators</a>
+            <a href="{% url 'external-login' %}" class="nav-link active">{% trans "External Collaborators" %}</a>
         </li>
     </ul>
     <form method="post" novalidate>
         {% csrf_token %}
-        <h6 class="m-4 text-center">External Collaborators Login</h6>
+        <h6 class="m-4 text-center">{% trans "External Collaborators Login" %}</h6>
         {% include 'includes/generic_form.html' with form=form %}
         <p class="text-center">
-            Forgotton Password?
+            {% trans "Forgotten Password?" %}
         </p>
-        <button type="submit" class="m-auto btn btn-lg btn-primary btn-block">Login</button>
+        <button type="submit" class="m-auto btn btn-lg btn-primary btn-block">{% trans "Login" %}</button>
     </form>
 {% endblock %}

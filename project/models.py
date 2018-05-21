@@ -2,6 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from institution.models import Institution
 from system.models import System
@@ -20,7 +21,7 @@ class ProjectCategory(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'Project Categories'
+        verbose_name_plural = _('Project Categories')
         ordering = ('name', )
 
 
@@ -37,95 +38,116 @@ class ProjectFundingSource(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'Project Funding Sources'
+        verbose_name_plural = _('Project Funding Sources')
         ordering = ('name', )
 
 
 class Project(models.Model):
     title = models.CharField(
         max_length=256,
-        verbose_name='Project Title',
+        verbose_name=_('Project Title'),
     )
     description = models.TextField(
         max_length=1024,
-        verbose_name='Project Description',
+        verbose_name=_('Project Description'),
     )
     legacy_hpcw_id = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name='Legacy HPC Wales ID',
-        help_text='Project legacy ID from HPC Wales',
+        verbose_name=_('Legacy HPC Wales ID'),
+        help_text=_('Project legacy ID from HPC Wales'),
     )
     legacy_arcca_id = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name='Legacy ARCCA ID',
-        help_text='Project legacy ID ARCCA',
+        verbose_name=_('Legacy ARCCA ID'),
+        help_text=_('Project legacy ID ARCCA'),
     )
     code = models.CharField(
         max_length=20,
-        verbose_name='Project code assigned by SCW',
+        verbose_name=_('Project code assigned by SCW'),
     )
     institution = models.ForeignKey(
         Institution,
         on_delete=models.CASCADE,
-        help_text='Institution project is based',
+        help_text=_('Institution project is based'),
+        verbose_name=_('Institution'),
     )
     institution_reference = models.CharField(
         max_length=128,
-        verbose_name='Owning institution project reference',
+        verbose_name=_('Owning institution project reference'),
     )
     department = models.CharField(
         max_length=128,
         blank=True,
+        verbose_name=_('Department'),
     )
     pi = models.CharField(
         max_length=256,
-        verbose_name='Principal Investigator',
+        verbose_name=_('Principal Investigator'),
     )
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='project_as_tech_lead',
         on_delete=models.CASCADE,
-        verbose_name='Technical Lead',
+        verbose_name=_('Technical Lead'),
     )
     category = models.ForeignKey(
         ProjectCategory,
         on_delete=models.CASCADE,
         null=True,
+        verbose_name=_('Category'),
     )
     funding_source = models.ForeignKey(
         ProjectFundingSource,
         on_delete=models.CASCADE,
+        verbose_name=_('Funding source'),
     )
-    start_date = models.DateField()
-    end_date = models.DateField()
-    economic_user = models.BooleanField(default=False)
+    start_date = models.DateField(
+        verbose_name=_('Start date'),
+    )
+    end_date = models.DateField(
+        verbose_name=_('End date'),
+    )
+    economic_user = models.BooleanField(
+        default=False,
+        verbose_name=_('Economic user'),
+    )
     requirements_software = models.TextField(
         max_length=512,
-        help_text='Software name and versions',
+        help_text=_('Software name and versions'),
+        verbose_name=_('Requirements software'),
     )
     requirements_gateways = models.TextField(
         max_length=512,
-        help_text='Web gateway or portal name and versions',
+        help_text=_('Web gateway or portal name and versions'),
+        verbose_name=_('Requirements gateways'),
     )
-    requirements_training = models.TextField(max_length=512)
-    requirements_onboarding = models.TextField(max_length=512)
+    requirements_training = models.TextField(
+        max_length=512,
+        verbose_name=_('Requirements training')
+    )
+    requirements_onboarding = models.TextField(
+        max_length=512,
+        verbose_name=_('Requirements onboarding')
+    )
     allocation_rse = models.BooleanField(
         default=False,
-        verbose_name='RSE available to?',
+        verbose_name=_('RSE available to?'),
     )
-    allocation_cputime = models.PositiveIntegerField(verbose_name='CPU time allocation in hours')
-    allocation_memory = models.PositiveIntegerField(verbose_name='RAM allocation in GB')
-    allocation_storage_home = models.PositiveIntegerField(verbose_name='Home storage in GB')
-    allocation_storage_scratch = models.PositiveIntegerField(verbose_name='Scratch storage in GB')
+    allocation_cputime = models.PositiveIntegerField(verbose_name=_('CPU time allocation in hours'))
+    allocation_memory = models.PositiveIntegerField(verbose_name=_('RAM allocation in GB'))
+    allocation_storage_home = models.PositiveIntegerField(verbose_name=_('Home storage in GB'))
+    allocation_storage_scratch = models.PositiveIntegerField(verbose_name=_('Scratch storage in GB'))
     allocation_systems = models.ManyToManyField(
         System,
         through='ProjectSystemAllocation',
+        verbose_name=_('Allocation systems'),
     )
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='ProjectUserMembership',
+        verbose_name=_('Members'),
     )
     AWAITING_APPROVAL = 1
     APPROVED = 2
@@ -134,26 +156,32 @@ class Project(models.Model):
     SUSPENDED = 5
     CLOSED = 6
     STATUS_CHOICES = (
-        (AWAITING_APPROVAL, 'Awaiting Approval'),
-        (APPROVED, 'Approved'),
-        (DECLINED, 'Declined'),
-        (REVOKED, 'Revoked'),
-        (SUSPENDED, 'Suspended'),
-        (CLOSED, 'Closed'),
+        (AWAITING_APPROVAL, _('Awaiting Approval')),
+        (APPROVED, _('Approved')),
+        (DECLINED, _('Declined')),
+        (REVOKED, _('Revoked')),
+        (SUSPENDED, _('Suspended')),
+        (CLOSED, _('Closed')),
     )
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
         default=AWAITING_APPROVAL,
+        verbose_name=_('Status'),
     )
     reason_decision = models.TextField(
         max_length=256,
         blank=True,
-        verbose_name='Reason for the project status decision:',
-        help_text='The reason will be emailed to the project\'s technical lead upon project status update.',
+        verbose_name=_('Reason for the project status decision:'),
+        help_text=_('The reason will be emailed to the project\'s technical lead upon project status update.'),
     )
-    notes = models.TextField(max_length=512, blank=True, help_text='Internal project notes')
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
+    notes = models.TextField(
+        max_length=512,
+        blank=True,
+        help_text=_('Internal project notes'),
+        verbose_name=_('Notes')
+    )
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
+    modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
 
     def awaiting_approval(self):
         return True if self.status == Project.AWAITING_APPROVAL else False
@@ -166,7 +194,7 @@ class Project(models.Model):
         return '{code} - {title}'.format(**data)
 
     class Meta:
-        verbose_name_plural = 'Projects'
+        verbose_name_plural = _('Projects')
 
 
 class ProjectSystemAllocation(models.Model):
@@ -190,10 +218,10 @@ class ProjectSystemAllocation(models.Model):
             'date_allocated': self.date_allocated,
             'date_unallocated': self.date_unallocated
         }
-        return '{project} on {system} from {date_allocated} to {date_unallocated}'.format(**data)
+        return _('{project} on {system} from {date_allocated} to {date_unallocated}').format(**data)
 
     class Meta:
-        verbose_name_plural = 'Project System Allocations'
+        verbose_name_plural = _('Project System Allocations')
 
 
 class ProjectUserMembershipManager(models.Manager):
@@ -222,11 +250,11 @@ class ProjectUserMembership(models.Model):
     REVOKED = 4
     SUSPENDED = 5
     STATUS_CHOICES = (
-        (AWAITING_AUTHORISATION, 'Awaiting Authorisation'),
-        (AUTHORISED, 'Authorised'),
-        (DECLINED, 'Declined'),
-        (REVOKED, 'Revoked'),
-        (SUSPENDED, 'Suspended'),
+        (AWAITING_AUTHORISATION, _('Awaiting Authorisation')),
+        (AUTHORISED, _('Authorised')),
+        (DECLINED, _('Declined')),
+        (REVOKED, _('Revoked')),
+        (SUSPENDED, _('Suspended')),
     )
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
@@ -260,8 +288,8 @@ class ProjectUserMembership(models.Model):
             'date_joined': self.date_joined,
             'date_left': self.date_left
         }
-        return '{user} on {project} from {date_joined} to {date_left}'.format(**data)
+        return _('{user} on {project} from {date_joined} to {date_left}').format(**data)
 
     class Meta:
-        verbose_name_plural = 'Project User Memberships'
+        verbose_name_plural = _('Project User Memberships')
         unique_together = ('project', 'user')
