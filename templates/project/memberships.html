@@ -27,20 +27,28 @@
 			<table class="table table-bordered">
 				<thead class="thead-light">
 					<tr>
-						<th scope="col">{% trans "Project Code" %}</th>
-						<th scope="col">{% trans "Title" %}</th>
-						<th scope="col">{% trans "Institution" %}</th>
-						<th scope="col">{% trans "Principal Investigator" %}</th>
-						<th scope="col">{% trans "Membership Status" %}</th>
+						<th scope="col" style="width:20%">{% trans "Project Code" %}</th>
+						<th scope="col" style="width:40%">{% trans "Title" %}</th>
+						<th scope="col" style="width:20%">{% trans "Institution" %}</th>
+						<th scope="col" style="width:20%">{% trans "Membership Status" %}</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for project_membership in project_memberships %}
 						<tr>
-							<td>{{project_membership.project.code}}</td>
+							<td>
+								{{project_membership.project.code}}
+								{% if project_membership.project.legacy_hpcw_id %}
+									</br>
+									<small class="text-muted">{% trans "HPCW" %}: {{project_membership.project.legacy_hpcw_id}}</small>
+								{% endif %}
+								{% if project_membership.project.legacy_arcca_id %}
+									</br>
+									<small class="text-muted">{% trans "ARRCA"%}: {{project_membership.project.legacy_arcca_id}}</small>
+								{% endif %}
+							</td>
 							<td>{{project_membership.project.title}}</td>
 							<td>{{project_membership.project.institution}}</td>
-							<td>{{project_membership.project.pi}}</td>
 							<td>
 								{% if project_membership.project.tech_lead == user %}
 									{% trans "Project Owner" %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-21 15:06+0000\n"
+"POT-Creation-Date: 2018-05-21 16:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,19 +59,19 @@ msgstr ""
 msgid "Institution"
 msgstr ""
 
-#: project/forms.py:102
+#: project/forms.py:101
 msgid "You are currently a member of the project."
 msgstr ""
 
-#: project/forms.py:104
+#: project/forms.py:103
 msgid "The project is currently awaiting approval."
 msgstr ""
 
-#: project/forms.py:106
+#: project/forms.py:105
 msgid "A membership request for this project already exists."
 msgstr ""
 
-#: project/forms.py:108
+#: project/forms.py:107
 msgid "Invalid Project Code."
 msgstr ""
 
@@ -124,7 +124,6 @@ msgid "Department"
 msgstr ""
 
 #: project/models.py:87 templates/project/application_detail.html:50
-#: templates/project/memberships.html:33
 msgid "Principal Investigator"
 msgstr ""
 
@@ -402,9 +401,7 @@ msgstr ""
 msgid "Institution project reference"
 msgstr ""
 
-#: templates/project/applications.html:30
-#: templates/project/membership/form.html:6
-#: templates/project/memberships.html:30
+#: templates/project/applications.html:30 templates/project/memberships.html:30
 msgid "Project Code"
 msgstr ""
 
@@ -412,9 +409,21 @@ msgstr ""
 msgid "Application Status"
 msgstr ""
 
-#: templates/project/applications.html:41
+#: templates/project/applications.html:43 templates/project/memberships.html:43
+msgid "HPCW"
+msgstr ""
+
+#: templates/project/applications.html:47 templates/project/memberships.html:47
+msgid "ARRCA"
+msgstr ""
+
+#: templates/project/applications.html:51
 #, python-format
 msgid "%(institution)s"
+msgstr ""
+
+#: templates/project/membership/form.html:6
+msgid "SCW, HPCW or ARCCA project code"
 msgstr ""
 
 #: templates/project/membership/form.html:8
@@ -450,11 +459,11 @@ msgstr ""
 msgid "Suspend"
 msgstr ""
 
-#: templates/project/memberships.html:34
+#: templates/project/memberships.html:33
 msgid "Membership Status"
 msgstr ""
 
-#: templates/project/memberships.html:46
+#: templates/project/memberships.html:54
 msgid "Project Owner"
 msgstr ""
 
