@@ -65,6 +65,45 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         user_id = self.user.id
         assert tech_lead_id == user_id
 
+        # Check that the project is not active
+        status = matching_projects.values_list('status', flat=True).get(pk=1)
+        assert status == Project.AWAITING_APPROVAL
+
+        # Approve the project and set a code
+        project = matching_projects.first()
+        project.status = Project.APPROVED
+        project.code = 'code1'
+        project.save()
+
+        # Login with a different user (student) and add the project
+        self.log_out()
+        self.sign_in(self.student)
+
+        self.fill_form_by_id({'project_code': project.code})
+        self.submit_form({'project_code': project.code})
+        assert 'Successfully submitted a project membership request' in self.selenium.page_source
+
+        # Check that the project memebership is visible
+        self.get_url("/projects/memberships/")
+        assert 'Joe Bloggs' in self.selenium.page_source
+        assert 'Awaiting Authorisation' in self.selenium.page_source
+
+        # Login with as the tech lead and authorize the new user
+        self.log_out()
+        self.sign_in(self.user)
+        self.get_url("/projects/memberships/user-requests/")
+
+        assert self.student.email in self.selenium.page_source
+        self.select_from_first_dropdown(1)
+
+        #Login with student again and check authorisation
+        self.log_out()
+        self.sign_in(self.student)
+        self.get_url("/projects/memberships/")
+
+        assert 'Authorised' in self.selenium.page_source
+
+
     def test_create_project_student(self):
         """
         Try to create a project as an external user
