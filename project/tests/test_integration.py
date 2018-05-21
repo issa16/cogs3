@@ -29,15 +29,30 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         Before running this a funding source called test must be added to the database.
         """
         self.sign_in( self.user )
+
+        # Fill the project form with a field missing
+        for missing_field in ['id_title','id_description','id_institution']:
+            self.get_url("")
+            self.click_by_id("create-project-application-button")
+            form_field = dict(self.default_project_form_fields)
+            form_field.pop(missing_field)
+            self.fill_form_by_id(form_field)
+            self.select_from_dropdown('id_funding_source', 1)
+            self.submit_form(self.default_project_form_fields)
+            assert "This field is required." in self.selenium.page_source
+
+        self.get_url("")
         self.click_by_id("create-project-application-button")
 
+        # Correctly fill the form
         self.fill_form_by_id(self.default_project_form_fields)
         self.select_from_dropdown('id_funding_source', 1)
 
-        #Check that the project does not exist yet
+        # Check that the project does not exist yet
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
         assert matching_projects.count() == 0
 
+        # Submit the form
         self.submit_form(self.default_project_form_fields)
 
         assert "This field is required." not in self.selenium.page_source
@@ -72,7 +87,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         Try to create a project as an external user
         """
         self.sign_in( self.external )
-        assert "Please enter a correct email and password" not in  self.selenium.page_source
         self.click_by_id("create-project-application-button")
 
         self.fill_form_by_id(self.default_project_form_fields)

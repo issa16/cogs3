@@ -43,6 +43,11 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         # Check that we didn't get the fail response
         assert "Please enter a correct email and password" not in  self.selenium.page_source
 
+    def log_out(self):
+        self.get_url("/accounts/logout/")
+        assert "accounts/logged_out/" in self.selenium.current_url
+        self.get_url("")
+
     def submit_form(self, form_fields):
         key = list(form_fields.keys())[0]
         self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
