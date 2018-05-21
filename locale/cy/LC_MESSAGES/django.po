@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-19 11:50+0000\n"
+"POT-Creation-Date: 2018-05-21 14:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != "
 "11) ? 2 : 3;\n"
-
-#: dashboard/views.py:21
-msgid ""
-"Your account is currently being configured. You should receive an email "
-"shortly with instructions on how to access the compute cluster."
-msgstr ""
 
 #: institutions_to_translate.py:1
 msgid "Swansea University"
@@ -589,4 +583,31 @@ msgstr ""
 
 #: templates/registration/register.html:30
 msgid "I agree to the Terms and Conditions."
+msgstr ""
+
+#: users/models.py:75
+msgid ""
+"Your Supercomputing Wales account request is currently awaiting approval."
+msgstr ""
+
+#: users/models.py:78
+msgid ""
+"Your Supercomputing Wales account request has been approved and is currently "
+"being configured."
+msgstr ""
+
+#: users/models.py:81
+msgid "Your Supercomputing Wales account has been declined."
+msgstr ""
+
+#: users/models.py:83
+msgid "Your Supercomputing Wales account has been revoked."
+msgstr ""
+
+#: users/models.py:85
+msgid "Your Supercomputing Wales account has been suspended."
+msgstr ""
+
+#: users/models.py:87
+msgid "Your Supercomputing Wales account has been closed."
 msgstr ""

@@ -4,6 +4,7 @@ from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.utils.translation import gettext as _
 
 from institution.models import Institution
 
@@ -68,6 +69,22 @@ class Profile(models.Model):
     class Meta:
         verbose_name = 'profile'
         verbose_name_plural = 'profiles'
+
+    def account_status_message(self):
+        if self.account_status == self.AWAITING_APPROVAL:
+            return _('Your Supercomputing Wales account request is currently awaiting approval.')
+        elif self.account_status == self.APPROVED:
+            # TODO - Check if system resources have been allocated
+            return _('Your Supercomputing Wales account request has been approved and is currently '
+                     'being configured.')
+        elif self.account_status == self.DECLINED:
+            return _('Your Supercomputing Wales account has been declined.')
+        elif self.account_status == self.REVOKED:
+            return _('Your Supercomputing Wales account has been revoked.')
+        elif self.account_status == self.SUSPENDED:
+            return _('Your Supercomputing Wales account has been suspended.')
+        elif self.account_status == self.CLOSED:
+            return _('Your Supercomputing Wales account has been closed.')
 
     def __str__(self):
         return self.user.email
