@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-19 11:50+0000\n"
+"POT-Creation-Date: 2018-05-21 15:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,29 +41,37 @@ msgstr ""
 msgid "Aberystwyth University"
 msgstr ""
 
-#: project/forms.py:23
+#: project/forms.py:24
 msgid "Project code must be unique."
 msgstr ""
 
-#: project/forms.py:61 project/models.py:74
+#: project/forms.py:35
+msgid "Project legacy HPCW id must be unique."
+msgstr ""
+
+#: project/forms.py:46
+msgid "Project legacy ARCCA id must be unique."
+msgstr ""
+
+#: project/forms.py:85 project/models.py:74
 #: templates/project/application_detail.html:42
 #: templates/project/applications.html:32 templates/project/memberships.html:32
 msgid "Institution"
 msgstr ""
 
-#: project/forms.py:76
+#: project/forms.py:102
 msgid "You are currently a member of the project."
 msgstr ""
 
-#: project/forms.py:78
+#: project/forms.py:104
 msgid "The project is currently awaiting approval."
 msgstr ""
 
-#: project/forms.py:80
+#: project/forms.py:106
 msgid "A membership request for this project already exists."
 msgstr ""
 
-#: project/forms.py:82
+#: project/forms.py:108
 msgid "Invalid Project Code."
 msgstr ""
 
