@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-21 16:01+0000\n"
+"POT-Creation-Date: 2018-05-22 08:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,12 +59,12 @@ msgstr ""
 msgid "Institution"
 msgstr ""
 
-#: project/forms.py:101
-msgid "You are currently a member of the project."
+#: project/forms.py:100
+msgid "The project is currently awaiting approval."
 msgstr ""
 
 #: project/forms.py:103
-msgid "The project is currently awaiting approval."
+msgid "You are currently a member of the project."
 msgstr ""
 
 #: project/forms.py:105
@@ -386,6 +386,10 @@ msgstr ""
 
 #: templates/project/application_detail.html:6
 msgid "Project details"
+msgstr ""
+
+#: templates/project/application_detail.html:12
+msgid "Project Application"
 msgstr ""
 
 #: templates/project/application_detail.html:22
