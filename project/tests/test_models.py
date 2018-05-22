@@ -188,7 +188,7 @@ class ProjectTests(ProjectModelTests, TestCase):
         )
         self._verify_project_details(project, title, code)
 
-    def test_project_creation_with_duplicate_title(self):
+    def test_project_creation_with_duplicate_titles(self):
         """
         A test to ensure a project can be created when the title exists in the database.
 
@@ -218,7 +218,7 @@ class ProjectTests(ProjectModelTests, TestCase):
 
         self._verify_project_details(project_1, title_1, code_1)
         self._verify_project_details(project_2, title_2, code_2)
-        self.assertEqual(Project.objects.all().count(), 2)
+        self.assertEqual(Project.objects.count(), 2)
 
 
 class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
