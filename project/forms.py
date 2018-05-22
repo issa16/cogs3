@@ -1,9 +1,34 @@
 from django import forms
 
-from .models import Project
-from .models import ProjectUserMembership
+from project.models import Project
+from project.models import ProjectUserMembership
+from institution.models import Institution
+from django.utils.translation import gettext_lazy as _
 
 
+class ProjectAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+    def clean_code(self):
+        """
+        Ensure the project code is unique.
+        """
+        current_code = self.instance.code
+        updated_code = self.cleaned_data['code']
+        if current_code != updated_code:
+            if Project.objects.filter(code=updated_code).exists():
+                raise forms.ValidationError(_('Project code must be unique.'))
+        return updated_code
+
+
+class LocalizeModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return _(obj.__str__())
+
+        
 class ProjectCreationForm(forms.ModelForm):
 
     class Meta:
@@ -20,6 +45,21 @@ class ProjectCreationForm(forms.ModelForm):
             'allocation_rse',
             'reason_decision',
         ]
+        widgets = {
+            'start_date': forms.DateInput(attrs={
+                'class': 'datepicker'
+            }),
+            'end_date': forms.DateInput(attrs={
+                'class': 'datepicker'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectCreationForm, self).__init__(*args, **kwargs)
+        self.fields['institution'] = LocalizeModelChoiceField(
+            queryset=Institution.objects.all(),
+            label=_('Institution'),
+        )
 
 
 class ProjectUserMembershipCreationForm(forms.Form):
@@ -33,11 +73,11 @@ class ProjectUserMembershipCreationForm(forms.Form):
             user = self.initial.get('user', None)
             # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:
-                raise forms.ValidationError("You are currently a member of the project.")
+                raise forms.ValidationError(_("You are currently a member of the project."))
             if project.awaiting_approval():
-                raise forms.ValidationError("The project is currently awaiting approval.")
+                raise forms.ValidationError(_("The project is currently awaiting approval."))
             if ProjectUserMembership.objects.filter(project=project, user=user).exists():
-                raise forms.ValidationError("A membership request for this project already exists.")
+                raise forms.ValidationError(_("A membership request for this project already exists."))
         except Project.DoesNotExist:
-            raise forms.ValidationError("Invalid Project Code.")
+            raise forms.ValidationError(_("Invalid Project Code."))
         return project_code

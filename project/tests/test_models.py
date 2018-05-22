@@ -156,10 +156,21 @@ class ProjectTests(ProjectModelTests, TestCase):
             allocation_cputime='1000000',
             allocation_memory='100',
             allocation_storage_home='5000',
-            allocation_storage_scartch='1000',
+            allocation_storage_scratch='1000',
             notes='Project notes',
         )
         return project
+
+    def _verify_project_details(self, project, title, code):
+        """
+        Ensure project details are correct.
+        """
+        self.assertTrue(isinstance(project, Project))
+        self.assertEqual(project.__str__(), code + ' - ' + title)
+        self.assertEqual(project.status, Project.AWAITING_APPROVAL)
+        self.assertEqual(project.title, title)
+        self.assertEqual(project.code, code)
+        self.assertTrue(project.awaiting_approval())
 
     def test_project_creation(self):
         """
@@ -175,12 +186,41 @@ class ProjectTests(ProjectModelTests, TestCase):
             category=self.category,
             funding_source=self.funding_source,
         )
-        self.assertTrue(isinstance(project, Project))
-        self.assertEqual(project.__str__(), code + ' - ' + title)
-        self.assertEqual(project.status, Project.AWAITING_APPROVAL)
-        self.assertEqual(project.title, title)
-        self.assertEqual(project.code, code)
-        self.assertTrue(project.awaiting_approval())
+        self._verify_project_details(project, title, code)
+
+    def test_project_creation_with_duplicate_titles(self):
+        """
+        A test to ensure a project can be created when the title exists in the database.
+
+        Issues: 
+            - https://github.com/tystakartografen/cogs3/issues/30
+            - https://github.com/tystakartografen/cogs3/issues/31
+        """
+        title_1 = 'Project title'
+        code_1 = 'SCW-0001'
+        project_1 = self.create_project(
+            title=title_1,
+            code=code_1,
+            institution=self.institution,
+            tech_lead=self.project_owner,
+            category=self.category,
+            funding_source=self.funding_source,
+        )
+
+        title_2 = 'Project title'
+        code_2 = 'SCW-0002'
+        project_2 = self.create_project(
+            title=title_2,
+            code=code_2,
+            institution=self.institution,
+            tech_lead=self.project_owner,
+            category=self.category,
+            funding_source=self.funding_source,
+        )
+
+        self._verify_project_details(project_1, title_1, code_1)
+        self._verify_project_details(project_2, title_2, code_2)
+        self.assertEqual(Project.objects.count(), 2)
 
 
 class ProjectSystemAllocationTests(ProjectModelTests, TestCase):

@@ -1,13 +1,14 @@
 <!-- templates/registration/logged_out.html -->
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 {% block content %}
-	<div class="form-logo mx-auto mt-4">
-		<img class="img-fluid" src="{% static "img/scw.png" %}" alt="Supercomputing Wales">
+	<div class="form-logo mx-auto mt-3">
+		<img class="img-fluid" src="{% static "img/scw.png" %}" alt="{% trans "Supercomputing Wales" %}">
 	</div>
-	<div class="mx-auto mt-4 text-center form-signin">
-		<h5 class="mb-4 mt-2">To log out please do the following:</h5>
-		<p>Close this web browser (including all tabs and windows).</p>
-		<p class="mt-3 mb-1 text-muted">© cogs3</p>
+	<div class="mx-auto mt-3 text-center form-signin">
+		<h5 class="mb-4 mt-2">{% trans "To log out please do the following:" %}</h5>
+		<p>{% trans "Close this web browser (including all tabs and windows)." %}</p>
+		<p class="mt-3 mb-1 text-muted">© {% trans "cogs3" %}</p>
 	</div>
 {% endblock %}

@@ -26,12 +26,17 @@ main {
     color: rgba(255, 255, 255, 1);
 }
 
+.language-select {
+    float: right;
+    margin-right: 24px;
+}
+
 .form-logo {
-    max-width: 440px;
+    max-width: 420px;
 }
 
 .form-signin {
-    max-width: 440px;
+    max-width: 420px;
     padding: 15px;
     box-shadow: 0 1px 2.5px 0 rgba(0, 0, 0, 0.09);
     background-color: #ffffff;
@@ -74,7 +79,7 @@ main {
 }
 
 .list-group img {
-    height: 60px;
+    height: 50px;
 }
 
 .footer {

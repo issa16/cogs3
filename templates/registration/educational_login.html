@@ -1,20 +1,21 @@
 <!-- templates/registration/educational_login.html -->
 {% extends 'registration/login.html' %}
+{% load i18n %}
 {% block login_form %}
     <ul class="nav nav-pills nav-fill mb-3">
         <li class="nav-item">
-            <a href="{% url 'login' %}" class="nav-link active">Educational Institution</a>
+            <a href="{% url 'login' %}" class="nav-link active">{% trans "Educational Institution" %}</a>
         </li>
         <li class="nav-item">
-            <a href="{% url 'external-login' %}" class="nav-link">External Collaborators</a>
+            <a href="{% url 'external-login' %}" class="nav-link">{% trans "External Collaborators" %}</a>
         </li>
     </ul>
-    <h6 class="mt-4 text-center">Which institution would you like to sign in with?</h6>
+    <h6 class="mt-4 text-center">{% trans "Which institution would you like to sign in with?" %}</h6>
     <div class="list-group">
         {% for institution in institutions %}
             {% if institution.identity_provider %}
                 <a id="{{institution.id_str}}-login-link" href="{{shibboleth_idp_login}}?entityID={{institution.identity_provider}}" class="text-center border-0 mt-3 list-group-item list-group-item-action flex-column align-items-start box-shadow">
-                    <img class="img-fluid" src="{{ institution.logo_path }}" alt="{{institution}}">
+                    <img class="img-fluid" src="{{institution.logo_path}}" alt="{% trans "{{institution}}" %}">
                 </a>
             {% endif %}
         {% endfor %}

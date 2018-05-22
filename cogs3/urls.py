@@ -5,12 +5,13 @@ from django.contrib.auth.views import LoginView
 from django.urls import include
 from django.urls import path
 from django.views.generic.base import TemplateView
+from django.conf.urls.i18n import i18n_patterns
 
 from institution.models import Institution
 from users.views import LogoutView
 from users.views import RegisterView
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     path(
         'queue/',
         include('django_rq.urls'),
@@ -70,4 +71,4 @@ urlpatterns = [
         'admin/',
         admin.site.urls,
     ),
-]
+)
