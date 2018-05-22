@@ -192,7 +192,9 @@ class ProjectTests(ProjectModelTests, TestCase):
         """
         A test to ensure a project can be created when the title exists in the database.
 
-        Issue: https://github.com/tystakartografen/cogs3/issues/30
+        Issues: 
+            - https://github.com/tystakartografen/cogs3/issues/30
+            - https://github.com/tystakartografen/cogs3/issues/31
         """
         title_1 = 'Project title'
         code_1 = 'SCW-0001'
