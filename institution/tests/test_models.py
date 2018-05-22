@@ -38,3 +38,8 @@ class InstitutionTests(TestCase):
         self.assertEqual(institution.name, name)
         self.assertEqual(institution.base_domain, base_domain)
         self.assertEqual(institution.identity_provider, identity_provider)
+
+
+    def test_id_str_produced(self):
+        institution = self.create_institution("Swansea University", "swansea.ac.uk", "")
+        self.assertEqual(institution.id_str(), "swansea-university")
