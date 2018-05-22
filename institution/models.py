@@ -1,8 +1,8 @@
 from django.db import models
+from django.utils.translation import gettext as _
 
 from institution.exceptions import InvalidIndentityProvider
 from institution.exceptions import InvalidInstitution
-from django.utils.translation import gettext as _
 
 
 class Institution(models.Model):
