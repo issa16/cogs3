@@ -217,3 +217,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         verbose_name_plural = 'Users'
+
+    def save(self, *args, **kwargs):
+        super(CustomUser, self).save(*args, **kwargs)
+        if self.is_shibboleth_login_required:
+            _, domain = self.email.split('@')
+            institution = Institution.objects.get(base_domain=domain)
+            ShibbolethProfile.objects.update_or_create(
+                user=self,
+                defaults={
+                    'shibboleth_id': self.email,
+                    'institution': institution,
+                },
+            )
+        else:
+            Profile.objects.update_or_create(user=self)
+        self.profile.save()
