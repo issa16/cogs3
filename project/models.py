@@ -13,6 +13,11 @@ logger = logging.getLogger('apps')
 
 
 class ProjectCategory(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('Project Categories')
+        ordering = ('name', )
+
     name = models.CharField(
         max_length=128,
         unique=True,
@@ -24,12 +29,13 @@ class ProjectCategory(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name_plural = _('Project Categories')
-        ordering = ('name', )
-
 
 class ProjectFundingSource(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('Project Funding Sources')
+        ordering = ('name', )
+
     name = models.CharField(
         max_length=128,
         unique=True,
@@ -41,12 +47,12 @@ class ProjectFundingSource(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name_plural = _('Project Funding Sources')
-        ordering = ('name', )
-
 
 class Project(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('Projects')
+
     title = models.CharField(
         max_length=256,
         verbose_name=_('Project Title'),
@@ -183,6 +189,25 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
 
+    # Manager?
+
+    def email_subject(self):
+        return "EMAIL SUBJECT"
+
+    def email_body(self):
+        return "EMAIL BODY"
+        # Populate
+        if self.status == Project.AWAITING_APPROVAL:
+            return ""
+        elif self.status == Project.APPROVED:
+            return ""
+        elif self.status == Project.DECLINED:
+            return ""
+        elif self.status == Project.REVOKED:
+            return ""
+        elif self.status == Project.SUSPENDED:
+            return ""
+
     def awaiting_approval(self):
         return True if self.status == Project.AWAITING_APPROVAL else False
 
@@ -192,9 +217,6 @@ class Project(models.Model):
             'title': self.title,
         }
         return '{code} - {title}'.format(**data)
-
-    class Meta:
-        verbose_name_plural = _('Projects')
 
     def save(self, *args, **kwargs):
         updated = self.pk
@@ -220,6 +242,10 @@ class Project(models.Model):
 
 
 class ProjectSystemAllocation(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('Project System Allocations')
+
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
@@ -242,9 +268,6 @@ class ProjectSystemAllocation(models.Model):
         }
         return _('{project} on {system} from {date_allocated} to {date_unallocated}').format(**data)
 
-    class Meta:
-        verbose_name_plural = _('Project System Allocations')
-
 
 class ProjectUserMembershipManager(models.Manager):
 
@@ -258,6 +281,11 @@ class ProjectUserMembershipManager(models.Manager):
 
 
 class ProjectUserMembership(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('Project User Memberships')
+        unique_together = ('project', 'user')
+
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
@@ -311,7 +339,3 @@ class ProjectUserMembership(models.Model):
             'date_left': self.date_left
         }
         return _('{user} on {project} from {date_joined} to {date_left}').format(**data)
-
-    class Meta:
-        verbose_name_plural = _('Project User Memberships')
-        unique_together = ('project', 'user')

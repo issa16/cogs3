@@ -1,9 +1,11 @@
 from django import forms
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 
+from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
-from institution.models import Institution
-from django.utils.translation import gettext_lazy as _
+from project.notifications import ProjectEmailNotification
 
 
 class ProjectAdminForm(forms.ModelForm):
@@ -11,6 +13,10 @@ class ProjectAdminForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectAdminForm, self).__init__(*args, **kwargs)
+        self.initial_status = self.instance.status
 
     def clean_code(self):
         """
@@ -23,12 +29,22 @@ class ProjectAdminForm(forms.ModelForm):
                 raise forms.ValidationError(_('Project code must be unique.'))
         return updated_code
 
+    def save(self, commit=True):
+        project = super(ProjectAdminForm, self).save(commit=False)
+        # When the project status is changed, send an email to technical lead.
+        if self.initial_status != project.status:
+            ProjectEmailNotification(project).send()
+        if commit:
+            project.save()
+        return project
+
 
 class LocalizeModelChoiceField(forms.ModelChoiceField):
+
     def label_from_instance(self, obj):
         return _(obj.__str__())
 
-        
+
 class ProjectCreationForm(forms.ModelForm):
 
     class Meta:
