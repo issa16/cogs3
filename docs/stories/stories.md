@@ -1,40 +1,61 @@
 # COGS User Stories
 
 ## Roles:
-- User
-- Project owner
-- Principal Investigator
-- Project Authoriser
-- Attribution Authoriser
-- RSE
-- System Administrator
+#### Implemented:
+- User : any user authorised on the system (internal and external)
+- Internal User : any user who signs up with an institutional email address
+- External user : a user without a institutional email address, which has been pre-created by a site admin
+- Technical lead : the user who creates project requests
+- Principal Investigator: not currently a user
+- Site Admin: django superuser, can make any changes to the database
+#### Not Implemented:
+- Attribution Authoriser: Users who have permission to authorise attribution
+- Project Authoriser: Users who have permission to authorise projects
+- RSE: undefined
 
 ## Stories
 ### Project creation
-- Users with valid, non-student institutional email addresses can create new projects as the project owner
-- Users with student or non-institutional email address cannot create new projects
-- New projects are created with a default priority level and are not active
-- Projects do not have a start or end date (start or end dates are specified on allocations, users and attributions)
-- New projects must have a name, description, project owner and institution
- 
+#### Tested
+- Internal users can create new project as it's technical lead [IT]
+- External users can create new project as it's technical lead [IT]
+- Newly created projects are created with status UNAPPROVED [UT]
+- Newly created projects do not have a default category [UT]
+- Project status cannot be set to approved without a category and project code [UT]
+- New projects must have a name, description, technical lead and institution
+- Active projects are listed as 'Awaiting Authorisation' the project list
+#### Not Tested
+- Projects require a start and end date [UT]
+
 ### Project administration
-- Project owner can associate new/existing users to an existing projects by email address
-- Associating users to a project should fail after a specified number of user has been reached (to avoid excessive disk space to a project)
-- The associated user limit should be set on a per-project basis and have a per-institution limit
-- Users associated with a project should be required to click a link in a confirm email before being added
-- Project owner can request a raised priority level if priority criterion is met (requests are sent to a system administrator to handle manually)
+#### Tested
+#### Pending Testing
+- User can create a project membership request
+- Project membership requests should be created in a PENDING state
+- Technical lead should be able to change the state of project memberships requests made by other users to APPROVED
+#### Not Implemented
+- Technical lead should be able to create a project membership request for a specific user by email address
+- User being added should be able to change the state of a project membership request created by a technical lead to APPROVED
+- Users added to a project by a technical lead should receive email notification of a pending project membership request
+- Technical leads of a project for which a user has created a project membership request receive email notification
+- Project membership should be capped to a number defined at each institution (to avoid excessive disk space to a project)
+- Project membership limits should be overridable on a per-project basis
+- Some mechanism (yet undetermined) is required for users to request a category change as appropriate
 
 ### User creation
-- Anyone with an institutional email address should be able to sign up for a user account
-- Anyone with a pre-approved (non-institutional) email address can create an account
-- Users should have a name, email address, institution, college/department, orcid, scopus url and homepage
-- Users from Swansea university must have a Cronfa URL
+#### Tested
+- Any users can log in with an institutional email address [IT]
+- Anyone user with a  pre-approved, non-institutional email address can log in
+#### Not Tested
 - Users should be automatically removed from the system when they leave university
+#### Not Implemented
+- Users should be able to set an orcid, scopus url and homepage
+- Users from Swansea university should be able to set a Cronfa URL
 - User signup should require agreeing to terms and conditions
- 
+
 ### Attribution addition and approval
-- Users can add an attributions to a projects they are associated, specifying an attribution owner (e.g. principal investigator or lead author)
-- An attribution can be of type grant or paper
+#### Not Implemented
+- Users can add an attributions to a projects they are associated with, specifying an attribution owner (e.g. principal investigator or lead author)
+- An attribution can be a type grant or paper
 - An attribution can associated with one or more projects
 - A paper has a title, authors, a Journal, a doi and a cronfa link (Swansea)
 - A grant has a title, grant code, total amount, amount attributed to SCW, grant code, comments, a funding body and a principal investigator
@@ -44,36 +65,26 @@
 - Attribution authoriser is notified of a new attribution at their institution
 - Attribution authoriser can mark an attribution confirmation email as valid
 - Attribution authoriser can see highlighted changes to attribution confirmation emails (compared to original message)
+- Paragraph about attribution from previous SCW form should be included
 
 ### Project approval and system allocation
+#### Tested
+- A site admin can approve projects
+#### Not Implemented
 - Project approvers, RSEs and attribution authorisers can see a page listing pending/unapproved projects per institution
 - Project approvers, RSEs and attribution authorisers can see details of pending/unapproved projects per institution
 - Project approvers can set project status to approved
-- Project approvers can reject project with a comment (project owner receives comment)
-- Project approvers can specify a system (or systems) on which a system allocation is created
-- Project approvers can modify default values of that system allocation
-- Project approvers can add new system allocations (for example on another cluster system or over a new time period) to an existing project
-- System allocations allowable and their priority should be determined in some way by level and/or nature of attribution (policy to be agreed by management board)
-- The associated cluster user accounts are enabled on the appropriate cluster when new (active) system allocations are created
-- Historical comments on a project are stored in a separate table
- 
+- Project approvers can reject project with a comment (technical lead receives comment by email)
+- New system allocations are created on the system belonging to the institution of the user
+- Project approvers can add new system allocations on other clusters to an existing project
+
 ### Cluster accounts
-- Can users have a cluster accounts on a cluster system (or multiple systems)
-- System administrators can create cluster user accounts for users
-- Creating a cluster account which belongs to a system will create an account on the appropriate cluster
-- Users should be able to reset passwords for their cluster accounts, user passwords will not be stored on the cogs system
- 
-### Raven users
-- New raven users will automatically have a new cluster account set up on first login and will belong to a default "Raven" project
-- Active cluster user accounts created on the Cardiff system with no approval required
- 
-### Potential future changes
-- Attribution should automatically affect resource allocation by some mechanism (according to policy agreed by management board)
-- All database records should contain a created and modified time stamp for auditing purposes. Records likely to be subject to auditing (e.g. approvals) should be versioned as appropriate
- 
-### Other Suggestions
-- Projects who aren't returning anything (yet) need a grant number to be raised from bottom category
-- Storage is allocated in system allocation table
-- On boarding and training could be combined to a single field
-- Paragraph about attribution from previous SCW form should be included
-- Project doesn't have an institution, it is derived from the main user
+#### Not Tested
+- Cluster accounts are created for the user (undefined behaviour)
+- User accounts are automatically created if they don't exist when a new system allocation is created
+### Not Implemented
+- Users can reset their cluster passwords
+
+### General
+#### Not Implemented
+- Database records should contain a created and modified time stamp for auditing purposes. Records likely to be subject to auditing (e.g. approvals) should be versioned as appropriate
