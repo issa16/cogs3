@@ -39,7 +39,10 @@ class InstitutionTests(TestCase):
         self.assertEqual(institution.base_domain, base_domain)
         self.assertEqual(institution.identity_provider, identity_provider)
 
-
     def test_id_str_produced(self):
-        institution = self.create_institution("Swansea University", "swansea.ac.uk", "")
+        institution = self.create_institution(
+            name='Swansea University',
+            base_domain='swansea.ac.uk',
+            identity_provider='https://iss-openathensla-runtime.swan.ac.uk/oala/metadata',
+        )
         self.assertEqual(institution.id_str(), "swansea-university")
