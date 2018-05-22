@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-21 14:41+0000\n"
+"POT-Creation-Date: 2018-05-22 09:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgstr ""
 msgid "Project code must be unique."
 msgstr ""
 
-#: project/forms.py:61 project/models.py:74
+#: project/forms.py:61 project/models.py:78
 #: templates/project/application_detail.html:42
 #: templates/project/applications.html:32 templates/project/memberships.html:32
 msgid "Institution"
@@ -61,76 +61,76 @@ msgstr ""
 msgid "Invalid Project Code."
 msgstr ""
 
-#: project/models.py:24
+#: project/models.py:28
 msgid "Project Categories"
 msgstr ""
 
-#: project/models.py:41
+#: project/models.py:45
 msgid "Project Funding Sources"
 msgstr ""
 
-#: project/models.py:48
+#: project/models.py:52
 msgid "Project Title"
 msgstr ""
 
-#: project/models.py:52
+#: project/models.py:56
 msgid "Project Description"
 msgstr ""
 
-#: project/models.py:57 templates/project/application_detail.html:34
+#: project/models.py:61 templates/project/application_detail.html:34
 msgid "Legacy HPC Wales ID"
 msgstr ""
 
-#: project/models.py:58
+#: project/models.py:62
 msgid "Project legacy ID from HPC Wales"
 msgstr ""
 
-#: project/models.py:63 templates/project/application_detail.html:38
+#: project/models.py:67 templates/project/application_detail.html:38
 msgid "Legacy ARCCA ID"
 msgstr ""
 
-#: project/models.py:64
+#: project/models.py:68
 msgid "Project legacy ID ARCCA"
 msgstr ""
 
-#: project/models.py:68
+#: project/models.py:72
 msgid "Project code assigned by SCW"
 msgstr ""
 
-#: project/models.py:73
+#: project/models.py:77
 msgid "Institution project is based"
 msgstr ""
 
-#: project/models.py:78
+#: project/models.py:82
 msgid "Owning institution project reference"
 msgstr ""
 
-#: project/models.py:83
+#: project/models.py:87
 msgid "Department"
 msgstr ""
 
-#: project/models.py:87 templates/project/application_detail.html:50
+#: project/models.py:91 templates/project/application_detail.html:50
 #: templates/project/memberships.html:33
 msgid "Principal Investigator"
 msgstr ""
 
-#: project/models.py:93
+#: project/models.py:97
 msgid "Technical Lead"
 msgstr ""
 
-#: project/models.py:99
+#: project/models.py:103
 msgid "Category"
 msgstr ""
 
-#: project/models.py:104 templates/project/application_detail.html:54
+#: project/models.py:108 templates/project/application_detail.html:54
 msgid "Funding source"
 msgstr ""
 
-#: project/models.py:107 templates/project/application_detail.html:58
+#: project/models.py:110 templates/project/application_detail.html:58
 msgid "Start date"
 msgstr ""
 
-#: project/models.py:110 templates/project/application_detail.html:62
+#: project/models.py:111 templates/project/application_detail.html:62
 msgid "End date"
 msgstr ""
 
@@ -198,15 +198,15 @@ msgstr ""
 msgid "Approved"
 msgstr ""
 
-#: project/models.py:161 project/models.py:255
+#: project/models.py:161 project/models.py:277
 msgid "Declined"
 msgstr ""
 
-#: project/models.py:162 project/models.py:256
+#: project/models.py:162 project/models.py:278
 msgid "Revoked"
 msgstr ""
 
-#: project/models.py:163 project/models.py:257
+#: project/models.py:163 project/models.py:279
 msgid "Suspended"
 msgstr ""
 
@@ -249,29 +249,29 @@ msgstr ""
 msgid "Projects"
 msgstr ""
 
-#: project/models.py:221
+#: project/models.py:243
 #, python-brace-format
 msgid "{project} on {system} from {date_allocated} to {date_unallocated}"
 msgstr ""
 
-#: project/models.py:224
+#: project/models.py:246
 msgid "Project System Allocations"
 msgstr ""
 
-#: project/models.py:253
+#: project/models.py:275
 msgid "Awaiting Authorisation"
 msgstr ""
 
-#: project/models.py:254
+#: project/models.py:276
 msgid "Authorised"
 msgstr ""
 
-#: project/models.py:291
+#: project/models.py:313
 #, python-brace-format
 msgid "{user} on {project} from {date_joined} to {date_left}"
 msgstr ""
 
-#: project/models.py:294
+#: project/models.py:316
 msgid "Project User Memberships"
 msgstr ""
 

@@ -1,11 +1,15 @@
 import datetime
+import logging
 
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from institution.models import Institution
 from system.models import System
+
+logger = logging.getLogger('apps')
 
 
 class ProjectCategory(models.Model):
@@ -103,12 +107,8 @@ class Project(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_('Funding source'),
     )
-    start_date = models.DateField(
-        verbose_name=_('Start date'),
-    )
-    end_date = models.DateField(
-        verbose_name=_('End date'),
-    )
+    start_date = models.DateField(verbose_name=_('Start date'))
+    end_date = models.DateField(verbose_name=_('End date'))
     economic_user = models.BooleanField(
         default=False,
         verbose_name=_('Economic user'),
@@ -125,11 +125,11 @@ class Project(models.Model):
     )
     requirements_training = models.TextField(
         max_length=512,
-        verbose_name=_('Requirements training')
+        verbose_name=_('Requirements training'),
     )
     requirements_onboarding = models.TextField(
         max_length=512,
-        verbose_name=_('Requirements onboarding')
+        verbose_name=_('Requirements onboarding'),
     )
     allocation_rse = models.BooleanField(
         default=False,
@@ -178,7 +178,7 @@ class Project(models.Model):
         max_length=512,
         blank=True,
         help_text=_('Internal project notes'),
-        verbose_name=_('Notes')
+        verbose_name=_('Notes'),
     )
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
@@ -195,6 +195,28 @@ class Project(models.Model):
 
     class Meta:
         verbose_name_plural = _('Projects')
+
+    def save(self, *args, **kwargs):
+        updated = self.pk
+        super(Project, self).save(*args, **kwargs)
+        # Update or create a ProjectUserMembership instance for the project's technical lead.
+        if updated:
+            try:
+                if self.status == Project.APPROVED:
+                    ProjectUserMembership.objects.update_or_create(
+                        project=self,
+                        user=self.tech_lead,
+                        defaults={
+                            'date_joined': datetime.date.today(),
+                            'status': ProjectUserMembership.AUTHORISED,
+                        },
+                    )
+                    # Assign the 'project_owner' group to the project's technical lead.
+                    group = Group.objects.get(name='project_owner')
+                    self.tech_lead.groups.add(group)
+            except Exception:
+                logger.exception('Failed to update or create a ProjectUserMembership instance for'
+                                 'the project\'s technical lead.')
 
 
 class ProjectSystemAllocation(models.Model):
