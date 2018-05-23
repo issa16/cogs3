@@ -54,35 +54,25 @@
 					</div>
 				</div>
 			</nav>
-
-		{% else %}
-			<nav class="language-select">
-				<ul class="navbar-nav ml-auto">
-					{% if LANGUAGE_CODE == "cy" %}
-						<li class="nav-item">
-							<a class="nav-link" href="{% translate_url 'en' %}" hreflang="en">English</a>
-						</li>
-					{% else %}
-						<li class="nav-item">
-							<a class="nav-link" href="{% translate_url 'cy' %}" hreflang="cy">Cymraeg</a>
-						</li>
-					{% endif %}
-				</ul>
-			</nav>
-			{% endif %}
-			<main class="container">
-				{% block content %}
-				{% endblock %}
-			</main>
-			<footer class="fixed-bottom">
-				{% cookielaw_banner %}
-			</footer>
-			<script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
-			<script src="{% static "js/jquery-ui.min.js" %}"></script>
-			<script src="{% static "js/bootstrap.min.js" %}"></script>
-			<script src="{% static "cookielaw/js/cookielaw.js" %}"></script>
-			<script src="{% static "js/main.js" %}"></script>
-			{% block custom_js %}
+		{% endif %}
+		<main class="container">
+			{% block content %}
 			{% endblock %}
-		</body>
-	</html>
+			{% if not user.is_authenticated %}
+				<p class="mt-3 mb-1 text-center">
+					<a href="{% translate_url 'en' %}" hreflang="en">English</a> | <a href="{% translate_url 'cy' %}" hreflang="cy">Cymraeg</a>
+				</p>
+			{% endif %}
+		</main>
+		<footer class="fixed-bottom">
+			{% cookielaw_banner %}
+		</footer>
+		<script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
+		<script src="{% static "js/jquery-ui.min.js" %}"></script>
+		<script src="{% static "js/bootstrap.min.js" %}"></script>
+		<script src="{% static "cookielaw/js/cookielaw.js" %}"></script>
+		<script src="{% static "js/main.js" %}"></script>
+		{% block custom_js %}
+		{% endblock %}
+	</body>
+</html>
