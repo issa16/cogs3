@@ -2,7 +2,7 @@ from selenium_base import SeleniumTestsBase
 
 class UserIntegrationTests(SeleniumTestsBase):
 
-    def test_external_login(self):
+    def test_user_login(self):
         """
         Sign in as an external user
         """
