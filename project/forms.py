@@ -33,17 +33,26 @@ class ProjectCreationForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        exclude = [
-            'code',
-            'category',
-            'status',
-            'allocation_systems',
-            'members',
-            'tech_lead',
-            'notes',
-            'economic_user',
-            'allocation_rse',
-            'reason_decision',
+        fields = [
+            'title',
+            'description',
+            'legacy_hpcw_id',
+            'legacy_arcca_id',
+            'institution',
+            'institution_reference',
+            'department',
+            'pi',
+            'funding_source',
+            'start_date',
+            'end_date',
+            'requirements_software',
+            'requirements_gateways',
+            'requirements_training',
+            'requirements_onboarding',
+            'allocation_cputime',
+            'allocation_memory',
+            'allocation_storage_home',
+            'allocation_storage_scratch'
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={
