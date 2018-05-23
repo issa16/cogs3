@@ -38,7 +38,7 @@ class ProjectCreationForm(forms.ModelForm):
             'description',
             'legacy_hpcw_id',
             'legacy_arcca_id',
-            'institution'
+            'institution',
             'institution_reference',
             'department',
             'pi',
