@@ -31,7 +31,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.sign_in( self.user )
 
         # Fill the project form with a field missing
-        for missing_field in ['id_title','id_description','id_institution']:
+        for missing_field in ['id_title','id_description','id_institution','id_start_date','id_end_date']:
             self.get_url("")
             self.click_link_by_url('/projects/create/')
             form_field = dict(self.default_project_form_fields)
