@@ -14,8 +14,8 @@
     <div class="list-group">
         {% for institution in institutions %}
             {% if institution.identity_provider %}
-                <a href="{{shibboleth_idp_login}}?entityID={{institution.identity_provider}}" class="text-center border-0 mt-3 list-group-item list-group-item-action flex-column align-items-start box-shadow">
-                    <img class="img-fluid" src="{{ institution.logo_path }}" alt="{% trans "{{institution}}" %}">
+                <a id="{{institution.id_str}}-login-link" href="{{shibboleth_idp_login}}?entityID={{institution.identity_provider}}" class="text-center border-0 mt-3 list-group-item list-group-item-action flex-column align-items-start box-shadow">
+                    <img class="img-fluid" src="{{institution.logo_path}}" alt="{% trans "{{institution}}" %}">
                 </a>
             {% endif %}
         {% endfor %}
