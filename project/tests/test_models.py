@@ -170,7 +170,7 @@ class ProjectTests(ProjectModelTests, TestCase):
         self.assertEqual(project.status, Project.AWAITING_APPROVAL)
         self.assertEqual(project.title, title)
         self.assertEqual(project.code, code)
-        self.assertTrue(project.awaiting_approval())
+        self.assertTrue(project.is_awaiting_approval())
 
     def test_project_creation(self):
         """

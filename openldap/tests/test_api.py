@@ -27,7 +27,10 @@ class OpenLDAPBaseAPITests(TestCase):
         return mock_resp
 
     @mock.patch('requests.get')
-    def _test_query_with_invalid_json_schema(self, mock_get, query, query_args):
+    @mock.patch('requests.post')
+    @mock.patch('requests.put')
+    @mock.patch('requests.delete')
+    def _test_query_with_invalid_json_schema(self, query, query_kwargs, delete_mock, put_mock, post_mock, get_mock):
         """
         Ensure a ValidationError is raised if the decoded JWT does not conform to the required
         json schema.
@@ -35,16 +38,18 @@ class OpenLDAPBaseAPITests(TestCase):
         jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGU'
                'uY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIn0.0nWb_yS8s9nwxP4vC9E'
                '38xCuutmrqD8EJh-6SpXXmiU')
-        mock_resp = self._mock_response(
-            status=200,
-            content=jwt.encode(),
-        )
-        mock_get.return_value = mock_resp
+        delete_mock.return_value = self._mock_response(status=204, content=jwt.encode())
+        put_mock.return_value = self._mock_response(status=200, content=jwt.encode())
+        post_mock.return_value = self._mock_response(status=201, content=jwt.encode())
+        get_mock.return_value = self._mock_response(status=200, content=jwt.encode())
         with self.assertRaises(jsonschema.exceptions.ValidationError):
-            query(query_args) if query_args else query()
+            query(**query_kwargs) if query_kwargs else query()
 
     @mock.patch('requests.get')
-    def _test_query_with_connection_error(self, mock_get, query, query_args):
+    @mock.patch('requests.post')
+    @mock.patch('requests.put')
+    @mock.patch('requests.delete')
+    def _test_query_with_connection_error(self, query, query_kwargs, delete_mock, put_mock, post_mock, get_mock):
         """
         Ensure a ConnectionError is raised if the request fails to connect.
         """
@@ -52,12 +57,18 @@ class OpenLDAPBaseAPITests(TestCase):
             status=504,
             raise_for_status=requests.exceptions.ConnectionError('ConnectionError.'),
         )
-        mock_get.return_value = mock_resp
+        delete_mock.return_value = mock_resp
+        put_mock.return_value = mock_resp
+        post_mock.return_value = mock_resp
+        get_mock.return_value = mock_resp
         with self.assertRaises(requests.exceptions.ConnectionError):
-            query(query_args) if query_args else query()
+            query(**query_kwargs) if query_kwargs else query()
 
     @mock.patch('requests.get')
-    def _test_query_with_http_error(self, mock_get, query, query_args):
+    @mock.patch('requests.post')
+    @mock.patch('requests.put')
+    @mock.patch('requests.delete')
+    def _test_query_with_http_error(self, query, query_kwargs, delete_mock, put_mock, post_mock, get_mock):
         """
         Ensure a HTTPError is raised if the the request returns a HTTP error status.
         """
@@ -65,12 +76,18 @@ class OpenLDAPBaseAPITests(TestCase):
             status=500,
             raise_for_status=requests.exceptions.HTTPError('Internal Server Error.'),
         )
-        mock_get.return_value = mock_resp
+        delete_mock.return_value = mock_resp
+        put_mock.return_value = mock_resp
+        post_mock.return_value = mock_resp
+        get_mock.return_value = mock_resp
         with self.assertRaises(requests.exceptions.HTTPError):
-            query(query_args) if query_args else query()
+            query(**query_kwargs) if query_kwargs else query()
 
     @mock.patch('requests.get')
-    def _test_query_with_timeout_error(self, mock_get, query, query_args):
+    @mock.patch('requests.post')
+    @mock.patch('requests.put')
+    @mock.patch('requests.delete')
+    def _test_query_with_timeout_error(self, query, query_kwargs, delete_mock, put_mock, post_mock, get_mock):
         """
         Ensure a Timeout error is raised if the request times out.
         """
@@ -78,6 +95,9 @@ class OpenLDAPBaseAPITests(TestCase):
             status=504,
             raise_for_status=requests.exceptions.Timeout('Timeout'),
         )
-        mock_get.return_value = mock_resp
+        delete_mock.return_value = mock_resp
+        put_mock.return_value = mock_resp
+        post_mock.return_value = mock_resp
+        get_mock.return_value = mock_resp
         with self.assertRaises(requests.exceptions.Timeout):
-            query(query_args) if query_args else query()
+            query(**query_kwargs) if query_kwargs else query()

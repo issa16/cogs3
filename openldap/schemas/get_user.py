@@ -1,48 +1,4 @@
-list_users_schema = {
-    "$schema": "http://json-schema.org/draft-06/schema#",
-    "$ref": "#/definitions/ListUsers",
-    "definitions": {
-        "ListUsers": {
-            "type": "object",
-            "additionalProperties": True,
-            "properties": {
-                "iss": {
-                    "type": "string"
-                },
-                "aud": {
-                    "type": "string"
-                },
-                "iat": {
-                    "type": "integer"
-                },
-                "nbf": {
-                    "type": "integer"
-                },
-                "data": {
-                    "$ref": "#/definitions/Data"
-                }
-            },
-            "required": ["aud", "data", "iat", "iss", "nbf"],
-            "title": "ListUsers"
-        },
-        "Data": {
-            "type": "object",
-            "additionalProperties": True,
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "count": {
-                    "type": "integer"
-                }
-            },
-            "required": ["count", "error"],
-            "title": "Data"
-        }
-    }
-}
-
-get_user_schema = {
+get_user_json = {
     "$schema": "http://json-schema.org/draft-06/schema#",
     "$ref": "#/definitions/GetUser",
     "definitions": {
@@ -69,7 +25,14 @@ get_user_schema = {
                     "type": "string"
                 }
             },
-            "required": ["displayname", "gidNumber", "mail", "telephone", "uid", "uidnumber"],
+            "required": [
+                "displayname",
+                "gidNumber",
+                "mail",
+                "telephone",
+                "uid",
+                "uidnumber",
+            ],
             "title": "0"
         },
         "GetUser": {
@@ -92,7 +55,13 @@ get_user_schema = {
                     "$ref": "#/definitions/Data"
                 }
             },
-            "required": ["aud", "data", "iat", "iss", "nbf"],
+            "required": [
+                "aud",
+                "data",
+                "iat",
+                "iss",
+                "nbf",
+            ],
             "title": "GetUser"
         },
         "Data": {
@@ -109,7 +78,11 @@ get_user_schema = {
                     "type": "integer"
                 }
             },
-            "required": ["0", "count", "error"],
+            "required": [
+                "0",
+                "count",
+                "error",
+            ],
             "title": "Data"
         },
         "Displayname": {
@@ -123,7 +96,10 @@ get_user_schema = {
                     "type": "integer"
                 }
             },
-            "required": ["0", "count"],
+            "required": [
+                "0",
+                "count",
+            ],
             "title": "Displayname"
         }
     }

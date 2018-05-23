@@ -4,8 +4,13 @@ import requests
 
 from django.conf import settings
 
-from openldap import schemas
 from openldap.decorators import OpenLDAPException
+from openldap.schemas.create_user import create_user_json
+from openldap.schemas.delete_user import delete_user_json
+from openldap.schemas.enable_account import enable_account_json
+from openldap.schemas.get_user import get_user_json
+from openldap.schemas.list_users import list_users_json
+from openldap.schemas.reset_password import reset_password_json
 from openldap.util import decode_response
 
 logger = logging.getLogger('openldap')
@@ -26,7 +31,7 @@ def list_users():
     )
     response.raise_for_status()
     response = decode_response(response)
-    jsonschema.validate(response, schemas.list_users_schema)
+    jsonschema.validate(response, list_users_json)
     return response
 
 
@@ -60,8 +65,8 @@ def create_user(email, title, first_name, surname, department, telephone, uid_nu
         payload.update({'department': department})
     if telephone:
         payload.update({'telephone': telephone})
-    if uidNumber:
-        payload.update({'uid_number': uidNumber})
+    if uid_number:
+        payload.update({'uidNumber': uid_number})
     response = requests.post(
         url,
         headers=headers,
@@ -70,8 +75,7 @@ def create_user(email, title, first_name, surname, department, telephone, uid_nu
     )
     response.raise_for_status()
     response = decode_response(response)
-    # TODO - Pending implementation
-    #jsonschema.validate(response, schemas.create_user_schema)
+    jsonschema.validate(response, create_user_json)
     return response
 
 
@@ -93,12 +97,12 @@ def get_user_by_id(user_id):
     )
     response.raise_for_status()
     response = decode_response(response)
-    jsonschema.validate(response, schemas.get_user_schema)
+    jsonschema.validate(response, get_user_json)
     return response
 
 
 @OpenLDAPException(logger)
-def test_get_user_by_email_address(email_address):
+def get_user_by_email_address(email_address):
     """
     Get an existing user by email address.
 
@@ -115,7 +119,7 @@ def test_get_user_by_email_address(email_address):
     )
     response.raise_for_status()
     response = decode_response(response)
-    jsonschema.validate(response, schemas.get_user_schema)
+    jsonschema.validate(response, get_user_json)
     return response
 
 
@@ -137,13 +141,12 @@ def delete_user(email_address):
     )
     response.raise_for_status()
     response = decode_response(response)
-    # TODO - Pending implementation
-    #jsonschema.validate(response, schemas.delete_user_schema)
+    jsonschema.validate(response, delete_user_json)
     return response
 
 
 @OpenLDAPException(logger)
-def reset_user_password(email_address):
+def reset_user_password(email_address, password):
     """
     Reset a user's password.
 
@@ -152,16 +155,20 @@ def reset_user_password(email_address):
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/resetPassword/', email_address, '/'])
     logger.info('OpenLDAP User API :: POST ::', url)
-    headers = {'Cache-Control': 'no-cache'}
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cache-Control': 'no-cache',
+    }
+    payload = {'password': password}
     response = requests.post(
         url,
         headers=headers,
+        params=payload,
         timeout=5,
     )
     response.raise_for_status()
     response = decode_response(response)
-    # TODO - Pending implementation
-    #jsonschema.validate(response, schemas.reset_user_password_schema)
+    jsonschema.validate(response, reset_password_json)
     return response
 
 
@@ -183,6 +190,5 @@ def enable_user_account(email_address):
     )
     response.raise_for_status()
     response = decode_response(response)
-    # TODO - Pending implementation
-    #jsonschema.validate(response, schemas.enable_user_account_schema)
+    jsonschema.validate(response, enable_account_json)
     return response

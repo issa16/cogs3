@@ -20,7 +20,7 @@ def create_project_membership(code, user_id):
         code (str): Project code (prefix_00001) - required
         user_id (str): (prefix.username) - required
     """
-    pass
+    raise NotImplementedError('Not yet implemented.')
 
 
 @OpenLDAPException(logger)
@@ -33,7 +33,7 @@ def update_project_membership(code, user_id, status):
         user_id (str): (prefix.username) - required
         status (str) : Project membership status [revoked, suspended, authorised] - required
     """
-    pass
+    raise NotImplementedError('Not yet implemented.')
 
 
 @OpenLDAPException(logger)
@@ -45,4 +45,4 @@ def delete_project_membership(code, user_id):
         code (str): Project code (prefix_00001) - required
         user_id (str): (prefix.username) - required
     """
-    pass
+    raise NotImplementedError('Not yet implemented.')

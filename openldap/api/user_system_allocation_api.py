@@ -17,9 +17,9 @@ def get_system_allocation(email):
     Get a system allocation.
 
     Args:
-        email (str): Email address - required
+        email (str): User's email address - required
     """
-    pass
+    raise NotImplementedError('Not yet implemented.')
 
 
 @OpenLDAPException(logger)
@@ -28,10 +28,10 @@ def update_system_allocation(email, system_id):
     Update a system allocation.
 
     Args:
-        email (str): Email address - required
+        email (str): User's email address - required
         system_id (str): System name [hawk, sunbird].
     """
-    pass
+    raise NotImplementedError('Not yet implemented.')
 
 
 @OpenLDAPException(logger)
@@ -40,7 +40,7 @@ def delete_system_allocation(email, system_id):
     Delete a system allocation.
 
     Args:
-        email (str): Email address - required
+        email (str): User's email address - required
         system_id (str): System name [hawk, sunbird].
     """
-    pass
+    raise NotImplementedError('Not yet implemented.')
