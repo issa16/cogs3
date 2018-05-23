@@ -314,6 +314,6 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         ]
         for query, query_kwargs in queries:
             self._test_query_with_invalid_json_schema(query, query_kwargs)
-            self._test_query_with_invalid_json_schema(query, query_kwargs)
+            self._test_query_with_connection_error(query, query_kwargs)
             self._test_query_with_http_error(query, query_kwargs)
             self._test_query_with_timeout_error(query, query_kwargs)
