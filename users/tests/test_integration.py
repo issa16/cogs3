@@ -1,5 +1,6 @@
 from selenium_base import SeleniumTestsBase
 
+
 class UserIntegrationTests(SeleniumTestsBase):
 
     def test_user_login(self):
