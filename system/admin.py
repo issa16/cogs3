@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import System
+from system.models import System
+from system.models import SystemToInstitutionMap
 
 
 @admin.register(System)
@@ -9,4 +10,12 @@ class SystemAdmin(admin.ModelAdmin):
         'name',
         'description',
         'number_of_cores',
+    )
+
+
+@admin.register(SystemToInstitutionMap)
+class SystemToInstitutionMapAdmin(admin.ModelAdmin):
+    list_display = (
+        'system',
+        'institution',
     )

@@ -103,12 +103,8 @@ class Project(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_('Funding source'),
     )
-    start_date = models.DateField(
-        verbose_name=_('Start date'),
-    )
-    end_date = models.DateField(
-        verbose_name=_('End date'),
-    )
+    start_date = models.DateField(verbose_name=_('Start date'), )
+    end_date = models.DateField(verbose_name=_('End date'), )
     economic_user = models.BooleanField(
         default=False,
         verbose_name=_('Economic user'),
@@ -123,14 +119,8 @@ class Project(models.Model):
         help_text=_('Web gateway or portal name and versions'),
         verbose_name=_('Requirements gateways'),
     )
-    requirements_training = models.TextField(
-        max_length=512,
-        verbose_name=_('Requirements training')
-    )
-    requirements_onboarding = models.TextField(
-        max_length=512,
-        verbose_name=_('Requirements onboarding')
-    )
+    requirements_training = models.TextField(max_length=512, verbose_name=_('Requirements training'))
+    requirements_onboarding = models.TextField(max_length=512, verbose_name=_('Requirements onboarding'))
     allocation_rse = models.BooleanField(
         default=False,
         verbose_name=_('RSE available to?'),
@@ -174,17 +164,27 @@ class Project(models.Model):
         verbose_name=_('Reason for the project status decision:'),
         help_text=_('The reason will be emailed to the project\'s technical lead upon project status update.'),
     )
-    notes = models.TextField(
-        max_length=512,
-        blank=True,
-        help_text=_('Internal project notes'),
-        verbose_name=_('Notes')
-    )
+    notes = models.TextField(max_length=512, blank=True, help_text=_('Internal project notes'), verbose_name=_('Notes'))
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
 
-    def awaiting_approval(self):
+    def is_awaiting_approval(self):
         return True if self.status == Project.AWAITING_APPROVAL else False
+
+    def is_approved(self):
+        return True if self.status == Project.APPROVED else False
+
+    def is_declined(self):
+        return True if self.status == Project.DECLINED else False
+
+    def is_revoked(self):
+        return True if self.status == Project.REVOKED else False
+
+    def is_suspended(self):
+        return True if self.status == Project.SUSPENDED else False
+
+    def is_closed(self):
+        return True if self.status == Project.CLOSED else False
 
     def __str__(self):
         data = {
@@ -210,6 +210,21 @@ class ProjectSystemAllocation(models.Model):
     date_unallocated = models.DateField()
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+    CREATE = 1
+    CREATED = 2
+    DEACTIVATE = 3
+    DEACTIVATED = 4
+    STATUS_CHOICES = (
+        (CREATE, 'Create System Resources'),
+        (CREATED, 'Created System Resources'),
+        (DEACTIVATE, 'Deactivate System Resources'),
+        (DEACTIVATED, 'Deactivated System Resources'),
+    )
+    openldap_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=CREATE,
+        verbose_name='OpenLDAP status',
+    )
 
     def __str__(self):
         data = {
@@ -222,6 +237,7 @@ class ProjectSystemAllocation(models.Model):
 
     class Meta:
         verbose_name_plural = _('Project System Allocations')
+        unique_together = (('project', 'system'), )
 
 
 class ProjectUserMembershipManager(models.Manager):
@@ -267,13 +283,13 @@ class ProjectUserMembership(models.Model):
 
     objects = ProjectUserMembershipManager()
 
-    def awaiting_authorisation(self):
+    def is_awaiting_authorisation(self):
         return True if self.status == ProjectUserMembership.AWAITING_AUTHORISATION else False
 
-    def authorised(self):
+    def is_authorised(self):
         return True if self.status == ProjectUserMembership.AUTHORISED else False
 
-    def unauthorised(self):
+    def is_unauthorised(self):
         revoked_states = [
             ProjectUserMembership.REVOKED,
             ProjectUserMembership.SUSPENDED,
