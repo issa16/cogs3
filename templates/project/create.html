@@ -10,7 +10,7 @@
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
 					<h4>Project Application</h4>
 				</div>
-				<form method="post" novalidate>
+				<form method="post" enctype="multipart/form-data" novalidate>
 					{% csrf_token %}
 					{% include 'includes/generic_form.html' with form=form %}
 					<button type="submit" class="btn btn-primary">Submit</button>

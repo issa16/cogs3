@@ -53,7 +53,8 @@ class ProjectCreationForm(forms.ModelForm):
             'allocation_cputime',
             'allocation_memory',
             'allocation_storage_home',
-            'allocation_storage_scratch'
+            'allocation_storage_scratch',
+            'document'
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={
