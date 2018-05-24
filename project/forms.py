@@ -6,11 +6,58 @@ from project.models import Project
 from project.models import ProjectUserMembership
 
 
+class FileLinkWidget(forms.Widget):
+    def __init__(self, obj, attrs=None):
+        self.object = obj
+        super(FileLinkWidget, self).__init__(attrs)
+
+    def render(self, name, value, attrs=None):
+        if self.object.pk:
+            return u'<a target="_blank" href="/en/projects/applications/%s/document">Download</a>' % (self.object.id)
+
+        else:
+            return u''
+
+
 class ProjectAdminForm(forms.ModelForm):
+
+    document_download = forms.CharField(label='Download Supporting Document', required=False)
 
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = [
+            'title',
+            'description',
+            'legacy_hpcw_id',
+            'legacy_arcca_id',
+            'code', 'institution',
+            'institution_reference',
+            'department',
+            'pi',
+            'tech_lead',
+            'category',
+            'funding_source',
+            'start_date',
+            'end_date',
+            'economic_user',
+            'requirements_software',
+            'requirements_gateways',
+            'requirements_training',
+            'requirements_onboarding',
+            'allocation_rse',
+            'allocation_cputime',
+            'allocation_memory',
+            'allocation_storage_home', 'allocation_storage_scratch',
+            'document',
+            'document_download',
+            'status',
+            'reason_decision',
+            'notes',
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectAdminForm, self).__init__(*args, **kwargs)
+        self.fields['document_download'].widget = FileLinkWidget(self.instance)
 
     def clean_code(self):
         """
