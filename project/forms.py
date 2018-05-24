@@ -68,7 +68,7 @@ class ProjectCreationForm(forms.ModelForm):
             'allocation_cputime',
             'allocation_memory',
             'allocation_storage_home',
-            'allocation_storage_scratch'
+            'allocation_storage_scratch',
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={
@@ -99,7 +99,7 @@ class ProjectUserMembershipCreationForm(forms.Form):
             # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:
                 raise forms.ValidationError(_("You are currently a member of the project."))
-            if project.awaiting_approval():
+            if project.is_awaiting_approval():
                 raise forms.ValidationError(_("The project is currently awaiting approval."))
             if ProjectUserMembership.objects.filter(project=project, user=user).exists():
                 raise forms.ValidationError(_("A membership request for this project already exists."))

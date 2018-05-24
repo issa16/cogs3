@@ -6,8 +6,6 @@ from abc import abstractmethod
 
 from django.core.mail import EmailMessage
 
-from notification.tasks import enqueue_email
-
 logger = logging.getLogger('queue')
 
 NOT_YET_IMPLEMENED = 'Not yet implemented.'

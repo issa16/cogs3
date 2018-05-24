@@ -197,7 +197,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
 
             # Ensure the project user membership status is currently set authorised.
             membership = ProjectUserMembership.objects.get(user=account)
-            self.assertTrue(membership.authorised())
+            self.assertTrue(membership.is_authorised())
 
     def test_form_when_a_user_has_a_request_awaiting_authorisation(self):
         """
@@ -230,7 +230,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
             user=self.project_applicant,
             project=project,
         )
-        self.assertTrue(membership.awaiting_authorisation())
+        self.assertTrue(membership.is_awaiting_authorisation())
 
         # A request to create a project user membership should be rejected.
         form = ProjectUserMembershipCreationForm(

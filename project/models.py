@@ -189,8 +189,6 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
 
-    # Manager?
-
     def email_subject(self):
         return "EMAIL SUBJECT"
 
@@ -208,8 +206,23 @@ class Project(models.Model):
         elif self.status == Project.SUSPENDED:
             return ""
 
-    def awaiting_approval(self):
+    def is_awaiting_approval(self):
         return True if self.status == Project.AWAITING_APPROVAL else False
+
+    def is_approved(self):
+        return True if self.status == Project.APPROVED else False
+
+    def is_declined(self):
+        return True if self.status == Project.DECLINED else False
+
+    def is_revoked(self):
+        return True if self.status == Project.REVOKED else False
+
+    def is_suspended(self):
+        return True if self.status == Project.SUSPENDED else False
+
+    def is_closed(self):
+        return True if self.status == Project.CLOSED else False
 
     def __str__(self):
         data = {
@@ -258,6 +271,21 @@ class ProjectSystemAllocation(models.Model):
     date_unallocated = models.DateField()
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+    CREATE = 1
+    CREATED = 2
+    DEACTIVATE = 3
+    DEACTIVATED = 4
+    STATUS_CHOICES = (
+        (CREATE, 'Create System Resources'),
+        (CREATED, 'Created System Resources'),
+        (DEACTIVATE, 'Deactivate System Resources'),
+        (DEACTIVATED, 'Deactivated System Resources'),
+    )
+    openldap_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=CREATE,
+        verbose_name='OpenLDAP status',
+    )
 
     def __str__(self):
         data = {
@@ -267,6 +295,10 @@ class ProjectSystemAllocation(models.Model):
             'date_unallocated': self.date_unallocated
         }
         return _('{project} on {system} from {date_allocated} to {date_unallocated}').format(**data)
+
+    class Meta:
+        verbose_name_plural = _('Project System Allocations')
+        unique_together = (('project', 'system'), )
 
 
 class ProjectUserMembershipManager(models.Manager):
@@ -317,13 +349,13 @@ class ProjectUserMembership(models.Model):
 
     objects = ProjectUserMembershipManager()
 
-    def awaiting_authorisation(self):
+    def is_awaiting_authorisation(self):
         return True if self.status == ProjectUserMembership.AWAITING_AUTHORISATION else False
 
-    def authorised(self):
+    def is_authorised(self):
         return True if self.status == ProjectUserMembership.AUTHORISED else False
 
-    def unauthorised(self):
+    def is_unauthorised(self):
         revoked_states = [
             ProjectUserMembership.REVOKED,
             ProjectUserMembership.SUSPENDED,

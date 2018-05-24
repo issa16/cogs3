@@ -35,7 +35,7 @@ class ProjectEmailNotification(EmailNotification):
         super(ProjectEmailNotification, self).__init__()
         self.project = project
 
-        # Parse project details...
+        # TODO
         subject = ''
         body = ''
         to = self.project.tech_lead
