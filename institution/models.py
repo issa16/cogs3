@@ -1,8 +1,8 @@
 from django.db import models
+from django.utils.translation import gettext as _
 
 from institution.exceptions import InvalidIndentityProvider
 from institution.exceptions import InvalidInstitution
-from django.utils.translation import gettext as _
 
 
 class Institution(models.Model):
@@ -34,6 +34,9 @@ class Institution(models.Model):
 
     def __str__(self):
         return _(self.name)
+
+    def id_str(self):
+        return self.name.lower().replace(" ", "-")
 
     class Meta:
         ordering = ('name', )
