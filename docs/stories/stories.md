@@ -21,17 +21,16 @@
 - Newly created projects are created with status UNAPPROVED [UT]
 - Newly created projects do not have a default category [UT]
 - Project status cannot be set to approved without a category and project code [UT]
-- New projects must have a name, description, technical lead and institution
-- Active projects are listed as 'Awaiting Authorisation' the project list
+- New projects must have a name, description, technical lead, institution, start date and an end date [IT]
+- Active projects are listed as 'Awaiting Authorisation' the project list [IT]
 #### Not Tested
 - Projects require a start and end date [UT]
 
 ### Project administration
 #### Tested
-#### Pending Testing
-- User can create a project membership request
-- Project membership requests should be created in a PENDING state
-- Technical lead should be able to change the state of project memberships requests made by other users to APPROVED
+- User can create a project membership request [IT]
+- Project membership requests should be created in a PENDING state [IT]
+- Technical lead should be able to change the state of project memberships requests made by other users to APPROVED [IT]
 #### Not Implemented
 - Technical lead should be able to create a project membership request for a specific user by email address
 - User being added should be able to change the state of a project membership request created by a technical lead to APPROVED
@@ -44,7 +43,7 @@
 ### User creation
 #### Tested
 - Any users can log in with an institutional email address [IT]
-- Anyone user with a  pre-approved, non-institutional email address can log in
+- Anyone user with a  pre-approved, non-institutional email address can log in [IT]
 #### Not Tested
 - Users should be automatically removed from the system when they leave university
 #### Not Implemented
