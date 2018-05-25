@@ -41,13 +41,13 @@
 						<td style="width:200px;">
 							<select class="membership-status form-control form-control-sm">
 								<option value="0" selected>{{project_request.get_status_display}}</option>
-								{% if project_request.awaiting_authorisation %}
+								{% if project_request.is_awaiting_authorisation %}
 									<option value="{{project_request.AUTHORISED}}">{% trans "Authorise" %}</option>
 									<option value="{{project_request.DECLINED}}">{% trans "Decline" %}</option>
-								{% elif project_request.authorised %}
+								{% elif project_request.is_authorised %}
 									<option value="{{project_request.REVOKED}}">{% trans "Revoke" %}</option>
 									<option value="{{project_request.SUSPENDED}}">{% trans "Suspend" %}</option>
-								{% elif project_request.unauthorised %}
+								{% elif project_request.is_unauthorised %}
 									<option value="{{project_request.AUTHORISED}}">{% trans "Authorise" %}</option>
 								{% endif %}
 							</select>
