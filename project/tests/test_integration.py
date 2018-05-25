@@ -1,7 +1,12 @@
+import os
+import filecmp
+
 from selenium_base import SeleniumTestsBase
 from project.models import Project
 
 class ProjectIntegrationTests(SeleniumTestsBase):
+
+    thisfile = os.path.realpath(__file__)
 
     default_project_form_fields = {
         "id_title": "Test project",
@@ -20,6 +25,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         "id_allocation_memory": "1",
         "id_allocation_storage_home": "200",
         "id_allocation_storage_scratch": "1",
+        'id_document': thisfile,
     }
 
 
@@ -68,7 +74,10 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
         assert matching_projects.count() == 1
 
-        #Check that the technical lead is the user
+        # Get the project
+        project = matching_projects.first()
+
+        # Check that the technical lead is the user
         tech_lead_id = matching_projects.values_list('tech_lead', flat=True).get(pk=1)
         user_id = self.user.id
         assert tech_lead_id == user_id
@@ -77,8 +86,14 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         status = matching_projects.values_list('status', flat=True).get(pk=1)
         assert status == Project.AWAITING_APPROVAL
 
+        # Check that the file was uploaded
+        rootpath = os.path.join(os.path.dirname(self.thisfile), os.pardir, os.pardir, 'media')
+        uploadpath = os.path.join(rootpath, project.document.name)
+        uploadpath = os.path.normpath(uploadpath)
+        assert os.path.isfile(uploadpath)
+        assert filecmp.cmp(uploadpath, self.thisfile)
+
         # Approve the project and set a code
-        project = matching_projects.first()
         project.status = Project.APPROVED
         project.code = 'code1'
         project.save()
