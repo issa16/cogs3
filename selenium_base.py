@@ -1,5 +1,5 @@
+import time
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 from users.models import CustomUser
@@ -15,11 +15,16 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
 
     serialized_rollback = True
 
+    internationalization_root = '/en'
+
     def get_url(self, url):
-        self.selenium.get(self.live_server_url + url)
+        full_url = self.live_server_url + self.internationalization_root + url
+        self.selenium.get(full_url)
 
     def click_link_by_url(self, url):
-        link = self.selenium.find_element_by_css_selector('a[href*="'+url+'"]')
+        full_url = self.internationalization_root + url
+        selector = 'a[href*="'+full_url+'"]'
+        link = self.selenium.find_element_by_css_selector(selector)
         link.click()
 
     def fill_form_by_id(self, fields):
@@ -59,6 +64,9 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
     def submit_form(self, form_fields):
         key = list(form_fields.keys())[0]
         self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
+        # This seems to be necessary Geckodriver (Firefox)
+        # I'm guessing it take a moment to process the submission
+        time.sleep(0.1)
 
     def click_by_id(self, text):
         self.selenium.find_element_by_id(text).click()
