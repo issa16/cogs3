@@ -3,6 +3,7 @@ import datetime
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.mail import EmailMessage
 
 from institution.models import Institution
 from system.models import System
@@ -186,12 +187,34 @@ class Project(models.Model):
     def is_closed(self):
         return True if self.status == Project.CLOSED else False
 
+    def status_change_email(self, status, reason):
+        status = self.status_string()
+        return EmailMessage(
+            'Supercomputing Wales Project %s'%status,
+            'Dear SCW user,\n\nYour project has been %s. \n\n%s\n\n\nIf you have any questions, please contact us at support@supercomputing.wales'
+            % (status.lower(), reason),
+            'support@supercomputing.wales',
+            ['to@example.com'],
+            [],
+            reply_to=['another@example.com'],
+        )
+
     def __str__(self):
         data = {
             'code': self.code,
             'title': self.title,
         }
         return '{code} - {title}'.format(**data)
+
+    def save(self):
+        if self.id:
+            current = Project.objects.get(pk=self.id)
+            email_on_status = [self.DECLINED, self.REVOKED, self.SUSPENDED, self.CLOSED]
+            if self.status != current.status and self.status in email_on_status and self.reason_decision != '':
+                email = self.status_change_email(self.status, self.reason_decision)
+                email.send(fail_silently=True)
+            self.reason_decision = ''
+        super(Project, self).save()
 
     class Meta:
         verbose_name_plural = _('Projects')
