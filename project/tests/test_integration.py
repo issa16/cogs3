@@ -1,5 +1,7 @@
 from selenium_base import SeleniumTestsBase
+from django.core import mail
 from project.models import Project
+
 
 class ProjectIntegrationTests(SeleniumTestsBase):
 
@@ -23,7 +25,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
     }
 
 
-    def test_create_project(self):
+    def test_project(self):
         """
         Create a new project
         Before running this a funding source called test must be added to the database.
@@ -69,16 +71,16 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         assert matching_projects.count() == 1
 
         #Check that the technical lead is the user
-        tech_lead_id = matching_projects.values_list('tech_lead', flat=True).get(pk=1)
+        project = matching_projects.first()
+        tech_lead_id = project.tech_lead.id
         user_id = self.user.id
         assert tech_lead_id == user_id
 
         # Check that the project is not active
-        status = matching_projects.values_list('status', flat=True).get(pk=1)
+        status = project.status
         assert status == Project.AWAITING_APPROVAL
 
         # Approve the project and set a code
-        project = matching_projects.first()
         project.status = Project.APPROVED
         project.code = 'code1'
         project.save()
@@ -89,7 +91,8 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         assert 'code1' in self.selenium.page_source
         assert self.default_project_form_fields["id_title"] in self.selenium.page_source
 
-        self.click_link_by_url('/projects/applications/1/')
+        id = project.id
+        self.click_link_by_url('/projects/applications/%i/'%id)
         assert self.default_project_form_fields["id_description"] in self.selenium.page_source
 
         self.get_url("/projects/memberships/")
@@ -125,13 +128,25 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         assert self.student.email in self.selenium.page_source
         self.select_from_first_dropdown(1)
 
-        #Login with student again and check authorisation
+        # Login with student again and check authorisation
         self.log_out()
         self.sign_in(self.student)
         self.get_url("")
         self.click_link_by_url('/projects/memberships/')
 
         assert 'Authorised' in self.selenium.page_source
+
+        # Set status to rejected and check an email is sent
+        project.status = Project.REVOKED
+        project.reason_decision = 'A very good reason'
+        project.save()
+
+        assert len(mail.outbox) == 1
+        # Message should contain the state
+        state = project.STATUS_CHOICES[project.status-1][1].lower()
+        print(state, mail.outbox[0].message())
+        assert state in mail.outbox[0].message()
+
 
 
     def test_create_project_external(self):

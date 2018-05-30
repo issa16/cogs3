@@ -188,11 +188,11 @@ class Project(models.Model):
         return True if self.status == Project.CLOSED else False
 
     def status_change_email(self, status, reason):
-        status = self.status_string()
+        status = self.STATUS_CHOICES[status-1][1]
         return EmailMessage(
             'Supercomputing Wales Project %s'%status,
-            'Dear SCW user,\n\nYour project has been %s. \n\n%s\n\n\nIf you have any questions, please contact us at support@supercomputing.wales'
-            % (status.lower(), reason),
+            'Dear SCW user,\n\nYour project "%s" has been %s. \n\n%s\n\n\nIf you have any questions, please contact us at support@supercomputing.wales'
+            % (self.title, status.lower(), reason),
             'support@supercomputing.wales',
             ['to@example.com'],
             [],
