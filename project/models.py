@@ -209,11 +209,11 @@ class Project(models.Model):
     def save(self):
         if self.id:
             current = Project.objects.get(pk=self.id)
-            email_on_status = [self.DECLINED, self.REVOKED, self.SUSPENDED, self.CLOSED]
-            if self.status != current.status and self.status in email_on_status and self.reason_decision != '':
+            new_closed_status =  self.status != current.status and self.status in [self.DECLINED, self.REVOKED, self.SUSPENDED, self.CLOSED]
+            reason_changed = self.reason_decision not in ['', current.reason_decision ]
+            if new_closed_status and reason_changed:
                 email = self.status_change_email(self.status, self.reason_decision)
                 email.send(fail_silently=True)
-            self.reason_decision = ''
         super(Project, self).save()
 
     class Meta:
