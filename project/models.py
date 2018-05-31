@@ -169,6 +169,8 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
 
+    email_signature = 'Visit my.supercomputing.wales to see your projects.\nIf you have any questions, please contact us at support@supercomputing.wales'
+
     def is_awaiting_approval(self):
         return True if self.status == Project.AWAITING_APPROVAL else False
 
@@ -187,16 +189,23 @@ class Project(models.Model):
     def is_closed(self):
         return True if self.status == Project.CLOSED else False
 
-    def status_change_email(self, status, reason):
+    def status_change_email(self, status, reason=''):
+        """ Generate an email to inform the user about a status change """
         status = self.STATUS_CHOICES[status-1][1]
+        title = 'Supercomputing Wales Project %s' % status
+
+        message = 'Dear SCW user,\n\nYour project request "%s" has been %s. \n\n' % (self.title, status.lower())
+        if reason != '':
+            message += '%s\n\n\n' % reason
+        message += self.email_signature
+
         return EmailMessage(
-            'Supercomputing Wales Project %s'%status,
-            'Dear SCW user,\n\nYour project "%s" has been %s. \n\n%s\n\n\nIf you have any questions, please contact us at support@supercomputing.wales'
-            % (self.title, status.lower(), reason),
+            title,
+            message,
             'support@supercomputing.wales',
-            ['to@example.com'],
+            [self.tech_lead.email],
             [],
-            reply_to=['another@example.com'],
+            reply_to=['support@supercomputing.wales'],
         )
 
     def __str__(self):
@@ -209,9 +218,10 @@ class Project(models.Model):
     def save(self):
         if self.id:
             current = Project.objects.get(pk=self.id)
-            new_closed_status =  self.status != current.status and self.status in [self.DECLINED, self.REVOKED, self.SUSPENDED, self.CLOSED]
-            reason_changed = self.reason_decision not in ['', current.reason_decision ]
-            if new_closed_status and reason_changed:
+            status_changed = self.status != current.status
+            if self.reason_decision == current.reason_decision:
+                self.reason_decision = ''
+            if status_changed:
                 email = self.status_change_email(self.status, self.reason_decision)
                 email.send(fail_silently=True)
         super(Project, self).save()
@@ -306,6 +316,8 @@ class ProjectUserMembership(models.Model):
 
     objects = ProjectUserMembershipManager()
 
+    email_signature = 'Visit my.supercomputing.wales see your projects.\nIf you have any questions, please contact us at support@supercomputing.wales'
+
     def is_awaiting_authorisation(self):
         return True if self.status == ProjectUserMembership.AWAITING_AUTHORISATION else False
 
@@ -320,6 +332,24 @@ class ProjectUserMembership(models.Model):
         ]
         return True if self.status in revoked_states else False
 
+
+    def status_change_email(self, status):
+        """ Generate an email to inform the user about a status change """
+        status_text = self.STATUS_CHOICES[status-1][1]
+        title = 'Supercomputing Wales Project Membership'
+
+        message = 'Dear SCW user,\n\nYour membership status in the project titled "%s" has been set to %s. \n\n' % (self.project.title, status_text.lower())
+        message += self.email_signature
+
+        return EmailMessage(
+            title,
+            message,
+            'support@supercomputing.wales',
+            [self.user.email],
+            [],
+            reply_to=['support@supercomputing.wales'],
+        )
+
     def __str__(self):
         data = {
             'user': self.user,
@@ -332,3 +362,12 @@ class ProjectUserMembership(models.Model):
     class Meta:
         verbose_name_plural = _('Project User Memberships')
         unique_together = ('project', 'user')
+
+    def save(self, *args, **kwargs):
+        if self.id:
+            current = ProjectUserMembership.objects.get(pk=self.id)
+            status_changed = self.status != current.status
+            if status_changed:
+                email = self.status_change_email(self.status)
+                email.send(fail_silently=True)
+        super(ProjectUserMembership, self).save(*args, **kwargs)
