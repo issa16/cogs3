@@ -71,8 +71,10 @@ class CustomUserAdmin(UserAdmin):
         }),
         ('Personal info', {
             'fields': (
+                'title',
                 'first_name',
                 'last_name',
+                'allow_emails',
             )
         }),
         ('Permissions', {
@@ -99,8 +101,10 @@ class CustomUserAdmin(UserAdmin):
         'classes': ('wide', ),
         'fields': (
             'email',
+            'title',
             'first_name',
             'last_name',
+            'allow_emails',
             'is_shibboleth_login_required',
         ),
     }), )

@@ -3,7 +3,6 @@ import datetime
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.core.mail import EmailMessage
 
 from institution.models import Institution
 from system.models import System
@@ -169,8 +168,6 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
 
-    email_signature = 'Visit my.supercomputing.wales to see your projects.\nIf you have any questions, please contact us at support@supercomputing.wales'
-
     def is_awaiting_approval(self):
         return True if self.status == Project.AWAITING_APPROVAL else False
 
@@ -189,24 +186,16 @@ class Project(models.Model):
     def is_closed(self):
         return True if self.status == Project.CLOSED else False
 
-    def status_change_email(self, status, reason=''):
+    def notify_status_change(self, status, reason=''):
         """ Generate an email to inform the user about a status change """
         status = self.STATUS_CHOICES[status-1][1]
         title = 'Supercomputing Wales Project %s' % status
 
-        message = 'Dear SCW user,\n\nYour project request "%s" has been %s. \n\n' % (self.title, status.lower())
+        message = 'Your project request "%s" has been %s.' % (self.title, status.lower())
         if reason != '':
-            message += '%s\n\n\n' % reason
-        message += self.email_signature
+            message += '\n\n%s' % reason
+        self.tech_lead.notify(title, message)
 
-        return EmailMessage(
-            title,
-            message,
-            'support@supercomputing.wales',
-            [self.tech_lead.email],
-            [],
-            reply_to=['support@supercomputing.wales'],
-        )
 
     def __str__(self):
         data = {
@@ -222,8 +211,7 @@ class Project(models.Model):
             if self.reason_decision == current.reason_decision:
                 self.reason_decision = ''
             if status_changed:
-                email = self.status_change_email(self.status, self.reason_decision)
-                email.send(fail_silently=True)
+                self.notify_status_change(self.status, self.reason_decision)
         super(Project, self).save()
 
     class Meta:
@@ -316,8 +304,6 @@ class ProjectUserMembership(models.Model):
 
     objects = ProjectUserMembershipManager()
 
-    email_signature = 'Visit my.supercomputing.wales see your projects.\nIf you have any questions, please contact us at support@supercomputing.wales'
-
     def is_awaiting_authorisation(self):
         return True if self.status == ProjectUserMembership.AWAITING_AUTHORISATION else False
 
@@ -333,22 +319,13 @@ class ProjectUserMembership(models.Model):
         return True if self.status in revoked_states else False
 
 
-    def status_change_email(self, status):
-        """ Generate an email to inform the user about a status change """
+    def notify_status_change(self, status):
+        """ Notify the user about a status change """
         status_text = self.STATUS_CHOICES[status-1][1]
         title = 'Supercomputing Wales Project Membership'
 
-        message = 'Dear SCW user,\n\nYour membership status in the project titled "%s" has been set to %s. \n\n' % (self.project.title, status_text.lower())
-        message += self.email_signature
-
-        return EmailMessage(
-            title,
-            message,
-            'support@supercomputing.wales',
-            [self.user.email],
-            [],
-            reply_to=['support@supercomputing.wales'],
-        )
+        message = 'Your membership status in the project titled "%s" has been set to %s.' % (self.project.title, status_text.lower())
+        self.user.notify(title, message)
 
     def __str__(self):
         data = {
@@ -368,6 +345,5 @@ class ProjectUserMembership(models.Model):
             current = ProjectUserMembership.objects.get(pk=self.id)
             status_changed = self.status != current.status
             if status_changed:
-                email = self.status_change_email(self.status)
-                email.send(fail_silently=True)
+                self.notify_status_change(self.status)
         super(ProjectUserMembership, self).save(*args, **kwargs)

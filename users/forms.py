@@ -18,15 +18,25 @@ class CustomUserCreationForm(forms.ModelForm):
             'is_staff',
             'is_active',
             'is_shibboleth_login_required',
+            'title',
             'first_name',
             'last_name',
+            'allow_emails',
         )
+        # Give a dropdown menu for the title
+        widgets = {
+            'title': forms.Select(choices=[
+            ('Ms.', 'Ms.'), ('Mrs.', 'Mrs.'), ('Mr.', 'Mr.'),
+            ('Dr.', 'Dr.'), ('Prof.', 'Prof.'),
+            ]),
+        }
 
     def __init__(self, *args, **kwargs):
         super(CustomUserCreationForm, self).__init__(*args, **kwargs)
 
         # Additionally required attributes
         self.fields['email'].required = True
+        self.fields['title'].required = True
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
 
@@ -53,6 +63,16 @@ class CustomUserChangeForm(UserChangeForm):
     """
     Form for updating CustomUser instances.
     """
+
+    class Meta:
+        # Give a dropdown menu for the title
+        widgets = {
+            'title': forms.Select(choices=[
+            ('Ms.', 'Ms.'), ('Mrs.', 'Mrs.'), ('Mr.', 'Mr.'),
+            ('Dr.', 'Dr.'), ('Prof.', 'Prof.'),
+            ]),
+        }
+
 
     def clean(self):
         cleaned_data = super().clean()

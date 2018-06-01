@@ -15,6 +15,16 @@
 				<label for="email">{% trans "Identifier" %}</label>
 				<input type="email" readonly class="form-control-plaintext" id="email" name="email" value="{{request.session.shib.username}}">
 			</div>
+			<div>
+				<label for="title">{% trans "Title" %}</label>
+				<select name="title" class="form-control" maxlength="5" id="title">
+					<option value="Ms.">   Ms.   </option>
+					<option value="Mrs.">  Mrs.  </option>
+					<option value="Mr.">   Mr.   </option>
+					<option value="Dr.">   Dr.   </option>
+					<option value="Prof."> Prof. </option>
+				</select>
+			</div>
 			<div class="form-group mb-3">
 				<label for="first-name">{% trans "First name" %}</label>
 				<input type="text" class="form-control" id="first-name" name="first_name">
@@ -22,6 +32,11 @@
 			<div class="form-group mb-3">
 				<label for="last-name">{% trans "Last name" %}</label>
 				<input type="text" class="form-control" id="last-name" name="last_name">
+			</div>
+			<div class="form-group text-center mb-3">
+				<input type="checkbox" class="form-check-input" id="allow-emails" name="allow_emails">
+				<label class="form-check-label" for="tandc-check"> {% trans "Please send me email updates about my projects" %}
+				</label>
 			</div>
 			<div class="form-group text-center mb-3">
 				<div class="form-check">
