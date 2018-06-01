@@ -1,0 +1,1 @@
+Your membership status in the project titled "{{title}}" has been set to "{{status}}".

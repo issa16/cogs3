@@ -3,6 +3,7 @@ import datetime
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.template.loader import get_template
 
 from institution.models import Institution
 from system.models import System
@@ -188,12 +189,16 @@ class Project(models.Model):
 
     def notify_status_change(self, status, reason=''):
         """ Generate an email to inform the user about a status change """
-        status = self.STATUS_CHOICES[status-1][1]
-        title = 'Supercomputing Wales Project %s' % status
+        status_text = self.STATUS_CHOICES[status-1][1]
+        title = 'Supercomputing Wales Project' % status_text
 
-        message = 'Your project request "%s" has been %s.' % (self.title, status.lower())
-        if reason != '':
-            message += '\n\n%s' % reason
+        template = get_template('notifications/project_status_change.txt')
+        context = {
+            'status': status_text.lower(),
+            'title': self.title,
+            'reason': reason,
+        }
+        message = template.render(context)
         self.tech_lead.notify(title, message)
 
 
@@ -318,13 +323,17 @@ class ProjectUserMembership(models.Model):
         ]
         return True if self.status in revoked_states else False
 
-
     def notify_status_change(self, status):
         """ Notify the user about a status change """
         status_text = self.STATUS_CHOICES[status-1][1]
         title = 'Supercomputing Wales Project Membership'
 
-        message = 'Your membership status in the project titled "%s" has been set to %s.' % (self.project.title, status_text.lower())
+        template = get_template('notifications/project_membership_status_change.txt')
+        context = {
+            'status': status_text.lower(),
+            'title': self.project.title,
+        }
+        message = template.render(context)
         self.user.notify(title, message)
 
     def __str__(self):

@@ -4,7 +4,8 @@ from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
-from django.core.mail import EmailMessage
+from django.template.loader import get_template
+from django.core.mail import EmailMultiAlternatives
 
 from institution.models import Institution
 
@@ -222,18 +223,21 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             Main content of the message
         """
         if self.allow_emails:
-            email_body = \
-                'Dear %s %s\n\n' % (self.title, self.last_name) \
-                + message\
-                + '\n\n\nVisit my.supercomputing.wales to see your projects.\nIf you have any questions, please contact us at support@supercomputing.wales'
-            email = EmailMessage(
-                title,
-                email_body,
-                'support@supercomputing.wales',
-                [self.email],
-                [],
-                reply_to=['support@supercomputing.wales'],
+            sender = 'support@supercomputing.wales';
+            plaintext = get_template('notifications/email_base.txt')
+            html = get_template('notifications/email_base.html')
+            context = {
+                'title': self.title,
+                'last_name': self.last_name,
+                'message_title': title,
+                'message': message,
+            }
+            text_email = plaintext.render(context)
+            html_email = html.render(context)
+            email = EmailMultiAlternatives(
+                title, text_email, sender, [self.email],
             )
+            email.attach_alternative(html_email, "text/html")
             email.send(fail_silently=True)
 
     class Meta:
