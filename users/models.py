@@ -4,6 +4,8 @@ from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.template.loader import get_template
+from django.core.mail import EmailMultiAlternatives
 
 from institution.models import Institution
 
@@ -173,6 +175,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    title = models.CharField(
+        blank=True,
+        max_length=5,
+        verbose_name='title',
+    )
     first_name = models.CharField(
         blank=True,
         max_length=30,
@@ -182,6 +189,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         blank=True,
         max_length=30,
         verbose_name='last name',
+    )
+    allow_emails = models.BooleanField(
+        default=False,
+        help_text='Wether the user has given permission for us to send emails',
+        verbose_name='allow emails',
     )
 
     USERNAME_FIELD = 'email'
@@ -197,6 +209,36 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.email
+
+    def notify(self, title, message):
+        """Send a message to user
+        Sends an email if the user has opted in. Otherwise there is
+        no notification
+
+        Parameters
+        ----------
+        title : type
+            The title of the message or subject of the email
+        message : type
+            Main content of the message
+        """
+        if self.allow_emails:
+            sender = 'support@supercomputing.wales';
+            plaintext = get_template('notifications/email_base.txt')
+            html = get_template('notifications/email_base.html')
+            context = {
+                'title': self.title,
+                'last_name': self.last_name,
+                'message_title': title,
+                'message': message,
+            }
+            text_email = plaintext.render(context)
+            html_email = html.render(context)
+            email = EmailMultiAlternatives(
+                title, text_email, sender, [self.email],
+            )
+            email.attach_alternative(html_email, "text/html")
+            email.send(fail_silently=True)
 
     class Meta:
         verbose_name_plural = 'Users'

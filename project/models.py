@@ -3,6 +3,7 @@ import datetime
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.template.loader import get_template
 
 from institution.models import Institution
 from system.models import System
@@ -186,12 +187,37 @@ class Project(models.Model):
     def is_closed(self):
         return True if self.status == Project.CLOSED else False
 
+    def notify_status_change(self, status, reason=''):
+        """ Generate an email to inform the user about a status change """
+        status_text = self.STATUS_CHOICES[status-1][1]
+        title = 'Supercomputing Wales Project' % status_text
+
+        template = get_template('notifications/project_status_change.txt')
+        context = {
+            'status': status_text.lower(),
+            'title': self.title,
+            'reason': reason,
+        }
+        message = template.render(context)
+        self.tech_lead.notify(title, message)
+
+
     def __str__(self):
         data = {
             'code': self.code,
             'title': self.title,
         }
         return '{code} - {title}'.format(**data)
+
+    def save(self):
+        if self.id:
+            current = Project.objects.get(pk=self.id)
+            status_changed = self.status != current.status
+            if self.reason_decision == current.reason_decision:
+                self.reason_decision = ''
+            if status_changed:
+                self.notify_status_change(self.status, self.reason_decision)
+        super(Project, self).save()
 
     class Meta:
         verbose_name_plural = _('Projects')
@@ -297,6 +323,19 @@ class ProjectUserMembership(models.Model):
         ]
         return True if self.status in revoked_states else False
 
+    def notify_status_change(self, status):
+        """ Notify the user about a status change """
+        status_text = self.STATUS_CHOICES[status-1][1]
+        title = 'Supercomputing Wales Project Membership'
+
+        template = get_template('notifications/project_membership_status_change.txt')
+        context = {
+            'status': status_text.lower(),
+            'title': self.project.title,
+        }
+        message = template.render(context)
+        self.user.notify(title, message)
+
     def __str__(self):
         data = {
             'user': self.user,
@@ -309,3 +348,11 @@ class ProjectUserMembership(models.Model):
     class Meta:
         verbose_name_plural = _('Project User Memberships')
         unique_together = ('project', 'user')
+
+    def save(self, *args, **kwargs):
+        if self.id:
+            current = ProjectUserMembership.objects.get(pk=self.id)
+            status_changed = self.status != current.status
+            if status_changed:
+                self.notify_status_change(self.status)
+        super(ProjectUserMembership, self).save(*args, **kwargs)

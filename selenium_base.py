@@ -1,5 +1,5 @@
+import time
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 from users.models import CustomUser
@@ -59,6 +59,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
     def submit_form(self, form_fields):
         key = list(form_fields.keys())[0]
         self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
+        time.sleep(0.1)
 
     def click_by_id(self, text):
         self.selenium.find_element_by_id(text).click()
@@ -81,10 +82,12 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.user = CustomUser(
             username="user@swansea.ac.uk",
             email="user@swansea.ac.uk",
+            title='Dr.',
             first_name='User',
             last_name='User',
             is_staff=True,
             is_shibboleth_login_required=False,
+            allow_emails=True,
         )
         self.create_test_user(self.user)
 
