@@ -24,9 +24,19 @@ urlpatterns = [
         name='project-application-detail',
     ),
     path(
+        'applications/<int:pk>/invite-user',
+        views.ProjectMembesrshipInviteView.as_view(),
+        name='project-membership-invite',
+    ),
+    path(
         'memberships/',
         views.ProjectUserMembershipListView.as_view(),
         name='project-membership-list',
+    ),
+    path(
+        'memberships/update/<int:pk>/',
+        views.ProjectUserRequestMembershipUpdateView.as_view(),
+        name='project-user-membership-update',
     ),
     path(
         'memberships/user-requests/',

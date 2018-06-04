@@ -192,7 +192,7 @@ class ProjectTests(ProjectModelTests, TestCase):
         """
         A test to ensure a project can be created when the title exists in the database.
 
-        Issues: 
+        Issues:
             - https://github.com/tystakartografen/cogs3/issues/30
             - https://github.com/tystakartografen/cogs3/issues/31
         """
@@ -345,6 +345,58 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
         for status in unauthorised_states:
             self.membership.status = status
             self.assertTrue(self.membership.is_unauthorised())
+
+    def test_project_user_membership_owner_editable(self):
+        """
+        Ensure the unauthorised() method returns the correct response.
+        """
+        disallowed_states = [
+            ProjectUserMembership.AWAITING_AUTHORISATION,
+            ProjectUserMembership.DECLINED,
+        ]
+        allowed_states = [
+            ProjectUserMembership.AUTHORISED,
+            ProjectUserMembership.REVOKED,
+            ProjectUserMembership.SUSPENDED,
+        ]
+        self.membership.initiated_by_user = False
+        for status in disallowed_states:
+            self.membership.status = status
+            self.assertFalse(self.membership.is_owner_editable())
+        for status in allowed_states:
+            self.membership.status = status
+            self.assertTrue(self.membership.is_owner_editable())
+
+        self.membership.initiated_by_user = True
+        for status in disallowed_states+allowed_states:
+            self.membership.status = status
+            self.assertTrue(self.membership.is_owner_editable())
+
+    def test_project_user_membership_user_editable(self):
+        """
+        Ensure the unauthorised() method returns the correct response.
+        """
+        disallowed_states = [
+            ProjectUserMembership.REVOKED,
+            ProjectUserMembership.SUSPENDED,
+        ]
+        allowed_states = [
+            ProjectUserMembership.AWAITING_AUTHORISATION,
+            ProjectUserMembership.AUTHORISED,
+            ProjectUserMembership.DECLINED,
+        ]
+        self.membership.initiated_by_user = False
+        for status in disallowed_states:
+            self.membership.status = status
+            self.assertFalse(self.membership.is_user_editable())
+        for status in allowed_states:
+            self.membership.status = status
+            self.assertTrue(self.membership.is_user_editable())
+
+        self.membership.initiated_by_user = True
+        for status in disallowed_states+allowed_states:
+            self.membership.status = status
+            self.assertFalse(self.membership.is_user_editable())
 
     def test_project_user_membership_str_representation(self):
         data = {

@@ -1,6 +1,7 @@
 from selenium_base import SeleniumTestsBase
 from project.models import Project
 
+
 class ProjectIntegrationTests(SeleniumTestsBase):
 
     default_project_form_fields = {
@@ -22,11 +23,9 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         "id_allocation_storage_scratch": "1",
     }
 
-
     def test_create_project(self):
         """
-        Create a new project
-        Before running this a funding source called test must be added to the database.
+        Test project creation and project membership workflows
         """
         self.sign_in( self.user )
 
@@ -64,11 +63,11 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         assert self.default_project_form_fields["id_title"] in self.selenium.page_source
         assert 'Awaiting Approval' in self.selenium.page_source
 
-        #Check that the project was created
+        #Check that the project was created in the database
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
         assert matching_projects.count() == 1
 
-        #Check that the technical lead is the user
+        #Check that the user is the technical lead
         tech_lead_id = matching_projects.values_list('tech_lead', flat=True).get(pk=1)
         user_id = self.user.id
         assert tech_lead_id == user_id
@@ -83,7 +82,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         project.code = 'code1'
         project.save()
 
-        #Try the Project Applications and Project Memberships pages
+        # Try the Project Applications and Project Memberships pages
         self.get_url("")
         self.click_link_by_url('/projects/applications/')
         assert 'code1' in self.selenium.page_source
@@ -133,6 +132,14 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         assert 'Authorised' in self.selenium.page_source
 
+        # Log in as tech lead and invite a different user
+        self.log_out()
+        self.sign_in(self.user)
+        self.get_url("")
+        self.click_link_by_url('/projects/applications/')
+        self.click_link_by_url('/projects/applications/%d/' % project.id)
+        self.click_link_by_url('/projects/applications/%d/invite-user/' % project.id)
+        input('wait')
 
     def test_create_project_external(self):
         """

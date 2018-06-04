@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
+from users.models import CustomUser
 
 
 class ProjectAdminForm(forms.ModelForm):
@@ -91,3 +92,25 @@ class ProjectUserMembershipCreationForm(forms.Form):
         except Project.DoesNotExist:
             raise forms.ValidationError(_("Invalid Project Code."))
         return project_code
+
+
+class ProjectUserInviteForm(forms.Form):
+    email = forms.CharField(max_length=50)
+    initiated_by_user = False
+
+    def clean_email(self):
+        # Verify the project code is valid and the project has been approved.
+        email = self.cleaned_data['email']
+        project = Project.objects.filter(id=self.initial['project_id']).first()
+        user = CustomUser.objects.filter(email=email).first()
+        # The technical lead will automatically be added as a member of the of project.
+        if not user:
+            raise forms.ValidationError(_("No user exists with given email."))
+        if project.tech_lead == user:
+            raise forms.ValidationError(_("You are currently a member of the project."))
+        if project.is_awaiting_approval():
+            raise forms.ValidationError(_("The project is currently awaiting approval."))
+        if ProjectUserMembership.objects.filter(project=project, user=user).exists():
+            raise forms.ValidationError(_("A membership request for this project already exists."))
+
+        return email
