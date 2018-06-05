@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-05 09:54+0000\n"
+"POT-Creation-Date: 2018-06-05 13:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,29 +41,37 @@ msgstr ""
 msgid "Aberystwyth University"
 msgstr ""
 
-#: project/forms.py:23
+#: project/forms.py:24
 msgid "Project code must be unique."
 msgstr ""
 
-#: project/forms.py:71 project/models.py:74
+#: project/forms.py:35
+msgid "Project legacy HPCW id must be unique."
+msgstr ""
+
+#: project/forms.py:46
+msgid "Project legacy ARCCA id must be unique."
+msgstr ""
+
+#: project/forms.py:94 project/models.py:74
 #: templates/project/application_detail.html:42
 #: templates/project/applications.html:32 templates/project/memberships.html:32
 msgid "Institution"
 msgstr ""
 
-#: project/forms.py:86
+#: project/forms.py:110
 msgid "You are currently a member of the project."
 msgstr ""
 
-#: project/forms.py:88
+#: project/forms.py:112
 msgid "The project is currently awaiting approval."
 msgstr ""
 
-#: project/forms.py:90
+#: project/forms.py:114
 msgid "A membership request for this project already exists."
 msgstr ""
 
-#: project/forms.py:92
+#: project/forms.py:116
 msgid "Invalid Project Code."
 msgstr ""
 
@@ -116,7 +124,6 @@ msgid "Department"
 msgstr ""
 
 #: project/models.py:87 templates/project/application_detail.html:50
-#: templates/project/memberships.html:33
 msgid "Principal Investigator"
 msgstr ""
 
@@ -381,6 +388,10 @@ msgstr ""
 msgid "Project details"
 msgstr ""
 
+#: templates/project/application_detail.html:12
+msgid "Project Application"
+msgstr ""
+
 #: templates/project/application_detail.html:22
 #: templates/project/applications.html:31 templates/project/memberships.html:31
 msgid "Title"
@@ -394,9 +405,7 @@ msgstr ""
 msgid "Institution project reference"
 msgstr ""
 
-#: templates/project/applications.html:30
-#: templates/project/membership/form.html:6
-#: templates/project/memberships.html:30
+#: templates/project/applications.html:30 templates/project/memberships.html:30
 msgid "Project Code"
 msgstr ""
 
@@ -404,9 +413,21 @@ msgstr ""
 msgid "Application Status"
 msgstr ""
 
-#: templates/project/applications.html:41
+#: templates/project/applications.html:43 templates/project/memberships.html:43
+msgid "HPCW"
+msgstr ""
+
+#: templates/project/applications.html:47 templates/project/memberships.html:47
+msgid "ARRCA"
+msgstr ""
+
+#: templates/project/applications.html:51
 #, python-format
 msgid "%(institution)s"
+msgstr ""
+
+#: templates/project/membership/form.html:6
+msgid "SCW, HPCW or ARCCA project code"
 msgstr ""
 
 #: templates/project/membership/form.html:8
@@ -442,11 +463,11 @@ msgstr ""
 msgid "Suspend"
 msgstr ""
 
-#: templates/project/memberships.html:34
+#: templates/project/memberships.html:33
 msgid "Membership Status"
 msgstr ""
 
-#: templates/project/memberships.html:46
+#: templates/project/memberships.html:54
 msgid "Project Owner"
 msgstr ""
 

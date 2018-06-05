@@ -124,7 +124,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         # Check that the project membership is visible
         self.get_url('')
         self.click_link_by_url(reverse('project-membership-list'))
-        assert 'Joe Bloggs' in self.selenium.page_source
         assert 'Awaiting Authorisation' in self.selenium.page_source
 
         # Login with as the tech lead and authorize the new user
