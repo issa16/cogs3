@@ -5,7 +5,9 @@ from selenium.webdriver.support.select import Select
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
+from django.utils.translation import activate
 
+from cogs3.settings import LANGUAGE_CODE
 from cogs3.settings import SELENIUM_WEBDRIVER
 from users.models import CustomUser
 
@@ -136,6 +138,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.create_test_user(self.admin)
 
         # Setup selenium
+        activate(LANGUAGE_CODE)
         self.selenium = SELENIUM_WEBDRIVER()
         self.selenium.implicitly_wait(2)
         self.get_url('')
