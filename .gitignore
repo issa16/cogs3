@@ -119,4 +119,7 @@ logs
 # sqlite
 db.sqlite*
 
+# Ignore redis binary dump (dump.rdb) files
+*.rdb
+
 
