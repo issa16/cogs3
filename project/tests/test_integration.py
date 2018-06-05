@@ -1,8 +1,9 @@
-import os
 import filecmp
+import os
 
 from selenium_base import SeleniumTestsBase
 
+from django.conf import settings
 from django.urls import reverse
 
 from project.models import Project
@@ -10,7 +11,10 @@ from project.models import Project
 
 class ProjectIntegrationTests(SeleniumTestsBase):
 
-    thisfile = os.path.realpath(__file__)
+    settings.MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'tmp')
+    settings.MEDIA_URL = '/tmp/'
+
+    test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_file.txt')
 
     default_project_form_fields = {
         "id_title": "Test project",
@@ -29,13 +33,12 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         "id_allocation_memory": "1",
         "id_allocation_storage_home": "200",
         "id_allocation_storage_scratch": "1",
-        'id_document': thisfile,
+        'id_document': test_file,
     }
 
     def test_create_project(self):
         """
         Create a new project
-        Before running this a funding source called test must be added to the database.
         """
         self.sign_in(self.user)
 
@@ -97,11 +100,11 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         assert status == Project.AWAITING_APPROVAL
 
         # Check that the file was uploaded
-        rootpath = os.path.join(os.path.dirname(self.thisfile), os.pardir, os.pardir, 'media')
+        rootpath = os.path.join(os.path.dirname(self.test_file), os.pardir, os.pardir, 'tmp')
         uploadpath = os.path.join(rootpath, project.document.name)
         uploadpath = os.path.normpath(uploadpath)
         assert os.path.isfile(uploadpath)
-        assert filecmp.cmp(uploadpath, self.thisfile)
+        assert filecmp.cmp(uploadpath, self.test_file)
 
         # Approve the project and set a code
         project.status = Project.APPROVED

@@ -115,6 +115,7 @@ misc.txt
 # misc
 util
 logs
+tmp
 
 # sqlite
 db.sqlite*
