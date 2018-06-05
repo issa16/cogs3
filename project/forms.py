@@ -57,17 +57,26 @@ class ProjectCreationForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        exclude = [
-            'code',
-            'category',
-            'status',
-            'allocation_systems',
-            'members',
-            'tech_lead',
-            'notes',
-            'economic_user',
-            'allocation_rse',
-            'reason_decision',
+        fields = [
+            'title',
+            'description',
+            'legacy_hpcw_id',
+            'legacy_arcca_id',
+            'institution',
+            'institution_reference',
+            'department',
+            'pi',
+            'funding_source',
+            'start_date',
+            'end_date',
+            'requirements_software',
+            'requirements_gateways',
+            'requirements_training',
+            'requirements_onboarding',
+            'allocation_cputime',
+            'allocation_memory',
+            'allocation_storage_home',
+            'allocation_storage_scratch',
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={
@@ -96,11 +105,11 @@ class ProjectUserMembershipCreationForm(forms.Form):
             project = Project.objects.get(
                 Q(code=project_code) | Q(legacy_hpcw_id=project_code) | Q(legacy_arcca_id=project_code))
             user = self.initial.get('user', None)
-            if project.awaiting_approval():
-                raise forms.ValidationError(_("The project is currently awaiting approval."))
             # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:
                 raise forms.ValidationError(_("You are currently a member of the project."))
+            if project.is_awaiting_approval():
+                raise forms.ValidationError(_("The project is currently awaiting approval."))
             if ProjectUserMembership.objects.filter(project=project, user=user).exists():
                 raise forms.ValidationError(_("A membership request for this project already exists."))
         except Project.DoesNotExist:
