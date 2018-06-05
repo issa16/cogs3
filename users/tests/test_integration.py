@@ -7,7 +7,14 @@ class UserIntegrationTests(SeleniumTestsBase):
         """
         Sign in as an external user
         """
-        #Just sign in. There is an assert in the sign_in function
-        for user in [self.user, self.external, self.student, self.rse, self.admin,]:
+        # Just sign in. There is an assert in the sign_in function
+        users = [
+            self.user,
+            self.external,
+            self.student,
+            self.rse,
+            self.admin,
+        ]
+        for user in users:
             self.sign_in(user)
             self.log_out()

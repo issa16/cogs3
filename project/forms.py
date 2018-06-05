@@ -1,6 +1,7 @@
 from django import forms
-
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+
 from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
@@ -70,6 +71,28 @@ class ProjectAdminForm(forms.ModelForm):
                 raise forms.ValidationError(_('Project code must be unique.'))
         return updated_code
 
+    def clean_legacy_hpcw_id(self):
+        """
+        Ensure the project legacy hpcw id is unique.
+        """
+        current_legacy_hpcw_id = self.instance.legacy_hpcw_id
+        updated_legacy_hpcw_id = self.cleaned_data['legacy_hpcw_id']
+        if current_legacy_hpcw_id != updated_legacy_hpcw_id:
+            if Project.objects.filter(legacy_hpcw_id=updated_legacy_hpcw_id).exists():
+                raise forms.ValidationError(_('Project legacy HPCW id must be unique.'))
+        return updated_legacy_hpcw_id
+
+    def clean_legacy_arcca_id(self):
+        """
+        Ensure the project legacy arcca id is unique.
+        """
+        current_legacy_arcca_id = self.instance.legacy_arcca_id
+        updated_legacy_arcca_id = self.cleaned_data['legacy_arcca_id']
+        if current_legacy_arcca_id != updated_legacy_arcca_id:
+            if Project.objects.filter(legacy_arcca_id=updated_legacy_arcca_id).exists():
+                raise forms.ValidationError(_('Project legacy ARCCA id must be unique.'))
+        return updated_legacy_arcca_id
+
 
 class LocalizeModelChoiceField(forms.ModelChoiceField):
 
@@ -101,7 +124,7 @@ class ProjectCreationForm(forms.ModelForm):
             'allocation_memory',
             'allocation_storage_home',
             'allocation_storage_scratch',
-            'document'
+            'document',
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={
@@ -127,7 +150,8 @@ class ProjectUserMembershipCreationForm(forms.Form):
         # Verify the project code is valid and the project has been approved.
         project_code = self.cleaned_data['project_code']
         try:
-            project = Project.objects.get(code=project_code)
+            project = Project.objects.get(
+                Q(code=project_code) | Q(legacy_hpcw_id=project_code) | Q(legacy_arcca_id=project_code))
             user = self.initial.get('user', None)
             # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:

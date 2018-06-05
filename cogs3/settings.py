@@ -366,3 +366,4 @@ LOGGING = {
 }
 
 SELENIUM_WEBDRIVER = webdriver.Firefox
+SELENIUM_WEBDRIVER_PROFILE = webdriver.FirefoxProfile

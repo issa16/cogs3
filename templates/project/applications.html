@@ -27,16 +27,26 @@
 			<table class="table table-bordered">
 				<thead class="thead-light">
 					<tr>
-						<th scope="col">{% trans "Project Code" %}</th>
-						<th scope="col">{% trans "Title" %}</th>
-						<th scope="col">{% trans "Institution" %}</th>
-						<th scope="col">{% trans "Application Status" %}</th>
+						<th scope="col" style="width:20%">{% trans "Project Code" %}</th>
+						<th scope="col" style="width:40%">{% trans "Title" %}</th>
+						<th scope="col" style="width:20%">{% trans "Institution" %}</th>
+						<th scope="col" style="width:20%">{% trans "Application Status" %}</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for project in projects %}
 						<tr>
-							<td>{{project.code}}</td>
+							<td>
+								{{project.code}}
+								{% if project.legacy_hpcw_id %}
+									</br>
+									<small class="text-muted">{% trans "HPCW" %}: {{project.legacy_hpcw_id}}</small>
+								{% endif %}
+								{% if project.legacy_arcca_id %}
+									</br>
+									<small class="text-muted">{% trans "ARRCA"%}: {{project.legacy_arcca_id}}</small>
+								{% endif %}
+							</td>
 							<td><a href="{% url 'project-application-detail' project.pk %}">{{project.title}}</a></td>
 							<td>{% blocktrans with institution=project.institution %}{{institution}}{% endblocktrans %}</td>
 							<td>{{project.get_status_display}}</td>
