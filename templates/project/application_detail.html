@@ -22,6 +22,12 @@
 								<th scope="row" style="width:25%">{% trans "Title" %}</th>
 								<td style="width:75%">{{project.title}}</td>
 							</tr>
+							{% if project.code %}
+								<tr>
+									<th scope="row">{% trans "Code" %}</th>
+									<td>{{project.code}}</td>
+								</tr>
+							{% endif %}
 							<tr>
 								<th scope="row">{% trans "Description" %}</th>
 								<td>{{project.description}}</td>
@@ -30,14 +36,18 @@
 								<th scope="row">{% trans "Status" %}</th>
 								<td>{{project.get_status_display}}</td>
 							</tr>
-							<tr>
-								<th scope="row">{% trans "Legacy HPC Wales ID" %}</th>
-								<td>{{project.legacy_hpcw_id}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Legacy ARCCA ID" %}</th>
-								<td>{{project.legacy_arcca_id}}</td>
-							</tr>
+							{% if project.legacy_hpcw_id %}
+								<tr>
+									<th scope="row">{% trans "Legacy HPC Wales ID" %}</th>
+									<td>{{project.legacy_hpcw_id}}</td>
+								</tr>
+							{% endif %}
+							{% if project.legacy_arcca_id %}
+								<tr>
+									<th scope="row">{% trans "Legacy ARCCA ID" %}</th>
+									<td>{{project.legacy_arcca_id}}</td>
+								</tr>
+							{% endif %}
 							<tr>
 								<th scope="row">{% trans "Institution" %}</th>
 								<td>{{project.institution}}</td>
