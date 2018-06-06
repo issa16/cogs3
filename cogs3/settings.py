@@ -17,8 +17,13 @@ import dj_database_url
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
 
+from selenium import webdriver
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # load environment variables from .env
 dotenv_file = os.path.join(BASE_DIR, 'cogs3', '.env')
@@ -366,3 +371,6 @@ LOGGING = {
         },
     }
 }
+
+SELENIUM_WEBDRIVER = webdriver.Firefox
+SELENIUM_WEBDRIVER_PROFILE = webdriver.FirefoxProfile

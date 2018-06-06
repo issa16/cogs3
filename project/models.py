@@ -145,6 +145,12 @@ class Project(models.Model):
     allocation_memory = models.PositiveIntegerField(verbose_name=_('RAM allocation in GB'))
     allocation_storage_home = models.PositiveIntegerField(verbose_name=_('Home storage in GB'))
     allocation_storage_scratch = models.PositiveIntegerField(verbose_name=_('Scratch storage in GB'))
+    document = models.FileField(
+        verbose_name=_('Upload Supporting Documents'),
+        upload_to="documents/%Y/%m/%d/%M/",
+        blank=True,
+        null=True,
+    )
     allocation_systems = models.ManyToManyField(
         System,
         through='ProjectSystemAllocation',

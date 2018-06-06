@@ -1,11 +1,11 @@
 """cogs3 URL Configuration"""
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.contrib.auth.views import LoginView
 from django.urls import include
 from django.urls import path
 from django.views.generic.base import TemplateView
-from django.conf.urls.i18n import i18n_patterns
 
 from institution.models import Institution
 from users.views import LogoutView
