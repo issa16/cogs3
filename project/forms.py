@@ -171,7 +171,7 @@ class ProjectUserInviteForm(forms.Form):
     initiated_by_user = False
 
     def clean_email(self):
-        # Verify the project code is valid and the project has been approved.
+        # Verify that the user exists and the project is approved
         email = self.cleaned_data['email']
         project = Project.objects.filter(id=self.initial['project_id']).first()
         user = CustomUser.objects.filter(email=email).first()

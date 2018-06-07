@@ -285,12 +285,12 @@ class ProjectUserMembership(models.Model):
     initiated_by_user = models.BooleanField(
         default=True,
         verbose_name=_('Initiated by User'),
-        help_text=_('Determines whether the request needs to be approved by the tech lead or the user'),
+        help_text=_('Determines who needs to approve the membership. The initating user is assumend to have approved it.'),
     )
     date_joined = models.DateField()
     date_left = models.DateField(default=datetime.date.max)
     created_time = models.DateTimeField(auto_now_add=True)
-    approved_time = models.DateTimeField(default=datetime.date.max)
+    approved_time = models.DateField(default=datetime.date.max)
     modified_time = models.DateTimeField(auto_now=True)
 
     objects = ProjectUserMembershipManager()
@@ -321,11 +321,11 @@ class ProjectUserMembership(models.Model):
 
     def is_owner_editable(self):
         ''' Check if the tech lead is allowed to edit current state '''
-        disallowed_states = [
+        forbidden_states = [
             ProjectUserMembership.AWAITING_AUTHORISATION,
             ProjectUserMembership.DECLINED,
         ]
-        condition = self.initiated_by_user or self.status not in disallowed_states
+        condition = self.initiated_by_user or self.status not in forbidden_states
         return condition
 
     def __str__(self):

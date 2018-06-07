@@ -136,7 +136,7 @@ class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequi
     model = ProjectUserMembership
     fields = ['status']
 
-    def user_passes_test(self, request):
+    def request_allowed(self, request):
         # Ensure the project belongs to the user attempting to update the membership status
         try:
             project_id = request.POST.get('project_id')
@@ -158,8 +158,8 @@ class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequi
             return False
 
     def dispatch(self, request, *args, **kwargs):
-        if not self.user_passes_test(request):
-            return HttpResponseRedirect(reverse('project-user-membership-request-list'))
+        if not self.request_allowed(request):
+            return HttpResponseRedirect(reverse('project-membership-list'))
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
