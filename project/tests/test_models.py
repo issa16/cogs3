@@ -120,7 +120,7 @@ class ProjectModelTests(TestCase):
 class ProjectTests(ProjectModelTests, TestCase):
 
     @classmethod
-    def create_project(cls, title, code, institution, tech_lead, category, funding_source):
+    def create_project(cls, title, code, tech_lead, category, funding_source):
         """
         Create a Project instance.
 
@@ -138,7 +138,6 @@ class ProjectTests(ProjectModelTests, TestCase):
             legacy_hpcw_id='HPCW-12345',
             legacy_arcca_id='ARCCA-12345',
             code=code,
-            institution=institution,
             institution_reference='BW-12345',
             department='School of Chemistry',
             pi='Project Principal Investigator',
@@ -181,7 +180,6 @@ class ProjectTests(ProjectModelTests, TestCase):
         project = self.create_project(
             title=title,
             code=code,
-            institution=self.institution,
             tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,
@@ -201,7 +199,6 @@ class ProjectTests(ProjectModelTests, TestCase):
         project_1 = self.create_project(
             title=title_1,
             code=code_1,
-            institution=self.institution,
             tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,
@@ -212,7 +209,6 @@ class ProjectTests(ProjectModelTests, TestCase):
         project_2 = self.create_project(
             title=title_2,
             code=code_2,
-            institution=self.institution,
             tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,
@@ -231,7 +227,6 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
         self.project = ProjectTests.create_project(
             title='Project title',
             code='SCW-12345',
-            institution=self.institution,
             tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,
@@ -281,7 +276,6 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
         self.project = ProjectTests.create_project(
             title='Project title',
             code='SCW-12345',
-            institution=self.institution,
             tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,

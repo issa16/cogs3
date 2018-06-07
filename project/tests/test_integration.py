@@ -19,7 +19,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
     default_project_form_fields = {
         "id_title": "Test project",
         "id_description": "This project aims to test the submission of projects",
-        "id_institution": "swansea",
         "id_institution_reference": "test1",
         "id_department": "SA2C",
         "id_pi": "Joe Bloggs",
@@ -46,7 +45,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         missing_fields = [
             'id_title',
             'id_description',
-            'id_institution',
             'id_start_date',
             'id_end_date',
         ]
