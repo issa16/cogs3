@@ -195,23 +195,6 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
 
-    def email_subject(self):
-        return "EMAIL SUBJECT"
-
-    def email_body(self):
-        return "EMAIL BODY"
-        # Populate
-        if self.status == Project.AWAITING_APPROVAL:
-            return ""
-        elif self.status == Project.APPROVED:
-            return ""
-        elif self.status == Project.DECLINED:
-            return ""
-        elif self.status == Project.REVOKED:
-            return ""
-        elif self.status == Project.SUSPENDED:
-            return ""
-
     def is_awaiting_approval(self):
         return True if self.status == Project.AWAITING_APPROVAL else False
 

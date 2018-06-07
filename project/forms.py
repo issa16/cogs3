@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
-from project.notifications import ProjectEmailNotification
+from project.notifications import EmailNotification
 
 
 class FileLinkWidget(forms.Widget):
@@ -79,16 +79,6 @@ class ProjectAdminForm(forms.ModelForm):
                 raise forms.ValidationError(_('Project code must be unique.'))
         return updated_code
 
-    def save(self, commit=True):
-        # Wrong place..? Model save....
-        project = super(ProjectAdminForm, self).save(commit=False)
-        # When the project status is changed, send an email to technical lead.
-        if self.initial_status != project.status:
-            ProjectEmailNotification(project).send()
-        if commit:
-            project.save()
-        return project
-
     def clean_legacy_hpcw_id(self):
         """
         Ensure the project legacy hpcw id is unique.
@@ -110,6 +100,24 @@ class ProjectAdminForm(forms.ModelForm):
             if Project.objects.filter(legacy_arcca_id=updated_legacy_arcca_id).exists():
                 raise forms.ValidationError(_('Project legacy ARCCA id must be unique.'))
         return updated_legacy_arcca_id
+
+    def save(self, commit=True):
+        project = super(ProjectAdminForm, self).save(commit=False)
+        # When the project status is changed, send an email to technical lead.
+        if self.initial_status != project.status:
+            email_context = {
+                'to': project.tech_lead.email,
+                'title': 'TITLE',
+                'first_name': project.tech_lead.first_name,
+                'last_name': project.tech_lead.last_name,
+                'subject': 'SUBJECT',
+                'message_title': 'Project Status Update (' + project.code + ')',
+                'message': ('Main message body'),
+            }
+            EmailNotification(email_context).enqueue()
+        if commit:
+            project.save()
+        return project
 
 
 class LocalizeModelChoiceField(forms.ModelChoiceField):

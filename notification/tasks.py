@@ -1,47 +1,35 @@
+import abc
 import django_rq
 import logging
-
-from abc import ABCMeta
-from abc import abstractmethod
 
 from django.core.mail import EmailMessage
 
 logger = logging.getLogger('queue')
 
-NOT_YET_IMPLEMENED = 'Not yet implemented.'
 
-
-class EmailNotification(object):
-    """
-    Represents an email notification.
-    """
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def send(self, email):
-        raise NotImplementedError(NOT_YET_IMPLEMENED)
-
-
-def send_email(email_message):
-    """
-    Send an email.
-
-    Args:
-        email_message (django.core.mail.EmailMessage): TODO
-    """
+def _send_email(email):
     try:
-        email.content_subtype = "html"
         email.send(fail_silently=False)
-        logger.info('Sent and email to:', to, 'subject:', subject)
-    except Exception as e:
-        logger.exception('Failed to send an email to:', to, 'subject:', subject)
+    except Exception:
+        logger.exception('Failed to send email')
 
 
-def enqueue_email(email_message):
-    """
-    Enqueue an email to the default django rq queue.
+class EmailTask(abc.ABC):
 
-    Args:
-        email_message (django.core.mail.EmailMessage): TODO
-    """
-    django_rq.enqueue(send_email, email_message)
+    @property
+    @abc.abstractmethod
+    def email(self):
+        return
+
+
+class QueuedTask(abc.ABC):
+
+    @abc.abstractmethod
+    def enqueue(self):
+        return
+
+
+class QueuedEmailTask(QueuedTask, EmailTask):
+
+    def enqueue(self):
+        django_rq.enqueue(_send_email, self.email)

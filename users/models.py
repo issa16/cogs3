@@ -72,19 +72,19 @@ class Profile(models.Model):
 
     def account_status_message(self):
         if self.account_status == self.AWAITING_APPROVAL:
-            return _('Your Supercomputing Wales account request is currently awaiting approval.')
+            message = _('access request is currently awaiting approval.')
         elif self.account_status == self.APPROVED:
             # TODO - Check if system resources have been allocated
-            return _('Your Supercomputing Wales account request has been approved and is currently '
-                     'being configured.')
+            message = _('access request has been approved and your account is currently being created.')
         elif self.account_status == self.DECLINED:
-            return _('Your Supercomputing Wales account has been declined.')
+            message = _('access request has been declined.')
         elif self.account_status == self.REVOKED:
-            return _('Your Supercomputing Wales account has been revoked.')
+            message = _('access has been revoked.')
         elif self.account_status == self.SUSPENDED:
-            return _('Your Supercomputing Wales account has been suspended.')
+            message = _('access has been suspended.')
         elif self.account_status == self.CLOSED:
-            return _('Your Supercomputing Wales account has been closed.')
+            message = _('has been closed.')
+        return _('Your Supercomputing Wales account ') + message
 
     def __str__(self):
         return self.user.email
