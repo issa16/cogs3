@@ -4,9 +4,9 @@ from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from institution.models import Institution
+from notification.tasks import EmailNotification
 from project.models import Project
 from project.models import ProjectUserMembership
-from project.notifications import EmailNotification
 
 
 class FileLinkWidget(forms.Widget):
@@ -107,12 +107,10 @@ class ProjectAdminForm(forms.ModelForm):
         if self.initial_status != project.status:
             email_context = {
                 'to': project.tech_lead.email,
-                'title': 'TITLE',
                 'first_name': project.tech_lead.first_name,
-                'last_name': project.tech_lead.last_name,
                 'subject': 'SUBJECT',
-                'message_title': 'Project Status Update (' + project.code + ')',
-                'message': ('Main message body'),
+                'message_title': 'Project Update (' + project.code + ')',
+                'message': project.email_message()
             }
             EmailNotification(email_context).enqueue()
         if commit:

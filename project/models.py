@@ -213,6 +213,9 @@ class Project(models.Model):
     def is_closed(self):
         return True if self.status == Project.CLOSED else False
 
+    def email_message(self):
+        return 'Email message'
+
     def __str__(self):
         data = {
             'code': self.code,
