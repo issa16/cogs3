@@ -48,4 +48,9 @@ urlpatterns = [
         views.ProjectUserRequestMembershipUpdateView.as_view(),
         name='project-user-membership-request-update',
     ),
+    path(
+        'applications/<int:pk>/document/',
+        views.ProjectDocumentView.as_view(),
+        name='project-application-document',
+    ),
 ]

@@ -1,9 +1,12 @@
 import datetime
+import os
+import mimetypes
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.urls import reverse
@@ -11,6 +14,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic.edit import FormView
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 from .forms import ProjectCreationForm
 from .forms import ProjectUserMembershipCreationForm
@@ -60,6 +64,25 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
         if not self.user_passes_test(request):
             return HttpResponseRedirect(reverse('project-application-list'))
         return super().dispatch(request, *args, **kwargs)
+
+class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
+
+    def user_passes_test(self, request):
+        if Project.objects.filter(id=self.kwargs['pk'], tech_lead=self.request.user).exists():
+            return True
+        else:
+            return self.request.user.is_superuser
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            return HttpResponseRedirect(reverse('project-application-list'))
+        project = Project.objects.get(id=self.kwargs['pk'])
+        filename = os.path.join(settings.MEDIA_ROOT,project.document.name)
+        with open(filename, 'rb') as f:
+            data = f.read()
+        response = HttpResponse(data, content_type=mimetypes.guess_type(filename)[0])
+        response['Content-Disposition'] = 'attachment; filename="'+os.path.basename(filename)+'"'
+        return response
 
 
 class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, FormView):

@@ -115,8 +115,12 @@ misc.txt
 # misc
 util
 logs
+tmp
 
 # sqlite
 db.sqlite*
+
+# Ignore redis binary dump (dump.rdb) files
+*.rdb
 
 

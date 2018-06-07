@@ -1,17 +1,65 @@
 from django import forms
-
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+
 from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
 from users.models import CustomUser
 
 
+class FileLinkWidget(forms.Widget):
+    def __init__(self, obj, attrs=None):
+        self.object = obj
+        super(FileLinkWidget, self).__init__(attrs)
+
+    def render(self, name, value, attrs=None):
+        if self.object.pk:
+            return u'<a target="_blank" href="/en/projects/applications/%s/document">Download</a>' % (self.object.id)
+
+        else:
+            return u''
+
+
 class ProjectAdminForm(forms.ModelForm):
+
+    document_download = forms.CharField(label='Download Supporting Document', required=False)
 
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = [
+            'title',
+            'description',
+            'legacy_hpcw_id',
+            'legacy_arcca_id',
+            'code', 'institution',
+            'institution_reference',
+            'department',
+            'pi',
+            'tech_lead',
+            'category',
+            'funding_source',
+            'start_date',
+            'end_date',
+            'economic_user',
+            'requirements_software',
+            'requirements_gateways',
+            'requirements_training',
+            'requirements_onboarding',
+            'allocation_rse',
+            'allocation_cputime',
+            'allocation_memory',
+            'allocation_storage_home', 'allocation_storage_scratch',
+            'document',
+            'document_download',
+            'status',
+            'reason_decision',
+            'notes',
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectAdminForm, self).__init__(*args, **kwargs)
+        self.fields['document_download'].widget = FileLinkWidget(self.instance)
 
     def clean_code(self):
         """
@@ -23,6 +71,28 @@ class ProjectAdminForm(forms.ModelForm):
             if Project.objects.filter(code=updated_code).exists():
                 raise forms.ValidationError(_('Project code must be unique.'))
         return updated_code
+
+    def clean_legacy_hpcw_id(self):
+        """
+        Ensure the project legacy hpcw id is unique.
+        """
+        current_legacy_hpcw_id = self.instance.legacy_hpcw_id
+        updated_legacy_hpcw_id = self.cleaned_data['legacy_hpcw_id']
+        if current_legacy_hpcw_id != updated_legacy_hpcw_id:
+            if Project.objects.filter(legacy_hpcw_id=updated_legacy_hpcw_id).exists():
+                raise forms.ValidationError(_('Project legacy HPCW id must be unique.'))
+        return updated_legacy_hpcw_id
+
+    def clean_legacy_arcca_id(self):
+        """
+        Ensure the project legacy arcca id is unique.
+        """
+        current_legacy_arcca_id = self.instance.legacy_arcca_id
+        updated_legacy_arcca_id = self.cleaned_data['legacy_arcca_id']
+        if current_legacy_arcca_id != updated_legacy_arcca_id:
+            if Project.objects.filter(legacy_arcca_id=updated_legacy_arcca_id).exists():
+                raise forms.ValidationError(_('Project legacy ARCCA id must be unique.'))
+        return updated_legacy_arcca_id
 
 
 class LocalizeModelChoiceField(forms.ModelChoiceField):
@@ -54,7 +124,8 @@ class ProjectCreationForm(forms.ModelForm):
             'allocation_cputime',
             'allocation_memory',
             'allocation_storage_home',
-            'allocation_storage_scratch'
+            'allocation_storage_scratch',
+            'document',
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={
@@ -80,7 +151,8 @@ class ProjectUserMembershipCreationForm(forms.Form):
         # Verify the project code is valid and the project has been approved.
         project_code = self.cleaned_data['project_code']
         try:
-            project = Project.objects.get(code=project_code)
+            project = Project.objects.get(
+                Q(code=project_code) | Q(legacy_hpcw_id=project_code) | Q(legacy_arcca_id=project_code))
             user = self.initial.get('user', None)
             # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:

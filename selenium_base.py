@@ -1,10 +1,16 @@
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium import webdriver
+import time
+
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
-from users.models import CustomUser
 
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
+from django.utils.translation import activate
+
+from cogs3.settings import LANGUAGE_CODE
 from cogs3.settings import SELENIUM_WEBDRIVER
+from cogs3.settings import SELENIUM_WEBDRIVER_PROFILE
+from users.models import CustomUser
 
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
@@ -19,7 +25,8 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.selenium.get(self.live_server_url + url)
 
     def click_link_by_url(self, url):
-        link = self.selenium.find_element_by_css_selector('a[href*="'+url+'"]')
+        selector = 'a[href*="' + url + '"]'
+        link = self.selenium.find_element_by_css_selector(selector)
         link.click()
 
     def fill_form_by_id(self, fields):
@@ -40,7 +47,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         Sign in as a preexisting test user
         """
         # Sign in using the external collaborators login form
-        self.get_url("/accounts/external/login/")
+        self.get_url(reverse('external-login'))
 
         form_fields = {
             "id_username": user.email,
@@ -49,16 +56,19 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.fill_form_by_id(form_fields)
         self.submit_form(form_fields)
         # Check that we didn't get the fail response
-        assert "Please enter a correct email and password" not in  self.selenium.page_source
+        assert "Please enter a correct email and password" not in self.selenium.page_source
 
     def log_out(self):
-        self.get_url("/accounts/logout/")
+        self.get_url(reverse('logout'))
         assert "accounts/logged_out/" in self.selenium.current_url
-        self.get_url("")
+        self.get_url('')
 
     def submit_form(self, form_fields):
         key = list(form_fields.keys())[0]
         self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
+        # This seems to be necessary Geckodriver (Firefox)
+        # I'm guessing it take a moment to process the submission
+        time.sleep(0.2)
 
     def click_by_id(self, text):
         self.selenium.find_element_by_id(text).click()
@@ -129,7 +139,13 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.create_test_user(self.admin)
 
         # Setup selenium
-        self.selenium = SELENIUM_WEBDRIVER()
-        self.selenium.implicitly_wait(10)
-        self.get_url("")
-        self.selenium.add_cookie({'name': 'cookielaw_accepted', 'value': '1'})
+        activate(LANGUAGE_CODE)
+        profile = SELENIUM_WEBDRIVER_PROFILE()
+        profile.set_preference('intl.accept_languages', 'en-gb')
+        self.selenium = SELENIUM_WEBDRIVER(profile)
+        self.selenium.implicitly_wait(2)
+        self.get_url('')
+        self.selenium.add_cookie({
+            'name': 'cookielaw_accepted',
+            'value': '1',
+        })
