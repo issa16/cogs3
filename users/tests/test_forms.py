@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.utils.translation import activate
 
 from institution.tests.test_models import InstitutionTests
-from users.forms import CustomUserCreationForm
+from users.forms import CustomUserCreationForm, CustomUserPersonalInfoUpdateForm
 from users.models import CustomUser
 
 
@@ -83,3 +83,14 @@ class CustomUserCreationFormTests(TestCase):
         form.save()
         self.assertEqual(CustomUser.objects.filter(email=email).count(), 1)
         self.assertIsNotNone(CustomUser.objects.get(email=email).password)
+
+
+class CustomUserPersonalInfoUpdateFormTests(TestCase):
+
+    def test_user_update_form(self):
+        form = CustomUserPersonalInfoUpdateForm(
+            data={
+                'first_name': 'Joe',
+                'last_name': 'Bloggs',
+            }, )
+        self.assertTrue(form.is_valid())
