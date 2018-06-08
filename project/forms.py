@@ -104,7 +104,6 @@ class ProjectAdminForm(forms.ModelForm):
 
     def save(self, commit=True):
         project = super(ProjectAdminForm, self).save(commit=False)
-        # When the project status is changed, send an email to technical lead.
         if self.initial_status != project.status:
             ProjectStatusUpdateEmail(project).enqueue()
         if commit:
