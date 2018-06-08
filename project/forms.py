@@ -4,9 +4,10 @@ from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from institution.models import Institution
-from notification.tasks import EmailNotification
+from notification.tasks import QueuedEmailTask
 from project.models import Project
 from project.models import ProjectUserMembership
+from project.notifications import ProjectStatusUpdateEmail
 
 
 class FileLinkWidget(forms.Widget):
@@ -105,14 +106,7 @@ class ProjectAdminForm(forms.ModelForm):
         project = super(ProjectAdminForm, self).save(commit=False)
         # When the project status is changed, send an email to technical lead.
         if self.initial_status != project.status:
-            email_context = {
-                'to': project.tech_lead.email,
-                'first_name': project.tech_lead.first_name,
-                'subject': 'SUBJECT',
-                'message_title': 'Project Update (' + project.code + ')',
-                'message': project.email_message()
-            }
-            EmailNotification(email_context).enqueue()
+            ProjectStatusUpdateEmail(project).enqueue()
         if commit:
             project.save()
         return project

@@ -5,16 +5,10 @@ import logging
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.core.mail import EmailMultiAlternatives
+from django.template import Context
 from django.template.loader import get_template
 
 logger = logging.getLogger('queue')
-
-
-def _send_email(email):
-    try:
-        email.send(fail_silently=False)
-    except Exception:
-        logger.exception('Failed to send email')
 
 
 class EmailTask(abc.ABC):
@@ -34,14 +28,8 @@ class QueuedTask(abc.ABC):
 
 class QueuedEmailTask(QueuedTask, EmailTask):
 
-    def enqueue(self):
-        django_rq.enqueue(_send_email, self.email)
-
-
-class EmailNotification(QueuedEmailTask):
-
     def __init__(self, email_context, template_context=None):
-        super(EmailNotification, self).__init__()
+        super(QueuedEmailTask, self).__init__()
         if template_context:
             self.template_context = template_context
         else:
@@ -65,3 +53,12 @@ class EmailNotification(QueuedEmailTask):
         )
         email.attach_alternative(html_alternative, "text/html")
         return email
+
+    def _send_email(self):
+        try:
+            self.email.send(fail_silently=False)
+        except Exception:
+            logger.exception('Failed to send email')
+
+    def enqueue(self):
+        django_rq.enqueue(self._send_email)

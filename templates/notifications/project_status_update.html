@@ -1,0 +1,13 @@
+{% extends 'notifications/email_base.html' %}
+{% load i18n %}
+{% block title %}
+	{% trans "Project Status Update" %}
+{% endblock %}
+{% block content %}
+	<p>
+		Hi {{ project.tech_lead.first_name}},
+	</p>
+	<p>
+		{{ project }} {{ project.get_status_display }}
+	</p>
+{% endblock %}

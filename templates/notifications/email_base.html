@@ -1,15 +1,14 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta name="description" content="">
 		<meta name="author" content="">
-		<title>{{message_title}}</title>
+		<title>{% block title %}{% endblock %}</title>
 	</head>
 	<p>
-	Hi {{first_name}}, 
-
-	{{ message|linebreaks }}
-
+	{% block content %}
+	{% endblock %}
 	</p>
 	<p style="color:DimGray;">
 		Visit <a style="color:DimGray;" href="http://my.supercomputing.wales">my.supercomputing.wales</a> to see your projects.
