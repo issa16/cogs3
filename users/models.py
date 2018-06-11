@@ -44,6 +44,7 @@ class Profile(models.Model):
     )
     uid_number = models.PositiveIntegerField(
         null=True,
+        blank=True,
         verbose_name='UID Number',
     )
     description = models.CharField(
