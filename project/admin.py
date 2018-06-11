@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from project.forms import ProjectAdminForm
+from project.forms import ProjectUserMembershipAdminForm
 from project.models import Project
 from project.models import ProjectCategory
 from project.models import ProjectFundingSource
@@ -31,6 +32,7 @@ class ProjectSystemAllocationAdmin(admin.ModelAdmin):
 
 @admin.register(ProjectUserMembership)
 class ProjectUserMembershipAdmin(admin.ModelAdmin):
+    form = ProjectUserMembershipAdminForm
     list_display = (
         'project',
         'user',

@@ -2,16 +2,15 @@ import jsonschema
 import logging
 import requests
 
+from django_rq import job
+
 from django.conf import settings
 
 from openldap import schemas
-from openldap.decorators import OpenLDAPException
 from openldap.util import decode_response
 
-logger = logging.getLogger('openldap')
 
-
-@OpenLDAPException(logger)
+@job
 def list_projects():
     """
     List all projects.
@@ -19,7 +18,7 @@ def list_projects():
     raise NotImplementedError('Not yet implemented.')
 
 
-@OpenLDAPException(logger)
+@job
 def create_project(code, category, title, technical_lead):
     """
     Create a project.
@@ -33,7 +32,7 @@ def create_project(code, category, title, technical_lead):
     raise NotImplementedError('Not yet implemented.')
 
 
-@OpenLDAPException(logger)
+@job
 def update_project(code, status):
     """
     Update an existing project.
@@ -45,7 +44,7 @@ def update_project(code, status):
     raise NotImplementedError('Not yet implemented.')
 
 
-@OpenLDAPException(logger)
+@job
 def delete_project(code):
     """
     Delete a project.

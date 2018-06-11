@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.forms.models import BaseInlineFormSet
 
 from users.forms import CustomUserChangeForm
 from users.forms import CustomUserCreationForm
@@ -8,11 +9,23 @@ from users.models import Profile
 from users.models import ShibbolethProfile
 
 
+class ProfileInlineFormset(BaseInlineFormSet):
+
+    def save_existing(self, form, instance, commit=True):
+        profile = super(ProfileInlineFormset, self).save_existing(form, instance, commit)
+        if 'account_status' in form.changed_data:
+            profile.update_ldap_account()
+        if commit:
+            profile.save()
+        return profile
+
+
 class ProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
     verbose_name_plural = 'Profile'
     fk_name = 'user'
+    formset = ProfileInlineFormset
 
 
 class ShibbolethProfileInline(admin.StackedInline):

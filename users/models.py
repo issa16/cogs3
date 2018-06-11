@@ -1,3 +1,5 @@
+import django_rq
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
@@ -7,6 +9,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from institution.models import Institution
+from openldap.api import user_api
 
 
 class Profile(models.Model):
@@ -39,6 +42,10 @@ class Profile(models.Model):
         blank=True,
         verbose_name='Raven email address',
     )
+    uid_number = models.PositiveIntegerField(
+        null=True,
+        verbose_name='UID Number',
+    )
     description = models.CharField(
         max_length=200,
         blank=True,
@@ -66,10 +73,6 @@ class Profile(models.Model):
         default=AWAITING_APPROVAL,
     )
 
-    class Meta:
-        verbose_name = 'profile'
-        verbose_name_plural = 'profiles'
-
     def account_status_message(self):
         if self.account_status == self.AWAITING_APPROVAL:
             message = _('access request is currently awaiting approval.')
@@ -84,10 +87,36 @@ class Profile(models.Model):
             message = _('access has been suspended.')
         elif self.account_status == self.CLOSED:
             message = _('has been closed.')
-        return _('Your Supercomputing Wales account ') + message
+        return _('Your {company_name} account {message}').format(
+            company_name=settings.COMPANY_NAME,
+            message=message,
+        )
+
+    def update_ldap_account(self):
+        """
+        Ensure account status updates are propogated to the user's LDAP account.
+        """
+        if self.account_status == self.APPROVED:
+            if self.scw_username:
+                user_api.activate_user_account.delay(user=self.user)
+            else:
+                user_api.create_user.delay(user=self.user)
+        else:
+            user_api.deactivate_user_account.delay(user=self.user)
+
+    def reset_account_status(self):
+        """
+        Reset user account status to Awaiting Approval.
+        """
+        self.account_status = Profile.AWAITING_APPROVAL
+        self.save()
 
     def __str__(self):
         return self.user.email
+
+    class Meta:
+        verbose_name = 'profile'
+        verbose_name_plural = 'profiles'
 
 
 class ShibbolethProfile(Profile):
@@ -206,17 +235,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    def __str__(self):
-        return self.email
-
     def get_full_name(self):
         return self.email
 
     def get_short_name(self):
         return self.email
-
-    class Meta:
-        verbose_name_plural = 'Users'
 
     def save(self, *args, **kwargs):
         super(CustomUser, self).save(*args, **kwargs)
@@ -233,3 +256,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         else:
             Profile.objects.update_or_create(user=self)
         self.profile.save()
+
+    def __str__(self):
+        return self.email
+
+    class Meta:
+        verbose_name_plural = 'Users'

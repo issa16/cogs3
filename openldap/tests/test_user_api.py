@@ -9,9 +9,18 @@ from django.test import TestCase
 
 from openldap.api import user_api
 from openldap.tests.test_api import OpenLDAPBaseAPITests
+from users.tests.test_models import CustomUserTests
 
 
 class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
+
+    def setUp(self):
+        super(OpenLDAPUserAPITests, self).setUp()
+        self.user = CustomUserTests.create_custom_user(email='joe.bloggs@bangor.ac.uk')
+        self.user.department = 'Chemistry'
+        self.user.profile.phone = '00000-000000'
+        self.user.profile.uid_number = '0000000'
+        self.user.save()
 
     @mock.patch('requests.get')
     def test_list_users_query(self, get_mock):
@@ -82,15 +91,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                 "uidnumber": "0000000"
             }
         }
-        result = user_api.create_user(
-            email='joe.bloggs@bangor.ac.uk',
-            title='Mr',
-            first_name='Joe',
-            surname='Bloggs',
-            department='Chemistry',
-            telephone='00000-000000',
-            uid_number='0000000',
-        )
+        result = user_api.create_user(user=self.user)
         self.assertEqual(result, expected_response)
 
     @mock.patch('requests.get')
@@ -200,9 +201,9 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         self.assertEqual(result, expected_response)
 
     @mock.patch('requests.delete')
-    def test_delete_user_query(self, delete_mock):
+    def test_deactivate_user_account_query(self, delete_mock):
         """
-        Delete (deactivate) an existing user.
+        Deactivate an existing user's OpenDLAP account
         """
         jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wb'
                'GUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTA'
@@ -222,7 +223,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                 "delete": "moved to cn=x.joe.bloggs,ou=Users,ou=Inactive,dc=example,dc=ac,dc=uk"
             }
         }
-        result = user_api.delete_user(email_address='joe.bloggs@bangor.ac.uk')
+        result = user_api.deactivate_user_account(user=self.user)
         self.assertEqual(result, expected_response)
 
     @mock.patch('requests.post')
@@ -254,9 +255,9 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         self.assertEqual(result, expected_response)
 
     @mock.patch('requests.put')
-    def test_enable_user_account_query(self, put_mock):
+    def test_activate_user_account_query(self, put_mock):
         """
-        Enable a user's account.
+        Activate an existing user's OpenLDAP account.
         """
         jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wb'
                'GUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTA'
@@ -277,7 +278,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                 "moved to cn=x.joe.bloggs,ou=ExampleUniversity,ou=Institutions,ou=Users,dc=example,dc=ac,dc=uk"
             }
         }
-        result = user_api.enable_user_account(email_address='joe.bloggs@bangor.ac.uk')
+        result = user_api.activate_user_account(user=self.user)
         self.assertEqual(result, expected_response)
 
     def test_query_exceptions(self):
@@ -287,29 +288,23 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         queries = [
             (user_api.list_users, None),
             (user_api.create_user, {
-                'email': 'joe.bloggs@bangor.ac.uk',
-                'title': 'Mr',
-                'first_name': 'Joe',
-                'surname': 'Bloggs',
-                'department': 'Chemistry',
-                'telephone': '00000-000000',
-                'uid_number': '0000000',
+                'user': self.user,
             }),
             (user_api.get_user_by_id, {
-                'user_id': 'x.joe.bloggs',
+                'user_id': 'x.joe.bloggs'
             }),
             (user_api.get_user_by_email_address, {
-                'email_address': 'joe.bloggs@bangor.ac.uk',
-            }),
-            (user_api.delete_user, {
-                'email_address': 'joe.bloggs@bangor.ac.uk',
+                'email_address': 'joe.bloggs@bangor.ac.uk'
             }),
             (user_api.reset_user_password, {
                 'email_address': 'joe.bloggs@bangor.ac.uk',
                 'password': '12345678',
             }),
-            (user_api.enable_user_account, {
-                'email_address': 'joe.bloggs@bangor.ac.uk',
+            (user_api.deactivate_user_account, {
+                'user': self.user,
+            }),
+            (user_api.activate_user_account, {
+                'user': self.user,
             }),
         ]
         for query, query_kwargs in queries:

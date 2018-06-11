@@ -1,7 +1,8 @@
 import datetime
-import os
 import mimetypes
+import os
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -11,15 +12,14 @@ from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.urls import reverse
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
-from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 
-from .forms import ProjectCreationForm
-from .forms import ProjectUserMembershipCreationForm
-from .models import Project
-from .models import ProjectUserMembership
+from project.forms import ProjectCreationForm
+from project.forms import ProjectUserMembershipCreationForm
+from project.models import Project
+from project.models import ProjectUserMembership
 
 
 class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
@@ -62,6 +62,7 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
             return HttpResponseRedirect(reverse('project-application-list'))
         return super().dispatch(request, *args, **kwargs)
 
+
 class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
 
     def user_passes_test(self, request):
@@ -74,11 +75,11 @@ class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
         if not self.user_passes_test(request):
             return HttpResponseRedirect(reverse('project-application-list'))
         project = Project.objects.get(id=self.kwargs['pk'])
-        filename = os.path.join(settings.MEDIA_ROOT,project.document.name)
+        filename = os.path.join(settings.MEDIA_ROOT, project.document.name)
         with open(filename, 'rb') as f:
             data = f.read()
         response = HttpResponse(data, content_type=mimetypes.guess_type(filename)[0])
-        response['Content-Disposition'] = 'attachment; filename="'+os.path.basename(filename)+'"'
+        response['Content-Disposition'] = 'attachment; filename="' + os.path.basename(filename) + '"'
         return response
 
 
@@ -152,9 +153,11 @@ class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequi
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        if 'status' in self.changed_data:
+            # TODO - OpenLDAP API call
+            pass
         if self.request.is_ajax():
-            data = {'message': 'Successfully updated.'}
-            return JsonResponse(data)
+            return JsonResponse({'message': 'Successfully updated.'})
         else:
             return response
 

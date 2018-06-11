@@ -66,9 +66,8 @@ INSTALLED_APPS = [
     'cookielaw',
     'django_rq',
     'security',
-    'openldap',
-    'notification',
     'hreflang',
+    'openldap',
 ]
 
 MIDDLEWARE = [
@@ -181,7 +180,6 @@ DEFAULT_CONTACT_EMAIL = os.environ.get('DEFAULT_CONTACT_EMAIL')
 
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
 EMAIL_FILE_PATH = os.environ.get('EMAIL_FILE_PATH')
-
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')

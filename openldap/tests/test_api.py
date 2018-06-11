@@ -5,8 +5,14 @@ import requests
 from django.conf import settings
 from django.test import TestCase
 
+from users.tests.test_models import CustomUserTests
+
 
 class OpenLDAPBaseAPITests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/institutions.yaml',
+    ]
 
     def setUp(self):
         settings.OPENLDAP_HOST = 'https://example.com/'

@@ -1,8 +1,8 @@
-enable_account_json = {
+deactivate_account_json = {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "$ref": "#/definitions/EnableAccount",
+    "$ref": "#/definitions/DeleteUser",
     "definitions": {
-        "EnableAccount": {
+        "DeleteUser": {
             "type": "object",
             "additionalProperties": False,
             "properties": {
@@ -29,18 +29,18 @@ enable_account_json = {
                 "iss",
                 "nbf",
             ],
-            "title": "EnableAccount"
+            "title": "DeleteUser"
         },
         "Data": {
             "type": "object",
             "additionalProperties": False,
             "properties": {
-                "enable": {
+                "delete": {
                     "type": "string"
                 }
             },
             "required": [
-                "enable",
+                "delete",
             ],
             "title": "Data"
         }

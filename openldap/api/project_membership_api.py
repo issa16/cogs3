@@ -2,16 +2,15 @@ import jsonschema
 import logging
 import requests
 
+from django_rq import job
+
 from django.conf import settings
 
 from openldap import schemas
-from openldap.decorators import OpenLDAPException
 from openldap.util import decode_response
 
-logger = logging.getLogger('openldap')
 
-
-@OpenLDAPException(logger)
+@job
 def create_project_membership(code, user_id):
     """
     Create a project membership.
@@ -23,7 +22,7 @@ def create_project_membership(code, user_id):
     raise NotImplementedError('Not yet implemented.')
 
 
-@OpenLDAPException(logger)
+@job
 def update_project_membership(code, user_id, status):
     """
     Update an existing project membership.
@@ -36,7 +35,7 @@ def update_project_membership(code, user_id, status):
     raise NotImplementedError('Not yet implemented.')
 
 
-@OpenLDAPException(logger)
+@job
 def delete_project_membership(code, user_id):
     """
     Delete a project membership.

@@ -4,10 +4,8 @@ from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from institution.models import Institution
-from notification.tasks import QueuedEmailTask
 from project.models import Project
 from project.models import ProjectUserMembership
-from project.notifications import ProjectStatusUpdateEmail
 
 
 class FileLinkWidget(forms.Widget):
@@ -63,11 +61,8 @@ class ProjectAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectAdminForm, self).__init__(*args, **kwargs)
-        self.fields['document_download'].widget = FileLinkWidget(self.instance)
-
-    def __init__(self, *args, **kwargs):
-        super(ProjectAdminForm, self).__init__(*args, **kwargs)
         self.initial_status = self.instance.status
+        self.fields['document_download'].widget = FileLinkWidget(self.instance)
 
     def clean_code(self):
         """
@@ -105,7 +100,8 @@ class ProjectAdminForm(forms.ModelForm):
     def save(self, commit=True):
         project = super(ProjectAdminForm, self).save(commit=False)
         if self.initial_status != project.status:
-            ProjectStatusUpdateEmail(project).enqueue()
+            # TODO - OpenLDAP API call
+            pass
         if commit:
             project.save()
         return project
@@ -180,3 +176,19 @@ class ProjectUserMembershipCreationForm(forms.Form):
         except Project.DoesNotExist:
             raise forms.ValidationError(_("Invalid Project Code."))
         return project_code
+
+
+class ProjectUserMembershipAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = ProjectUserMembership
+        fields = '__all__'
+
+    def save(self, commit=True):
+        project_user_membership = super(ProjectUserMembershipAdminForm, self).save(commit=False)
+        if 'status' in self.changed_data:
+            # TODO - OpenLDAP API call
+            pass
+        if commit:
+            project_user_membership.save()
+        return project_user_membership

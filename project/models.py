@@ -213,9 +213,6 @@ class Project(models.Model):
     def is_closed(self):
         return True if self.status == Project.CLOSED else False
 
-    def email_message(self):
-        return 'Email message'
-
     def __str__(self):
         data = {
             'code': self.code,
@@ -223,27 +220,28 @@ class Project(models.Model):
         }
         return '{code} - {title}'.format(**data)
 
+    def _assign_project_owner_project_membership(self):
+        try:
+            if self.status == Project.APPROVED:
+                ProjectUserMembership.objects.update_or_create(
+                    project=self,
+                    user=self.tech_lead,
+                    defaults={
+                        'date_joined': datetime.date.today(),
+                        'status': ProjectUserMembership.AUTHORISED,
+                    },
+                )
+                # Assign the 'project_owner' group to the project's technical lead.
+                group = Group.objects.get(name='project_owner')
+                self.tech_lead.groups.add(group)
+        except Exception:
+            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
+
     def save(self, *args, **kwargs):
         updated = self.pk
         super(Project, self).save(*args, **kwargs)
-        # Update or create a ProjectUserMembership instance for the project's technical lead.
         if updated:
-            try:
-                if self.status == Project.APPROVED:
-                    ProjectUserMembership.objects.update_or_create(
-                        project=self,
-                        user=self.tech_lead,
-                        defaults={
-                            'date_joined': datetime.date.today(),
-                            'status': ProjectUserMembership.AUTHORISED,
-                        },
-                    )
-                    # Assign the 'project_owner' group to the project's technical lead.
-                    group = Group.objects.get(name='project_owner')
-                    self.tech_lead.groups.add(group)
-            except Exception:
-                logger.exception('Failed to update or create a ProjectUserMembership instance for'
-                                 'the project\'s technical lead.')
+            self._assign_project_owner_project_membership()
 
 
 class ProjectSystemAllocation(models.Model):
