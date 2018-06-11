@@ -7,10 +7,10 @@ from security.json_web_token import JSONWebToken
 
 def decode_response(response):
     return JSONWebToken.decode(
-        data=response.content.decode('utf-8').rstrip(),
+        data=response.content.strip(),
         key=settings.OPENLDAP_JWT_KEY,
         audience=settings.OPENLDAP_JWT_AUDIENCE,
-        algorithms=[settings.OPENLDAP_JWT_ALGORITHM],
+        algorithms=settings.OPENLDAP_JWT_ALGORITHM,
     )
 
 
