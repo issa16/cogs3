@@ -44,6 +44,11 @@ def _update_user_profile(user, data):
     user.save()
 
 
+def _error_check(data):
+    if data.get('error', None):
+        raise ValueError('Error Detected {error}'.format(error=data['error']))
+
+
 @job
 def list_users():
     """
@@ -99,6 +104,7 @@ def create_user(user, notify_user=True):
         response.raise_for_status()
         response = decode_response(response)
         jsonschema.validate(response, create_user_json)
+        _error_check(response['data'])
 
         _verify_profile_data(payload, response['data'])
         _update_user_profile(user, response['data'])
@@ -205,6 +211,7 @@ def deactivate_user_account(user, notify_user=True):
         response.raise_for_status()
         response = decode_response(response)
         jsonschema.validate(response, deactivate_account_json)
+        _error_check(response['data'])
 
         if notify_user:
             subject = _('{company_name} Account Deactivated'.format(company_name=settings.COMPANY_NAME))
@@ -240,6 +247,7 @@ def activate_user_account(user, notify_user=True):
         response.raise_for_status()
         response = decode_response(response)
         jsonschema.validate(response, activate_account_json)
+        _error_check(response['data'])
 
         if notify_user:
             subject = _('{company_name} Account Activated'.format(company_name=settings.COMPANY_NAME))

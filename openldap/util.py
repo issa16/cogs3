@@ -7,7 +7,7 @@ from security.json_web_token import JSONWebToken
 
 def decode_response(response):
     return JSONWebToken.decode(
-        data=response.content,
+        data=response.content.decode('utf-8').rstrip(),
         key=settings.OPENLDAP_JWT_KEY,
         audience=settings.OPENLDAP_JWT_AUDIENCE,
         algorithms=[settings.OPENLDAP_JWT_ALGORITHM],
