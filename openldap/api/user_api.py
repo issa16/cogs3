@@ -88,6 +88,7 @@ def create_user(user, notify_user=True):
     except Exception:
         # Optional field, so ignore
         pass
+
     try:
         response = requests.post(
             url,
@@ -96,14 +97,12 @@ def create_user(user, notify_user=True):
             timeout=5,
         )
         response.raise_for_status()
-    except Exception:
-        user.profile.reset_account_status()
-        raise
-    else:
         response = decode_response(response)
         jsonschema.validate(response, create_user_json)
+
         _verify_profile_data(payload, response['data'])
         _update_user_profile(user, response['data'])
+
         if notify_user:
             subject = _('{company_name} Account Created'.format(company_name=settings.COMPANY_NAME))
             context = {
@@ -113,6 +112,9 @@ def create_user(user, notify_user=True):
             text_template_path = 'notifications/account_status_update.txt'
             html_template_path = 'notifications/account_status_update.html'
             email_user(subject, context, text_template_path, html_template_path)
+    except Exception:
+        user.profile.reset_account_status()
+        raise
     return response
 
 
@@ -201,12 +203,9 @@ def deactivate_user_account(user, notify_user=True):
             timeout=5,
         )
         response.raise_for_status()
-    except Exception:
-        user.profile.reset_account_status()
-        raise
-    else:
         response = decode_response(response)
         jsonschema.validate(response, deactivate_account_json)
+
         if notify_user:
             subject = _('{company_name} Account Deactivated'.format(company_name=settings.COMPANY_NAME))
             context = {
@@ -216,6 +215,9 @@ def deactivate_user_account(user, notify_user=True):
             text_template_path = 'notifications/account_deactivated.txt'
             html_template_path = 'notifications/account_deactivated.html'
             email_user(subject, context, text_template_path, html_template_path)
+    except Exception:
+        user.profile.reset_account_status()
+        raise
     return response
 
 
@@ -236,12 +238,9 @@ def activate_user_account(user, notify_user=True):
             timeout=5,
         )
         response.raise_for_status()
-    except Exception:
-        user.profile.reset_account_status()
-        raise
-    else:
         response = decode_response(response)
         jsonschema.validate(response, activate_account_json)
+
         if notify_user:
             subject = _('{company_name} Account Activated'.format(company_name=settings.COMPANY_NAME))
             context = {
@@ -251,4 +250,8 @@ def activate_user_account(user, notify_user=True):
             text_template_path = 'notifications/account_activated.txt'
             html_template_path = 'notifications/account_activated.html'
             email_user(subject, context, text_template_path, html_template_path)
+
+    except Exception:
+        user.profile.reset_account_status()
+        raise
     return response
