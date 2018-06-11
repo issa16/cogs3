@@ -72,6 +72,13 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.email
 
+    @property
+    def institution(self):
+        """ return institution if shibboleth user, otherwise return None """
+        if hasattr(self, 'shibbolethprofile'):
+            return self.shibbolethprofile.institution
+        else:
+            return None
 
 class ShibbolethProfile(Profile):
     shibboleth_id = models.CharField(
