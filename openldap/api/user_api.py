@@ -17,15 +17,10 @@ from openldap.util import decode_response
 from openldap.util import email_user
 
 
-def _verify_profile_data(payload, data):
+def _verify_payload_data(payload, data, mapping):
     """
-    Ensure certain data values match in both the payload and data dict's.
+    Ensure data values match in both the payload and data dict's.
     """
-    mapping = {
-        'email': 'mail',
-        'firstName': 'givenname',
-        'uidNumber': 'uidnumber',
-    }
     for payload_key, data_key in mapping.items():
         if payload[payload_key] != data[data_key]:
             message = 'Data Mismatch payload[{payload_key}] != data[{data_key}]'.format(
@@ -107,7 +102,12 @@ def create_user(user, notify_user=True):
         _error_check(response.get('data'))
         jsonschema.validate(response, create_user_json)
 
-        _verify_profile_data(payload, response.get('data'))
+        mapping = {
+            'email': 'mail',
+            'firstName': 'givenname',
+            'uidNumber': 'uidnumber',
+        }
+        _verify_payload_data(payload, response.get('data'), mapping)
         _update_user_profile(user, response.get('data'))
 
         if notify_user:
@@ -120,7 +120,7 @@ def create_user(user, notify_user=True):
             html_template_path = 'notifications/account_status_update.html'
             email_user(subject, context, text_template_path, html_template_path)
     except Exception as e:
-        if 'Existing user' not in e:
+        if 'Existing user' not in str(e):
             user.profile.reset_account_status()
         raise
     return response
@@ -212,8 +212,9 @@ def deactivate_user_account(user, notify_user=True):
         )
         response.raise_for_status()
         response = decode_response(response)
+
+        _error_check(response.get('data'))
         jsonschema.validate(response, deactivate_account_json)
-        _error_check(response['data'])
 
         if notify_user:
             subject = _('{company_name} Account Deactivated'.format(company_name=settings.COMPANY_NAME))
@@ -248,8 +249,9 @@ def activate_user_account(user, notify_user=True):
         )
         response.raise_for_status()
         response = decode_response(response)
+
+        _error_check(response.get('data'))
         jsonschema.validate(response, activate_account_json)
-        _error_check(response['data'])
 
         if notify_user:
             subject = _('{company_name} Account Activated'.format(company_name=settings.COMPANY_NAME))
