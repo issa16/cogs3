@@ -10,7 +10,7 @@ def decode_response(response):
         data=response.content.strip(),
         key=settings.OPENLDAP_JWT_KEY,
         audience=settings.OPENLDAP_JWT_AUDIENCE,
-        algorithms=settings.OPENLDAP_JWT_ALGORITHM,
+        algorithms=[settings.OPENLDAP_JWT_ALGORITHM],
     )
 
 
