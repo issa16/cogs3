@@ -236,9 +236,6 @@ def deactivate_user_account(user, notify_user=True):
         response.raise_for_status()
         response = decode_response(response)
 
-        _error_check(response.get('data'))
-        jsonschema.validate(response, deactivate_account_json)
-
         if notify_user:
             subject = _('{company_name} Account Deactivated'.format(company_name=settings.COMPANY_NAME))
             context = {
