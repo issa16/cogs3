@@ -91,7 +91,7 @@ def create_user(user, notify_user=True):
     try:
         payload.update({'department': user.profile.department})
     except Exception:
-        # Optional field, so ignore
+        # Optional field, so ignore if not present
         pass
 
     try:
@@ -103,8 +103,9 @@ def create_user(user, notify_user=True):
         )
         response.raise_for_status()
         response = decode_response(response)
-        jsonschema.validate(response, create_user_json)
+
         _error_check(response.get('data'))
+        jsonschema.validate(response, create_user_json)
 
         _verify_profile_data(payload, response.get('data'))
         _update_user_profile(user, response.get('data'))
