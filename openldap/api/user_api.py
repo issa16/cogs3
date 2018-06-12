@@ -40,6 +40,9 @@ def _update_user_profile(user, data):
 
 
 def _error_check(data):
+    """
+    Check for data errors.
+    """
     if data.get('error', None):
         raise ValueError('Error Detected: {error}'.format(error=data['error']))
 
@@ -51,14 +54,19 @@ def list_users():
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/'])
     headers = {'Cache-Control': 'no-cache'}
-    response = requests.get(
-        url,
-        headers=headers,
-        timeout=5,
-    )
-    response.raise_for_status()
-    response = decode_response(response)
-    jsonschema.validate(response, list_users_json)
+    try:
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=5,
+        )
+        response.raise_for_status()
+        response = decode_response(response)
+
+        _error_check(response.get('data'))
+        jsonschema.validate(response, list_users_json)
+    except Exception as e:
+        raise e
     return response
 
 
@@ -122,7 +130,7 @@ def create_user(user, notify_user=True):
     except Exception as e:
         if 'Existing user' not in str(e):
             user.profile.reset_account_status()
-        raise
+        raise e
     return response
 
 
@@ -136,14 +144,19 @@ def get_user_by_id(user_id):
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', user_id, '/'])
     headers = {'Cache-Control': 'no-cache'}
-    response = requests.get(
-        url,
-        headers=headers,
-        timeout=5,
-    )
-    response.raise_for_status()
-    response = decode_response(response)
-    jsonschema.validate(response, get_user_json)
+    try:
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=5,
+        )
+        response.raise_for_status()
+        response = decode_response(response)
+
+        _error_check(response.get('data'))
+        jsonschema.validate(response, get_user_json)
+    except Exception as e:
+        raise e
     return response
 
 
@@ -157,14 +170,19 @@ def get_user_by_email_address(email_address):
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', email_address, '/'])
     headers = {'Cache-Control': 'no-cache'}
-    response = requests.get(
-        url,
-        headers=headers,
-        timeout=5,
-    )
-    response.raise_for_status()
-    response = decode_response(response)
-    jsonschema.validate(response, get_user_json)
+    try:
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=5,
+        )
+        response.raise_for_status()
+        response = decode_response(response)
+
+        _error_check(response.get('data'))
+        jsonschema.validate(response, get_user_json)
+    except Exception as e:
+        raise e
     return response
 
 
@@ -182,15 +200,20 @@ def reset_user_password(email_address, password):
         'Cache-Control': 'no-cache',
     }
     payload = {'password': password}
-    response = requests.post(
-        url,
-        headers=headers,
-        params=payload,
-        timeout=5,
-    )
-    response.raise_for_status()
-    response = decode_response(response)
-    jsonschema.validate(response, reset_password_json)
+    try:
+        response = requests.post(
+            url,
+            headers=headers,
+            params=payload,
+            timeout=5,
+        )
+        response.raise_for_status()
+        response = decode_response(response)
+
+        _error_check(response.get('data'))
+        jsonschema.validate(response, reset_password_json)
+    except Exception as e:
+        raise e
     return response
 
 
@@ -227,7 +250,7 @@ def deactivate_user_account(user, notify_user=True):
             email_user(subject, context, text_template_path, html_template_path)
     except Exception:
         user.profile.reset_account_status()
-        raise
+        raise e
     return response
 
 
@@ -262,8 +285,7 @@ def activate_user_account(user, notify_user=True):
             text_template_path = 'notifications/account_activated.txt'
             html_template_path = 'notifications/account_activated.html'
             email_user(subject, context, text_template_path, html_template_path)
-
     except Exception:
         user.profile.reset_account_status()
-        raise
+        raise e
     return response
