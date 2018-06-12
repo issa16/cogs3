@@ -28,10 +28,10 @@ class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateV
     success_message = _("Successfully submitted a project application.")
     template_name = 'project/create.html'
 
-    def form_valid(self, form):
-        form.instance.tech_lead = self.request.user
-        return super().form_valid(form)
-
+    def get_form(self, *args, **kwargs):
+        form = super().get_form(*args, **kwargs)
+        form.set_user(self.request.user)
+        return form
 
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'projects'
