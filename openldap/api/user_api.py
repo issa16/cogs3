@@ -46,7 +46,7 @@ def _update_user_profile(user, data):
 
 def _error_check(data):
     if data.get('error', None):
-        raise ValueError('Error Detected {error}'.format(error=data['error']))
+        raise ValueError('Error Detected: {error}'.format(error=data['error']))
 
 
 @job
@@ -98,16 +98,16 @@ def create_user(user, notify_user=True):
         response = requests.post(
             url,
             headers=headers,
-            params=payload,
+            data=payload,
             timeout=5,
         )
         response.raise_for_status()
         response = decode_response(response)
         jsonschema.validate(response, create_user_json)
-        _error_check(response['data'])
+        _error_check(response.get('data'))
 
-        _verify_profile_data(payload, response['data'])
-        _update_user_profile(user, response['data'])
+        _verify_profile_data(payload, response.get('data'))
+        _update_user_profile(user, response.get('data'))
 
         if notify_user:
             subject = _('{company_name} Account Created'.format(company_name=settings.COMPANY_NAME))
@@ -118,8 +118,9 @@ def create_user(user, notify_user=True):
             text_template_path = 'notifications/account_status_update.txt'
             html_template_path = 'notifications/account_status_update.html'
             email_user(subject, context, text_template_path, html_template_path)
-    except Exception:
-        user.profile.reset_account_status()
+    except Exception as e:
+        if 'Existing user' not in e:
+            user.profile.reset_account_status()
         raise
     return response
 
