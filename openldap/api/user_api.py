@@ -29,7 +29,7 @@ def _update_user_profile(user, data):
 @job
 def list_users():
     """
-    List all users.
+    List all OpenLDAP user accounts.
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/'])
     headers = {'Cache-Control': 'no-cache'}
@@ -41,7 +41,7 @@ def list_users():
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data')
+        data = response.get('data', {})
 
         error_check(data)
         jsonschema.validate(response, list_users_json)
@@ -89,7 +89,7 @@ def create_user(user, notify_user=True):
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data')
+        data = response.get('data', {})
 
         error_check(data)
         jsonschema.validate(response, create_user_json)
@@ -108,8 +108,8 @@ def create_user(user, notify_user=True):
                 'first_name': user.first_name,
                 'to': user.email,
             }
-            text_template_path = 'notifications/account_status_update.txt'
-            html_template_path = 'notifications/account_status_update.html'
+            text_template_path = 'notifications/account_created.txt'
+            html_template_path = 'notifications/account_created.html'
             email_user(subject, context, text_template_path, html_template_path)
 
         return response
@@ -137,7 +137,7 @@ def get_user_by_id(user_id):
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data')
+        data = response.get('data', {})
 
         error_check(data)
         jsonschema.validate(response, get_user_json)
@@ -165,7 +165,7 @@ def get_user_by_email_address(email_address):
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data')
+        data = response.get('data', {})
 
         error_check(data)
         jsonschema.validate(response, get_user_json)
@@ -199,7 +199,7 @@ def reset_user_password(user, password):
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data')
+        data = response.get('data', {})
 
         error_check(data)
         jsonschema.validate(response, reset_password_json)
@@ -265,7 +265,7 @@ def activate_user_account(user, notify_user=True):
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data')
+        data = response.get('data', {})
 
         error_check(data)
         jsonschema.validate(response, activate_account_json)
