@@ -51,7 +51,7 @@ def verify_payload_data(payload, data, mapping):
             raise ValueError(message)
 
 
-def error_check(data):
+def raise_for_data_error(data):
     """
     Check for data errors.
     """

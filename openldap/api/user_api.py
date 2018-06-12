@@ -13,7 +13,7 @@ from openldap.schemas.list_users import list_users_json
 from openldap.schemas.reset_password import reset_password_json
 from openldap.util import decode_response
 from openldap.util import email_user
-from openldap.util import error_check
+from openldap.util import raise_for_data_error
 from openldap.util import verify_payload_data
 
 
@@ -43,7 +43,7 @@ def list_users():
         response = decode_response(response)
         data = response.get('data', {})
 
-        error_check(data)
+        raise_for_data_error(data)
         jsonschema.validate(response, list_users_json)
 
         return response
@@ -91,7 +91,7 @@ def create_user(user, notify_user=True):
         response = decode_response(response)
         data = response.get('data', {})
 
-        error_check(data)
+        raise_for_data_error(data)
         jsonschema.validate(response, create_user_json)
 
         mapping = {
@@ -139,7 +139,7 @@ def get_user_by_id(user_id):
         response = decode_response(response)
         data = response.get('data', {})
 
-        error_check(data)
+        raise_for_data_error(data)
         jsonschema.validate(response, get_user_json)
 
         return response
@@ -167,7 +167,7 @@ def get_user_by_email_address(email_address):
         response = decode_response(response)
         data = response.get('data', {})
 
-        error_check(data)
+        raise_for_data_error(data)
         jsonschema.validate(response, get_user_json)
 
         return response
@@ -201,7 +201,7 @@ def reset_user_password(user, password):
         response = decode_response(response)
         data = response.get('data', {})
 
-        error_check(data)
+        raise_for_data_error(data)
         jsonschema.validate(response, reset_password_json)
 
         # Email the user their new reset pass code...
@@ -267,7 +267,7 @@ def activate_user_account(user, notify_user=True):
         response = decode_response(response)
         data = response.get('data', {})
 
-        error_check(data)
+        raise_for_data_error(data)
         jsonschema.validate(response, activate_account_json)
 
         if notify_user:
