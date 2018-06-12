@@ -87,8 +87,9 @@ def create_user(user, notify_user=True):
         'title': 'TODO',
         'firstName': user.first_name,
         'surname': user.last_name,
-        'telephone': user.profile.phone,
     }
+    if user.profile.phone:
+        payload.update({'telephone': user.profile.phone})
     if user.profile.uid_number:
         payload.update({'uidNumber': user.profile.uid_number})
     try:
