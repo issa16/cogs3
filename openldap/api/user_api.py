@@ -9,7 +9,6 @@ from django.utils.translation import gettext_lazy as _
 
 from openldap.schemas.activate_account import activate_account_json
 from openldap.schemas.create_user import create_user_json
-from openldap.schemas.deactivate_account import deactivate_account_json
 from openldap.schemas.get_user import get_user_json
 from openldap.schemas.list_users import list_users_json
 from openldap.schemas.reset_password import reset_password_json
@@ -89,8 +88,9 @@ def create_user(user, notify_user=True):
         'firstName': user.first_name,
         'surname': user.last_name,
         'telephone': user.profile.phone,
-        'uidNumber': user.profile.uid_number,
     }
+    if user.profile.uid_number:
+        payload.update({'uidNumber': user.profile.uid_number})
     try:
         payload.update({'department': user.profile.department})
     except Exception:
@@ -234,7 +234,6 @@ def deactivate_user_account(user, notify_user=True):
             timeout=5,
         )
         response.raise_for_status()
-        response = decode_response(response)
 
         if notify_user:
             subject = _('{company_name} Account Deactivated'.format(company_name=settings.COMPANY_NAME))
