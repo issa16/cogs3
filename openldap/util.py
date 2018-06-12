@@ -36,3 +36,24 @@ def email_user(subject, context, text_template_path, html_template_path):
     )
     email.attach_alternative(html_alternative, "text/html")
     email.send(fail_silently=False)
+
+
+def verify_payload_data(payload, data, mapping):
+    """
+    Ensure data values match in both the payload and data dict's.
+    """
+    for payload_key, data_key in mapping.items():
+        if payload[payload_key] != data[data_key]:
+            message = 'Data Mismatch payload[{payload_key}] != data[{data_key}]'.format(
+                payload_key=payload_key,
+                data_key=data_key,
+            )
+            raise ValueError(message)
+
+
+def error_check(data):
+    """
+    Check for data errors.
+    """
+    if data.get('error', None):
+        raise ValueError('Error Detected: {error}'.format(error=data['error']))

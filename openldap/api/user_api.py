@@ -1,11 +1,10 @@
 import jsonschema
 import requests
 
-from django_rq import job
-
 from django.conf import settings
 from django.template.loader import get_template
 from django.utils.translation import gettext_lazy as _
+from django_rq import job
 
 from openldap.schemas.activate_account import activate_account_json
 from openldap.schemas.create_user import create_user_json
@@ -14,19 +13,8 @@ from openldap.schemas.list_users import list_users_json
 from openldap.schemas.reset_password import reset_password_json
 from openldap.util import decode_response
 from openldap.util import email_user
-
-
-def _verify_payload_data(payload, data, mapping):
-    """
-    Ensure data values match in both the payload and data dict's.
-    """
-    for payload_key, data_key in mapping.items():
-        if payload[payload_key] != data[data_key]:
-            message = 'Data Mismatch payload[{payload_key}] != data[{data_key}]'.format(
-                payload_key=payload_key,
-                data_key=data_key,
-            )
-            raise ValueError(message)
+from openldap.util import error_check
+from openldap.util import verify_payload_data
 
 
 def _update_user_profile(user, data):
@@ -36,14 +24,6 @@ def _update_user_profile(user, data):
     user.profile.scw_username = data['uid']
     user.profile.uid_number = data['uidnumber']
     user.save()
-
-
-def _error_check(data):
-    """
-    Check for data errors.
-    """
-    if data.get('error', None):
-        raise ValueError('Error Detected: {error}'.format(error=data['error']))
 
 
 @job
@@ -61,12 +41,14 @@ def list_users():
         )
         response.raise_for_status()
         response = decode_response(response)
+        data = response.get('data')
 
-        _error_check(response.get('data'))
+        error_check(data)
         jsonschema.validate(response, list_users_json)
+
+        return response
     except Exception as e:
         raise e
-    return response
 
 
 @job
@@ -76,6 +58,7 @@ def create_user(user, notify_user=True):
 
     Args:
         user (CustomUser): User instance - required
+        notify_user (bool): Issue a notification email to the user? - optional
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/'])
     headers = {
@@ -97,7 +80,6 @@ def create_user(user, notify_user=True):
     except Exception:
         # Optional field, so ignore if not present
         pass
-
     try:
         response = requests.post(
             url,
@@ -107,8 +89,9 @@ def create_user(user, notify_user=True):
         )
         response.raise_for_status()
         response = decode_response(response)
+        data = response.get('data')
 
-        _error_check(response.get('data'))
+        error_check(data)
         jsonschema.validate(response, create_user_json)
 
         mapping = {
@@ -116,8 +99,8 @@ def create_user(user, notify_user=True):
             'firstName': 'givenname',
             'uidNumber': 'uidnumber',
         }
-        _verify_payload_data(payload, response.get('data'), mapping)
-        _update_user_profile(user, response.get('data'))
+        verify_payload_data(payload, data, mapping)
+        _update_user_profile(user, data)
 
         if notify_user:
             subject = _('{company_name} Account Created'.format(company_name=settings.COMPANY_NAME))
@@ -128,11 +111,12 @@ def create_user(user, notify_user=True):
             text_template_path = 'notifications/account_status_update.txt'
             html_template_path = 'notifications/account_status_update.html'
             email_user(subject, context, text_template_path, html_template_path)
+
+        return response
     except Exception as e:
         if 'Existing user' not in str(e):
             user.profile.reset_account_status()
         raise e
-    return response
 
 
 @job
@@ -153,12 +137,14 @@ def get_user_by_id(user_id):
         )
         response.raise_for_status()
         response = decode_response(response)
+        data = response.get('data')
 
-        _error_check(response.get('data'))
+        error_check(data)
         jsonschema.validate(response, get_user_json)
+
+        return response
     except Exception as e:
         raise e
-    return response
 
 
 @job
@@ -179,23 +165,26 @@ def get_user_by_email_address(email_address):
         )
         response.raise_for_status()
         response = decode_response(response)
+        data = response.get('data')
 
-        _error_check(response.get('data'))
+        error_check(data)
         jsonschema.validate(response, get_user_json)
+
+        return response
     except Exception as e:
         raise e
-    return response
 
 
 @job
-def reset_user_password(email_address, password):
+def reset_user_password(user, password):
     """
     Reset a user's password.
 
     Args:
-        email_address (str): Email address - required
+        user (CustomUser): User instance - required
+        password (str): New password - required
     """
-    url = ''.join([settings.OPENLDAP_HOST, 'user/resetPassword/', email_address, '/'])
+    url = ''.join([settings.OPENLDAP_HOST, 'user/resetPassword/', user.email, '/'])
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cache-Control': 'no-cache',
@@ -210,12 +199,16 @@ def reset_user_password(email_address, password):
         )
         response.raise_for_status()
         response = decode_response(response)
+        data = response.get('data')
 
-        _error_check(response.get('data'))
+        error_check(data)
         jsonschema.validate(response, reset_password_json)
+
+        # Email the user their new reset pass code...
+
+        return response
     except Exception as e:
         raise e
-    return response
 
 
 @job
@@ -225,6 +218,7 @@ def deactivate_user_account(user, notify_user=True):
 
     Args:
         user (CustomUser): User instance - required
+        notify_user (bool): Issue a notification email to the user? - optional
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', user.email, '/'])
     headers = {'Cache-Control': 'no-cache'}
@@ -245,10 +239,11 @@ def deactivate_user_account(user, notify_user=True):
             text_template_path = 'notifications/account_deactivated.txt'
             html_template_path = 'notifications/account_deactivated.html'
             email_user(subject, context, text_template_path, html_template_path)
+
+        return response
     except Exception as e:
         user.profile.reset_account_status()
         raise e
-    return response
 
 
 @job
@@ -258,6 +253,7 @@ def activate_user_account(user, notify_user=True):
 
     Args:
         user (CustomUser): User instance - required
+        notify_user (bool): Issue a notification email to the user? - optional
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/enable/', user.email, '/'])
     headers = {'Cache-Control': 'no-cache'}
@@ -269,8 +265,9 @@ def activate_user_account(user, notify_user=True):
         )
         response.raise_for_status()
         response = decode_response(response)
+        data = response.get('data')
 
-        _error_check(response.get('data'))
+        error_check(data)
         jsonschema.validate(response, activate_account_json)
 
         if notify_user:
@@ -282,7 +279,8 @@ def activate_user_account(user, notify_user=True):
             text_template_path = 'notifications/account_activated.txt'
             html_template_path = 'notifications/account_activated.html'
             email_user(subject, context, text_template_path, html_template_path)
+
+        return response
     except Exception as e:
         user.profile.reset_account_status()
         raise e
-    return response
