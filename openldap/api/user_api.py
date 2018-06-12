@@ -248,7 +248,7 @@ def deactivate_user_account(user, notify_user=True):
             text_template_path = 'notifications/account_deactivated.txt'
             html_template_path = 'notifications/account_deactivated.html'
             email_user(subject, context, text_template_path, html_template_path)
-    except Exception:
+    except Exception as e:
         user.profile.reset_account_status()
         raise e
     return response
@@ -285,7 +285,7 @@ def activate_user_account(user, notify_user=True):
             text_template_path = 'notifications/account_activated.txt'
             html_template_path = 'notifications/account_activated.html'
             email_user(subject, context, text_template_path, html_template_path)
-    except Exception:
+    except Exception as e:
         user.profile.reset_account_status()
         raise e
     return response
