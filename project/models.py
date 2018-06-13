@@ -59,6 +59,7 @@ class Project(models.Model):
     )
     description = models.TextField(
         max_length=1024,
+        blank=True,
         verbose_name=_('Project Description'),
     )
     legacy_hpcw_id = models.CharField(
@@ -85,6 +86,7 @@ class Project(models.Model):
     )
     institution_reference = models.CharField(
         max_length=128,
+        blank=True,
         verbose_name=_('Owning institution project reference'),
     )
     department = models.CharField(
@@ -121,20 +123,24 @@ class Project(models.Model):
     )
     requirements_software = models.TextField(
         max_length=512,
+        blank=True,
         help_text=_('Software name and versions'),
         verbose_name=_('Requirements software'),
     )
     requirements_gateways = models.TextField(
         max_length=512,
+        blank=True,
         help_text=_('Web gateway or portal name and versions'),
         verbose_name=_('Requirements gateways'),
     )
     requirements_training = models.TextField(
         max_length=512,
+        blank=True,
         verbose_name=_('Requirements training'),
     )
     requirements_onboarding = models.TextField(
         max_length=512,
+        blank=True,
         verbose_name=_('Requirements onboarding'),
     )
     allocation_rse = models.BooleanField(
@@ -213,35 +219,44 @@ class Project(models.Model):
     def is_closed(self):
         return True if self.status == Project.CLOSED else False
 
+    def _assign_project_owner_project_membership(self):
+        try:
+            ProjectUserMembership.objects.get_or_create(
+                project=self,
+                user=self.tech_lead,
+                date_joined=datetime.date.today(),
+                status=ProjectUserMembership.AUTHORISED,
+            )
+            # Assign the 'project_owner' group to the project's technical lead.
+            group = Group.objects.get(name='project_owner')
+            self.tech_lead.groups.add(group)
+        except Exception as e:
+            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
+
+    def save(self, *args, **kwargs):
+        updated = self.pk
+        if self.code is '':
+            last_project = Project.objects.order_by('id').last()
+            if not last_project:
+                if self.legacy_arcca_id or self.legacy_hpcw_id:
+                    self.code = 'SCW-0000'
+                else:
+                    self.code = 'SCW-1000'
+            else:
+                prefix, code = last_project.code.split('-')
+                self.code = 'SCW-' + str(int(code) + 1).zfill(4)
+
+        super(Project, self).save(*args, **kwargs)
+
+        if self.status == Project.APPROVED:
+            self._assign_project_owner_project_membership()
+
     def __str__(self):
         data = {
             'code': self.code,
             'title': self.title,
         }
         return '{code} - {title}'.format(**data)
-
-    def _assign_project_owner_project_membership(self):
-        try:
-            if self.status == Project.APPROVED:
-                ProjectUserMembership.objects.update_or_create(
-                    project=self,
-                    user=self.tech_lead,
-                    defaults={
-                        'date_joined': datetime.date.today(),
-                        'status': ProjectUserMembership.AUTHORISED,
-                    },
-                )
-                # Assign the 'project_owner' group to the project's technical lead.
-                group = Group.objects.get(name='project_owner')
-                self.tech_lead.groups.add(group)
-        except Exception:
-            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
-
-    def save(self, *args, **kwargs):
-        updated = self.pk
-        super(Project, self).save(*args, **kwargs)
-        if updated:
-            self._assign_project_owner_project_membership()
 
 
 class ProjectSystemAllocation(models.Model):
@@ -261,19 +276,15 @@ class ProjectSystemAllocation(models.Model):
     date_unallocated = models.DateField()
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
-    CREATE = 1
-    CREATED = 2
-    DEACTIVATE = 3
-    DEACTIVATED = 4
+    ACTIVE = 1
+    INACTIVE = 2
     STATUS_CHOICES = (
-        (CREATE, 'Create System Resources'),
-        (CREATED, 'Created System Resources'),
-        (DEACTIVATE, 'Deactivate System Resources'),
-        (DEACTIVATED, 'Deactivated System Resources'),
+        (ACTIVE, 'Active'),
+        (INACTIVE, 'Inactive'),
     )
     openldap_status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
-        default=CREATE,
+        default=ACTIVE,
         verbose_name='OpenLDAP status',
     )
 

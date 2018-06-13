@@ -34,9 +34,10 @@ class ProjectSystemAllocationAdmin(admin.ModelAdmin):
 class ProjectUserMembershipAdmin(admin.ModelAdmin):
     form = ProjectUserMembershipAdminForm
     list_display = (
-        'project',
         'user',
+        'date_joined',
         'status',
+        'project',
     )
 
 
