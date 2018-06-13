@@ -55,6 +55,9 @@ create_user_json = {
                 "title": {
                     "type": "string"
                 },
+                "telephonenumber": {
+                    "type": "string"
+                },
                 "homedirectory": {
                     "type": "string"
                 },
@@ -75,7 +78,7 @@ create_user_json = {
                 },
                 "uidnumber": {
                     "type": "string"
-                },
+                }
             },
             "required": [
                 "cn",
@@ -87,6 +90,7 @@ create_user_json = {
                 "mail",
                 "objectclass",
                 "sn",
+                "telephonenumber",
                 "title",
                 "uid",
                 "uidnumber",
