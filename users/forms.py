@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
+from django.utils.translation import gettext_lazy as _
 
 from institution.exceptions import InvalidInstitution
 from institution.models import Institution
@@ -65,6 +66,26 @@ class CustomUserChangeForm(UserChangeForm):
                 raise forms.ValidationError(str(e))
 
 
+class CustomUserRegisterExistingForm(forms.ModelForm):
+    """
+    Register a previously created user.
+    """
+    class Meta:
+        model = CustomUser
+        fields = (
+            'first_name',
+            'last_name',
+            'has_accepted_terms_and_conditions',
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        tandc = cleaned_data.get('has_accepted_terms_and_conditions')
+        if not tandc :
+            raise forms.ValidationError(_("To continue please accept the terms and conditions"))
+        return cleaned_data
+
+
 class CustomUserPersonalInfoUpdateForm(forms.ModelForm):
     """
     Form for updating Personal Information.
@@ -75,4 +96,3 @@ class CustomUserPersonalInfoUpdateForm(forms.ModelForm):
             'first_name',
             'last_name',
         )
-        exclude = ['password']

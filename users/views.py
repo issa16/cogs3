@@ -7,8 +7,8 @@ from django.views import generic
 from django.views.generic import TemplateView
 
 from users.models import CustomUser
-
 from users.forms import CustomUserCreationForm
+from users.forms import CustomUserRegisterExistingForm
 from users.forms import CustomUserPersonalInfoUpdateForm
 
 
@@ -26,6 +26,21 @@ class RegisterView(generic.CreateView):
         form.instance.is_active = True
         form.instance.is_shibboleth_login_required = True
         return super().form_valid(form)
+
+
+class RegisterExistingView(generic.UpdateView):
+    """Ask an existing user to fill in missing information."""
+    form_class = CustomUserRegisterExistingForm
+    model = CustomUser
+    success_url = reverse_lazy('login')
+    template_name = 'registration/register_existing.html'
+
+    def form_valid(self, form):
+        form.instance.is_active = True
+        return super().form_valid(form)
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
 
 class LogoutView(TemplateView):

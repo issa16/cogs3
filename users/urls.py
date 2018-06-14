@@ -8,4 +8,9 @@ urlpatterns = [
         views.UpdateView.as_view(),
         name='update-user',
     ),
+    path(
+        'setup/',
+        views.RegisterExistingView.as_view(),
+        name='register-existing',
+    ),
 ]
