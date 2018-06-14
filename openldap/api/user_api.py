@@ -23,11 +23,11 @@ def update_user_openldap_account(profile):
     """
     if profile.account_status == profile.APPROVED:
         if profile.scw_username:
-            user_api.activate_user_account.delay(user=profile.user)
+            activate_user_account.delay(user=profile.user)
         else:
-            user_api.create_user.delay(user=profile.user)
+            create_user.delay(user=profile.user)
     else:
-        user_api.deactivate_user_account.delay(user=profile.user)
+        deactivate_user_account.delay(user=profile.user)
 
 
 @job
