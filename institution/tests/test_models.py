@@ -4,6 +4,9 @@ from institution.models import Institution
 
 
 class InstitutionTests(TestCase):
+    fixtures = [
+        'institution/fixtures/institutions.yaml',
+    ]
 
     @classmethod
     def create_institution(cls, name, base_domain, identity_provider):
@@ -25,9 +28,9 @@ class InstitutionTests(TestCase):
         """
         Ensure we can create an Institution instance.
         """
-        name = 'Bangor University'
-        base_domain = 'bangor.ac.uk'
-        identity_provider = 'https://idp.bangor.ac.uk/shibboleth'
+        name = 'New University'
+        base_domain = 'new.ac.uk'
+        identity_provider = 'https://idp.new.ac.uk/shibboleth'
         institution = self.create_institution(
             name=name,
             base_domain=base_domain,
@@ -41,8 +44,43 @@ class InstitutionTests(TestCase):
 
     def test_id_str_produced(self):
         institution = self.create_institution(
-            name='Swansea University',
-            base_domain='swansea.ac.uk',
-            identity_provider='https://iss-openathensla-runtime.swan.ac.uk/oala/metadata',
+            name='New University',
+            base_domain='new.ac.uk',
+            identity_provider='https://new.ac.uk/shibboleth',
         )
-        self.assertEqual(institution.id_str(), "swansea-university")
+        self.assertEqual(institution.id_str(), "new-university")
+
+
+    def test_institutional_predicates(self):
+        """
+        Ensure institutional methods (e.g. is_swansea, is_swansea_system etc) return correct values
+        """
+        institutions = Institution.objects.all()
+
+        # loop over institutions
+        for institution in institutions:
+            # loop over institutions predicates
+            for institution_predicate in institutions:
+                cond = institution.id == institution_predicate.id
+
+                inst_name = institution_predicate.base_domain.split('.')[0]
+                property_name = f'is_{inst_name}'
+                property_val = getattr(institution, property_name)
+
+                self.assertEqual(cond, property_val)
+
+            # check institution system
+            inst_name = institution.base_domain.split('.')[0]
+
+            iss = institution.is_sunbird
+            ics = institution.is_hawk
+
+            if inst_name in ['swansea','aber']:
+                self.assertTrue(iss)
+                self.assertFalse(ics)
+            elif inst_name in ['cardiff','bangor']:
+                self.assertTrue(ics)
+                self.assertFalse(iss)
+            else:
+                raise ValueError(f'Institution {inst_name} not recognised')
+
