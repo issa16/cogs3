@@ -49,6 +49,7 @@ class CustomUserAdmin(UserAdmin):
         for user in queryset:
             user.profile.account_status = Profile.APPROVED
             user.save()
+            user_api.update_user_openldap_account(user.profile)
             rows_updated += 1
         message = self._account_action_message(rows_updated)
         self.message_user(request, '{message} successfully activated.'.format(message=message))
@@ -61,6 +62,7 @@ class CustomUserAdmin(UserAdmin):
         for user in queryset:
             user.profile.account_status = Profile.SUSPENDED
             user.save()
+            user_api.update_user_openldap_account(user.profile)
             rows_updated += 1
         message = self._account_action_message(rows_updated)
         self.message_user(request, '{message} successfully deactivated.'.format(message=message))
