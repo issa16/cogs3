@@ -94,7 +94,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             first_name='User',
             last_name='User',
             is_staff=True,
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
         )
         self.create_test_user(self.user)
 
@@ -112,7 +112,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             email="123456@swansea.ac.uk",
             first_name='Student',
             last_name='Student',
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
         )
         self.create_test_user(self.student)
 
@@ -123,7 +123,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             last_name='Rse',
             is_staff=True,
             is_superuser=True,
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
         )
         self.create_test_user(self.rse)
 
@@ -134,7 +134,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             last_name='Admin',
             is_staff=True,
             is_superuser=True,
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
         )
         self.create_test_user(self.admin)
 
