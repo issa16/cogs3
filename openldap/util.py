@@ -16,7 +16,7 @@ def decode_response(response):
 
 def email_user(subject, context, text_template_path, html_template_path):
     """
-    Reset user account status to Awaiting Approval.
+    Dispatch a notification email to a user.
 
     Args:
         subject (str): Email subject - required
