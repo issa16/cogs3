@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.forms.models import BaseInlineFormSet
@@ -42,8 +43,40 @@ class CustomUserAdmin(UserAdmin):
     """
     Form to add or update a CustomUser instance.
     """
-    form = CustomUserChangeForm
-    add_form = CustomUserCreationForm
+
+    def activate_users(self, request, queryset):
+        rows_updated = 0
+        for user in queryset:
+            user.profile.account_status = Profile.APPROVED
+            user.save()
+            rows_updated += 1
+        message = self._account_action_message(rows_updated)
+        self.message_user(request, '{message} successfully activated.'.format(message=message))
+
+    activate_users.short_description = 'Activate selected users {company_name} account'.format(
+        company_name=settings.COMPANY_NAME)
+
+    def deactivate_users(self, request, queryset):
+        rows_updated = 0
+        for user in queryset:
+            user.profile.account_status = Profile.SUSPENDED
+            user.save()
+            rows_updated += 1
+        message = self._account_action_message(rows_updated)
+        self.message_user(request, '{message} successfully deactivated.'.format(message=message))
+
+    deactivate_users.short_description = 'Deactivate selected users {company_name} account'.format(
+        company_name=settings.COMPANY_NAME)
+
+    def _account_action_message(self, rows_updated):
+        if rows_updated == 1:
+            message = '1 {company_name} account was'.format(company_name=settings.COMPANY_NAME)
+        else:
+            message = '{rows} {company_name} accounts were'.format(
+                rows=rows_updated,
+                company_name=settings.COMPANY_NAME,
+            )
+        return message
 
     def get_form(self, request, user=None, **kwargs):
         """
@@ -59,6 +92,10 @@ class CustomUserAdmin(UserAdmin):
             self.inlines = []
 
         return super(CustomUserAdmin, self).get_form(request, user, **kwargs)
+
+    form = CustomUserChangeForm
+    add_form = CustomUserCreationForm
+    actions = [activate_users, deactivate_users]
 
     # Fields to be used when displaying a CustomUser model.
     list_display = (
