@@ -6,6 +6,7 @@ from users.admin import CustomUserAdmin
 from users.models import CustomUser
 from users.models import Profile
 from users.models import ShibbolethProfile
+from institution.models import Institution
 
 
 class CustomUserTests(TestCase):
@@ -69,6 +70,21 @@ class CustomUserTests(TestCase):
             group=group,
             is_shibboleth_login_required=False,
         )
+
+    @classmethod
+    def create_institutional_users(cls):
+        inst_all = Institution.objects.all()
+
+        names = [ i.base_domain.split('.')[0] for i in inst_all ]
+        users = {}
+
+        for i in names:
+            username = f'{i}_user'
+            email = f'{i}@{i}.ac.uk'
+
+            users[i] = CustomUserTests.create_custom_user(email=email)
+
+            return (names, users)
 
     def verify_user_data(self, user):
         self.assertTrue(isinstance(user, CustomUser))
