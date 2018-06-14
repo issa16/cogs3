@@ -19,8 +19,6 @@ from dotenv import load_dotenv
 
 from selenium import webdriver
 
-COMPANY_NAME = os.environ.get('COMPANY_NAME')
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -31,6 +29,8 @@ MEDIA_URL = '/media/'
 dotenv_file = os.path.join(BASE_DIR, 'cogs3', '.env')
 if os.path.isfile(dotenv_file):
     load_dotenv(dotenv_file)
+
+COMPANY_NAME = os.environ.get('COMPANY_NAME')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
