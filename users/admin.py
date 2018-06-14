@@ -33,6 +33,7 @@ class ShibbolethProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'Shibboleth Profile'
     fk_name = 'user'
+    formset = ProfileInlineFormset
 
 
 @admin.register(CustomUser)

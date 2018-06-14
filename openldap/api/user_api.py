@@ -67,7 +67,7 @@ def create_user(user, notify_user=True):
     }
     payload = {
         'email': user.email,
-        'title': 'TODO',
+        'title': 'Mx',
         'firstName': user.first_name,
         'surname': user.last_name,
     }
@@ -97,7 +97,7 @@ def create_user(user, notify_user=True):
         mapping = {
             'email': 'mail',
             'firstName': 'givenname',
-            'uidNumber': 'uidnumber',
+            'title': 'title',
         }
         verify_payload_data(payload, data, mapping)
         _update_user_profile(user, data)
@@ -175,10 +175,9 @@ def get_user_by_email_address(email_address):
         raise e
 
 
-@job
 def reset_user_password(user, password):
     """
-    Reset a user's password.
+    Reset a user's OpenLDAP acccount password.
 
     Args:
         user (CustomUser): User instance - required
@@ -203,8 +202,6 @@ def reset_user_password(user, password):
 
         raise_for_data_error(data)
         jsonschema.validate(response, reset_password_json)
-
-        # Email the user their new reset pass code...
 
         return response
     except Exception as e:
