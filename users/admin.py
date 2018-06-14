@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.forms.models import BaseInlineFormSet
 
+from openldap.api import user_api
 from users.forms import CustomUserChangeForm
 from users.forms import CustomUserCreationForm
 from users.models import CustomUser
@@ -14,7 +15,7 @@ class ProfileInlineFormset(BaseInlineFormSet):
     def save_existing(self, form, instance, commit=True):
         profile = super(ProfileInlineFormset, self).save_existing(form, instance, commit)
         if 'account_status' in form.changed_data:
-            profile.update_ldap_account()
+            user_api.update_user_openldap_account(profile)
         if commit:
             profile.save()
         return profile

@@ -93,18 +93,6 @@ class Profile(models.Model):
             message=message,
         )
 
-    def update_ldap_account(self):
-        """
-        Ensure account status updates are propogated to the user's LDAP account.
-        """
-        if self.account_status == self.APPROVED:
-            if self.scw_username:
-                user_api.activate_user_account.delay(user=self.user)
-            else:
-                user_api.create_user.delay(user=self.user)
-        else:
-            user_api.deactivate_user_account.delay(user=self.user)
-
     def reset_account_status(self):
         """
         Reset user account status to Awaiting Approval.
@@ -185,6 +173,13 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    """
+    Represents an application User.
+    """
+
+    class Meta:
+        verbose_name_plural = 'Users'
+
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         'username',
@@ -260,6 +255,3 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-
-    class Meta:
-        verbose_name_plural = 'Users'

@@ -17,13 +17,17 @@ from openldap.util import raise_for_data_error
 from openldap.util import verify_payload_data
 
 
-def _update_user_profile(user, data):
+def update_user_openldap_account(profile):
     """
-    Update the user's profile.
+    Ensure account status updates are propogated to the user's LDAP account.
     """
-    user.profile.scw_username = data['uid']
-    user.profile.uid_number = data['uidnumber']
-    user.save()
+    if profile.account_status == profile.APPROVED:
+        if profile.scw_username:
+            user_api.activate_user_account.delay(user=profile.user)
+        else:
+            user_api.create_user.delay(user=profile.user)
+    else:
+        user_api.deactivate_user_account.delay(user=profile.user)
 
 
 @job
@@ -100,7 +104,11 @@ def create_user(user, notify_user=True):
             'title': 'title',
         }
         verify_payload_data(payload, data, mapping)
-        _update_user_profile(user, data)
+
+        # Update the user's profile.
+        user.profile.scw_username = data.get('uid', '')
+        user.profile.uid_number = data.get('uidnumber', '')
+        user.save()
 
         if notify_user:
             subject = _('{company_name} Account Created'.format(company_name=settings.COMPANY_NAME))
