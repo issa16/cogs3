@@ -101,7 +101,6 @@ def create_user(user, notify_user=True):
         mapping = {
             'email': 'mail',
             'firstName': 'givenname',
-            'title': 'title',
         }
         verify_payload_data(payload, data, mapping)
 

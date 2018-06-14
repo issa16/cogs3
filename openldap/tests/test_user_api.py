@@ -18,8 +18,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         super(OpenLDAPUserAPITests, self).setUp()
         self.user = CustomUserTests.create_custom_user(email='joe.bloggs@bangor.ac.uk')
         self.user.department = 'Chemistry'
-        self.user.profile.phone = '00000-000000'
-        self.user.profile.uid_number = '0000000'
+        self.user.profile.phone = '00000-000-000'
         self.user.save()
 
     @mock.patch('requests.get')
@@ -54,15 +53,15 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Create a User.
         """
-        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbG'
-               'UuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwM'
-               'TQxLCJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOnsiY24iOiJ4LmpvZS5ibG9nZ3MiLCJzbiI6IkJsb2dn'
-               'cyIsImdpZG51bWJlciI6IjAwMDAwMDAiLCJnaXZlbm5hbWUiOiJKb2UiLCJkaXNwbGF5TmFtZSI6Ik1'
-               'yIEpvZSBCbG9nZ3MiLCJ0aXRsZSI6Ik1yIiwiaG9tZWRpcmVjdG9yeSI6Ii9ob21lL3guam9lLmJsb2'
-               'dncyIsImxvZ2luc2hlbGwiOiIvYmluL2Jhc2giLCJvYmplY3RjbGFzcyI6WyJpbmV0T3JnUGVyc29uI'
-               'iwicG9zaXhBY2NvdW50IiwidG9wIl0sIm1haWwiOiJqb2UuYmxvZ2dzQGJhbmdvci5hYy51ayIsInVp'
-               'ZCI6Inguam9lLmJsb2dncyIsInVpZG51bWJlciI6IjAwMDAwMDAifX0.41b0B1YrpKl3B5k9COhHV1r'
-               'xVAhAkC7AdzSgYg1Ntjo')
+        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGU'
+               'uY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwMTQ'
+               'xLCJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOnsiY24iOiJ4LmpvZS5ibG9nZ3MiLCJzbiI6IkJsb2dncyI'
+               'sImdpZG51bWJlciI6IjUwMDAwMDEiLCJnaXZlbm5hbWUiOiJKb2UiLCJkaXNwbGF5TmFtZSI6Ik1yIEp'
+               'vZSBCbG9nZ3MiLCJ0aXRsZSI6Ik1yIiwiaG9tZWRpcmVjdG9yeSI6Ii9ob21lL3guam9lLmJsb2dncyI'
+               'sImxvZ2luc2hlbGwiOiIvYmluL2Jhc2giLCJvYmplY3RjbGFzcyI6WyJpbmV0T3JnUGVyc29uIiwicG9'
+               'zaXhBY2NvdW50IiwidG9wIl0sInRlbGVwaG9uZW51bWJlciI6IjAwMDAwLTAwMC0wMDAiLCJtYWlsIjo'
+               'iam9lLmJsb2dnc0BiYW5nb3IuYWMudWsiLCJ1aWQiOiJ4LmpvZS5ibG9nZ3MiLCJ1aWRudW1iZXIiOiI'
+               '1MDAwMDAxIn19.QNKtIMjNc_zE6rSH-0MxxfFpWtE8TvaxWyliTW-J_rI')
         post_mock.return_value = self._mock_response(
             status=201,
             content=jwt.encode(),
@@ -75,7 +74,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
             "data": {
                 "cn": "x.joe.bloggs",
                 "sn": "Bloggs",
-                "gidnumber": "0000000",
+                "gidnumber": "5000001",
                 "givenname": "Joe",
                 "displayName": "Mr Joe Bloggs",
                 "title": "Mr",
@@ -86,13 +85,18 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                     "posixAccount",
                     "top",
                 ],
+                "telephonenumber": "00000-000-000",
                 "mail": "joe.bloggs@bangor.ac.uk",
                 "uid": "x.joe.bloggs",
-                "uidnumber": "0000000"
+                "uidnumber": "5000001"
             }
         }
         result = user_api.create_user(user=self.user)
         self.assertEqual(result, expected_response)
+
+        # Verify the user's profile information was updated correctly.
+        self.assertEqual("5000001", self.user.profile.uid_number)
+        self.assertEqual("x.joe.bloggs", self.user.profile.scw_username)
 
     @mock.patch('requests.get')
     def test_get_user_by_id_query(self, get_mock):
