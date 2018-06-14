@@ -102,9 +102,6 @@ class LocalizeModelChoiceField(forms.ModelChoiceField):
 
 class ProjectCreationForm(forms.ModelForm):
 
-    def set_user(self, user):
-        self.user = user
-
     def clean(self):
         self.instance.tech_lead = self.user
 
@@ -141,8 +138,11 @@ class ProjectCreationForm(forms.ModelForm):
             }),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(ProjectCreationForm, self).__init__(*args, **kwargs)
+
+        self.user = user
+
         self.fields['institution'] = LocalizeModelChoiceField(
             queryset=Institution.objects.all(),
             label=_('Institution'),
