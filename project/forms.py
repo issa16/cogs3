@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
+from django.forms import ValidationError
 
 
 class FileLinkWidget(forms.Widget):
@@ -107,6 +108,9 @@ class ProjectCreationForm(forms.ModelForm):
 
     def clean(self):
         self.instance.tech_lead = self.user
+
+        if self.instance.tech_lead.profile.institution is None:
+            raise ValidationError('only users which belong to an institution can create projects')
 
     class Meta:
         model = Project
