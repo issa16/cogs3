@@ -19,7 +19,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
     default_project_form_fields = {
         "id_title": "Test project",
         "id_description": "This project aims to test the submission of projects",
-        "id_institution": "swansea",
         "id_institution_reference": "test1",
         "id_department": "SA2C",
         "id_pi": "Joe Bloggs",
@@ -46,7 +45,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         missing_fields = [
             'id_title',
             'id_description',
-            'id_institution',
             'id_start_date',
             'id_end_date',
         ]
@@ -56,15 +54,24 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             form_field = dict(self.default_project_form_fields)
             form_field.pop(missing_field)
             self.fill_form_by_id(form_field)
+            self.select_from_dropdown_by_id('id_institution', 1)
             self.select_from_dropdown_by_id('id_funding_source', 1)
             self.submit_form(self.default_project_form_fields)
             assert "This field is required." in self.selenium.page_source
 
+        # Lead out the institution
         self.get_url('')
         self.click_link_by_url(reverse('create-project'))
+        self.fill_form_by_id(self.default_project_form_fields)
+        self.select_from_dropdown_by_id('id_funding_source', 1)
+        self.submit_form(self.default_project_form_fields)
+        assert "This field is required." in self.selenium.page_source
 
         # Correctly fill the form
+        self.get_url('')
+        self.click_link_by_url(reverse('create-project'))
         self.fill_form_by_id(self.default_project_form_fields)
+        self.select_from_dropdown_by_id('id_institution', 1)
         self.select_from_dropdown_by_id('id_funding_source', 1)
 
         # Check that the project does not exist yet
@@ -169,6 +176,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.click_link_by_url(reverse('create-project'))
 
         self.fill_form_by_id(self.default_project_form_fields)
+        self.select_from_dropdown_by_id('id_institution', 1)
         self.select_from_dropdown_by_id('id_funding_source', 1)
 
         self.submit_form(self.default_project_form_fields)

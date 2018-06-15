@@ -59,7 +59,8 @@ class CustomUserTests(TestCase):
     @classmethod
     def create_unregistered_shibboleth_user(cls, email):
         """
-        Create a CustomUser instance that requires authentication via shibboleth.
+        Create a CustomUser instance that has not
+        gone through the register view.
 
         Args:
             email (str): Email address.
@@ -69,6 +70,7 @@ class CustomUserTests(TestCase):
             email=email,
             group=group,
             is_shibboleth_login_required=True,
+            has_accepted_terms_and_conditions=False
         )
 
     @classmethod
