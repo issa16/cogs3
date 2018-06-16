@@ -7,6 +7,7 @@ from django.forms import ValidationError
 
 
 class FileLinkWidget(forms.Widget):
+
     def __init__(self, obj, attrs=None):
         self.object = obj
         super(FileLinkWidget, self).__init__(attrs)
@@ -47,7 +48,8 @@ class ProjectAdminForm(forms.ModelForm):
             'allocation_rse',
             'allocation_cputime',
             'allocation_memory',
-            'allocation_storage_home', 'allocation_storage_scratch',
+            'allocation_storage_home',
+            'allocation_storage_scratch',
             'document',
             'document_download',
             'status',
@@ -106,7 +108,6 @@ class ProjectCreationForm(forms.ModelForm):
 
     def clean(self):
         self.instance.tech_lead = self.user
-
         if self.instance.tech_lead.profile.institution is None:
             raise ValidationError('only users which belong to an institution can create projects')
 
