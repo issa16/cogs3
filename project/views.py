@@ -33,7 +33,6 @@ class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateV
         form.set_user(self.request.user)
         return form
 
-
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'projects'
     template_name = 'project/applications.html'

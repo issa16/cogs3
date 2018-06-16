@@ -67,12 +67,6 @@ class Project(models.Model):
         max_length=20,
         verbose_name=_('Project code assigned by SCW'),
     )
-    institution = models.ForeignKey(
-        Institution,
-        on_delete=models.CASCADE,
-        help_text=_('Institution project is based'),
-        verbose_name=_('Institution'),
-    )
     institution_reference = models.CharField(
         max_length=128,
         verbose_name=_('Owning institution project reference'),

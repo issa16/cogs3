@@ -1,10 +1,9 @@
 from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-
-from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
+from django.forms import ValidationError
 
 
 class FileLinkWidget(forms.Widget):
@@ -33,7 +32,6 @@ class ProjectAdminForm(forms.ModelForm):
             'legacy_hpcw_id',
             'legacy_arcca_id',
             'code',
-            'institution',
             'institution_reference',
             'department',
             'pi',
@@ -110,6 +108,8 @@ class ProjectCreationForm(forms.ModelForm):
 
     def clean(self):
         self.instance.tech_lead = self.user
+        if self.instance.tech_lead.profile.institution is None:
+            raise ValidationError('only users which belong to an institution can create projects')
 
     class Meta:
         model = Project
@@ -118,7 +118,6 @@ class ProjectCreationForm(forms.ModelForm):
             'description',
             'legacy_hpcw_id',
             'legacy_arcca_id',
-            'institution',
             'institution_reference',
             'department',
             'pi',
@@ -143,13 +142,6 @@ class ProjectCreationForm(forms.ModelForm):
                 'class': 'datepicker'
             }),
         }
-
-    def __init__(self, *args, **kwargs):
-        super(ProjectCreationForm, self).__init__(*args, **kwargs)
-        self.fields['institution'] = LocalizeModelChoiceField(
-            queryset=Institution.objects.all(),
-            label=_('Institution'),
-        )
 
 
 class ProjectUserMembershipCreationForm(forms.Form):
