@@ -29,6 +29,9 @@ addons:
 
 script:
   - pip install -r requirements.txt
+  - coverage debug config
+  - coverage debug sys
+  - coverage debug data
   - coverage run manage.py test
 
 after_success:
