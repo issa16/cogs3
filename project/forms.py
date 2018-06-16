@@ -105,7 +105,7 @@ class LocalizeModelChoiceField(forms.ModelChoiceField):
 
 class ProjectCreationForm(forms.ModelForm):
 
-    def set_technical_lead_user(self, user):
+    def set_user(self, user):
         self.user = user
 
     def clean(self):

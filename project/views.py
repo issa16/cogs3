@@ -30,7 +30,7 @@ class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateV
 
     def get_form(self, *args, **kwargs):
         form = super().get_form(*args, **kwargs)
-        form.set_technical_lead_user(self.request.user)
+        form.set_user(self.request.user)
         return form
 
 
