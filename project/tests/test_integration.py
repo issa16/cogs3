@@ -174,7 +174,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         self.submit_form(self.default_project_form_fields)
 
-        assert "only users which belong to an institution can create projects" in self.selenium.page_source
+        assert "Only users which belong to an institution can create projects." in self.selenium.page_source
 
     def test_create_project_unauthorized(self):
         """

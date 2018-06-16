@@ -47,6 +47,4 @@ class ProjectAdmin(admin.ModelAdmin):
         'tech_lead',
         'status',
     )
-    list_filter = (
-        'status',
-    )
+    list_filter = ('status', )
