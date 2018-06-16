@@ -8,6 +8,7 @@ from project.models import ProjectUserMembership
 
 
 class FileLinkWidget(forms.Widget):
+
     def __init__(self, obj, attrs=None):
         self.object = obj
         super(FileLinkWidget, self).__init__(attrs)
@@ -31,7 +32,8 @@ class ProjectAdminForm(forms.ModelForm):
             'description',
             'legacy_hpcw_id',
             'legacy_arcca_id',
-            'code', 'institution',
+            'code',
+            'institution',
             'institution_reference',
             'department',
             'pi',
@@ -48,7 +50,8 @@ class ProjectAdminForm(forms.ModelForm):
             'allocation_rse',
             'allocation_cputime',
             'allocation_memory',
-            'allocation_storage_home', 'allocation_storage_scratch',
+            'allocation_storage_home',
+            'allocation_storage_scratch',
             'document',
             'document_download',
             'status',
@@ -102,7 +105,7 @@ class LocalizeModelChoiceField(forms.ModelChoiceField):
 
 class ProjectCreationForm(forms.ModelForm):
 
-    def set_user(self, user):
+    def set_technical_lead_user(self, user):
         self.user = user
 
     def clean(self):

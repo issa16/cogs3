@@ -1,7 +1,8 @@
 import datetime
-import os
 import mimetypes
+import os
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -11,10 +12,9 @@ from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.urls import reverse
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
-from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 
 from .forms import ProjectCreationForm
 from .forms import ProjectUserMembershipCreationForm
@@ -30,8 +30,9 @@ class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateV
 
     def get_form(self, *args, **kwargs):
         form = super().get_form(*args, **kwargs)
-        form.set_user(self.request.user)
+        form.set_technical_lead_user(self.request.user)
         return form
+
 
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'projects'
@@ -62,6 +63,7 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
             return HttpResponseRedirect(reverse('project-application-list'))
         return super().dispatch(request, *args, **kwargs)
 
+
 class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
 
     def user_passes_test(self, request):
@@ -74,11 +76,11 @@ class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
         if not self.user_passes_test(request):
             return HttpResponseRedirect(reverse('project-application-list'))
         project = Project.objects.get(id=self.kwargs['pk'])
-        filename = os.path.join(settings.MEDIA_ROOT,project.document.name)
+        filename = os.path.join(settings.MEDIA_ROOT, project.document.name)
         with open(filename, 'rb') as f:
             data = f.read()
         response = HttpResponse(data, content_type=mimetypes.guess_type(filename)[0])
-        response['Content-Disposition'] = 'attachment; filename="'+os.path.basename(filename)+'"'
+        response['Content-Disposition'] = 'attachment; filename="' + os.path.basename(filename) + '"'
         return response
 
 
