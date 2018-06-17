@@ -1,9 +1,8 @@
 from django import forms
 from django.conf import settings
 from django.db.models import Q
+from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
-
-from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
 
@@ -33,7 +32,6 @@ class ProjectAdminForm(forms.ModelForm):
             'legacy_hpcw_id',
             'legacy_arcca_id',
             'code',
-            'institution',
             'institution_reference',
             'department',
             'pi',
@@ -122,7 +120,6 @@ class ProjectCreationForm(forms.ModelForm):
             'description',
             'legacy_hpcw_id',
             'legacy_arcca_id',
-            'institution',
             'institution_reference',
             'department',
             'pi',
@@ -148,12 +145,13 @@ class ProjectCreationForm(forms.ModelForm):
             }),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(ProjectCreationForm, self).__init__(*args, **kwargs)
-        self.fields['institution'] = LocalizeModelChoiceField(
-            queryset=Institution.objects.all(),
-            label=_('Institution'),
-        )
+    def set_user(self, user):
+        self.user = user
+
+    def clean(self):
+        self.instance.tech_lead = self.user
+        if self.instance.tech_lead.profile.institution is None:
+            raise ValidationError('Only users which belong to an institution can create projects.')
 
 
 class ProjectUserMembershipCreationForm(forms.Form):

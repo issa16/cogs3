@@ -59,7 +59,6 @@ class ProjectFormTests(TestCase):
         self.project = ProjectTests.create_project(
             title=self.title,
             code=self.code,
-            institution=self.institution,
             tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,
@@ -173,7 +172,6 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
             project = ProjectTests.create_project(
                 title=self.title,
                 code='scw-' + code,
-                institution=self.institution,
                 tech_lead=account,
                 category=self.category,
                 funding_source=self.funding_source,
@@ -209,7 +207,6 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         project = ProjectTests.create_project(
             title=self.title,
             code='scw-' + code,
-            institution=self.institution,
             tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,

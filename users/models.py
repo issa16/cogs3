@@ -13,6 +13,11 @@ from openldap.api import user_api
 
 
 class Profile(models.Model):
+
+    class Meta:
+        verbose_name = 'profile'
+        verbose_name_plural = 'profiles'
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -74,6 +79,16 @@ class Profile(models.Model):
         default=AWAITING_APPROVAL,
     )
 
+    @property
+    def institution(self):
+        """ 
+        Return institution if shibboleth user, otherwise return None 
+        """
+        if hasattr(self, 'shibbolethprofile'):
+            return self.shibbolethprofile.institution
+        else:
+            return None
+
     def account_status_message(self):
         if self.account_status == self.AWAITING_APPROVAL:
             message = _('access request is currently awaiting approval.')
@@ -102,10 +117,6 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.email
-
-    class Meta:
-        verbose_name = 'profile'
-        verbose_name_plural = 'profiles'
 
 
 class ShibbolethProfile(Profile):
