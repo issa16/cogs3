@@ -186,7 +186,7 @@ def reset_user_password(user, password, notify_user=True):
         response = requests.post(
             url,
             headers=headers,
-            params=payload,
+            data=payload,
             timeout=5,
         )
         response.raise_for_status()
