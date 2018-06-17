@@ -131,34 +131,34 @@
 				$('#form-errors').removeClass('d-none');
 			} else {
 				$('#form-errors').addClass('d-none');
+				// Submit a password reset request
+				$.ajax({
+					type: 'POST',
+					url: "{% url 'scw-password-reset' %}",
+					data: {
+						'password': password,
+						'password_confirm': password_confirm,
+						'csrfmiddlewaretoken': csrfmiddlewaretoken,
+					},
+					dataType: 'json',
+					encode: true,
+					success: function(msg) {
+						// Hide password reset form
+						$('#password-policy').addClass('d-none');
+						$('#password-reset > .modal-footer > .btn-primary').addClass('d-none');
+						// Show success message
+						$('#form-success').text(msg.data);
+						$('#form-success').removeClass('d-none');
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						// Hide any success messages
+						$('#form-success').addClass('d-none');
+						// Show error message
+						$('#form-errors').text('Invalid password reset request.');
+						$('#form-errors').removeClass('d-none');
+					},
+				});
 			}
-			// Submit a password reset request
-			$.ajax({
-				type: 'POST',
-				url: "{% url 'scw-password-reset' %}",
-				data: {
-					'password': password,
-					'password_confirm': password_confirm,
-					'csrfmiddlewaretoken': csrfmiddlewaretoken,
-				},
-				dataType: 'json',
-				encode: true,
-				success: function(msg) {
-					// Hide password reset form
-					$('#password-policy').addClass('d-none');
-					$('#password-reset > .modal-footer > .btn-primary').addClass('d-none');
-					// Show success message
-					$('#form-success').text(msg.data);
-					$('#form-success').removeClass('d-none');
-				},
-				error: function(XMLHttpRequest, textStatus, errorThrown) {
-					// Hide any success messages
-					$('#form-success').addClass('d-none');
-					// Show error message
-					$('#form-errors').text('Invalid password reset request.');
-					$('#form-errors').removeClass('d-none');
-				},
-			});
 	});
 	</script>
 {% endblock %}
