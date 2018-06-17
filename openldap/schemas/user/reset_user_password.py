@@ -35,13 +35,11 @@ reset_user_password_json = {
             "type": "object",
             "additionalProperties": False,
             "properties": {
-                "message": {
+                "password": {
                     "type": "string"
                 }
             },
-            "required": [
-                "message",
-            ],
+            "required": ["password"],
             "title": "Data"
         }
     }

@@ -229,10 +229,10 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Reset a user's password.
         """
-        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wb'
-               'GUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk'
-               '5MDU5LCJuYmYiOjE1MjcwOTg0NTksImRhdGEiOnsibWVzc2FnZSI6IlN1Y2Nlc3NmdWxseSByZXNld'
-               'CB1c2VyIHBhc3N3b3JkLiJ9fQ.IoNA--5mFkCy_AtamPRZlP1YMUzzBI_PbHn7nJxEMyk')
+        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGU'
+               'uY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI5MjQ5MjM'
+               'zLCJuYmYiOjE1MjkyNDg2MzMsImRhdGEiOnsicGFzc3dvcmQiOiJTdWNjZXNzZnVsbHkgcmVzZXQgcGF'
+               'zc3dvcmQifX0.ZC9yWYpDwszRs3TIt1naWmg0BSbl3U5SiW1LJ_hVEwM')
         post_mock.return_value = self._mock_response(
             status=201,
             content=jwt.encode(),
@@ -240,10 +240,10 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         expected_response = {
             "iss": settings.OPENLDAP_JWT_ISSUER,
             "aud": settings.OPENLDAP_JWT_AUDIENCE,
-            "iat": 1527099059,
-            "nbf": 1527098459,
+            "iat": 1529249233,
+            "nbf": 1529249233,
             "data": {
-                "message": "Successfully reset user password."
+                "password": "Successfully reset password"
             }
         }
         result = user_api.reset_user_password(user=self.user, password=12345678)
