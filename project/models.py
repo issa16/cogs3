@@ -225,21 +225,21 @@ class Project(models.Model):
         except Exception as e:
             logger.exception('Failed assign project owner membership to the project\'s technical lead.')
 
-    def save(self, *args, **kwargs):
-        updated = self.pk
+    def _generate_project_code(self):
         if self.code is '':
             last_project = Project.objects.order_by('id').last()
             if not last_project:
                 if self.legacy_arcca_id or self.legacy_hpcw_id:
-                    self.code = 'SCW-0000'
+                    return 'SCW0000'
                 else:
-                    self.code = 'SCW-1000'
+                    return 'SCW1000'
             else:
                 prefix, code = last_project.code.split('-')
-                self.code = 'SCW-' + str(int(code) + 1).zfill(4)
+                return 'SCW' + str(int(code) + 1).zfill(4)
 
+    def save(self, *args, **kwargs):
+        self.code = self._generate_project_code()
         super(Project, self).save(*args, **kwargs)
-
         if self.status == Project.APPROVED:
             self._assign_project_owner_project_membership()
 
