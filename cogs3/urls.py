@@ -10,6 +10,7 @@ from django.views.generic.base import TemplateView
 from institution.models import Institution
 from users.views import LogoutView
 from users.views import RegisterView
+from users.views import reset_scw_password
 
 urlpatterns = i18n_patterns(
     path(
@@ -62,6 +63,11 @@ urlpatterns = i18n_patterns(
         'accounts/register/',
         RegisterView.as_view(),
         name='register',
+    ),
+    path(
+        'accounts/scw/password-reset/',
+        reset_scw_password,
+        name='scw-password-reset',
     ),
     path(
         'projects/',

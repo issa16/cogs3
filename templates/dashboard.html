@@ -43,10 +43,10 @@
 									<a href="{% url 'create-project' %}">{% trans "Create Project Application" %}</a>
 								</li>
 								<li class="list-group-item d-flex justify-content-between align-items-center disabled">
-									<a href="#">{% trans "Access SCW Cluster" %}</a>
+									<a href="#">{% trans "Access SCW System" %}</a>
 								</li>
 								<li class="list-group-item d-flex justify-content-between align-items-center disabled">
-									<a href="#">{% trans "Reset Password" %}</a>
+									<a href="#" data-toggle="modal" data-target="#password-reset-modal">{% trans "Reset SCW Password" %}</a>
 								</li>
 							</ul>
 						</div>
@@ -76,4 +76,89 @@
 			</div>
 		</div>
 	</div>
+	<div id="password-reset-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">{% trans "Reset SCW Password" %}</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form id="password-reset" method="post">
+					{% csrf_token %}
+					<div class="modal-body">
+						<div id="form-errors" class="alert alert-danger d-none"></div>
+						<div id="form-success" class="alert alert-success d-none"></div>
+						<div id="password-policy">
+							<p>
+								{% trans "Your new password must comply with the following format" %}:
+							</p>
+							<ul>
+								<li>{% trans "Must contain uppercase and lowercase characters." %}</li>
+								<li>{% trans "Must contain at least one number." %}</li>
+								<li>{% trans "Minimum length should be at least 8 characters." %}</li>
+							</ul>
+							<div class="form-group">
+								<label for="password" class="col-form-label">{% trans "New Password" %}:</label>
+								<input class="form-control" name="password" value="aS1sdifdosiff" type="password" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$">
+							</div>
+							<div class="form-group">
+								<label for="password-confirm" class="col-form-label">{% trans "Confirm Password" %}:</label>
+								<input class="form-control" name="password-confirm" value="aS1sdifdosiff" type="password" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Close" %}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block custom_js %}
+	<script>
+		$("#password-reset").submit(function(event) {
+			event.preventDefault();
+			let csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			// Ensure password fields match
+			let password = $('input[name=password]').val();
+			let password_confirm = $('input[name=password-confirm]').val();
+			if (password != password_confirm) {
+				$('#form-errors').text('{% trans "The passwords you have entered do not match." %}');
+				$('#form-errors').removeClass('d-none');
+			} else {
+				$('#form-errors').addClass('d-none');
+			}
+			// Submit a password reset request
+			$.ajax({
+				type: 'POST',
+				url: "{% url 'scw-password-reset' %}",
+				data: {
+					'password': password,
+					'password_confirm': password_confirm,
+					'csrfmiddlewaretoken': csrfmiddlewaretoken,
+				},
+				dataType: 'json',
+				encode: true,
+				success: function(msg) {
+					// Hide password reset form
+					$('#password-policy').addClass('d-none');
+					$('#password-reset > .modal-footer > .btn-primary').addClass('d-none');
+					// Show success message
+					$('#form-success').text(msg.data);
+					$('#form-success').removeClass('d-none');
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					// Hide any success messages
+					$('#form-success').addClass('d-none');
+					// Show error message
+					$('#form-errors').text('Invalid password reset request.');
+					$('#form-errors').removeClass('d-none');
+				},
+			});
+	});
+	</script>
 {% endblock %}

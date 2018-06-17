@@ -1,11 +1,16 @@
+import re
+
 from django.conf import settings
 from django.contrib import auth
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 from django.views import generic
 from django.views.generic import TemplateView
 
+from openldap.api import user_api
 from users.forms import CustomUserCreationForm
 
 
@@ -37,3 +42,35 @@ class LogoutView(TemplateView):
         auth.logout(self.request)
 
         return redirect(reverse('logged_out'))
+
+
+def reset_scw_password(request):
+    """
+    Reset a user's SCW account password.
+
+    Args:
+        request (django.http.request.HttpRequest): Django HTTP request - required
+    """
+    try:
+        # Ensure password fields match.
+        password = request.POST.get("password")
+        password_confirm = request.POST.get("password_confirm")
+        if password != password_confirm:
+            raise ValidationError()
+
+        # Ensure password complies with the OpenLDAP password policy.
+        pattern = re.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$")
+        if not pattern.match(password):
+            raise ValidationError()
+
+        # Submit an OpenLDAP password reset request.
+        user_api.reset_user_password.delay(user=request.user, password=password)
+
+        message = _('Successfully submitted a password reset request. You should receive a '
+                    'confirmation email once the request has been processed.')
+        return JsonResponse(
+            status=200,
+            data={'data': message},
+        )
+    except Exception as e:
+        return JsonResponse(status=400)
