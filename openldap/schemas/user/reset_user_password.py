@@ -1,8 +1,8 @@
-activate_account_json = {
+reset_user_password_json = {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "$ref": "#/definitions/EnableAccount",
+    "$ref": "#/definitions/ResetPassword",
     "definitions": {
-        "EnableAccount": {
+        "ResetPassword": {
             "type": "object",
             "additionalProperties": False,
             "properties": {
@@ -29,18 +29,18 @@ activate_account_json = {
                 "iss",
                 "nbf",
             ],
-            "title": "EnableAccount"
+            "title": "ResetPassword"
         },
         "Data": {
             "type": "object",
             "additionalProperties": False,
             "properties": {
-                "enable": {
+                "message": {
                     "type": "string"
                 }
             },
             "required": [
-                "enable",
+                "message",
             ],
             "title": "Data"
         }

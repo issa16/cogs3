@@ -14,13 +14,6 @@ from users.tests.test_models import CustomUserTests
 
 class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
 
-    def setUp(self):
-        super(OpenLDAPUserAPITests, self).setUp()
-        self.user = CustomUserTests.create_custom_user(email='joe.bloggs@bangor.ac.uk')
-        self.user.department = 'Chemistry'
-        self.user.profile.phone = '00000-000-000'
-        self.user.save()
-
     @mock.patch('requests.get')
     def test_list_users_query(self, get_mock):
         """

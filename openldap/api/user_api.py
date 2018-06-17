@@ -6,11 +6,11 @@ from django.template.loader import get_template
 from django.utils.translation import gettext_lazy as _
 from django_rq import job
 
-from openldap.schemas.activate_account import activate_account_json
-from openldap.schemas.create_user import create_user_json
-from openldap.schemas.get_user import get_user_json
-from openldap.schemas.list_users import list_users_json
-from openldap.schemas.reset_password import reset_password_json
+from openldap.schemas.user.activate_user import activate_user_json
+from openldap.schemas.user.create_user import create_user_json
+from openldap.schemas.user.get_user import get_user_json
+from openldap.schemas.user.list_users import list_users_json
+from openldap.schemas.user.reset_user_password import reset_user_password_json
 from openldap.util import decode_response
 from openldap.util import email_user
 from openldap.util import raise_for_data_error
@@ -45,11 +45,8 @@ def list_users():
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data', {})
-
-        raise_for_data_error(data)
         jsonschema.validate(response, list_users_json)
-
+        raise_for_data_error(response.get('data'))
         return response
     except Exception as e:
         raise e
@@ -71,7 +68,6 @@ def create_user(user, notify_user=True):
     }
     payload = {
         'email': user.email,
-        'title': 'Mx',
         'firstName': user.first_name,
         'surname': user.last_name,
     }
@@ -79,11 +75,8 @@ def create_user(user, notify_user=True):
         payload.update({'telephone': user.profile.phone})
     if user.profile.uid_number:
         payload.update({'uidNumber': user.profile.uid_number})
-    try:
+    if hasattr(user.profile, 'department'):
         payload.update({'department': user.profile.department})
-    except Exception:
-        # Optional field, so ignore if not present
-        pass
     try:
         response = requests.post(
             url,
@@ -93,18 +86,16 @@ def create_user(user, notify_user=True):
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data', {})
-
-        raise_for_data_error(data)
         jsonschema.validate(response, create_user_json)
-
+        data = response.get('data')
+        raise_for_data_error(data)
         mapping = {
             'email': 'mail',
             'firstName': 'givenname',
         }
         verify_payload_data(payload, data, mapping)
 
-        # Update the user's profile.
+        # Update user profile.
         user.profile.scw_username = data.get('uid', '')
         user.profile.uid_number = data.get('uidnumber', '')
         user.save()
@@ -118,7 +109,6 @@ def create_user(user, notify_user=True):
             text_template_path = 'notifications/account_created.txt'
             html_template_path = 'notifications/account_created.html'
             email_user(subject, context, text_template_path, html_template_path)
-
         return response
     except Exception as e:
         if 'Existing user' not in str(e):
@@ -144,11 +134,8 @@ def get_user_by_id(user_id):
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data', {})
-
-        raise_for_data_error(data)
         jsonschema.validate(response, get_user_json)
-
+        raise_for_data_error(response.get('data'))
         return response
     except Exception as e:
         raise e
@@ -172,11 +159,8 @@ def get_user_by_email_address(email_address):
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data', {})
-
-        raise_for_data_error(data)
         jsonschema.validate(response, get_user_json)
-
+        raise_for_data_error(response.get('data'))
         return response
     except Exception as e:
         raise e
@@ -205,11 +189,8 @@ def reset_user_password(user, password):
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data', {})
-
-        raise_for_data_error(data)
-        jsonschema.validate(response, reset_password_json)
-
+        jsonschema.validate(response, reset_user_password_json)
+        raise_for_data_error(response.get('data'))
         return response
     except Exception as e:
         raise e
@@ -233,7 +214,6 @@ def deactivate_user_account(user, notify_user=True):
             timeout=5,
         )
         response.raise_for_status()
-
         if notify_user:
             subject = _('{company_name} Account Deactivated'.format(company_name=settings.COMPANY_NAME))
             context = {
@@ -243,7 +223,6 @@ def deactivate_user_account(user, notify_user=True):
             text_template_path = 'notifications/account_deactivated.txt'
             html_template_path = 'notifications/account_deactivated.html'
             email_user(subject, context, text_template_path, html_template_path)
-
         return response
     except Exception as e:
         user.profile.reset_account_status()
@@ -269,11 +248,8 @@ def activate_user_account(user, notify_user=True):
         )
         response.raise_for_status()
         response = decode_response(response)
-        data = response.get('data', {})
-
-        raise_for_data_error(data)
-        jsonschema.validate(response, activate_account_json)
-
+        jsonschema.validate(response, activate_user_json)
+        raise_for_data_error(response.get('data'))
         if notify_user:
             subject = _('{company_name} Account Activated'.format(company_name=settings.COMPANY_NAME))
             context = {
@@ -283,7 +259,6 @@ def activate_user_account(user, notify_user=True):
             text_template_path = 'notifications/account_activated.txt'
             html_template_path = 'notifications/account_activated.html'
             email_user(subject, context, text_template_path, html_template_path)
-
         return response
     except Exception as e:
         user.profile.reset_account_status()

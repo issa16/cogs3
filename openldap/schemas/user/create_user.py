@@ -90,8 +90,6 @@ create_user_json = {
                 "mail",
                 "objectclass",
                 "sn",
-                "telephonenumber",
-                "title",
                 "uid",
                 "uidnumber",
             ],

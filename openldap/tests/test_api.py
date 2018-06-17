@@ -21,6 +21,10 @@ class OpenLDAPBaseAPITests(TestCase):
         settings.OPENLDAP_JWT_AUDIENCE = 'https://openldap.example.com/'
         settings.OPENLDAP_JWT_ALGORITHM = 'HS256'
 
+        self.user = CustomUserTests.create_custom_user(email='joe.bloggs@bangor.ac.uk')
+        self.user.department = 'Chemistry'
+        self.user.profile.phone = '00000-000-000'
+
     def _mock_response(self, content=None, status=200, json_data=None, raise_for_status=None):
         mock_resp = mock.Mock()
         mock_resp.raise_for_status = mock.Mock()
