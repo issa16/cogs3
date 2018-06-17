@@ -58,8 +58,7 @@ def reset_scw_password(request):
         if password != password_confirm:
             raise ValidationError()
 
-        # Ensure password complies with the OpenLDAP password policy.
-        pattern = re.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$")
+        pattern = re.compile("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}")
         if not pattern.match(password):
             raise ValidationError()
 
