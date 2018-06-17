@@ -119,7 +119,7 @@ def create_user(user, notify_user=True):
 @job
 def get_user_by_id(user_id):
     """
-    Get an existing user by id.
+    Get an existing user's OpenLDAP account details by user id.
 
     Args:
         user_id (str): User id - required
@@ -144,7 +144,7 @@ def get_user_by_id(user_id):
 @job
 def get_user_by_email_address(email_address):
     """
-    Get an existing user by email address.
+    Get an existing user's OpenLDAP account details by email address.
 
     Args:
         email_address (str): Email address - required
@@ -166,13 +166,15 @@ def get_user_by_email_address(email_address):
         raise e
 
 
-def reset_user_password(user, password):
+@job
+def reset_user_password(user, password, notify_user=True):
     """
-    Reset a user's OpenLDAP acccount password.
+    Reset a user's OpenLDAP account password.
 
     Args:
         user (CustomUser): User instance - required
         password (str): New password - required
+        notify_user (bool): Issue a notification email to the user? - optional
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/resetPassword/', user.email, '/'])
     headers = {
@@ -191,6 +193,16 @@ def reset_user_password(user, password):
         response = decode_response(response)
         jsonschema.validate(response, reset_user_password_json)
         raise_for_data_error(response.get('data'))
+
+        if notify_user:
+            subject = _('{company_name} Password Reset'.format(company_name=settings.COMPANY_NAME))
+            context = {
+                'first_name': user.first_name,
+                'to': user.email,
+            }
+            text_template_path = 'notifications/password_reset.txt'
+            html_template_path = 'notifications/password_reset.html'
+            email_user(subject, context, text_template_path, html_template_path)
         return response
     except Exception as e:
         raise e
@@ -214,6 +226,7 @@ def deactivate_user_account(user, notify_user=True):
             timeout=5,
         )
         response.raise_for_status()
+
         if notify_user:
             subject = _('{company_name} Account Deactivated'.format(company_name=settings.COMPANY_NAME))
             context = {
@@ -250,6 +263,7 @@ def activate_user_account(user, notify_user=True):
         response = decode_response(response)
         jsonschema.validate(response, activate_user_json)
         raise_for_data_error(response.get('data'))
+
         if notify_user:
             subject = _('{company_name} Account Activated'.format(company_name=settings.COMPANY_NAME))
             context = {
