@@ -70,7 +70,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
         # This seems to be necessary Geckodriver (Firefox)
         # I'm guessing it take a moment to process the submission
-        time.sleep(1)
+        time.sleep(0.2)
 
     def click_by_id(self, text):
         self.selenium.find_element_by_id(text).click()
