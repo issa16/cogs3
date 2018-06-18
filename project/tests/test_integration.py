@@ -81,8 +81,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         assert "Successfully submitted a project application." in self.selenium.page_source
 
         # Check the project status
-        self.get_url('')
-        self.click_link_by_url(reverse('project-application-list'))
+        self.get_url(reverse('project-application-list'))
         assert self.default_project_form_fields["id_title"] in self.selenium.page_source
         assert 'Awaiting Approval' in self.selenium.page_source
 
@@ -115,8 +114,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         project.save()
 
         # Try the Project Applications and Project Memberships pages
-        self.get_url('')
-        self.click_link_by_url(reverse('project-application-list'))
+        self.get_url(reverse('project-application-list'))
         assert 'code1' in self.selenium.page_source
         assert self.default_project_form_fields["id_title"] in self.selenium.page_source
 
