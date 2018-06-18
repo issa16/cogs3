@@ -27,6 +27,7 @@ class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateV
     success_url = reverse_lazy('project-application-list')
     success_message = _("Successfully submitted a project application.")
     template_name = 'project/create.html'
+    permission_required = 'project.add_project'
 
     def get_form(self, form_class=None):
         """Return an instance of the form to be used in this view."""
@@ -39,6 +40,7 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
     template_name = 'project/applications.html'
     model = Project
     paginate_by = 10
+    permission_required = 'project.add_project'
 
     def get_queryset(self):
         user = self.request.user
