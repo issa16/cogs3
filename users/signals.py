@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from institution.models import Institution
 from users.models import Profile
 from users.models import ShibbolethProfile
+from django.contrib.auth.models import Permission
 
 
 def login_user(sender, user, request, **kwargs):
@@ -23,13 +24,19 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     if user.is_shibboleth_login_required:
         _, domain = user.email.split('@')
         institution = Institution.objects.get(base_domain=domain)
-        ShibbolethProfile.objects.update_or_create(
+        _, created = ShibbolethProfile.objects.update_or_create(
             user=user,
             defaults={
                 'shibboleth_id': user.email,
                 'institution': institution,
             },
         )
+
+        if created:
+            permission = Permission.objects.get(codename='add_project')
+            user.user_permissions.add(permission)
+            user.save()
+
     else:
         Profile.objects.update_or_create(user=user)
     user.profile.save()

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import Group
 from django.test import TestCase
+from django.contrib.auth.models import Permission
 
 from institution.tests.test_models import InstitutionTests
 from users.admin import CustomUserAdmin
@@ -118,6 +119,7 @@ class CustomUserTests(TestCase):
         self.assertEqual(profile.scopus, '')
         self.assertEqual(profile.homepage, '')
         self.assertEqual(profile.cronfa, '')
+        self.assertTrue(user.has_perm('project.add_project'))
 
     def test_non_shibboleth_user_creation(self):
         """
@@ -141,3 +143,4 @@ class CustomUserTests(TestCase):
         self.assertEqual(profile.description, '')
         self.assertEqual(profile.phone, '')
         self.assertEqual(profile.account_status, Profile.AWAITING_APPROVAL)
+        self.assertFalse(user.has_perm('project.add_project'))
