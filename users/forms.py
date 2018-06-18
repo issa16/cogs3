@@ -63,3 +63,16 @@ class CustomUserChangeForm(UserChangeForm):
                 Institution.is_valid_email_address(email)
             except InvalidInstitution as e:
                 raise forms.ValidationError(str(e))
+
+
+class CustomUserPersonalInfoUpdateForm(forms.ModelForm):
+    """
+    Form for updating Personal Information.
+    """
+    class Meta:
+        model = CustomUser
+        fields = (
+            'first_name',
+            'last_name',
+        )
+        exclude = ['password']

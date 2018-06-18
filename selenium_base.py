@@ -32,6 +32,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
     def fill_form_by_id(self, fields):
         for field, value in fields.items():
             element = self.selenium.find_element_by_id(field)
+            element.clear()
             element.send_keys(value)
 
     def select_from_dropdown_by_id(self, id, index):

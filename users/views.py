@@ -6,7 +6,10 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import TemplateView
 
+from users.models import CustomUser
+
 from users.forms import CustomUserCreationForm
+from users.forms import CustomUserPersonalInfoUpdateForm
 
 
 class RegisterView(generic.CreateView):
@@ -37,3 +40,13 @@ class LogoutView(TemplateView):
         auth.logout(self.request)
 
         return redirect(reverse('logged_out'))
+
+
+class UpdateView(generic.UpdateView):
+    """Update Personal Information"""
+    model = CustomUser
+    form_class = CustomUserPersonalInfoUpdateForm
+    success_url = reverse_lazy('home')
+
+    def get_object(self, queryset=None):
+        return self.request.user
