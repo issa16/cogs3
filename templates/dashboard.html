@@ -39,9 +39,11 @@
 								<b>{% trans "Quick Action Links" %}</b>
 							</div>
 							<ul class="list-group list-group-flush">
-								<li class="list-group-item d-flex justify-content-between align-items-center">
-									<a href="{% url 'create-project' %}">{% trans "Create Project Application" %}</a>
-								</li>
+						    {% if perms.project.create_project %}
+								  <li class="list-group-item d-flex justify-content-between align-items-center">
+								  	<a href="{% url 'create-project' %}">{% trans "Create Project Application" %}</a>
+								  </li>
+						    {% endif %}
 								<li class="list-group-item d-flex justify-content-between align-items-center disabled">
 									<a href="#">{% trans "Access SCW Cluster" %}</a>
 								</li>
@@ -59,16 +61,13 @@
 						<b>{% trans "Summary" %}</b>
 					</div>
 					<ul class="list-group list-group-flush">
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<a href="{% url 'project-user-membership-request-list' %}">{% trans "Project User Requests" %}</a>
+							<span class="badge badge-primary badge-pill float-right">{{ project_user_requests_count }}</span>
+						</li>
 						{% if perms.project.add_project %}
-							<li class="list-group-item d-flex justify-content-between align-items-center">
-								<a href="{% url 'project-user-membership-request-list' %}">{% trans "Project User Requests" %}</a>
-								<span class="badge badge-primary badge-pill float-right">{{ project_user_requests_count }}</span>
-							</li>
-						{% endif %}
-						{% if perms.project.create_project %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<a href="{% url 'project-application-list' %}">{% trans "Project Applications" %}</a>
-							<span class="badge badge-primary badge-pill float-right">{{ project_application_count }}</span>
 						</li>
 						{% endif %}
 						<li class="list-group-item d-flex justify-content-between align-items-center">
