@@ -19,7 +19,7 @@ from openldap.util import verify_payload_data
 
 def update_user_openldap_account(profile):
     """
-    Ensure account status updates are propogated to the user's LDAP account.
+    Ensure account status updates are propogated to the user's Open LDAP account.
     """
     if profile.account_status == profile.APPROVED:
         if profile.scw_username:
