@@ -241,7 +241,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
             "iss": settings.OPENLDAP_JWT_ISSUER,
             "aud": settings.OPENLDAP_JWT_AUDIENCE,
             "iat": 1529249233,
-            "nbf": 1529249233,
+            "nbf": 1529248633,
             "data": {
                 "password": "Successfully reset password"
             }
