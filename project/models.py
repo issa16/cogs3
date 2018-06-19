@@ -76,6 +76,11 @@ class Project(models.Model):
         max_length=20,
         verbose_name=_('Project code assigned by SCW'),
     )
+    gid_number = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_('OpenLDAP GID Number'),
+    )
     institution_reference = models.CharField(
         max_length=128,
         blank=True,
@@ -159,12 +164,12 @@ class Project(models.Model):
         through='ProjectUserMembership',
         verbose_name=_('Members'),
     )
-    AWAITING_APPROVAL = 1
-    APPROVED = 2
-    DECLINED = 3
-    REVOKED = 4
-    SUSPENDED = 5
-    CLOSED = 6
+    AWAITING_APPROVAL = 0
+    APPROVED = 1
+    DECLINED = 2
+    REVOKED = 3
+    SUSPENDED = 4
+    CLOSED = 5
     STATUS_CHOICES = (
         (AWAITING_APPROVAL, _('Awaiting Approval')),
         (APPROVED, _('Approved')),
@@ -176,7 +181,12 @@ class Project(models.Model):
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
         default=AWAITING_APPROVAL,
-        verbose_name=_('Status'),
+        verbose_name=_('Current Status'),
+    )
+    previous_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_APPROVAL,
+        verbose_name=_('Previous Status'),
     )
     reason_decision = models.TextField(
         max_length=256,
@@ -211,6 +221,13 @@ class Project(models.Model):
     def is_closed(self):
         return True if self.status == Project.CLOSED else False
 
+    def reset_status(self):
+        """
+        Reset the current status to the previous status.
+        """
+        self.status = self.previous_status
+        self.save()
+
     def _assign_project_owner_project_membership(self):
         try:
             ProjectUserMembership.objects.get_or_create(
@@ -226,22 +243,23 @@ class Project(models.Model):
             logger.exception('Failed assign project owner membership to the project\'s technical lead.')
 
     def _generate_project_code(self):
+        prefix = 'SCW'
         last_project = Project.objects.order_by('id').last()
         if not last_project:
             if self.legacy_arcca_id or self.legacy_hpcw_id:
-                return 'SCW0000'
+                return prefix + '0000'
             else:
-                return 'SCW1000'
+                return prefix + '1000'
         else:
-            prefix, code = last_project.code.split('-')
-            return 'SCW' + str(int(code) + 1).zfill(4)
+            code = last_project.code.split(prefix)[1]
+            return prefix + str(int(code) + 1).zfill(4)
 
     def save(self, *args, **kwargs):
         if self.code is '':
             self.code = self._generate_project_code()
-        super(Project, self).save(*args, **kwargs)
         if self.status == Project.APPROVED:
             self._assign_project_owner_project_membership()
+        super(Project, self).save(*args, **kwargs)
 
     def __str__(self):
         data = {

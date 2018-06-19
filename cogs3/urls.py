@@ -8,7 +8,7 @@ from django.urls import path
 from django.views.generic.base import TemplateView
 
 from institution.models import Institution
-from users.openldap import reset_scw_password
+from users.openldap import reset_openldap_password
 from users.views import LogoutView
 from users.views import RegisterView
 
@@ -66,7 +66,7 @@ urlpatterns = i18n_patterns(
     ),
     path(
         'accounts/scw/password-reset/',
-        reset_scw_password,
+        reset_openldap_password,
         name='scw-password-reset',
     ),
     path(

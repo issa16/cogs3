@@ -5,7 +5,7 @@ from institution.exceptions import InvalidInstitution
 from institution.models import Institution
 from users.models import CustomUser
 from users.models import Profile
-from users.openldap import update_user_openldap_account
+from users.openldap import update_openldap_user
 
 
 class ProfileUpdateForm(forms.ModelForm):
@@ -19,9 +19,9 @@ class ProfileUpdateForm(forms.ModelForm):
         if self.instance.user_id:
             self.initial_account_status = self.instance.account_status
             self.fields['account_status'] = forms.ChoiceField(
-                choices=self._get_account_choices(self.instance.account_status), )
+                choices=self._get_account_status_choices(self.instance.account_status), )
 
-    def _get_account_choices(self, account_status):
+    def _get_account_status_choices(self, account_status):
         pre_approved_options = [
             Profile.STATUS_CHOICES[Profile.AWAITING_APPROVAL],
             Profile.STATUS_CHOICES[Profile.APPROVED],
@@ -42,7 +42,7 @@ class ProfileUpdateForm(forms.ModelForm):
         profile = super(ProfileUpdateForm, self).save(commit=False)
         profile.previous_account_status = self.initial_account_status
         if 'account_status' in self.changed_data:
-            update_user_openldap_account(profile)
+            update_openldap_user(profile)
         if commit:
             profile.save()
         return profile

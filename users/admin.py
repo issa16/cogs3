@@ -9,7 +9,7 @@ from users.forms import ProfileUpdateForm
 from users.models import CustomUser
 from users.models import Profile
 from users.models import ShibbolethProfile
-from users.openldap import update_user_openldap_account
+from users.openldap import update_openldap_user
 
 
 class ProfileInline(admin.StackedInline):
@@ -34,32 +34,6 @@ class CustomUserAdmin(UserAdmin):
     Form to add or update a CustomUser instance.
     """
 
-    def activate_users(self, request, queryset):
-        rows_updated = 0
-        for user in queryset:
-            user.profile.account_status = Profile.APPROVED
-            user.save()
-            update_user_openldap_account(user.profile)
-            rows_updated += 1
-        message = self._account_action_message(rows_updated)
-        self.message_user(request, '{message} successfully activated.'.format(message=message))
-
-    activate_users.short_description = 'Activate selected users {company_name} account'.format(
-        company_name=settings.COMPANY_NAME)
-
-    def deactivate_users(self, request, queryset):
-        rows_updated = 0
-        for user in queryset:
-            user.profile.account_status = Profile.SUSPENDED
-            user.save()
-            update_user_openldap_account(user.profile)
-            rows_updated += 1
-        message = self._account_action_message(rows_updated)
-        self.message_user(request, '{message} successfully deactivated.'.format(message=message))
-
-    deactivate_users.short_description = 'Deactivate selected users {company_name} account'.format(
-        company_name=settings.COMPANY_NAME)
-
     def _account_action_message(self, rows_updated):
         if rows_updated == 1:
             message = '1 {company_name} account was'.format(company_name=settings.COMPANY_NAME)
@@ -70,21 +44,37 @@ class CustomUserAdmin(UserAdmin):
             )
         return message
 
-    def get_form(self, request, user=None, **kwargs):
-        if not user:
-            self.inlines = []
-        else:
-            if user.is_shibboleth_login_required:
-                self.inlines = [ShibbolethProfileInline]
-            else:
-                self.inlines = [ProfileInline]
-        return super(CustomUserAdmin, self).get_form(request, user, **kwargs)
+    def activate_users(self, request, queryset):
+        rows_updated = 0
+        for user in queryset:
+            user.profile.account_status = Profile.APPROVED
+            user.save()
+            update_openldap_user(user.profile)
+            rows_updated += 1
+        message = self._account_action_message(rows_updated)
+        self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
+
+    activate_users.short_description = 'Activate selected users {company_name} account'.format(
+        company_name=settings.COMPANY_NAME)
+
+    def deactivate_users(self, request, queryset):
+        rows_updated = 0
+        for user in queryset:
+            user.profile.account_status = Profile.REVOKED
+            user.save()
+            update_openldap_user(user.profile)
+            rows_updated += 1
+        message = self._account_action_message(rows_updated)
+        self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
+
+    deactivate_users.short_description = 'Deactivate selected users {company_name} account'.format(
+        company_name=settings.COMPANY_NAME)
 
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
     actions = [activate_users, deactivate_users]
 
-    # Fields to be used when displaying a CustomUser model.
+    # Fields to be used when displaying a CustomUser instance.
     list_display = (
         'email',
         'created_at',
@@ -165,3 +155,13 @@ class CustomUserAdmin(UserAdmin):
         return instance.profile.scw_username
 
     get_scw_username.short_description = 'SCW Username'
+
+    def get_form(self, request, user=None, **kwargs):
+        if not user:
+            self.inlines = []
+        else:
+            if user.is_shibboleth_login_required:
+                self.inlines = [ShibbolethProfileInline]
+            else:
+                self.inlines = [ProfileInline]
+        return super(CustomUserAdmin, self).get_form(request, user, **kwargs)

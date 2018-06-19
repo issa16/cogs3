@@ -9,7 +9,6 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from institution.models import Institution
-from openldap.api import user_api
 
 
 class Profile(models.Model):
@@ -77,10 +76,12 @@ class Profile(models.Model):
     account_status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
         default=AWAITING_APPROVAL,
+        verbose_name=_('Current Status'),
     )
     previous_account_status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
         default=AWAITING_APPROVAL,
+        verbose_name=_('Previous Status'),
     )
 
     @property

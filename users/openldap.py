@@ -1,8 +1,13 @@
+import re
+
+from django.http import JsonResponse
+from django.utils.translation import gettext as _
+
 from openldap.api import user_api
 from users.models import Profile
 
 
-def reset_scw_password(request):
+def reset_openldap_password(request):
     """
     Reset a user's SCW account password.
 
@@ -34,14 +39,19 @@ def reset_scw_password(request):
         return JsonResponse(status=400)
 
 
-def update_user_openldap_account(profile):
+def update_openldap_user(profile):
     """
-    Ensure account status updates are propogated to the user's Open LDAP account.
+    Ensure account status updates are propagated to the user's OpenLDAP account.
     """
+    deactivate_user_states = [
+        Profile.REVOKED,
+        Profile.SUSPENDED,
+        Profile.CLOSED,
+    ]
     if profile.account_status == Profile.APPROVED:
         if profile.scw_username:
             user_api.activate_user_account.delay(user=profile.user)
         else:
             user_api.create_user.delay(user=profile.user)
-    else:
+    elif profile.account_status in deactivate_user_states:
         user_api.deactivate_user_account.delay(user=profile.user)

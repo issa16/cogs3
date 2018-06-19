@@ -92,9 +92,10 @@ def create_user(user, notify_user=True):
             context = {
                 'first_name': user.first_name,
                 'to': user.email,
+                'status': user.profile.get_account_status_display(),
             }
-            text_template_path = 'notifications/account_created.txt'
-            html_template_path = 'notifications/account_created.html'
+            text_template_path = 'notifications/user/update.txt'
+            html_template_path = 'notifications/user/update.html'
             email_user(subject, context, text_template_path, html_template_path)
         return response
     except Exception as e:
@@ -187,8 +188,8 @@ def reset_user_password(user, password, notify_user=True):
                 'first_name': user.first_name,
                 'to': user.email,
             }
-            text_template_path = 'notifications/password_reset.txt'
-            html_template_path = 'notifications/password_reset.html'
+            text_template_path = 'notifications/user/password_reset.txt'
+            html_template_path = 'notifications/user/password_reset.html'
             email_user(subject, context, text_template_path, html_template_path)
         return response
     except Exception as e:
@@ -219,9 +220,10 @@ def deactivate_user_account(user, notify_user=True):
             context = {
                 'first_name': user.first_name,
                 'to': user.email,
+                'status': user.profile.get_account_status_display(),
             }
-            text_template_path = 'notifications/account_deactivated.txt'
-            html_template_path = 'notifications/account_deactivated.html'
+            text_template_path = 'notifications/user/update.txt'
+            html_template_path = 'notifications/user/update.html'
             email_user(subject, context, text_template_path, html_template_path)
         return response
     except Exception as e:
@@ -256,9 +258,10 @@ def activate_user_account(user, notify_user=True):
             context = {
                 'first_name': user.first_name,
                 'to': user.email,
+                'status': user.profile.get_account_status_display(),
             }
-            text_template_path = 'notifications/account_activated.txt'
-            html_template_path = 'notifications/account_activated.html'
+            text_template_path = 'notifications/user/update.txt'
+            html_template_path = 'notifications/user/update.html'
             email_user(subject, context, text_template_path, html_template_path)
         return response
     except Exception as e:

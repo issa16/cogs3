@@ -3,8 +3,10 @@ from django.conf import settings
 from django.db.models import Q
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
+
 from project.models import Project
 from project.models import ProjectUserMembership
+from project.openldap import update_openldap_project
 
 
 class FileLinkWidget(forms.Widget):
@@ -31,9 +33,9 @@ class ProjectAdminForm(forms.ModelForm):
             'description',
             'legacy_hpcw_id',
             'legacy_arcca_id',
-            'code',
             'institution_reference',
             'department',
+            'gid_number',
             'pi',
             'tech_lead',
             'category',
@@ -53,6 +55,7 @@ class ProjectAdminForm(forms.ModelForm):
             'document',
             'document_download',
             'status',
+            'previous_status',
             'reason_decision',
             'notes',
         ]
@@ -61,6 +64,7 @@ class ProjectAdminForm(forms.ModelForm):
         super(ProjectAdminForm, self).__init__(*args, **kwargs)
         self.initial_status = self.instance.status
         self.fields['document_download'].widget = FileLinkWidget(self.instance)
+        self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status), )
 
     def clean_code(self):
         """
@@ -95,11 +99,28 @@ class ProjectAdminForm(forms.ModelForm):
                 raise forms.ValidationError(_('Project legacy ARCCA id must be unique.'))
         return updated_legacy_arcca_id
 
+    def _get_status_choices(self, status):
+        pre_approved_options = [
+            Project.STATUS_CHOICES[Project.AWAITING_APPROVAL],
+            Project.STATUS_CHOICES[Project.APPROVED],
+            Project.STATUS_CHOICES[Project.DECLINED],
+        ]
+        post_approved_options = [
+            Project.STATUS_CHOICES[Project.APPROVED],
+            Project.STATUS_CHOICES[Project.REVOKED],
+            Project.STATUS_CHOICES[Project.SUSPENDED],
+            Project.STATUS_CHOICES[Project.CLOSED],
+        ]
+        if Project.STATUS_CHOICES[status] in post_approved_options:
+            return post_approved_options
+        else:
+            return pre_approved_options
+
     def save(self, commit=True):
         project = super(ProjectAdminForm, self).save(commit=False)
-        if self.initial_status != project.status:
-            # TODO - OpenLDAP API call
-            pass
+        project.previous_status = self.initial_status
+        if 'status' in self.changed_data:
+            update_openldap_project(project)
         if commit:
             project.save()
         return project
