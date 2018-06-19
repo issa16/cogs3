@@ -82,8 +82,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Check the project status
-        self.get_url('')
-        self.click_link_by_url(reverse('project-application-list'))
+        self.get_url(reverse('project-application-list'))
         if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
             raise AssertionError()
         if 'Awaiting Approval' not in self.selenium.page_source:
@@ -123,8 +122,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         project.save()
 
         # Try the Project Applications and Project Memberships pages
-        self.get_url('')
-        self.click_link_by_url(reverse('project-application-list'))
+        self.get_url(reverse('project-application-list'))
         if 'code1' not in self.selenium.page_source:
             raise AssertionError()
         if self.default_project_form_fields["id_title"] not in self.selenium.page_source:

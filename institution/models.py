@@ -40,3 +40,27 @@ class Institution(models.Model):
 
     class Meta:
         ordering = ('name', )
+
+    @property
+    def is_cardiff(self):
+        return self.base_domain == 'cardiff.ac.uk'
+
+    @property
+    def is_swansea(self):
+        return self.base_domain == 'swansea.ac.uk'
+
+    @property
+    def is_bangor(self):
+        return self.base_domain == 'bangor.ac.uk'
+
+    @property
+    def is_aber(self):
+        return self.base_domain == 'aber.ac.uk'
+
+    @property
+    def is_sunbird(self):
+        return self.is_swansea or self.is_aber
+
+    @property
+    def is_hawk(self):
+        return self.is_cardiff or self.is_bangor

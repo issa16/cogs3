@@ -142,7 +142,20 @@ class ProjectCreationForm(forms.ModelForm):
         self.instance.tech_lead = self.user
         if self.instance.tech_lead.profile.institution is None:
             raise ValidationError('Only users which belong to an institution can create projects.')
+    
+    def __init__(self, user, *args, **kwargs):
+        super(ProjectCreationForm, self).__init__(*args, **kwargs)
 
+        self.user = user
+
+        self.fields['institution'] = LocalizeModelChoiceField(
+            queryset=Institution.objects.all(),
+            label=_('Institution'),
+        )
+
+        if self.user.profile.institution is not None and not self.user.profile.institution.is_cardiff:
+            # hide arcca field from swansea users
+            del self.fields['legacy_arcca_id']
 
 class ProjectUserMembershipCreationForm(forms.Form):
     project_code = forms.CharField(max_length=20)

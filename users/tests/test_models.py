@@ -1,11 +1,13 @@
 from django.contrib.auth.models import Group
 from django.test import TestCase
+from django.contrib.auth.models import Permission
 
 from institution.tests.test_models import InstitutionTests
 from users.admin import CustomUserAdmin
 from users.models import CustomUser
 from users.models import Profile
 from users.models import ShibbolethProfile
+from institution.models import Institution
 
 
 class CustomUserTests(TestCase):
@@ -70,6 +72,21 @@ class CustomUserTests(TestCase):
             is_shibboleth_login_required=False,
         )
 
+    @classmethod
+    def create_institutional_users(cls):
+        inst_all = Institution.objects.all()
+
+        names = [ i.base_domain.split('.')[0] for i in inst_all ]
+        users = {}
+
+        for i in names:
+            username = f'{i}_user'
+            email = f'{i}@{i}.ac.uk'
+
+            users[i] = CustomUserTests.create_custom_user(email=email)
+
+            return (names, users)
+
     def verify_user_data(self, user):
         self.assertTrue(isinstance(user, CustomUser))
         self.assertEqual(user.__str__(), user.email)
@@ -102,6 +119,7 @@ class CustomUserTests(TestCase):
         self.assertEqual(profile.scopus, '')
         self.assertEqual(profile.homepage, '')
         self.assertEqual(profile.cronfa, '')
+        self.assertTrue(user.has_perm('project.add_project'))
 
     def test_non_shibboleth_user_creation(self):
         """
@@ -125,3 +143,4 @@ class CustomUserTests(TestCase):
         self.assertEqual(profile.description, '')
         self.assertEqual(profile.phone, '')
         self.assertEqual(profile.account_status, Profile.AWAITING_APPROVAL)
+        self.assertFalse(user.has_perm('project.add_project'))
