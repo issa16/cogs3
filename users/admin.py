@@ -3,23 +3,13 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.forms.models import BaseInlineFormSet
 
-from openldap.api import user_api
 from users.forms import CustomUserChangeForm
 from users.forms import CustomUserCreationForm
+from users.forms import ProfileUpdateForm
 from users.models import CustomUser
 from users.models import Profile
 from users.models import ShibbolethProfile
-
-
-class ProfileInlineFormset(BaseInlineFormSet):
-
-    def save_existing(self, form, instance, commit=True):
-        profile = super(ProfileInlineFormset, self).save_existing(form, instance, commit)
-        if 'account_status' in form.changed_data:
-            user_api.update_user_openldap_account(profile)
-        if commit:
-            profile.save()
-        return profile
+from users.openldap import update_user_openldap_account
 
 
 class ProfileInline(admin.StackedInline):
@@ -27,7 +17,7 @@ class ProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'Profile'
     fk_name = 'user'
-    formset = ProfileInlineFormset
+    form = ProfileUpdateForm
 
 
 class ShibbolethProfileInline(admin.StackedInline):
@@ -35,7 +25,7 @@ class ShibbolethProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'Shibboleth Profile'
     fk_name = 'user'
-    formset = ProfileInlineFormset
+    form = ProfileUpdateForm
 
 
 @admin.register(CustomUser)
@@ -49,7 +39,7 @@ class CustomUserAdmin(UserAdmin):
         for user in queryset:
             user.profile.account_status = Profile.APPROVED
             user.save()
-            user_api.update_user_openldap_account(user.profile)
+            update_user_openldap_account(user.profile)
             rows_updated += 1
         message = self._account_action_message(rows_updated)
         self.message_user(request, '{message} successfully activated.'.format(message=message))
@@ -62,7 +52,7 @@ class CustomUserAdmin(UserAdmin):
         for user in queryset:
             user.profile.account_status = Profile.SUSPENDED
             user.save()
-            user_api.update_user_openldap_account(user.profile)
+            update_user_openldap_account(user.profile)
             rows_updated += 1
         message = self._account_action_message(rows_updated)
         self.message_user(request, '{message} successfully deactivated.'.format(message=message))
@@ -81,18 +71,13 @@ class CustomUserAdmin(UserAdmin):
         return message
 
     def get_form(self, request, user=None, **kwargs):
-        """
-        Load the ShibbolethProfileInline for shibboleth users.
-        Load the ProfileInline for non shibboleth users.
-        """
-        if user:
+        if not user:
+            self.inlines = []
+        else:
             if user.is_shibboleth_login_required:
                 self.inlines = [ShibbolethProfileInline]
             else:
                 self.inlines = [ProfileInline]
-        else:
-            self.inlines = []
-
         return super(CustomUserAdmin, self).get_form(request, user, **kwargs)
 
     form = CustomUserChangeForm
@@ -180,8 +165,3 @@ class CustomUserAdmin(UserAdmin):
         return instance.profile.scw_username
 
     get_scw_username.short_description = 'SCW Username'
-
-    def get_inline_instance(self, request, obj=None):
-        if not obj:
-            return list()
-        return super(CustomUserAdmin, self).get_inline_instance(request, obj)

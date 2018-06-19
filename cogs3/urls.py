@@ -8,9 +8,9 @@ from django.urls import path
 from django.views.generic.base import TemplateView
 
 from institution.models import Institution
+from users.openldap import reset_scw_password
 from users.views import LogoutView
 from users.views import RegisterView
-from users.views import reset_scw_password
 
 urlpatterns = i18n_patterns(
     path(

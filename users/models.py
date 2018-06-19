@@ -60,12 +60,12 @@ class Profile(models.Model):
         max_length=15,
         blank=True,
     )
-    AWAITING_APPROVAL = 1
-    APPROVED = 2
-    DECLINED = 3
-    REVOKED = 4
-    SUSPENDED = 5
-    CLOSED = 6
+    AWAITING_APPROVAL = 0
+    APPROVED = 1
+    DECLINED = 2
+    REVOKED = 3
+    SUSPENDED = 4
+    CLOSED = 5
     STATUS_CHOICES = (
         (AWAITING_APPROVAL, 'Awaiting Approval'),
         (APPROVED, 'Approved'),
@@ -75,6 +75,10 @@ class Profile(models.Model):
         (CLOSED, 'Closed'),
     )
     account_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_APPROVAL,
+    )
+    previous_account_status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
         default=AWAITING_APPROVAL,
     )
@@ -90,11 +94,9 @@ class Profile(models.Model):
             return None
 
     def account_status_message(self):
+        message = None
         if self.account_status == self.AWAITING_APPROVAL:
             message = _('access request is currently awaiting approval.')
-        elif self.account_status == self.APPROVED:
-            # TODO - Check if system resources have been allocated
-            message = _('access request has been approved and your account is currently being created.')
         elif self.account_status == self.DECLINED:
             message = _('access request has been declined.')
         elif self.account_status == self.REVOKED:
@@ -103,16 +105,19 @@ class Profile(models.Model):
             message = _('access has been suspended.')
         elif self.account_status == self.CLOSED:
             message = _('has been closed.')
-        return _('Your {company_name} account {message}').format(
-            company_name=settings.COMPANY_NAME,
-            message=message,
-        )
+        if message:
+            return _('Your {company_name} account {message}').format(
+                company_name=settings.COMPANY_NAME,
+                message=message,
+            )
+        else:
+            return None
 
     def reset_account_status(self):
         """
-        Reset user account status to Awaiting Approval.
+        Reset the current account status to the previous account staus
         """
-        self.account_status = Profile.AWAITING_APPROVAL
+        self.account_status = self.previous_account_status
         self.save()
 
     def __str__(self):
