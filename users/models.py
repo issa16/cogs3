@@ -115,7 +115,7 @@ class Profile(models.Model):
 
     def reset_account_status(self):
         """
-        Reset the current account status to the previous account staus
+        Reset the current account status to the previous account status.
         """
         self.account_status = self.previous_account_status
         self.save()
