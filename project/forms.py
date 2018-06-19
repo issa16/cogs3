@@ -1,13 +1,13 @@
 from django import forms
 from django.db.models import Q
+from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
-
-from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
 
 
 class FileLinkWidget(forms.Widget):
+
     def __init__(self, obj, attrs=None):
         self.object = obj
         super(FileLinkWidget, self).__init__(attrs)
@@ -31,7 +31,7 @@ class ProjectAdminForm(forms.ModelForm):
             'description',
             'legacy_hpcw_id',
             'legacy_arcca_id',
-            'code', 'institution',
+            'code',
             'institution_reference',
             'department',
             'pi',
@@ -48,7 +48,8 @@ class ProjectAdminForm(forms.ModelForm):
             'allocation_rse',
             'allocation_cputime',
             'allocation_memory',
-            'allocation_storage_home', 'allocation_storage_scratch',
+            'allocation_storage_home',
+            'allocation_storage_scratch',
             'document',
             'document_download',
             'status',
@@ -109,7 +110,6 @@ class ProjectCreationForm(forms.ModelForm):
             'description',
             'legacy_hpcw_id',
             'legacy_arcca_id',
-            'institution',
             'institution_reference',
             'department',
             'pi',
@@ -135,12 +135,13 @@ class ProjectCreationForm(forms.ModelForm):
             }),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(ProjectCreationForm, self).__init__(*args, **kwargs)
-        self.fields['institution'] = LocalizeModelChoiceField(
-            queryset=Institution.objects.all(),
-            label=_('Institution'),
-        )
+    def set_user(self, user):
+        self.user = user
+
+    def clean(self):
+        self.instance.tech_lead = self.user
+        if self.instance.tech_lead.profile.institution is None:
+            raise ValidationError('Only users which belong to an institution can create projects.')
 
 
 class ProjectUserMembershipCreationForm(forms.Form):

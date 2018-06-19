@@ -167,7 +167,6 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
             project = ProjectTests.create_project(
                 title='Project Title',
                 code='scw-' + str(uuid.uuid4()),
-                institution=self.institution,
                 tech_lead=account.get('user'),
                 category=self.category,
                 funding_source=self.funding_source,
@@ -199,7 +198,6 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         project = ProjectTests.create_project(
             title='Project Title',
             code='scw-' + code,
-            institution=self.institution,
             tech_lead=self.project_owner,
             category=self.category,
             funding_source=self.funding_source,

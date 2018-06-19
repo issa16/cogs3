@@ -4,7 +4,6 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from institution.models import Institution
 from system.models import System
 
 
@@ -66,12 +65,6 @@ class Project(models.Model):
     code = models.CharField(
         max_length=20,
         verbose_name=_('Project code assigned by SCW'),
-    )
-    institution = models.ForeignKey(
-        Institution,
-        on_delete=models.CASCADE,
-        help_text=_('Institution project is based'),
-        verbose_name=_('Institution'),
     )
     institution_reference = models.CharField(
         max_length=128,

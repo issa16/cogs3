@@ -44,11 +44,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = (
         'title',
         'code',
-        'institution',
         'tech_lead',
         'status',
     )
-    list_filter = (
-        'institution',
-        'status',
-    )
+    list_filter = ('status', )

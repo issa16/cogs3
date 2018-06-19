@@ -57,11 +57,13 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.fill_form_by_id(form_fields)
         self.submit_form(form_fields)
         # Check that we didn't get the fail response
-        assert "Please enter a correct email and password" not in self.selenium.page_source
+        if "Please enter a correct email and password" in self.selenium.page_source:
+            raise AssertionError()
 
     def log_out(self):
         self.get_url(reverse('logout'))
-        assert "accounts/logged_out/" in self.selenium.current_url
+        if "accounts/logged_out/" not in self.selenium.current_url:
+            raise AssertionError()
         self.get_url('')
 
     def submit_form(self, form_fields):
@@ -95,7 +97,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             first_name='User',
             last_name='User',
             is_staff=True,
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
             has_accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.user)
@@ -115,7 +117,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             email="123456@swansea.ac.uk",
             first_name='Student',
             last_name='Student',
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
             has_accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.student)
@@ -127,7 +129,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             last_name='Rse',
             is_staff=True,
             is_superuser=True,
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
             has_accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.rse)
@@ -139,8 +141,9 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             last_name='Admin',
             is_staff=True,
             is_superuser=True,
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
             has_accepted_terms_and_conditions=True,
+
         )
         self.create_test_user(self.admin)
 
