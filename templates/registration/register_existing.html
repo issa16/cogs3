@@ -1,0 +1,18 @@
+<!-- templates/registration/register_existing.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+	<div class="form-logo mx-auto mt-4">
+		<img class="img-fluid" src="{% static "img/scw.png" %}" alt="{% trans "Supercomputing Wales" %}">
+	</div>
+	<div class="mx-auto mt-4 form-signin">
+		<form method="post">
+			{% csrf_token %}
+			<h5 class="text-center mb-4 mt-2">{% trans "Create a Supercomputing Wales account" %}</h5>
+			{% include 'includes/errors.html' %}
+			{% include 'includes/register_form.html' %}
+			<p class="mt-3 mb-1 text-center text-muted">© {% trans "cogs3" %}</p>
+		</form>
+	</div>
+{% endblock %}
