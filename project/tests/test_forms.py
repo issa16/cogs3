@@ -13,7 +13,6 @@ from project.tests.test_models import ProjectCategoryTests
 from project.tests.test_models import ProjectFundingSourceTests
 from project.tests.test_models import ProjectTests
 from users.tests.test_models import CustomUserTests
-from institution.models import Institution
 
 
 class ProjectFormTests(TestCase):
@@ -79,6 +78,7 @@ class ProjectFormTests(TestCase):
                 self.assertTrue('legacy_arcca_id' in form.fields)
             else:
                 self.assertFalse('legacy_arcca_id' in form.fields)
+
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
 

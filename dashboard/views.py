@@ -16,7 +16,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             num_requests = ProjectUserMembership.objects.awaiting_authorisation(self.request.user).count()
             context['project_user_requests_count'] = num_requests
 
-        if self.request.user.has_perm('project.add_projects'):
+        if self.request.user.has_perm('project.add_project'):
             num_requests = Project.objects.filter(tech_lead=self.request.user, status=Project.AWAITING_APPROVAL).count()
             context['project_application_count'] = num_requests
 

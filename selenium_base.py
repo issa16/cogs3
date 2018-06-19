@@ -11,6 +11,8 @@ from cogs3.settings import LANGUAGE_CODE
 from cogs3.settings import SELENIUM_WEBDRIVER
 from cogs3.settings import SELENIUM_WEBDRIVER_PROFILE
 from users.models import CustomUser
+from institution.models import Institution
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
@@ -25,7 +27,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.selenium.get(self.live_server_url + url)
 
     def click_link_by_url(self, url):
-        selector = 'a[href*="' + url + '"]'
+        selector = 'a[href="' + url + '"]'
         link = self.selenium.find_element_by_css_selector(selector)
         link.click()
 
@@ -83,6 +85,13 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         user.save()
         user.profile.account_status = user.profile.APPROVED
         user.save()
+        try:
+            domain = user.email.split('@')[1]
+            institute = Institution.objects.get(base_domain=domain)
+            self.user.profile.institution = institute
+            self.user.profile.save()
+        except ObjectDoesNotExist:
+            pass
 
     def tearDown(self):
         super(SeleniumTestsBase, self).tearDown()

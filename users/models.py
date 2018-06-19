@@ -80,6 +80,7 @@ class Profile(models.Model):
         else:
             return None
 
+
 class ShibbolethProfile(Profile):
     shibboleth_id = models.CharField(
         max_length=50,

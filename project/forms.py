@@ -4,6 +4,7 @@ from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 from project.models import Project
 from project.models import ProjectUserMembership
+from institution.models import Institution
 
 
 class FileLinkWidget(forms.Widget):
@@ -142,16 +143,18 @@ class ProjectCreationForm(forms.ModelForm):
         self.instance.tech_lead = self.user
         if self.instance.tech_lead.profile.institution is None:
             raise ValidationError('Only users which belong to an institution can create projects.')
-    
+
     def __init__(self, user, *args, **kwargs):
         super(ProjectCreationForm, self).__init__(*args, **kwargs)
 
         self.user = user
 
-        self.fields['institution'] = LocalizeModelChoiceField(
-            queryset=Institution.objects.all(),
-            label=_('Institution'),
-        )
+        # Users without an institution are not allowed to create projects
+        #if not self.user.profile.institution:
+        #    self.fields['institution'] = LocalizeModelChoiceField(
+        #        queryset=Institution.objects.all(),
+        #        label=_('Institution'),
+        #    )
 
         if self.user.profile.institution is not None and not self.user.profile.institution.is_cardiff:
             # hide arcca field from swansea users
