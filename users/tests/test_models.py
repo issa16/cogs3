@@ -19,7 +19,7 @@ class CustomUserTests(TestCase):
         )
 
     @classmethod
-    def create_custom_user(cls, email, group=None, is_shibboleth_login_required=True):
+    def create_custom_user(cls, email, group=None, is_shibboleth_login_required=True, has_accepted_terms_and_conditions=True):
         """
         Create a CustomUser instance.
 
@@ -35,6 +35,7 @@ class CustomUserTests(TestCase):
             first_name='Joe',
             last_name='Bloggs',
             is_shibboleth_login_required=is_shibboleth_login_required,
+            has_accepted_terms_and_conditions = has_accepted_terms_and_conditions
         )
         if group:
             user.groups.add(group)
@@ -53,6 +54,23 @@ class CustomUserTests(TestCase):
             email=email,
             group=group,
             is_shibboleth_login_required=True,
+        )
+
+    @classmethod
+    def create_unregistered_shibboleth_user(cls, email):
+        """
+        Create a CustomUser instance that has not
+        gone through the register view.
+
+        Args:
+            email (str): Email address.
+        """
+        group = Group.objects.get(name='project_owner')
+        return CustomUserTests.create_custom_user(
+            email=email,
+            group=group,
+            is_shibboleth_login_required=True,
+            has_accepted_terms_and_conditions=False
         )
 
     @classmethod

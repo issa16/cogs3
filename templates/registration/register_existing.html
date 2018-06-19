@@ -1,4 +1,4 @@
-<!-- templates/registration/register.html -->
+<!-- templates/registration/register_existing.html -->
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
@@ -11,10 +11,6 @@
 			{% csrf_token %}
 			<h5 class="text-center mb-4 mt-2">{% trans "Create a Supercomputing Wales account" %}</h5>
 			{% include 'includes/errors.html' %}
-			<div class="form-group mb-3">
-				<label for="email">{% trans "Identifier" %}</label>
-				<input type="email" readonly class="form-control-plaintext" id="email" name="email" value="{{request.session.shib.username}}">
-			</div>
 			{% include 'includes/register_form.html' %}
 			<p class="mt-3 mb-1 text-center text-muted">© {% trans "cogs3" %}</p>
 		</form>

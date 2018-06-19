@@ -17,6 +17,7 @@ from shibboleth.middleware import ShibbolethValidationError
 class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
 
     def process_request(self, request):
+
         # The identity of external collaborators is managed within the django application.
         # Therefore, exclude the external collaborator login form from the SCW Remote User
         # Middleware.
@@ -36,6 +37,13 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         # This will require the user to close their browser.
         if request.session.get(settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY) == True:
             return
+
+        if request.user.is_authenticated and not request.user.has_accepted_terms_and_conditions:
+            # Requesting access as a user that has not registered
+            # Redirect to the update page
+            url_name = resolve(request.path_info).url_name
+            if url_name != 'register-existing':
+                return HttpResponseRedirect(reverse('register-existing'))
 
         # Locate the required headers.
         try:

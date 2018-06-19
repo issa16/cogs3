@@ -157,6 +157,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         },
     )
     email = models.EmailField(unique=True, null=True)
+    has_accepted_terms_and_conditions = models.BooleanField(
+        default=False,
+        help_text='Designates whether this user has accepted the terms and conditions. If unchecked, the user will be redirected to the register view.',
+        verbose_name='has accepted terms and conditions',
+    )
     is_shibboleth_login_required = models.BooleanField(
         default=True,
         help_text='Designates whether this user is required to login via a shibboleth identity provider.',

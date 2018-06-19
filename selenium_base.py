@@ -32,6 +32,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
     def fill_form_by_id(self, fields):
         for field, value in fields.items():
             element = self.selenium.find_element_by_id(field)
+            element.clear()
             element.send_keys(value)
 
     def select_from_dropdown_by_id(self, id, index):
@@ -97,6 +98,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             last_name='User',
             is_staff=True,
             is_shibboleth_login_required=True,
+            has_accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.user)
 
@@ -106,6 +108,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             first_name='External',
             last_name='External',
             is_shibboleth_login_required=False,
+            has_accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.external)
 
@@ -115,6 +118,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             first_name='Student',
             last_name='Student',
             is_shibboleth_login_required=True,
+            has_accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.student)
 
@@ -126,6 +130,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             is_staff=True,
             is_superuser=True,
             is_shibboleth_login_required=True,
+            has_accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.rse)
 
@@ -137,6 +142,8 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             is_staff=True,
             is_superuser=True,
             is_shibboleth_login_required=True,
+            has_accepted_terms_and_conditions=True,
+
         )
         self.create_test_user(self.admin)
 

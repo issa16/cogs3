@@ -1,0 +1,19 @@
+<!-- includes/register_form.html -->
+{% load i18n %}
+<div class="form-group mb-3">
+  <label for="first-name">{% trans "First name" %}</label>
+  <input type="text" class="form-control" id="first-name" name="first_name">
+</div>
+<div class="form-group mb-3">
+  <label for="last-name">{% trans "Last name" %}</label>
+  <input type="text" class="form-control" id="last-name" name="last_name">
+</div>
+<div class="form-group text-center mb-3">
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" id="tandc-check" name="has_accepted_terms_and_conditions">
+    <label class="form-check-label" for="tandc-check">
+      {% trans "I agree to the Terms and Conditions." %}
+    </label>
+  </div>
+</div>
+<button class="btn btn-primary btn-block" type="submit">{% trans "Create a Supercomputing Wales account" %}</button>

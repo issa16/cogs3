@@ -62,10 +62,9 @@ class ProjectIntegrationTests(SeleniumTestsBase):
     def test_create_project(self):
         self.sign_in(self.user)
 
+        # Correctly fill the form
         self.get_url('')
         self.click_link_by_url(reverse('create-project'))
-
-        # Correctly fill the form
         self.fill_form_by_id(self.default_project_form_fields)
         self.select_from_dropdown_by_id('id_funding_source', 1)
 

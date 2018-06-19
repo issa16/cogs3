@@ -6,7 +6,10 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import TemplateView
 
+from users.models import CustomUser
 from users.forms import CustomUserCreationForm
+from users.forms import CustomUserRegisterExistingForm
+from users.forms import CustomUserPersonalInfoUpdateForm
 
 
 class RegisterView(generic.CreateView):
@@ -25,6 +28,21 @@ class RegisterView(generic.CreateView):
         return super().form_valid(form)
 
 
+class RegisterExistingView(generic.UpdateView):
+    """Ask an existing user to fill in missing information."""
+    form_class = CustomUserRegisterExistingForm
+    model = CustomUser
+    success_url = reverse_lazy('login')
+    template_name = 'registration/register_existing.html'
+
+    def form_valid(self, form):
+        form.instance.is_active = True
+        return super().form_valid(form)
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+
 class LogoutView(TemplateView):
 
     def get(self, *args, **kwargs):
@@ -37,3 +55,13 @@ class LogoutView(TemplateView):
         auth.logout(self.request)
 
         return redirect(reverse('logged_out'))
+
+
+class UpdateView(generic.UpdateView):
+    """Update Personal Information"""
+    model = CustomUser
+    form_class = CustomUserPersonalInfoUpdateForm
+    success_url = reverse_lazy('home')
+
+    def get_object(self, queryset=None):
+        return self.request.user

@@ -54,6 +54,7 @@ class CustomUserAdmin(UserAdmin):
         'last_name',
         'is_staff',
         'is_shibboleth_login_required',
+        'has_accepted_terms_and_conditions',
     )
 
     readonly_fields = (
@@ -67,6 +68,7 @@ class CustomUserAdmin(UserAdmin):
             'fields': (
                 'email',
                 'password',
+                'has_accepted_terms_and_conditions',
             )
         }),
         ('Personal info', {

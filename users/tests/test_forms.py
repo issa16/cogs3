@@ -1,8 +1,10 @@
 from django.test import TestCase
 from django.utils.translation import activate
+from django.urls import reverse
 
 from institution.tests.test_models import InstitutionTests
-from users.forms import CustomUserCreationForm
+from users.tests.test_models import CustomUserTests
+from users.forms import CustomUserCreationForm, CustomUserPersonalInfoUpdateForm
 from users.models import CustomUser
 
 
@@ -83,3 +85,57 @@ class CustomUserCreationFormTests(TestCase):
         form.save()
         self.assertEqual(CustomUser.objects.filter(email=email).count(), 1)
         self.assertIsNotNone(CustomUser.objects.get(email=email).password)
+
+
+class CustomUserPersonalInfoUpdateFormTests(TestCase):
+
+    def setUp(self):
+        # Create an institution
+        self.institution = InstitutionTests.create_institution(
+            name='Bangor University',
+            base_domain='bangor.ac.uk',
+            identity_provider='https://idp.bangor.ac.uk/shibboleth',
+        )
+
+    def test_user_update_form(self):
+        email = '@'.join(['joe.bloggs', self.institution.base_domain])
+        user = CustomUserTests.create_custom_user(
+            email=email,
+            has_accepted_terms_and_conditions=True,
+        )
+        headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
+        }
+        data = {
+            'first_name': 'test',
+            'last_name': 'user',
+        }
+        # First get a page and login in through the middleware
+        self.client.get(reverse('update-user'), **headers)
+        # Now post
+        self.client.post(reverse('update-user'), data, **headers)
+        user = CustomUser.objects.get(email=email)
+        assert user.first_name == 'test'
+        assert user.last_name == 'user'
+
+    def test_register_unregistered_user_form(self):
+        email = '@'.join(['joe.bloggs', self.institution.base_domain])
+        user = CustomUserTests.create_custom_user(
+            email=email,
+            has_accepted_terms_and_conditions=False,
+        )
+        headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
+        }
+        data = {
+            'first_name': 'test',
+            'last_name': 'user',
+            'has_accepted_terms_and_conditions': True,
+        }
+        self.client.get(reverse('register-existing'), **headers)
+        self.client.post(reverse('register-existing'), data, **headers)
+        user = CustomUser.objects.get(email=email)
+        assert user.first_name == 'test'
+        assert user.last_name == 'user'

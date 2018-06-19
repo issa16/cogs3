@@ -54,6 +54,26 @@ class RegisterViewTests(UserViewTests, TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
 
+    def test_register_view_as_an_unregistered_user(self):
+        """
+        Ensure an authorised  but unregistered user is redirected to the register existing view.
+        """
+        email = '@'.join(['user', self.institution.base_domain])
+        CustomUserTests.create_unregistered_shibboleth_user(email=email)
+
+        headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
+        }
+        # First get request will authenticat the user
+        response = self.client.get(reverse('register'), **headers)
+        # This will be redirected
+        self.assertEqual(response.status_code, 302)
+        response=self.client.get(response.url, **headers)
+        # And should now be redirected to the register-existing view
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('register-existing'))
+
 
 class LoginViewTests(UserViewTests, TestCase):
 
@@ -92,7 +112,6 @@ class LoginViewTests(UserViewTests, TestCase):
         self.assertEqual(response.url, reverse('home'))
 
 
-
 class LogoutViewTests(UserViewTests, TestCase):
 
     def test_logout_view_as_an_unauthorised_user(self):
@@ -127,3 +146,39 @@ class LogoutViewTests(UserViewTests, TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('logged_out'))
+
+
+class UpdateViewTests(UserViewTests, TestCase):
+
+    def test_login_view_as_an_unauthorised_user(self):
+        """
+        Ensure an unauthorised user can access the register view.
+        """
+        email = '@'.join(['unauthorised-user', self.institution.base_domain])
+        headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
+        }
+        response = self.client.get(
+            reverse('update-user'),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url, reverse('register'))
+
+    def test_login_view_as_an_authorised_user(self):
+        """
+        Ensure an authorised user is redirected to the dashboard and can not access
+        the register view.
+        """
+        email = '@'.join(['user', self.institution.base_domain])
+        CustomUserTests.create_shibboleth_user(email=email)
+        headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
+        }
+        response = self.client.get(
+            reverse('update-user'),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 200)

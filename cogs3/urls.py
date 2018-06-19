@@ -64,6 +64,10 @@ urlpatterns = i18n_patterns(
         name='register',
     ),
     path(
+        'accounts/',
+        include('users.urls'),
+    ),
+    path(
         'projects/',
         include('project.urls'),
     ),
