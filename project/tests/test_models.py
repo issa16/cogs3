@@ -165,7 +165,7 @@ class ProjectTests(ProjectModelTests, TestCase):
         Ensure project details are correct.
         """
         self.assertTrue(isinstance(project, Project))
-        self.assertEqual(project.__str__(), code + ' - ' + title)
+        self.assertEqual(project.__str__(), code)
         self.assertEqual(project.status, Project.AWAITING_APPROVAL)
         self.assertEqual(project.title, title)
         self.assertEqual(project.code, code)

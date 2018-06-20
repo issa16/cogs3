@@ -36,12 +36,9 @@ class CustomUserAdmin(UserAdmin):
 
     def _account_action_message(self, rows_updated):
         if rows_updated == 1:
-            message = '1 {company_name} account was'.format(company_name=settings.COMPANY_NAME)
+            message = '1 account was'
         else:
-            message = '{rows} {company_name} accounts were'.format(
-                rows=rows_updated,
-                company_name=settings.COMPANY_NAME,
-            )
+            message = '{rows} accounts were'.format(rows=rows_updated)
         return message
 
     def activate_users(self, request, queryset):
@@ -54,8 +51,7 @@ class CustomUserAdmin(UserAdmin):
         message = self._account_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
 
-    activate_users.short_description = 'Activate selected users {company_name} account'.format(
-        company_name=settings.COMPANY_NAME)
+    activate_users.short_description = 'Activate selected users account in LDAP'
 
     def deactivate_users(self, request, queryset):
         rows_updated = 0
@@ -67,8 +63,7 @@ class CustomUserAdmin(UserAdmin):
         message = self._account_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
 
-    deactivate_users.short_description = 'Deactivate selected users {company_name} account'.format(
-        company_name=settings.COMPANY_NAME)
+    deactivate_users.short_description = 'Deactivate selected users account in LDAP'
 
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm

@@ -15,8 +15,8 @@ class Command(BaseCommand):
         parser.add_argument('csv_filename')
 
     def handle(self, *args, **options):
-        filename = options['csv_filename']
         try:
+            filename = options['csv_filename']
             with open(filename, newline='', encoding='ISO-8859-1') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:

@@ -1,47 +1,116 @@
 import jsonschema
-import logging
 import requests
 
+from django.conf import settings
 from django_rq import job
 
-from django.conf import settings
-
-from openldap import schemas
+from openldap.schemas.project_membership.create_project_membership import create_project_membership_json
+from openldap.schemas.project_membership.deactivate_project_membership import deactivate_project_membership_json
+from openldap.schemas.project_membership.list_project_memberships import list_project_memberships_json
 from openldap.util import decode_response
 
 
 @job
-def create_project_membership(code, user_id):
+def list_project_memberships(project_code):
     """
-    Create a project membership.
-
-    Args:
-        code (str): Project code (prefix_00001) - required
-        user_id (str): (prefix.username) - required
+    List all OpenLDAP project memberships for a given project.
     """
-    raise NotImplementedError('Not yet implemented.')
+    url = ''.join([settings.OPENLDAP_HOST, 'project/member/', project_code, '/'])
+    try:
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=5,
+        )
+        response.raise_for_status()
+        response = decode_response(response)
+        jsonschema.validate(response, list_project_memeberships_json)
+        raise_for_data_error(response.get('data'))
+        return response
+    except Exception as e:
+        raise e
 
 
 @job
-def update_project_membership(code, user_id, status):
+def create_project_membership(project_membership, notify_user=True):
     """
-    Update an existing project membership.
+    Create an OpenLDAP project membership.
 
     Args:
-        code (str): Project code (prefix_00001) - required
-        user_id (str): (prefix.username) - required
-        status (str) : Project membership status [revoked, suspended, authorised] - required
+        project_membership (str): Project Membership - required
+        notify_user (bool): Issue a notification email to the user? - optional
     """
-    raise NotImplementedError('Not yet implemented.')
+    url = ''.join([settings.OPENLDAP_HOST, 'project/membership/', project_membership.project.code, '/'])
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cache-Control': 'no-cache',
+    }
+    payload = {
+        'email': project_membership.user.email,
+    }
+    try:
+        response = requests.post(
+            url,
+            headers=headers,
+            data=payload,
+            timeout=5,
+        )
+        response.raise_for_status()
+        response = decode_response(response)
+        jsonschema.validate(response, create_project_membership_json)
+        data = response.get('data')
+        raise_for_data_error(data)
+
+        if notify_user:
+            subject = _('{company_name} Project Membership Created'.format(company_name=settings.COMPANY_NAME))
+            context = {
+                'first_name': project_membership.user.first_name,
+                'to': project_membership.user.email,
+                'status': project_membership.get_status_display(),
+                'code': project_membership.project_code.code,
+            }
+            text_template_path = 'notifications/project_membership/update.txt'
+            html_template_path = 'notifications/project_membership/update.html'
+            email_user(subject, context, text_template_path, html_template_path)
+        return response
+    except Exception as e:
+        project_membership.reset_status()
+        raise e
 
 
 @job
-def delete_project_membership(code, user_id):
+def delete_project_membership(project_membership, notify_user=True):
     """
-    Delete a project membership.
+    Delete an OpenLDAP project membership.
 
     Args:
-        code (str): Project code (prefix_00001) - required
-        user_id (str): (prefix.username) - required
+        project_membership (str): Project Membership - required
+        notify_user (bool): Issue a notification email to the user? - optional
     """
-    raise NotImplementedError('Not yet implemented.')
+    url = ''.join([settings.OPENLDAP_HOST, 'project/member/', project_membership.project.code, '/', user.email, '/'])
+    headers = {'Cache-Control': 'no-cache'}
+    try:
+        response = requests.delete(
+            url,
+            headers=headers,
+            timeout=5,
+        )
+        response.raise_for_status()
+        jsonschema.validate(response, deactivate_project_membership_json)
+        raise_for_data_error(response.get('data'))
+
+        if notify_user:
+            subject = _('{company_name} Project Membership Deleted'.format(company_name=settings.COMPANY_NAME))
+            context = {
+                'first_name': project_membership.user.first_name,
+                'to': project_membership.user.email,
+                'status': project_membership.get_status_display(),
+                'code': project_membership.project_code.code,
+            }
+            text_template_path = 'notifications/project_membership/update.txt'
+            html_template_path = 'notifications/project_membership/update.html'
+            email_user(subject, context, text_template_path, html_template_path)
+        return response
+    except Exception as e:
+        project_membership.reset_status()
+        raise e

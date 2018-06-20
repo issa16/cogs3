@@ -23,7 +23,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             filename = options['csv_filename']
-            with open(filename, encoding='utf-8') as csvfile:
+            with open(filename, newline='', encoding='ISO-8859-1') as csvfile:
                 next(csvfile)
                 reader = csv.reader(csvfile, delimiter=',')
                 self.parse_projects(reader)
@@ -44,7 +44,6 @@ class Command(BaseCommand):
             legacy_hpcw_id=data[0],
             title='Untitled' if data[2] is '' else data[2],
             description='',
-            institution=Institution.objects.get(name__iexact=data[7].title()),
             institution_reference='',
             pi=data[5].title(),
             tech_lead=Profile.objects.get(hpcw_username__iexact=data[6].title()).user,
@@ -56,7 +55,7 @@ class Command(BaseCommand):
             allocation_memory=0,
             allocation_storage_home=0,
             allocation_storage_scratch=0,
-            status=Project.APPROVED,
+            status=Project.AWAITING_APPROVAL,
             notes='Imported HPCW Project.',
         )
         if created:
@@ -73,7 +72,7 @@ class Command(BaseCommand):
             project_membership, created = ProjectUserMembership.objects.get_or_create(
                 project=Project.objects.get(legacy_hpcw_id=data[0]),
                 user=user,
-                status=ProjectUserMembership.AUTHORISED,
+                status=ProjectUserMembership.AWAITING_AUTHORISATION,
                 date_joined=datetime.datetime.now(),
             )
             if created:

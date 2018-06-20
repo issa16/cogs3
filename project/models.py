@@ -6,6 +6,7 @@ from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openldap.api import project_membership_api
 from system.models import System
 
 logger = logging.getLogger('apps')
@@ -236,14 +237,18 @@ class Project(models.Model):
                 date_joined=datetime.date.today(),
                 status=ProjectUserMembership.AUTHORISED,
             )
+
             # Assign the 'project_owner' group to the project's technical lead.
             group = Group.objects.get(name='project_owner')
             self.tech_lead.groups.add(group)
+
+            # Propagate the changes to OpenLDAP
+            update_openldap_project_membership(project_membership=project_membership)
         except Exception as e:
             logger.exception('Failed assign project owner membership to the project\'s technical lead.')
 
     def _generate_project_code(self):
-        prefix = 'SCW'
+        prefix = 'scw'
         last_project = Project.objects.order_by('id').last()
         if not last_project:
             if self.legacy_arcca_id or self.legacy_hpcw_id:
@@ -262,11 +267,7 @@ class Project(models.Model):
         super(Project, self).save(*args, **kwargs)
 
     def __str__(self):
-        data = {
-            'code': self.code,
-            'title': self.title,
-        }
-        return '{code} - {title}'.format(**data)
+        return self.code
 
 
 class ProjectSystemAllocation(models.Model):
@@ -337,11 +338,11 @@ class ProjectUserMembership(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    AWAITING_AUTHORISATION = 1
-    AUTHORISED = 2
-    DECLINED = 3
-    REVOKED = 4
-    SUSPENDED = 5
+    AWAITING_AUTHORISATION = 0
+    AUTHORISED = 1
+    DECLINED = 2
+    REVOKED = 3
+    SUSPENDED = 4
     STATUS_CHOICES = (
         (AWAITING_AUTHORISATION, _('Awaiting Authorisation')),
         (AUTHORISED, _('Authorised')),
@@ -352,6 +353,12 @@ class ProjectUserMembership(models.Model):
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
         default=AWAITING_AUTHORISATION,
+        verbose_name=_('Current Status'),
+    )
+    previous_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_AUTHORISATION,
+        verbose_name=_('Previous Status'),
     )
     date_joined = models.DateField()
     date_left = models.DateField(default=datetime.date.max)
@@ -373,6 +380,13 @@ class ProjectUserMembership(models.Model):
             ProjectUserMembership.DECLINED,
         ]
         return True if self.status in revoked_states else False
+
+    def reset_status(self):
+        """
+        Reset the current status to the previous status.
+        """
+        self.status = self.previous_status
+        self.save()
 
     def __str__(self):
         data = {

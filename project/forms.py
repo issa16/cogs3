@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from project.models import Project
 from project.models import ProjectUserMembership
-from project.openldap import update_openldap_project
+from project.openldap import update_openldap_project_membership
 
 
 class FileLinkWidget(forms.Widget):
@@ -55,7 +55,6 @@ class ProjectAdminForm(forms.ModelForm):
             'document',
             'document_download',
             'status',
-            'previous_status',
             'reason_decision',
             'notes',
         ]
@@ -64,7 +63,7 @@ class ProjectAdminForm(forms.ModelForm):
         super(ProjectAdminForm, self).__init__(*args, **kwargs)
         self.initial_status = self.instance.status
         self.fields['document_download'].widget = FileLinkWidget(self.instance)
-        self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status), )
+        self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status))
 
     def clean_code(self):
         """
@@ -201,13 +200,39 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
 
     class Meta:
         model = ProjectUserMembership
-        fields = '__all__'
+        fields = [
+            'project',
+            'user',
+            'status',
+            'date_joined',
+            'date_left',
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectUserMembershipAdminForm, self).__init__(*args, **kwargs)
+        self.initial_status = self.instance.status
+        self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status))
+
+    def _get_status_choices(self, status):
+        pre_approved_options = [
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.AWAITING_AUTHORISATION],
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.AUTHORISED],
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.DECLINED],
+        ]
+        post_approved_options = [
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.AUTHORISED],
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.REVOKED],
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.SUSPENDED],
+        ]
+        if ProjectUserMembership.STATUS_CHOICES[status] in post_approved_options:
+            return post_approved_options
+        else:
+            return pre_approved_options
 
     def save(self, commit=True):
         project_user_membership = super(ProjectUserMembershipAdminForm, self).save(commit=False)
         if 'status' in self.changed_data:
-            # TODO - OpenLDAP API call
-            pass
+            update_openldap_project_membership(project_user_membership)
         if commit:
             project_user_membership.save()
         return project_user_membership
