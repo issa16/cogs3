@@ -101,6 +101,7 @@ def delete_project_membership(project_membership, notify_user=True):
             timeout=5,
         )
         response.raise_for_status()
+        response = decode_response(response)
         jsonschema.validate(response, delete_project_membership_json)
         raise_for_data_error(response.get('data'))
 

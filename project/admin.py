@@ -69,10 +69,10 @@ class ProjectUserMembershipAdmin(admin.ModelAdmin):
     form = ProjectUserMembershipAdminForm
     actions = [activate_project_memberships, deactivate_project_memberships]
     list_display = (
-        'user',
-        'date_joined',
-        'status',
         'project',
+        'user',
+        'status',
+        'date_joined',
     )
 
 
