@@ -2,6 +2,7 @@ import jsonschema
 import requests
 
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 from django_rq import job
 
 from openldap.schemas.project.activate_project import activate_project_json

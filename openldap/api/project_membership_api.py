@@ -2,6 +2,7 @@ import jsonschema
 import requests
 
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 from django_rq import job
 
 from openldap.schemas.project_membership.create_project_membership import create_project_membership_json
