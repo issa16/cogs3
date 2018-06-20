@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from system.models import System
+from funding.models import FundingSource
 
 
 class ProjectCategory(models.Model):
@@ -62,6 +63,7 @@ class Project(models.Model):
         max_length=256,
         verbose_name=_('Principal Investigator'),
     )
+    funding_sources = models.ManyToManyField(FundingSource)
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='project_as_tech_lead',

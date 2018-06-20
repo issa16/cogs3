@@ -4,6 +4,7 @@ from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 from project.models import Project
 from project.models import ProjectUserMembership
+from funding.models import FundingBody
 
 
 class FileLinkWidget(forms.Widget):
@@ -18,6 +19,10 @@ class FileLinkWidget(forms.Widget):
 
         else:
             return u''
+
+
+class SelectMultipleAdd(forms.widgets.CheckboxSelectMultiple):
+    template_name = 'project/check_option.html'
 
 
 class ProjectAdminForm(forms.ModelForm):
@@ -35,6 +40,7 @@ class ProjectAdminForm(forms.ModelForm):
             'institution_reference',
             'department',
             'pi',
+            'funding_sources',
             'tech_lead',
             'category',
             'start_date',
@@ -112,6 +118,7 @@ class ProjectCreationForm(forms.ModelForm):
             'institution_reference',
             'department',
             'pi',
+            'funding_sources',
             'start_date',
             'end_date',
             'requirements_software',
@@ -131,6 +138,7 @@ class ProjectCreationForm(forms.ModelForm):
             'end_date': forms.DateInput(attrs={
                 'class': 'datepicker'
             }),
+            'funding_sources': SelectMultipleAdd(),
         }
 
     def set_user(self, user):

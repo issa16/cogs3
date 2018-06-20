@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from institution.models import Institution
 
 # Create your models here.
 
@@ -20,7 +19,7 @@ class FundingBody(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = _('Project Funding Sources')
+        verbose_name_plural = _('Funding Bodies')
         ordering = ('name', )
 
 
@@ -41,5 +40,5 @@ class FundingSource(models.Model):
         return self.title
 
     class Meta:
-        verbose_name_plural = _('Project Funding Sources')
+        verbose_name_plural = _('Funding Sources')
         ordering = ('created_time', )
