@@ -3,7 +3,6 @@ from django.contrib import admin
 from project.forms import ProjectAdminForm
 from project.models import Project
 from project.models import ProjectCategory
-from project.models import ProjectFundingSource
 from project.models import ProjectSystemAllocation
 from project.models import ProjectUserMembership
 
@@ -11,14 +10,6 @@ from project.models import ProjectUserMembership
 @admin.register(ProjectCategory)
 class ProjectCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', )
-
-
-@admin.register(ProjectFundingSource)
-class ProjectFundingSourceAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'description',
-    )
 
 
 @admin.register(ProjectSystemAllocation)

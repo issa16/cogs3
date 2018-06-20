@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'institution.apps.InstitutionConfig',
+    'funding',
     'project.apps.ProjectConfig',
     'system.apps.SystemConfig',
     'users.apps.UsersConfig',

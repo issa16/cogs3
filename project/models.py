@@ -24,23 +24,6 @@ class ProjectCategory(models.Model):
         ordering = ('name', )
 
 
-class ProjectFundingSource(models.Model):
-    name = models.CharField(
-        max_length=128,
-        unique=True,
-    )
-    description = models.CharField(max_length=512)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = _('Project Funding Sources')
-        ordering = ('name', )
-
-
 class Project(models.Model):
     title = models.CharField(
         max_length=256,
@@ -90,11 +73,6 @@ class Project(models.Model):
         on_delete=models.CASCADE,
         null=True,
         verbose_name=_('Category'),
-    )
-    funding_source = models.ForeignKey(
-        ProjectFundingSource,
-        on_delete=models.CASCADE,
-        verbose_name=_('Funding source'),
     )
     start_date = models.DateField(verbose_name=_('Start date'), )
     end_date = models.DateField(verbose_name=_('End date'), )
