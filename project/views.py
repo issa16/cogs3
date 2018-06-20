@@ -23,14 +23,12 @@ from .models import ProjectUserMembership
 
 
 class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
-    form_class = ProjectCreationForm
     success_url = reverse_lazy('project-application-list')
     success_message = _("Successfully submitted a project application.")
     template_name = 'project/create.html'
 
     def get_form(self, *args, **kwargs):
-        form = super().get_form(*args, **kwargs)
-        form.set_user(self.request.user)
+        form = ProjectCreationForm(self.request.user)
         return form
 
 
