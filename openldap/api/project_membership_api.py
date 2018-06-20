@@ -5,7 +5,7 @@ from django.conf import settings
 from django_rq import job
 
 from openldap.schemas.project_membership.create_project_membership import create_project_membership_json
-from openldap.schemas.project_membership.deactivate_project_membership import deactivate_project_membership_json
+from openldap.schemas.project_membership.delete_project_membership import delete_project_membership_json
 from openldap.schemas.project_membership.list_project_memberships import list_project_memberships_json
 from openldap.util import decode_response
 
@@ -96,7 +96,7 @@ def delete_project_membership(project_membership, notify_user=True):
             timeout=5,
         )
         response.raise_for_status()
-        jsonschema.validate(response, deactivate_project_membership_json)
+        jsonschema.validate(response, delete_project_membership_json)
         raise_for_data_error(response.get('data'))
 
         if notify_user:
