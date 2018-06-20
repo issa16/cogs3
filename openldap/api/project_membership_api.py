@@ -41,7 +41,7 @@ def create_project_membership(project_membership, notify_user=True):
         project_membership (str): Project Membership - required
         notify_user (bool): Issue a notification email to the user? - optional
     """
-    url = ''.join([settings.OPENLDAP_HOST, 'project/membership/', project_membership.project.code, '/'])
+    url = ''.join([settings.OPENLDAP_HOST, 'project/member/', project_membership.project.code, '/'])
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cache-Control': 'no-cache',
