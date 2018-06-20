@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -33,6 +34,13 @@ class FundingSource(models.Model):
         null=True,
         verbose_name=_('Funding Body'),
     )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='created_by',
+        on_delete=models.CASCADE,
+        verbose_name=_('Created By'),
+    )
+    pi_email = models.CharField(max_length=128)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
