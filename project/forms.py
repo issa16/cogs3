@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from project.models import Project
 from project.models import ProjectUserMembership
+from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
 
 
