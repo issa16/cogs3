@@ -68,7 +68,7 @@ def create_project_membership(project_membership, notify_user=True):
                 'first_name': project_membership.user.first_name,
                 'to': project_membership.user.email,
                 'status': project_membership.get_status_display(),
-                'code': project_membership.project_code.code,
+                'code': project_membership.project.code,
             }
             text_template_path = 'notifications/project_membership/update.txt'
             html_template_path = 'notifications/project_membership/update.html'
@@ -109,7 +109,7 @@ def delete_project_membership(project_membership, notify_user=True):
                 'first_name': project_membership.user.first_name,
                 'to': project_membership.user.email,
                 'status': project_membership.get_status_display(),
-                'code': project_membership.project_code.code,
+                'code': project_membership.project.code,
             }
             text_template_path = 'notifications/project_membership/update.txt'
             html_template_path = 'notifications/project_membership/update.html'
