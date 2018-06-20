@@ -94,7 +94,7 @@ class Project(models.Model):
     )
     pi = models.CharField(
         max_length=256,
-        verbose_name=_('Principal Investigator'),
+        verbose_name=_("Principal Investigator's name, position and email"),
     )
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -145,10 +145,22 @@ class Project(models.Model):
         default=False,
         verbose_name=_('RSE available to?'),
     )
-    allocation_cputime = models.PositiveIntegerField(verbose_name=_('CPU time allocation in hours'))
-    allocation_memory = models.PositiveIntegerField(verbose_name=_('RAM allocation in GB'))
-    allocation_storage_home = models.PositiveIntegerField(verbose_name=_('Home storage in GB'))
-    allocation_storage_scratch = models.PositiveIntegerField(verbose_name=_('Scratch storage in GB'))
+    allocation_cputime = models.PositiveIntegerField(
+        blank=True,
+        verbose_name=_('CPU time allocation in hours'),
+    )
+    allocation_memory = models.PositiveIntegerField(
+        blank=True,
+        verbose_name=_('RAM allocation in GB'),
+    )
+    allocation_storage_home = models.PositiveIntegerField(
+        blank=True,
+        verbose_name=_('Home storage in GB'),
+    )
+    allocation_storage_scratch = models.PositiveIntegerField(
+        blank=True,
+        verbose_name=_('Scratch storage in GB'),
+    )
     document = models.FileField(
         verbose_name=_('Upload Supporting Documents'),
         upload_to="documents/%Y/%m/%d/%M/",
