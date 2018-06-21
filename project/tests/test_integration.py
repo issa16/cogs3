@@ -54,7 +54,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             form_field = dict(self.default_project_form_fields)
             form_field.pop(missing_field)
             self.fill_form_by_id(form_field)
-            self.select_from_dropdown_by_id('id_funding_source', 1)
             self.submit_form(self.default_project_form_fields)
             if "This field is required." not in self.selenium.page_source:
                 raise AssertionError()
@@ -67,7 +66,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         # Correctly fill the form
         self.fill_form_by_id(self.default_project_form_fields)
-        self.select_from_dropdown_by_id('id_funding_source', 1)
+        # self.select_from_dropdown_by_id('id_funding_source', 1)
 
         # Check that the project does not exist yet
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
@@ -191,7 +190,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.click_link_by_url(reverse('create-project'))
 
         self.fill_form_by_id(self.default_project_form_fields)
-        self.select_from_dropdown_by_id('id_funding_source', 1)
+        # self.select_from_dropdown_by_id('id_funding_source', 1)
 
         self.submit_form(self.default_project_form_fields)
 

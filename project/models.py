@@ -63,7 +63,10 @@ class Project(models.Model):
         max_length=256,
         verbose_name=_('Principal Investigator'),
     )
-    funding_sources = models.ManyToManyField(FundingSource)
+    funding_sources = models.ManyToManyField(
+        FundingSource,
+        blank=True,
+    )
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='project_as_tech_lead',

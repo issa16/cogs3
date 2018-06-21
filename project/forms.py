@@ -1,6 +1,5 @@
 from django import forms
 from django.db.models import Q
-from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 from project.models import Project
 from project.models import ProjectUserMembership
@@ -21,7 +20,7 @@ class FileLinkWidget(forms.Widget):
             return u''
 
 
-class SelectMultipleAdd(forms.widgets.CheckboxSelectMultiple):
+class SelectMultipleTickbox(forms.widgets.CheckboxSelectMultiple):
     template_name = 'project/check_option.html'
 
 
@@ -138,7 +137,6 @@ class ProjectCreationForm(forms.ModelForm):
             'end_date': forms.DateInput(attrs={
                 'class': 'datepicker'
             }),
-            'funding_sources': SelectMultipleAdd(),
         }
 
     def __init__(self, user, *args, **kwargs):
@@ -146,17 +144,17 @@ class ProjectCreationForm(forms.ModelForm):
         super(forms.ModelForm, self).__init__(*args, **kwargs)
         self.fields['funding_sources'] = forms.ModelMultipleChoiceField(
             label="Select Funding sources",
-            widget=SelectMultipleAdd(),
+            widget=SelectMultipleTickbox(),
             queryset=FundingSource.objects.filter(
                 created_by=self.user
             ),
+            required=False,
         )
-        print(self.user)
 
     def clean(self):
         self.instance.tech_lead = self.user
         if self.instance.tech_lead.profile.institution is None:
-            raise ValidationError('Only users which belong to an institution can create projects.')
+            raise forms.ValidationError('Only users which belong to an institution can create projects.')
 
 
 class ProjectUserMembershipCreationForm(forms.Form):

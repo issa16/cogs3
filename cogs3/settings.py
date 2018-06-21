@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django.forms',
     'institution.apps.InstitutionConfig',
-    'funding',
+    'funding.apps.FundingConfig',
     'project.apps.ProjectConfig',
     'system.apps.SystemConfig',
     'users.apps.UsersConfig',

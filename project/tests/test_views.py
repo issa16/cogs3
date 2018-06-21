@@ -10,7 +10,8 @@ from institution.tests.test_models import InstitutionTests
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.tests.test_models import ProjectCategoryTests
-from project.tests.test_models import ProjectFundingSourceTests
+from funding.tests.test_models import FundingSourceTests
+from funding.tests.test_models import FundingBodyTests
 from project.tests.test_models import ProjectTests
 from project.views import ProjectCreateView
 from project.views import ProjectDetailView
@@ -51,12 +52,24 @@ class ProjectViewTests(TestCase):
             description=description,
         )
 
-        # Create a funding source
-        name = 'A project function source name'
-        description = 'A project funding source description'
-        self.funding_source = ProjectFundingSourceTests.create_project_funding_source(
+        # Create a funding body
+        name = 'A function source name'
+        description = 'A funding source description'
+        self.funding_body = FundingBodyTests.create_funding_body(
             name=name,
             description=description,
+        )
+
+        # Create a funding source
+        title = 'A funding source title'
+        identifier = 'A funding source identifier'
+        pi_email = '@'.join(['pi', self.institution.base_domain])
+        self.funding_source = FundingSourceTests.create_funding_source(
+            title=title,
+            identifier=identifier,
+            funding_body=self.funding_body,
+            owner=self.project_owner,
+            pi_email=pi_email,
         )
 
     def access_view_as_unauthorisied_user(self, path):
