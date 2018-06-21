@@ -62,12 +62,12 @@ class Command(BaseCommand):
             message = 'Successfully created project {code}.'.format(code=data[0])
             self.stdout.write(self.style.SUCCESS(message))
         else:
-            message = 'Successfully updated project {code}.'.format(code=data[0])
+            message = 'Project {code} already exists.'.format(code=data[0])
             self.stdout.write(self.style.SUCCESS(message))
 
     def parse_project_membership(self, data):
         project_member_col_index = 8
-        while (data[project_member_col_index]):
+        while (data[project_member_col_index].strip()):
             user = Profile.objects.get(hpcw_username__iexact=data[project_member_col_index].lower()).user
             project_membership, created = ProjectUserMembership.objects.get_or_create(
                 project=Project.objects.get(legacy_hpcw_id=data[0]),
