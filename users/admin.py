@@ -129,7 +129,11 @@ class CustomUserAdmin(UserAdmin):
         ),
     }), )
 
-    search_fields = ('email', )
+    search_fields = (
+        'email',
+        'first_name',
+        'last_name',
+    )
     ordering = ('created_at', )
     list_filter = (
         'is_shibboleth_login_required',
