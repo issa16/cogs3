@@ -128,11 +128,13 @@ class CustomUserAdmin(UserAdmin):
             'is_shibboleth_login_required',
         ),
     }), )
-
     search_fields = (
         'email',
         'first_name',
         'last_name',
+        'profile__scw_username',
+        'profile__hpcw_username',
+        'profile__raven_username',
     )
     ordering = ('created_at', )
     list_filter = (
