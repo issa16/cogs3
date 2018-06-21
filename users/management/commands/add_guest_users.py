@@ -40,7 +40,7 @@ class Command(BaseCommand):
                                 self.stdout.write(self.style.SUCCESS(message))
 
                             profile = user.profile
-                            profile.hpcw_username = row['hpcw_username'].title()
+                            profile.hpcw_username = row['hpcw_username'].lower()
                             profile.hpcw_email = row['hpcw_email'].lower()
                             profile.raven_username = row['raven_username']
                             if row['raven_uid']:
