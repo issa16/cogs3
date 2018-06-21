@@ -76,10 +76,15 @@ def create_project(project, notify_user=True):
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cache-Control': 'no-cache',
     }
+    title = '{title} (Principal Investigator = {pi}, Technical Lead = {tech_lead})'.format(
+        pi=project.pi,
+        tech_lead=project.tech_lead.email,
+        title=project.title,
+    )
     payload = {
         'code': project.code,
         'category': project.category.id,
-        'title': project.title,
+        'title': title,
         'technical_lead': project.tech_lead.profile.scw_username,
     }
     try:
