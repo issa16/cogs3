@@ -46,7 +46,7 @@ class Command(BaseCommand):
             description='',
             institution_reference='',
             pi=data[5].title(),
-            tech_lead=Profile.objects.get(hpcw_username__iexact=data[6].title()).user,
+            tech_lead=Profile.objects.get(hpcw_username__iexact=data[6].lower()).user,
             category=ProjectCategory.objects.get(name='Standard Projects - Internally Funded'),
             funding_source=ProjectFundingSource.objects.get(name='N/A'),
             start_date=datetime.datetime.strptime(data[1], '%d/%m/%Y'),
@@ -68,7 +68,7 @@ class Command(BaseCommand):
     def parse_project_membership(self, data):
         project_member_col_index = 8
         while (data[project_member_col_index]):
-            user = Profile.objects.get(hpcw_username__iexact=data[project_member_col_index]).user
+            user = Profile.objects.get(hpcw_username__iexact=data[project_member_col_index].lower()).user
             project_membership, created = ProjectUserMembership.objects.get_or_create(
                 project=Project.objects.get(legacy_hpcw_id=data[0]),
                 user=user,
