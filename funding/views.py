@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponseRedirect
 
+from .forms import FundingSourceForm
 from .models import FundingSource
 
 # Create your views here.
@@ -12,9 +13,9 @@ from .models import FundingSource
 
 class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     model = FundingSource
+    form_class = FundingSourceForm
     success_url = reverse_lazy('list-funding-sources')
     success_message = _("Successfully added funding source.")
-    fields = ['title', 'identifier', 'funding_body','pi_email']
     template_name = 'funding/create.html'
 
     def form_valid(self, form):
@@ -38,16 +39,14 @@ class FundingSourceListView(LoginRequiredMixin, generic.ListView):
 
 
 class FundingSourceUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):
-    """Update """
     model = FundingSource
+    form_class = FundingSourceForm
     success_message = _("Successfully modified funding source.")
     success_url = reverse_lazy('list-funding-sources')
-    fields = ['title', 'identifier', 'funding_body','pi_email']
     template_name = 'funding/create.html'
 
 
 class FundingSourceDeleteView(LoginRequiredMixin, generic.DeleteView):
-    """Update """
     model = FundingSource
     success_message = _("Funding source deleted.")
     success_url = reverse_lazy('list-funding-sources')
