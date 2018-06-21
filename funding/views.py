@@ -1,6 +1,7 @@
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponseRedirect
@@ -45,9 +46,25 @@ class FundingSourceUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.U
     success_url = reverse_lazy('list-funding-sources')
     template_name = 'funding/create.html'
 
+    def user_passes_test(self, request):
+        return FundingSource.objects.filter(id=self.kwargs['pk'], created_by=self.request.user).exists()
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            return HttpResponseRedirect(reverse('list-funding-sources'))
+        return super().dispatch(request, *args, **kwargs)
+
 
 class FundingSourceDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = FundingSource
     success_message = _("Funding source deleted.")
     success_url = reverse_lazy('list-funding-sources')
     template_name = 'funding/delete.html'
+
+    def user_passes_test(self, request):
+        return FundingSource.objects.filter(id=self.kwargs['pk'], created_by=self.request.user).exists()
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            return HttpResponseRedirect(reverse('list-funding-sources'))
+        return super().dispatch(request, *args, **kwargs)
