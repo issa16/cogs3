@@ -48,12 +48,16 @@ create_project_json = {
                 "cn": {
                     "type": "string"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "memberUid": {
                     "type": "string"
                 }
             },
             "required": [
                 "cn",
+                "description",
                 "gidNumber",
                 "memberUid",
                 "objectClass",

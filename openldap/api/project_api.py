@@ -102,6 +102,7 @@ def create_project(project, notify_user=True):
         mapping = {
             'code': 'cn',
             'technical_lead': 'memberUid',
+            'title': 'description',
         }
         verify_payload_data(payload, data, mapping)
 
