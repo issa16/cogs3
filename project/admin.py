@@ -91,7 +91,7 @@ class ProjectAdmin(admin.ModelAdmin):
         for project in queryset:
             project.status = Project.APPROVED
             project.save()
-            update_openldap_project(project)
+            update_openldap_project_membership(project)
             rows_updated += 1
         message = self._project_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
@@ -103,7 +103,7 @@ class ProjectAdmin(admin.ModelAdmin):
         for project in queryset:
             project.status = Project.REVOKED
             project.save()
-            update_openldap_project(project)
+            update_openldap_project_membership(project)
             rows_updated += 1
         message = self._project_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
