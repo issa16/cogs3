@@ -8,6 +8,7 @@ from project.models import ProjectCategory
 from project.models import ProjectFundingSource
 from project.models import ProjectSystemAllocation
 from project.models import ProjectUserMembership
+from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
 
 
@@ -91,7 +92,7 @@ class ProjectAdmin(admin.ModelAdmin):
         for project in queryset:
             project.status = Project.APPROVED
             project.save()
-            update_openldap_project_membership(project)
+            update_openldap_project(project)
             rows_updated += 1
         message = self._project_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
@@ -103,7 +104,7 @@ class ProjectAdmin(admin.ModelAdmin):
         for project in queryset:
             project.status = Project.REVOKED
             project.save()
-            update_openldap_project_membership(project)
+            update_openldap_project(project)
             rows_updated += 1
         message = self._project_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
