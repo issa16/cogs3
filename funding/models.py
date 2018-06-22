@@ -2,6 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from users.models import CustomUser
+
 # Create your models here.
 
 
@@ -40,7 +42,18 @@ class FundingSource(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_('Created By'),
     )
-    pi_email = models.CharField(max_length=128)
+    pi_email = models.CharField(
+        max_length=128,
+        null=True,
+        verbose_name=_('PI Email'),
+    )
+    pi = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='pi',
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_('PI'),
+    )
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
@@ -50,3 +63,11 @@ class FundingSource(models.Model):
     class Meta:
         verbose_name_plural = _('Funding Sources')
         ordering = ('created_time', )
+
+    def save(self, *args, **kwargs):
+        if getattr(self, 'pi_email_changed', True):
+            matching_users = CustomUser.objects.filter(email=self.pi_email)
+            if matching_users.exists():
+                self.pi = matching_users.get()
+                self.pi_email = None
+        super().save(*args, **kwargs)

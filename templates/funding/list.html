@@ -30,7 +30,6 @@
 						<th scope="col" style="width:20%">{% trans "Identifier" %}</th>
 						<th scope="col" style="width:40%">{% trans "Title" %}</th>
 						<th scope="col" style="width:20%">{% trans "Funding Body" %}</th>
-						<th scope="col" style="width:20%">{% trans "PI Email" %}</th>
 						<th scope="col" style="width:20%"></th>
 					</tr>
 				</thead>
@@ -45,7 +44,6 @@
 							</td>
 							<td><a href="{% url 'funding-source-update' source.pk %}">{{source.title}}</a></td>
 							<td>{{source.funding_body}}</td>
-							<td>{{source.pi_email}}</td>
 							<td><a class="btn btn-primary" href="{% url 'delete-funding-source' source.pk %}">{% trans "Delete" %}</a></td>
 						</tr>
 					{% endfor %}
