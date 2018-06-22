@@ -24,7 +24,7 @@ class FundingBodyTests(TestCase):
         )
         return funding_body
 
-    def test_project_funding_source_creation(self):
+    def test_funding_body_creation(self):
         """
         Ensure we can create a FundingBody instance.
         """

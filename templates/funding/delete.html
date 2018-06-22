@@ -13,7 +13,7 @@
 				</div>
 				<form method="post" enctype="multipart/form-data" novalidate>
 					{% csrf_token %}
-					<button type="submit" class="btn btn-primary">{% trans "Delete" %}</button>
+					<input type="submit" class="btn btn-primary" value="{% trans "Delete" %}">
 					<a class="btn btn-primary" href="{% url 'list-funding-sources' %}">{% trans "Cancel" %}</a>
 				</form>
 			</div>
