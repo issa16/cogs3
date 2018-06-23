@@ -146,18 +146,22 @@ class Project(models.Model):
         verbose_name=_('RSE available to?'),
     )
     allocation_cputime = models.PositiveIntegerField(
+        null=True,
         blank=True,
         verbose_name=_('CPU time allocation in hours'),
     )
     allocation_memory = models.PositiveIntegerField(
+        null=True,
         blank=True,
         verbose_name=_('RAM allocation in GB'),
     )
     allocation_storage_home = models.PositiveIntegerField(
+        null=True,
         blank=True,
         verbose_name=_('Home storage in GB'),
     )
     allocation_storage_scratch = models.PositiveIntegerField(
+        null=True,
         blank=True,
         verbose_name=_('Scratch storage in GB'),
     )
