@@ -15,7 +15,7 @@ get_user_json = {
                 "displayname": {
                     "$ref": "#/definitions/Displayname"
                 },
-                "gidNumber": {
+                "gidnumber": {
                     "$ref": "#/definitions/Displayname"
                 },
                 "uidnumber": {
@@ -27,7 +27,7 @@ get_user_json = {
             },
             "required": [
                 "displayname",
-                "gidNumber",
+                "gidnumber",
                 "mail",
                 "telephone",
                 "uid",

@@ -46,15 +46,15 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Create a User.
         """
-        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGU'
-               'uY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwMTQ'
-               'xLCJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOnsiY24iOiJ4LmpvZS5ibG9nZ3MiLCJzbiI6IkJsb2dncyI'
-               'sImdpZG51bWJlciI6IjUwMDAwMDEiLCJnaXZlbm5hbWUiOiJKb2UiLCJkaXNwbGF5TmFtZSI6Ik1yIEp'
-               'vZSBCbG9nZ3MiLCJ0aXRsZSI6Ik1yIiwiaG9tZWRpcmVjdG9yeSI6Ii9ob21lL3guam9lLmJsb2dncyI'
-               'sImxvZ2luc2hlbGwiOiIvYmluL2Jhc2giLCJvYmplY3RjbGFzcyI6WyJpbmV0T3JnUGVyc29uIiwicG9'
-               'zaXhBY2NvdW50IiwidG9wIl0sInRlbGVwaG9uZW51bWJlciI6IjAwMDAwLTAwMC0wMDAiLCJtYWlsIjo'
-               'iam9lLmJsb2dnc0BiYW5nb3IuYWMudWsiLCJ1aWQiOiJ4LmpvZS5ibG9nZ3MiLCJ1aWRudW1iZXIiOiI'
-               '1MDAwMDAxIn19.QNKtIMjNc_zE6rSH-0MxxfFpWtE8TvaxWyliTW-J_rI')
+        jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUuY2'
+               '9tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwMTQxLCJuY'
+               'mYiOjE1MjcwOTk1NDEsImRhdGEiOnsiY24iOiJ4LmpvZS5ibG9nZ3MiLCJzbiI6IkJsb2dncyIsImdpZG51'
+               'bWJlciI6IjUwMDAwMDEiLCJnaXZlbm5hbWUiOiJKb2UiLCJkaXNwbGF5TmFtZSI6Ik1yIEpvZSBCbG9nZ3M'
+               'iLCJ0aXRsZSI6Ik1yIiwiaG9tZWRpcmVjdG9yeSI6Ii9ob21lL3guam9lLmJsb2dncyIsImxvZ2luc2hlbG'
+               'wiOiIvYmluL2Jhc2giLCJvYmplY3RjbGFzcyI6WyJpbmV0T3JnUGVyc29uIiwicG9zaXhBY2NvdW50Iiwid'
+               'G9wIl0sInRlbGVwaG9uZW51bWJlciI6IjAwMDAwLTAwMC0wMDAiLCJtYWlsIjoiam9lLmJsb2dnc0BiYW5n'
+               'b3IuYWMudWsiLCJ1aWQiOiJ4LmpvZS5ibG9nZ3MiLCJ1aWRudW1iZXIiOiI1MDAwMDAxIn19.LDxd6hvdqC'
+               '8CdG17ucNrD7Dy5Q4T7k-B-vHOTLOWs7Q')
         post_mock.return_value = self._mock_response(
             status=201,
             content=jwt.encode(),
@@ -96,14 +96,14 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Get an existing user by id.
         """
-        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbG'
-               'UuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4O'
-               'TIwLCJuYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6Inguam9lLmJsb2dncyIs'
-               'ImNvdW50IjoxfSwibWFpbCI6eyIwIjoiam9lLmJsb2dnc0BiYW5nb3IuYWMudWsiLCJjb3VudCI6MX0'
-               'sImRpc3BsYXluYW1lIjp7IjAiOiJNciBKb2UgQmxvZ2dzIiwiY291bnQiOjF9LCJnaWROdW1iZXIiOn'
-               'siMCI6Ijk5OTk5OTkiLCJjb3VudCI6MX0sInVpZG51bWJlciI6eyIwIjoiOTk5OTk5OSIsImNvdW50I'
-               'joxfSwidGVsZXBob25lIjoiMDAwMDAtMDAwMDAwIn0sImVycm9yIjoiIiwiY291bnQiOjF9fQ.0pBYA'
-               'IVhaRa_CPw3_40ViIIJTqHYq6L1hBAeS1QZdNc')
+        jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUuY'
+               '29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4OTIwLCJ'
+               'uYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6Inguam9lLmJsb2dncyIsImNvdW50I'
+               'joxfSwibWFpbCI6eyIwIjoiam9lLmJsb2dnc0BiYW5nb3IuYWMudWsiLCJjb3VudCI6MX0sImRpc3BsYXl'
+               'uYW1lIjp7IjAiOiJNciBKb2UgQmxvZ2dzIiwiY291bnQiOjF9LCJnaWRudW1iZXIiOnsiMCI6Ijk5OTk5O'
+               'TkiLCJjb3VudCI6MX0sInVpZG51bWJlciI6eyIwIjoiOTk5OTk5OSIsImNvdW50IjoxfSwidGVsZXBob25'
+               'lIjoiMDAwMDAtMDAwMDAwIn0sImVycm9yIjoiIiwiY291bnQiOjF9fQ.WG4MhgveQEn0vXult3RbOze2CB'
+               'AzE3OwLqmnfGl0GLg')
         get_mock.return_value = self._mock_response(
             status=200,
             content=jwt.encode(),
@@ -127,7 +127,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                         "0": "Mr Joe Bloggs",
                         "count": 1
                     },
-                    "gidNumber": {
+                    "gidnumber": {
                         "0": "9999999",
                         "count": 1
                     },
@@ -149,14 +149,14 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Get an existing user by email address.
         """
-        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbG'
-               'UuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4O'
-               'TIwLCJuYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6Inguam9lLmJsb2dncyIs'
-               'ImNvdW50IjoxfSwibWFpbCI6eyIwIjoiam9lLmJsb2dnc0BiYW5nb3IuYWMudWsiLCJjb3VudCI6MX0'
-               'sImRpc3BsYXluYW1lIjp7IjAiOiJNciBKb2UgQmxvZ2dzIiwiY291bnQiOjF9LCJnaWROdW1iZXIiOn'
-               'siMCI6Ijk5OTk5OTkiLCJjb3VudCI6MX0sInVpZG51bWJlciI6eyIwIjoiOTk5OTk5OSIsImNvdW50I'
-               'joxfSwidGVsZXBob25lIjoiMDAwMDAtMDAwMDAwIn0sImVycm9yIjoiIiwiY291bnQiOjF9fQ.0pBYA'
-               'IVhaRa_CPw3_40ViIIJTqHYq6L1hBAeS1QZdNc')
+        jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUuY'
+               '29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4OTIwLCJ'
+               'uYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6Inguam9lLmJsb2dncyIsImNvdW50I'
+               'joxfSwibWFpbCI6eyIwIjoiam9lLmJsb2dnc0BiYW5nb3IuYWMudWsiLCJjb3VudCI6MX0sImRpc3BsYXl'
+               'uYW1lIjp7IjAiOiJNciBKb2UgQmxvZ2dzIiwiY291bnQiOjF9LCJnaWRudW1iZXIiOnsiMCI6Ijk5OTk5O'
+               'TkiLCJjb3VudCI6MX0sInVpZG51bWJlciI6eyIwIjoiOTk5OTk5OSIsImNvdW50IjoxfSwidGVsZXBob25'
+               'lIjoiMDAwMDAtMDAwMDAwIn0sImVycm9yIjoiIiwiY291bnQiOjF9fQ.WG4MhgveQEn0vXult3RbOze2CB'
+               'AzE3OwLqmnfGl0GLg')
         get_mock.return_value = self._mock_response(
             status=200,
             content=jwt.encode(),
@@ -180,7 +180,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                         "0": "Mr Joe Bloggs",
                         "count": 1
                     },
-                    "gidNumber": {
+                    "gidnumber": {
                         "0": "9999999",
                         "count": 1
                     },
