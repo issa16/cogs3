@@ -84,6 +84,24 @@ class Profile(models.Model):
         verbose_name=_('Previous Status'),
     )
 
+    def is_awaiting_approval(self):
+        return True if self.account_status == Profile.AWAITING_APPROVAL else False
+
+    def is_approved(self):
+        return True if self.account_status == Profile.APPROVED else False
+
+    def is_declined(self):
+        return True if self.account_status == Profile.DECLINED else False
+
+    def is_revoked(self):
+        return True if self.account_status == Profile.REVOKED else False
+
+    def is_suspended(self):
+        return True if self.account_status == Profile.SUSPENDED else False
+
+    def is_closed(self):
+        return True if self.account_status == Profile.CLOSED else False
+
     @property
     def institution(self):
         """ 
