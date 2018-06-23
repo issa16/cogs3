@@ -15,6 +15,4 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             num_requests = ProjectUserMembership.objects.awaiting_authorisation(self.request.user).count()
             context['project_user_requests_count'] = num_requests
 
-        context['account_status_message'] = self.request.user.profile.account_status_message()
-
         return context

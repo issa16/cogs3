@@ -112,26 +112,6 @@ class Profile(models.Model):
         else:
             return None
 
-    def account_status_message(self):
-        message = None
-        if self.account_status == self.AWAITING_APPROVAL:
-            message = _('access request is currently awaiting approval.')
-        elif self.account_status == self.DECLINED:
-            message = _('access request has been declined.')
-        elif self.account_status == self.REVOKED:
-            message = _('access has been revoked.')
-        elif self.account_status == self.SUSPENDED:
-            message = _('access has been suspended.')
-        elif self.account_status == self.CLOSED:
-            message = _('has been closed.')
-        if message:
-            return _('Your {company_name} account {message}').format(
-                company_name=settings.COMPANY_NAME,
-                message=message,
-            )
-        else:
-            return None
-
     def reset_account_status(self):
         """
         Reset the current account status to the previous account status.
