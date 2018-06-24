@@ -136,11 +136,11 @@
 							</ul>
 							<div class="form-group">
 								<label for="password" class="col-form-label">{% trans "New Password" %}:</label>
-								<input class="form-control" name="password" type="password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+								<input class="form-control" name="password" type="password" autocomplete="off" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
 							</div>
 							<div class="form-group">
 								<label for="password-confirm" class="col-form-label">{% trans "Confirm Password" %}:</label>
-								<input class="form-control" name="password-confirm" type="password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+								<input class="form-control" name="password-confirm" type="password" autocomplete="off" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
 							</div>
 						</div>
 					</div>
@@ -157,10 +157,10 @@
 	<script>
 		$("#password-reset").submit(function(event) {
 			event.preventDefault();
-			let csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			var csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
 			// Ensure password fields match
-			let password = $('input[name=password]').val();
-			let password_confirm = $('input[name=password-confirm]').val();
+			var password = $('input[name=password]').val();
+			var password_confirm = $('input[name=password-confirm]').val();
 			if (password != password_confirm) {
 				$('#form-errors').text('{% trans "The passwords you have entered do not match." %}');
 				$('#form-errors').removeClass('d-none');
