@@ -12,6 +12,11 @@ from users.openldap import reset_openldap_password
 from users.views import LogoutView
 from users.views import RegisterView
 
+# Admin config
+admin.site.site_header = 'Cogs3 Administration'
+admin.site.index_title = 'Cogs3'
+admin.site.site_title = 'Administration'
+
 urlpatterns = i18n_patterns(
     path(
         'queue/',
