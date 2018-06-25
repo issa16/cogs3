@@ -269,4 +269,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.profile.save()
 
     def __str__(self):
-        return self.email
+        return '{first_name} {last_name} ({email})'.format(
+            first_name=self.first_name,
+            last_name=self.last_name,
+            email=self.email,
+        )
