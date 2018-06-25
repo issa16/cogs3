@@ -41,7 +41,7 @@ class ProfileUpdateForm(forms.ModelForm):
     def save(self, commit=True):
         profile = super(ProfileUpdateForm, self).save(commit=False)
         profile.previous_account_status = self.initial_account_status
-        if 'account_status' in self.changed_data:
+        if self.initial_account_status != profile.account_status:
             update_openldap_user(profile)
         if commit:
             profile.save()
