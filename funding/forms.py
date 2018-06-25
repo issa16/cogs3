@@ -8,14 +8,15 @@ class FundingSourceForm(forms.ModelForm):
         model = FundingSource
         fields = ['title', 'identifier', 'funding_body', 'pi_email']
 
-    def __init__(self, *args, **kwargs):
-        # Set the initial email if pi is a user
+    def __init__(self, user, *args, **kwargs):
         instance = kwargs.get('instance', {})
-        if instance.pi is not None:
+        if hasattr(instance, 'pi') and instance.pi is not None:
             initial = kwargs.get('initial', {})
             initial['pi_email'] = instance.pi.email
             kwargs['initial'] = initial
         super(FundingSourceForm, self).__init__(*args, **kwargs)
+        # Set the initial email if pi is a user
+        self.user_email = user.email
 
     def clean_pi_email(self):
         cleaned_data = super().clean()

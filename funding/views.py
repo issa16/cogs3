@@ -14,10 +14,15 @@ from .models import FundingSource
 
 class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     model = FundingSource
-    form_class = FundingSourceForm
     success_url = reverse_lazy('list-funding-sources')
     success_message = _("Successfully added funding source.")
     template_name = 'funding/create.html'
+
+    def get_form(self):
+        return FundingSourceForm(
+            self.request.user,
+            **self.get_form_kwargs()
+        )
 
     def form_valid(self, form):
         fundingsource = form.save(commit=False)
@@ -41,10 +46,15 @@ class FundingSourceListView(LoginRequiredMixin, generic.ListView):
 
 class FundingSourceUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):
     model = FundingSource
-    form_class = FundingSourceForm
     success_message = _("Successfully modified funding source.")
     success_url = reverse_lazy('list-funding-sources')
     template_name = 'funding/create.html'
+
+    def get_form(self):
+        return FundingSourceForm(
+            self.request.user,
+            **self.get_form_kwargs()
+        )
 
     def user_passes_test(self, request):
         return FundingSource.objects.filter(id=self.kwargs['pk'], created_by=self.request.user).exists()
