@@ -27,8 +27,8 @@ def update_openldap_project_membership(project_membership):
     Ensure project memberships are propagated to OpenLDAP.
     """
     delete_project_membership_states = [
-        Project.REVOKED,
-        Project.SUSPENDED,
+        ProjectUserMembership.REVOKED,
+        ProjectUserMembership.SUSPENDED,
     ]
     if project_membership.status == ProjectUserMembership.AUTHORISED:
         project_membership_api.create_project_membership.delay(project_membership=project_membership)

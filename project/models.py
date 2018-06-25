@@ -247,19 +247,19 @@ class Project(models.Model):
 
     def _assign_project_owner_project_membership(self):
         try:
-            ProjectUserMembership.objects.get_or_create(
+            project_membership, created = ProjectUserMembership.objects.get_or_create(
                 project=self,
                 user=self.tech_lead,
                 date_joined=datetime.date.today(),
                 status=ProjectUserMembership.AUTHORISED,
             )
-
             # Assign the 'project_owner' group to the project's technical lead.
             group = Group.objects.get(name='project_owner')
             self.tech_lead.groups.add(group)
 
             # Propagate the changes to OpenLDAP
-            update_openldap_project_membership(project_membership=project_membership)
+            if created:
+                project_membership_api.create_project_membership(project_membership=project_membership)
         except Exception as e:
             logger.exception('Failed assign project owner membership to the project\'s technical lead.')
 

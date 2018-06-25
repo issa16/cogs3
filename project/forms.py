@@ -232,7 +232,7 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
 
     def save(self, commit=True):
         project_user_membership = super(ProjectUserMembershipAdminForm, self).save(commit=False)
-        if 'status' in self.changed_data:
+        if self.initial_status != project_user_membership.status:
             update_openldap_project_membership(project_user_membership)
         if commit:
             project_user_membership.save()
