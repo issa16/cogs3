@@ -252,12 +252,13 @@ class Project(models.Model):
                 user=self.tech_lead,
                 date_joined=datetime.date.today(),
                 status=ProjectUserMembership.AUTHORISED,
+                previous_status=ProjectUserMembership.AUTHORISED,
             )
             # Assign the 'project_owner' group to the project's technical lead.
             group = Group.objects.get(name='project_owner')
             self.tech_lead.groups.add(group)
 
-            # Propagate the changes to OpenLDAP
+            # Propagate the changes to LDAP
             if created:
                 project_membership_api.create_project_membership(project_membership=project_membership)
         except Exception as e:
