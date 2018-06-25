@@ -123,23 +123,23 @@ class Project(models.Model):
         max_length=512,
         blank=True,
         help_text=_('Software name and versions'),
-        verbose_name=_('Requirements software'),
+        verbose_name=_('Software Requirements'),
     )
     requirements_gateways = models.TextField(
         max_length=512,
         blank=True,
         help_text=_('Web gateway or portal name and versions'),
-        verbose_name=_('Requirements gateways'),
+        verbose_name=_('Gateway Requirements'),
     )
     requirements_training = models.TextField(
         max_length=512,
         blank=True,
-        verbose_name=_('Requirements training'),
+        verbose_name=_('Training Requirements'),
     )
     requirements_onboarding = models.TextField(
         max_length=512,
         blank=True,
-        verbose_name=_('Requirements onboarding'),
+        verbose_name=_('Onboarding Requirements'),
     )
     allocation_rse = models.BooleanField(
         default=False,
