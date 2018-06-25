@@ -70,4 +70,7 @@ class FundingSource(models.Model):
             if matching_users.exists():
                 self.pi = matching_users.get()
                 self.pi_email = None
+            elif self.pi:
+                self.pi = None
+
         super().save(*args, **kwargs)
