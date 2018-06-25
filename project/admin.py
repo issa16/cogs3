@@ -117,6 +117,7 @@ class ProjectAdmin(admin.ModelAdmin):
     # Fields to be used when displaying a Project instance.
     list_display = (
         'code',
+        'created_time',
         'tech_lead',
         'status',
     )
