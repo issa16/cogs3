@@ -43,7 +43,41 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         if "This field is required." not in self.selenium.page_source:
             raise AssertionError()
 
-    def test_create_funding_source(self):
+    def test_create_with_other_pi(self):
+        """
+        Create a funding source using someone else as the pi
+        """
+        self.sign_in(self.user)
+
+        email = 'test@swansea.ac.uk'
+
+        form_fields = {
+            'id_title': 'Title',
+            'id_identifier': 'Id',
+            'id_pi_email': email,
+        }
+
+        self.get_url(reverse('list-funding-sources'))
+        self.click_link_by_url(reverse('create-funding-source'))
+        self.fill_form_by_id(form_fields)
+        self.select_from_dropdown_by_id('id_funding_body', 1)
+        self.submit_form(form_fields)
+        if "This field is required." in self.selenium.page_source:
+            raise AssertionError()
+
+        # Check that the funding source was created
+        matching_sources = FundingSource.objects.filter(identifier=form_fields['id_identifier'])
+        if matching_sources.count() != 1:
+            raise AssertionError()
+
+        # Get the object
+        funding_source = matching_sources.get()
+        if funding_source.pi_email != email:
+            raise AssertionError()
+        if funding_source.pi is not None:
+            raise AssertionError()
+
+    def test_create_and_update_funding_source(self):
         """
         Try creating, updating and deleting a funding source
         """
@@ -70,6 +104,12 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Get the object
         funding_source = matching_sources.get()
+
+        # Check the pi was identified correctly
+        if funding_source.pi_email is not None:
+            raise AssertionError()
+        if funding_source.pi != self.user:
+            raise AssertionError()
 
         # Should be redirected to the list view
         if "funding/list/" not in self.selenium.current_url:

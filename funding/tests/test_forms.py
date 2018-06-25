@@ -40,6 +40,7 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
         The form should raise ValidationError when given a non-institutional PI email
         """
         form = FundingSourceForm(
+            user = self.owner,
             data={
                 'title': 'Title',
                 'identifier': 'Id',
@@ -58,11 +59,27 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
         The form should be accepted with an institutional email
         """
         form = FundingSourceForm(
+            user = self.owner,
             data={
                 'title': 'Title',
                 'identifier': 'Id',
                 'funding_body': self.funding_body.id,
                 'pi_email': 'myemail@bangor.ac.uk'
+            },
+        )
+        self.assertTrue(form.is_valid())
+
+    def test_form_with_user_email(self):
+        """
+        The form should be accepted with an institutional email
+        """
+        form = FundingSourceForm(
+            user = self.owner,
+            data={
+                'title': 'Title',
+                'identifier': 'Id',
+                'funding_body': self.funding_body.id,
+                'pi_email': 'owner_email@bangor.ac.uk'
             },
         )
         self.assertTrue(form.is_valid())
