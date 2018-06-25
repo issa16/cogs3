@@ -75,6 +75,12 @@ class ProjectUserMembershipAdmin(admin.ModelAdmin):
         'status',
         'date_joined',
     )
+    search_fields = (
+        'project__code',
+        'user__first_name',
+        'user__last_name',
+        'user__email',
+    )
 
 
 @admin.register(Project)
@@ -130,4 +136,7 @@ class ProjectAdmin(admin.ModelAdmin):
         'code',
         'gid_number',
         'pi',
+        'tech_lead__first_name',
+        'tech_lead__last_name',
+        'tech_lead__email',
     )
