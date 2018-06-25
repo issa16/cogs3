@@ -118,6 +118,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = (
         'code',
         'created_time',
+        'start_date',
         'tech_lead',
         'status',
     )
