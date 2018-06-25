@@ -79,7 +79,7 @@ class ProjectAdminForm(forms.ModelForm):
 
     def clean_legacy_hpcw_id(self):
         """
-        Ensure the project legacy hpcw id is unique.
+        Ensure the project legacy HPCW id is unique.
         """
         current_legacy_hpcw_id = self.instance.legacy_hpcw_id
         updated_legacy_hpcw_id = self.cleaned_data['legacy_hpcw_id']
@@ -90,7 +90,7 @@ class ProjectAdminForm(forms.ModelForm):
 
     def clean_legacy_arcca_id(self):
         """
-        Ensure the project legacy arcca id is unique.
+        Ensure the project legacy ARCCA id is unique.
         """
         current_legacy_arcca_id = self.instance.legacy_arcca_id
         updated_legacy_arcca_id = self.cleaned_data['legacy_arcca_id']
@@ -119,7 +119,7 @@ class ProjectAdminForm(forms.ModelForm):
     def save(self, commit=True):
         project = super(ProjectAdminForm, self).save(commit=False)
         project.previous_status = self.initial_status
-        if 'status' in self.changed_data:
+        if self.initial_status != project.status:
             update_openldap_project(project)
         if commit:
             project.save()
