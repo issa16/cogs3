@@ -1,9 +1,9 @@
 from django import forms
 from django.db.models import Q
-from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 from project.models import Project
 from project.models import ProjectUserMembership
+from funding.models import FundingSource
 
 
 class FileLinkWidget(forms.Widget):
@@ -18,6 +18,10 @@ class FileLinkWidget(forms.Widget):
 
         else:
             return u''
+
+
+class SelectMultipleTickbox(forms.widgets.CheckboxSelectMultiple):
+    template_name = 'project/check_option.html'
 
 
 class ProjectAdminForm(forms.ModelForm):
@@ -35,9 +39,9 @@ class ProjectAdminForm(forms.ModelForm):
             'institution_reference',
             'department',
             'pi',
+            'funding_sources',
             'tech_lead',
             'category',
-            'funding_source',
             'start_date',
             'end_date',
             'economic_user',
@@ -113,7 +117,7 @@ class ProjectCreationForm(forms.ModelForm):
             'institution_reference',
             'department',
             'pi',
-            'funding_source',
+            'funding_sources',
             'start_date',
             'end_date',
             'requirements_software',
@@ -135,13 +139,22 @@ class ProjectCreationForm(forms.ModelForm):
             }),
         }
 
-    def set_user(self, user):
+    def __init__(self, user, *args, **kwargs):
         self.user = user
+        super(forms.ModelForm, self).__init__(*args, **kwargs)
+        self.fields['funding_sources'] = forms.ModelMultipleChoiceField(
+            label="Select Funding sources",
+            widget=SelectMultipleTickbox(),
+            queryset=FundingSource.objects.filter(
+                created_by=self.user
+            ),
+            required=False,
+        )
 
     def clean(self):
         self.instance.tech_lead = self.user
         if self.instance.tech_lead.profile.institution is None:
-            raise ValidationError('Only users which belong to an institution can create projects.')
+            raise forms.ValidationError('Only users which belong to an institution can create projects.')
 
 
 class ProjectUserMembershipCreationForm(forms.Form):

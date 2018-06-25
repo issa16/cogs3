@@ -64,6 +64,10 @@ urlpatterns = i18n_patterns(
         name='register',
     ),
     path(
+        'funding/',
+        include('funding.urls'),
+    ),
+    path(
         'projects/',
         include('project.urls'),
     ),

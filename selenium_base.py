@@ -11,12 +11,12 @@ from cogs3.settings import LANGUAGE_CODE
 from cogs3.settings import SELENIUM_WEBDRIVER
 from cogs3.settings import SELENIUM_WEBDRIVER_PROFILE
 from users.models import CustomUser
+from funding.models import FundingBody
 
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
     fixtures = [
         'institution/fixtures/institutions.yaml',
-        'project/fixtures/funding_sources.yaml',
     ]
 
     serialized_rollback = True
@@ -89,6 +89,14 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.selenium.quit()
 
     def setUp(self):
+        # Create a funding body
+        self.funding_body = FundingBody(
+            name='A function source name',
+            description='A funding source description',
+        )
+        self.funding_body.save()
+
+        # Create a number of user for different roles
         self.user_password = "password"
         self.user = CustomUser(
             username="user@swansea.ac.uk",

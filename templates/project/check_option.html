@@ -1,0 +1,11 @@
+<!-- includes/check_option.html -->
+{% for group, options, index in widget.optgroups %}
+  {% for option in options %}
+  <div class="checkbox">
+    <label for="{{ option.attrs.id }}" >
+      <input type="{{ option.type }}" name="{{ option.name }}" value="{{ option.value|stringformat:'s' }}">
+      {{ option.label }}
+    </label>
+  </div>
+  {% endfor %}
+{% endfor %}

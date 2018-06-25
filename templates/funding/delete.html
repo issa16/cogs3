@@ -1,0 +1,22 @@
+<!-- templates/funding/create.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}Delete funding source{% endblock %}
+{% block content %}
+	<div class="my-3 p-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4>Are you sure you want to delete this funding source?</h4>
+				</div>
+				<form method="post" enctype="multipart/form-data" novalidate>
+					{% csrf_token %}
+					<input type="submit" class="btn btn-primary" value="{% trans "Delete" %}">
+					<a class="btn btn-primary" href="{% url 'list-funding-sources' %}">{% trans "Cancel" %}</a>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}

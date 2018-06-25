@@ -54,7 +54,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django.forms',
     'institution.apps.InstitutionConfig',
+    'funding.apps.FundingConfig',
     'project.apps.ProjectConfig',
     'system.apps.SystemConfig',
     'users.apps.UsersConfig',
@@ -105,6 +107,8 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'cogs3.wsgi.application'
 

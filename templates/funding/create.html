@@ -1,0 +1,26 @@
+<!-- templates/funding/create.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}Funding Source{% endblock %}
+{% block content %}
+	<div class="my-3 p-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4>Funding Source</h4>
+				</div>
+				<form method="post" enctype="multipart/form-data" novalidate>
+					{% csrf_token %}
+					{% include 'includes/generic_form.html' with form=form %}
+					<button type="submit" class="btn btn-primary">Save</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script src="{% static "js/pi_email_checkbox.js" %}" ></script>
+	<script>
+	  var checkbox_handler = new email_checkbox_handler("id_pi_email", "{{form.user_email}}");
+	</script>
+{% endblock %}

@@ -10,8 +10,9 @@ from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
 from project.models import ProjectUserMembership
 from project.tests.test_models import ProjectCategoryTests
-from project.tests.test_models import ProjectFundingSourceTests
 from project.tests.test_models import ProjectTests
+from funding.tests.test_models import FundingBodyTests
+from funding.tests.test_models import FundingSourceTests
 from users.tests.test_models import CustomUserTests
 
 
@@ -45,12 +46,24 @@ class ProjectFormTests(TestCase):
             description=description,
         )
 
-        # Create a funding source
-        name = 'A project function source name'
-        description = 'A project funding source description'
-        self.funding_source = ProjectFundingSourceTests.create_project_funding_source(
+        # Create a funding body
+        name = 'A function source name'
+        description = 'A funding source description'
+        self.funding_body = FundingBodyTests.create_funding_body(
             name=name,
             description=description,
+        )
+
+        # Create a funding source
+        title = 'A funding source title'
+        identifier = 'A funding source identifier'
+        pi_email = '@'.join(['pi', self.institution.base_domain])
+        self.funding_source = FundingSourceTests.create_funding_source(
+            title=title,
+            identifier=identifier,
+            funding_body=self.funding_body,
+            owner=self.project_owner,
+            pi_email=pi_email,
         )
 
         # Create a project.
