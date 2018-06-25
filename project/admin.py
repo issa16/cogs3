@@ -123,3 +123,11 @@ class ProjectAdmin(admin.ModelAdmin):
         'status',
     )
     list_filter = ('status', )
+    search_fields = (
+        'title',
+        'legacy_hpcw_id',
+        'legacy_arcca_id',
+        'code',
+        'gid_number',
+        'pi',
+    )
