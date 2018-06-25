@@ -20,6 +20,7 @@ from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
 from project.models import ProjectUserMembership
+from project.openldap import update_openldap_project_membership
 
 
 class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
@@ -154,9 +155,8 @@ class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequi
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        if 'status' in self.changed_data:
-            # TODO - OpenLDAP API call
-            pass
+        if 'status' in form.changed_data:
+            update_openldap_project_membership(project_membership=form.instance)
         if self.request.is_ajax():
             return JsonResponse({'message': 'Successfully updated.'})
         else:
