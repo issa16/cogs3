@@ -68,7 +68,12 @@ class CustomUserTests(TestCase):
 
     def verify_user_data(self, user):
         self.assertTrue(isinstance(user, CustomUser))
-        self.assertEqual(user.__str__(), user.email)
+        user_str = '{first_name} {last_name} ({email})'.format(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            email=user.email,
+        )
+        self.assertEqual(user.__str__(), user_str)
         self.assertEqual(user.get_full_name(), user.email)
         self.assertEqual(user.get_short_name(), user.email)
         self.assertEqual(user.username, user.email)
