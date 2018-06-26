@@ -1,19 +1,18 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from institution.tests.test_models import InstitutionTests
+from institution.models import Institution
 from users.tests.test_models import CustomUserTests
 
 
 class DashboardViewTests(TestCase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.yaml',
+    ]
+
     def setUp(self):
-        # Create an institution.
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
+        self.institution = Institution.objects.get(name='Example University')
 
     def test_view_without_required_headers(self):
         """

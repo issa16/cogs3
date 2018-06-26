@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from django.test import TestCase
 
-from institution.tests.test_models import InstitutionTests
+from institution.models import Institution
 from users.admin import CustomUserAdmin
 from users.models import CustomUser
 from users.models import Profile
@@ -10,13 +10,12 @@ from users.models import ShibbolethProfile
 
 class CustomUserTests(TestCase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.yaml',
+    ]
+
     def setUp(self):
-        # Create an institution
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
+        self.institution = Institution.objects.get(name='Example University')
 
     @classmethod
     def create_custom_user(cls, email, group=None, is_shibboleth_login_required=True):

@@ -1,0 +1,52 @@
+[
+{
+  "model": "users.customuser",
+  "pk": 3843,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$oP9g8Y1X5OOf$YO8dcoe61dKROHjv99+SQQt0MCjpH5fiG5CB8wNO1W0=",
+    "last_login": "2018-06-26T12:16:52.434Z",
+    "username": "joe.bloggs@example.ac.uk",
+    "email": "joe.bloggs@example.ac.uk",
+    "is_shibboleth_login_required": true,
+    "is_staff": false,
+    "is_active": true,
+    "is_superuser": false,
+    "created_at": "2018-06-26T10:50:45.805Z",
+    "updated_at": "2018-06-26T12:16:34.736Z",
+    "first_name": "Joe",
+    "last_name": "Bloggs",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.shibbolethprofile",
+  "pk": 3843,
+  "fields": {
+    "shibboleth_id": "joe.bloggs@example.ac.uk",
+    "institution": 1,
+    "department": "",
+    "orcid": "",
+    "scopus": "",
+    "homepage": "",
+    "cronfa": ""
+  }
+},
+{
+  "model": "users.profile",
+  "pk": 3843,
+  "fields": {
+    "user": 3843,
+    "scw_username": "x.joe.bloggs",
+    "hpcw_username": "",
+    "hpcw_email": "",
+    "raven_username": "",
+    "raven_email": "",
+    "uid_number": null,
+    "description": "",
+    "phone": "",
+    "account_status": 1,
+    "previous_account_status": 0
+  }
+}
+]

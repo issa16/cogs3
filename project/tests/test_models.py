@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth.models import Group
 from django.test import TestCase
 
-from institution.tests.test_models import InstitutionTests
+from institution.models import Institution
 from project.models import Project
 from project.models import ProjectCategory
 from project.models import ProjectFundingSource
@@ -80,13 +80,12 @@ class ProjectFundingSourceTests(TestCase):
 
 class ProjectModelTests(TestCase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.yaml',
+    ]
+
     def setUp(self):
-        # Create an institution
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
+        self.institution = Institution.objects.get(name='Example University')
 
         # Create a project owner.
         group = Group.objects.get(name='project_owner')

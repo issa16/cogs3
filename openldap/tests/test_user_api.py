@@ -46,15 +46,15 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Create a User.
         """
-        jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUuY2'
-               '9tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwMTQxLCJuY'
-               'mYiOjE1MjcwOTk1NDEsImRhdGEiOnsiY24iOiJ4LmpvZS5ibG9nZ3MiLCJzbiI6IkJsb2dncyIsImdpZG51'
-               'bWJlciI6IjUwMDAwMDEiLCJnaXZlbm5hbWUiOiJKb2UiLCJkaXNwbGF5TmFtZSI6Ik1yIEpvZSBCbG9nZ3M'
-               'iLCJ0aXRsZSI6Ik1yIiwiaG9tZWRpcmVjdG9yeSI6Ii9ob21lL3guam9lLmJsb2dncyIsImxvZ2luc2hlbG'
-               'wiOiIvYmluL2Jhc2giLCJvYmplY3RjbGFzcyI6WyJpbmV0T3JnUGVyc29uIiwicG9zaXhBY2NvdW50Iiwid'
-               'G9wIl0sInRlbGVwaG9uZW51bWJlciI6IjAwMDAwLTAwMC0wMDAiLCJtYWlsIjoiam9lLmJsb2dnc0BiYW5n'
-               'b3IuYWMudWsiLCJ1aWQiOiJ4LmpvZS5ibG9nZ3MiLCJ1aWRudW1iZXIiOiI1MDAwMDAxIn19.LDxd6hvdqC'
-               '8CdG17ucNrD7Dy5Q4T7k-B-vHOTLOWs7Q')
+        jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUu'
+               'Y29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwMTQxL'
+               'CJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOnsiY24iOiJ4LmpvZS5ibG9nZ3MiLCJzbiI6IkJsb2dncyIsIm'
+               'dpZE51bWJlciI6IjUwMDAwMDEiLCJnaXZlbm5hbWUiOiJKb2UiLCJkaXNwbGF5TmFtZSI6Ik1yIEpvZSB'
+               'CbG9nZ3MiLCJ0aXRsZSI6Ik1yIiwiaG9tZWRpcmVjdG9yeSI6Ii9ob21lL3guam9lLmJsb2dncyIsImxv'
+               'Z2luc2hlbGwiOiIvYmluL2Jhc2giLCJvYmplY3RjbGFzcyI6WyJpbmV0T3JnUGVyc29uIiwicG9zaXhBY'
+               '2NvdW50IiwidG9wIl0sInRlbGVwaG9uZW51bWJlciI6IjAwMDAwLTAwMC0wMDAiLCJtYWlsIjoiam9lLm'
+               'Jsb2dnc0BleGFtcGxlLmFjLnVrIiwidWlkIjoieC5qb2UuYmxvZ2dzIiwidWlkbnVtYmVyIjoiNTAwMDA'
+               'wMSJ9fQ.pTFrY5Jd0PpKYEgJvDgjKCK0550X32IqlP4ORMU3ke4')
         post_mock.return_value = self._mock_response(
             status=201,
             content=jwt.encode(),
@@ -67,7 +67,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
             "data": {
                 "cn": "x.joe.bloggs",
                 "sn": "Bloggs",
-                "gidnumber": "5000001",
+                "gidNumber": "5000001",
                 "givenname": "Joe",
                 "displayName": "Mr Joe Bloggs",
                 "title": "Mr",
@@ -79,7 +79,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                     "top",
                 ],
                 "telephonenumber": "00000-000-000",
-                "mail": "joe.bloggs@bangor.ac.uk",
+                "mail": "joe.bloggs@example.ac.uk",
                 "uid": "x.joe.bloggs",
                 "uidnumber": "5000001"
             }
@@ -96,14 +96,14 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Get an existing user by id.
         """
-        jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUuY'
-               '29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4OTIwLCJ'
-               'uYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6Inguam9lLmJsb2dncyIsImNvdW50I'
-               'joxfSwibWFpbCI6eyIwIjoiam9lLmJsb2dnc0BiYW5nb3IuYWMudWsiLCJjb3VudCI6MX0sImRpc3BsYXl'
-               'uYW1lIjp7IjAiOiJNciBKb2UgQmxvZ2dzIiwiY291bnQiOjF9LCJnaWRudW1iZXIiOnsiMCI6Ijk5OTk5O'
-               'TkiLCJjb3VudCI6MX0sInVpZG51bWJlciI6eyIwIjoiOTk5OTk5OSIsImNvdW50IjoxfSwidGVsZXBob25'
-               'lIjoiMDAwMDAtMDAwMDAwIn0sImVycm9yIjoiIiwiY291bnQiOjF9fQ.WG4MhgveQEn0vXult3RbOze2CB'
-               'AzE3OwLqmnfGl0GLg')
+        jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGU'
+               'uY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4OTI'
+               'wLCJuYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6Inguam9lLmJsb2dncyIsImN'
+               'vdW50IjoxfSwibWFpbCI6eyIwIjoiam9lLmJsb2dnc0BleGFtcGxlLmFjLnVrIiwiY291bnQiOjF9LCJ'
+               'kaXNwbGF5bmFtZSI6eyIwIjoiTXIgSm9lIEJsb2dncyIsImNvdW50IjoxfSwiZ2lkTnVtYmVyIjp7IjA'
+               'iOiI5OTk5OTk5IiwiY291bnQiOjF9LCJ1aWRudW1iZXIiOnsiMCI6Ijk5OTk5OTkiLCJjb3VudCI6MX0'
+               'sInRlbGVwaG9uZSI6IjAwMDAwLTAwMDAwMCJ9LCJlcnJvciI6IiIsImNvdW50IjoxfX0.6SoI3lrGiy1'
+               '9ia3sakAuMTWkmqzQ-k1fHfiExvQycfs')
         get_mock.return_value = self._mock_response(
             status=200,
             content=jwt.encode(),
@@ -120,14 +120,14 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                         "count": 1
                     },
                     "mail": {
-                        "0": "joe.bloggs@bangor.ac.uk",
+                        "0": "joe.bloggs@example.ac.uk",
                         "count": 1
                     },
                     "displayname": {
                         "0": "Mr Joe Bloggs",
                         "count": 1
                     },
-                    "gidnumber": {
+                    "gidNumber": {
                         "0": "9999999",
                         "count": 1
                     },
@@ -152,11 +152,11 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUuY'
                '29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4OTIwLCJ'
                'uYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6Inguam9lLmJsb2dncyIsImNvdW50I'
-               'joxfSwibWFpbCI6eyIwIjoiam9lLmJsb2dnc0BiYW5nb3IuYWMudWsiLCJjb3VudCI6MX0sImRpc3BsYXl'
-               'uYW1lIjp7IjAiOiJNciBKb2UgQmxvZ2dzIiwiY291bnQiOjF9LCJnaWRudW1iZXIiOnsiMCI6Ijk5OTk5O'
-               'TkiLCJjb3VudCI6MX0sInVpZG51bWJlciI6eyIwIjoiOTk5OTk5OSIsImNvdW50IjoxfSwidGVsZXBob25'
-               'lIjoiMDAwMDAtMDAwMDAwIn0sImVycm9yIjoiIiwiY291bnQiOjF9fQ.WG4MhgveQEn0vXult3RbOze2CB'
-               'AzE3OwLqmnfGl0GLg')
+               'joxfSwibWFpbCI6eyIwIjoiam9lLmJsb2dnc0BleGFtcGxlLmFjLnVrIiwiY291bnQiOjF9LCJkaXNwbGF'
+               '5bmFtZSI6eyIwIjoiTXIgSm9lIEJsb2dncyIsImNvdW50IjoxfSwiZ2lkTnVtYmVyIjp7IjAiOiI5OTk5O'
+               'Tk5IiwiY291bnQiOjF9LCJ1aWRudW1iZXIiOnsiMCI6Ijk5OTk5OTkiLCJjb3VudCI6MX0sInRlbGVwaG9'
+               'uZSI6IjAwMDAwLTAwMDAwMCJ9LCJlcnJvciI6IiIsImNvdW50IjoxfX0.6SoI3lrGiy19ia3sakAuMTWkm'
+               'qzQ-k1fHfiExvQycfs')
         get_mock.return_value = self._mock_response(
             status=200,
             content=jwt.encode(),
@@ -173,14 +173,14 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                         "count": 1
                     },
                     "mail": {
-                        "0": "joe.bloggs@bangor.ac.uk",
+                        "0": "joe.bloggs@example.ac.uk",
                         "count": 1
                     },
                     "displayname": {
                         "0": "Mr Joe Bloggs",
                         "count": 1
                     },
-                    "gidnumber": {
+                    "gidNumber": {
                         "0": "9999999",
                         "count": 1
                     },
@@ -194,7 +194,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                 "count": 1
             }
         }
-        result = user_api.get_user_by_email_address(email_address='joe.bloggs@bangor.ac.uk')
+        result = user_api.get_user_by_email_address(email_address='joe.bloggs@example.ac.uk')
         self.assertEqual(result, expected_response)
 
     @skip("Pending OpenLDAP fix")
@@ -289,7 +289,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                 'user_id': 'x.joe.bloggs'
             }),
             (user_api.get_user_by_email_address, {
-                'email_address': 'joe.bloggs@bangor.ac.uk'
+                'email_address': 'joe.bloggs@example.ac.uk'
             }),
             (user_api.reset_user_password, {
                 'user': self.user,

@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group
 from django.test import TestCase
 from django.urls import reverse
 
-from institution.tests.test_models import InstitutionTests
+from institution.models import Institution
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.tests.test_models import ProjectCategoryTests
@@ -23,13 +23,12 @@ from users.tests.test_models import CustomUserTests
 
 class ProjectViewTests(TestCase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.yaml',
+    ]
+
     def setUp(self):
-        # Create an institution
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
+        self.institution = Institution.objects.get(name='Example University')
 
         # Create a project owner
         group = Group.objects.get(name='project_owner')

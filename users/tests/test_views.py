@@ -2,20 +2,19 @@ from django.test import TestCase
 
 from django.urls import reverse
 
-from institution.tests.test_models import InstitutionTests
+from institution.models import Institution
 from users.tests.test_models import CustomUserTests
 from users.views import RegisterView
 
 
 class UserViewTests(TestCase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.yaml',
+    ]
+
     def setUp(self):
-        # Create an institution
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
+        self.institution = Institution.objects.get(name='Example University')
 
 
 class RegisterViewTests(UserViewTests, TestCase):
@@ -90,7 +89,6 @@ class LoginViewTests(UserViewTests, TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
-
 
 
 class LogoutViewTests(UserViewTests, TestCase):
