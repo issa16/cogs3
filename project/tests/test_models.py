@@ -140,7 +140,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             code=code,
             institution_reference='BW-12345',
             department='School of Chemistry',
-            project_supervisor_email='Project Principal Investigator',
+            project_supervisor_email='supervisor@email.ac.uk',
             tech_lead=tech_lead,
             category=category,
             funding_source=funding_source,
