@@ -21,7 +21,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         "id_description": "This project aims to test the submission of projects",
         "id_institution_reference": "test1",
         "id_department": "SA2C",
-        "id_pi_email": "j.bloggs@swansea.ac.uk",
+        "id_project_supervisor_email": "j.bloggs@swansea.ac.uk",
         "id_start_date": "2018-09-17",
         "id_end_date": "2019-09-17",
         "id_requirements_software": "none",
