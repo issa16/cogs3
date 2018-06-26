@@ -1,8 +1,8 @@
-reset_password_json = {
+create_project_json = {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "$ref": "#/definitions/ResetPassword",
+    "$ref": "#/definitions/CreateProject",
     "definitions": {
-        "ResetPassword": {
+        "CreateProject": {
             "type": "object",
             "additionalProperties": False,
             "properties": {
@@ -29,18 +29,38 @@ reset_password_json = {
                 "iss",
                 "nbf",
             ],
-            "title": "ResetPassword"
+            "title": "CreateProject"
         },
         "Data": {
             "type": "object",
             "additionalProperties": False,
             "properties": {
-                "message": {
+                "objectClass": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "gidNumber": {
+                    "type": "string",
+                    "format": "integer"
+                },
+                "cn": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "memberUid": {
                     "type": "string"
                 }
             },
             "required": [
-                "message",
+                "cn",
+                "description",
+                "gidNumber",
+                "memberUid",
+                "objectClass",
             ],
             "title": "Data"
         }

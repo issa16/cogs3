@@ -8,8 +8,14 @@ from django.urls import path
 from django.views.generic.base import TemplateView
 
 from institution.models import Institution
+from users.openldap import reset_openldap_password
 from users.views import LogoutView
 from users.views import RegisterView
+
+# Admin config
+admin.site.site_header = 'Cogs3 Administration'
+admin.site.index_title = 'Cogs3'
+admin.site.site_title = 'Administration'
 
 urlpatterns = i18n_patterns(
     path(
@@ -62,6 +68,11 @@ urlpatterns = i18n_patterns(
         'accounts/register/',
         RegisterView.as_view(),
         name='register',
+    ),
+    path(
+        'accounts/scw/password-reset/',
+        reset_openldap_password,
+        name='scw-password-reset',
     ),
     path(
         'projects/',

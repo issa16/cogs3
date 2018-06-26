@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from django.test import TestCase
 
-from institution.tests.test_models import InstitutionTests
+from institution.models import Institution
 from users.admin import CustomUserAdmin
 from users.models import CustomUser
 from users.models import Profile
@@ -10,13 +10,12 @@ from users.models import ShibbolethProfile
 
 class CustomUserTests(TestCase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.yaml',
+    ]
+
     def setUp(self):
-        # Create an institution
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
+        self.institution = Institution.objects.get(name='Example University')
 
     @classmethod
     def create_custom_user(cls, email, group=None, is_shibboleth_login_required=True):
@@ -48,10 +47,8 @@ class CustomUserTests(TestCase):
         Args:
             email (str): Email address.
         """
-        group = Group.objects.get(name='project_owner')
         return CustomUserTests.create_custom_user(
             email=email,
-            group=group,
             is_shibboleth_login_required=True,
         )
 
@@ -63,20 +60,22 @@ class CustomUserTests(TestCase):
         Args:
             email (str): Email address.
         """
-        group = Group.objects.get(name='project_owner')
         return CustomUserTests.create_custom_user(
             email=email,
-            group=group,
             is_shibboleth_login_required=False,
         )
 
     def verify_user_data(self, user):
         self.assertTrue(isinstance(user, CustomUser))
-        self.assertEqual(user.__str__(), user.email)
+        user_str = '{first_name} {last_name} ({email})'.format(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            email=user.email,
+        )
+        self.assertEqual(user.__str__(), user_str)
         self.assertEqual(user.get_full_name(), user.email)
         self.assertEqual(user.get_short_name(), user.email)
         self.assertEqual(user.username, user.email)
-        self.assertEqual(user.groups.get(), Group.objects.get(name='project_owner'))
 
     def test_shibboleth_user_creation(self):
         """

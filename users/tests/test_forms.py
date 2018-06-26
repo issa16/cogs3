@@ -1,20 +1,19 @@
 from django.test import TestCase
 from django.utils.translation import activate
 
-from institution.tests.test_models import InstitutionTests
+from institution.models import Institution
 from users.forms import CustomUserCreationForm
 from users.models import CustomUser
 
 
 class CustomUserCreationFormTests(TestCase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.yaml',
+    ]
+
     def setUp(self):
-        # Create an institution
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
+        self.institution = Institution.objects.get(name='Example University')
 
     def test_create_shibboleth_user(self):
         """

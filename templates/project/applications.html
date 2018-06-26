@@ -50,7 +50,7 @@
 								{% endif %}
 							</td>
 							<td><a href="{% url 'project-application-detail' project.pk %}">{{project.title}}</a></td>
-							<td>{% blocktrans with institution=project.institution %}{{institution}}{% endblocktrans %}</td>
+							<td>{% blocktrans with institution=project.tech_lead.profile.institution %}{{institution}}{% endblocktrans %}</td>
 							<td>{{project.get_status_display}}</td>
 						</tr>
 					{% endfor %}

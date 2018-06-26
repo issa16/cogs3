@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import TemplateView
 
+from openldap.api import user_api
 from users.forms import CustomUserCreationForm
 
 

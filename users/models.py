@@ -1,14 +1,22 @@
+import django_rq
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.utils.translation import gettext as _
 
 from institution.models import Institution
 
 
 class Profile(models.Model):
+
+    class Meta:
+        verbose_name = 'profile'
+        verbose_name_plural = 'profiles'
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -38,6 +46,11 @@ class Profile(models.Model):
         blank=True,
         verbose_name='Raven email address',
     )
+    uid_number = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name='UID Number',
+    )
     description = models.CharField(
         max_length=200,
         blank=True,
@@ -46,12 +59,12 @@ class Profile(models.Model):
         max_length=15,
         blank=True,
     )
-    AWAITING_APPROVAL = 1
-    APPROVED = 2
-    DECLINED = 3
-    REVOKED = 4
-    SUSPENDED = 5
-    CLOSED = 6
+    AWAITING_APPROVAL = 0
+    APPROVED = 1
+    DECLINED = 2
+    REVOKED = 3
+    SUSPENDED = 4
+    CLOSED = 5
     STATUS_CHOICES = (
         (AWAITING_APPROVAL, 'Awaiting Approval'),
         (APPROVED, 'Approved'),
@@ -63,22 +76,52 @@ class Profile(models.Model):
     account_status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
         default=AWAITING_APPROVAL,
+        verbose_name=_('Current Status'),
+    )
+    previous_account_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_APPROVAL,
+        verbose_name=_('Previous Status'),
     )
 
-    class Meta:
-        verbose_name = 'profile'
-        verbose_name_plural = 'profiles'
+    def is_awaiting_approval(self):
+        return True if self.account_status == Profile.AWAITING_APPROVAL else False
 
-    def __str__(self):
-        return self.user.email
+    def is_approved(self):
+        return True if self.account_status == Profile.APPROVED else False
+
+    def is_declined(self):
+        return True if self.account_status == Profile.DECLINED else False
+
+    def is_revoked(self):
+        return True if self.account_status == Profile.REVOKED else False
+
+    def is_suspended(self):
+        return True if self.account_status == Profile.SUSPENDED else False
+
+    def is_closed(self):
+        return True if self.account_status == Profile.CLOSED else False
 
     @property
     def institution(self):
-        """ return institution if shibboleth user, otherwise return None """
+        """ 
+        Return institution if shibboleth user, otherwise return None 
+        """
         if hasattr(self, 'shibbolethprofile'):
             return self.shibbolethprofile.institution
         else:
             return None
+
+    def reset_account_status(self):
+        """
+        Reset the current account status to the previous account status.
+        """
+        self.account_status = self.previous_account_status
+        self.save()
+
+    def __str__(self):
+        return self.user.email
+
 
 class ShibbolethProfile(Profile):
     shibboleth_id = models.CharField(
@@ -145,6 +188,13 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    """
+    Represents an application User.
+    """
+
+    class Meta:
+        verbose_name_plural = 'Users'
+
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         'username',
@@ -196,14 +246,31 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    def __str__(self):
-        return self.email
-
     def get_full_name(self):
         return self.email
 
     def get_short_name(self):
         return self.email
 
-    class Meta:
-        verbose_name_plural = 'Users'
+    def save(self, *args, **kwargs):
+        super(CustomUser, self).save(*args, **kwargs)
+        if self.is_shibboleth_login_required:
+            _, domain = self.email.split('@')
+            institution = Institution.objects.get(base_domain=domain)
+            ShibbolethProfile.objects.update_or_create(
+                user=self,
+                defaults={
+                    'shibboleth_id': self.email,
+                    'institution': institution,
+                },
+            )
+        else:
+            Profile.objects.update_or_create(user=self)
+        self.profile.save()
+
+    def __str__(self):
+        return '{first_name} {last_name} ({email})'.format(
+            first_name=self.first_name,
+            last_name=self.last_name,
+            email=self.email,
+        )

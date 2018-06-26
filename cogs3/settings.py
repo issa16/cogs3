@@ -30,6 +30,8 @@ dotenv_file = os.path.join(BASE_DIR, 'cogs3', '.env')
 if os.path.isfile(dotenv_file):
     load_dotenv(dotenv_file)
 
+COMPANY_NAME = os.environ.get('COMPANY_NAME')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -64,9 +66,8 @@ INSTALLED_APPS = [
     'cookielaw',
     'django_rq',
     'security',
-    'openldap',
-    'notification',
     'hreflang',
+    'openldap',
 ]
 
 MIDDLEWARE = [
@@ -173,6 +174,12 @@ MESSAGE_TAGS = {
 }
 
 # Email
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+DEFAULT_BCC_EMAIL = os.environ.get('DEFAULT_BCC_EMAIL')
+DEFAULT_CONTACT_EMAIL = os.environ.get('DEFAULT_CONTACT_EMAIL')
+
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_FILE_PATH = os.environ.get('EMAIL_FILE_PATH')
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')

@@ -16,10 +16,11 @@ from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
 
-from .forms import ProjectCreationForm
-from .forms import ProjectUserMembershipCreationForm
-from .models import Project
-from .models import ProjectUserMembership
+from project.forms import ProjectCreationForm
+from project.forms import ProjectUserMembershipCreationForm
+from project.models import Project
+from project.models import ProjectUserMembership
+from project.openldap import update_openldap_project_membership
 
 
 class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
@@ -154,9 +155,10 @@ class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequi
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        if 'status' in form.changed_data:
+            update_openldap_project_membership(project_membership=form.instance)
         if self.request.is_ajax():
-            data = {'message': 'Successfully updated.'}
-            return JsonResponse(data)
+            return JsonResponse({'message': 'Successfully updated.'})
         else:
             return response
 
