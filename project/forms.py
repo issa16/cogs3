@@ -4,6 +4,7 @@ from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 from project.models import Project
 from project.models import ProjectUserMembership
+from institution.models import Institution
 
 
 class FileLinkWidget(forms.Widget):
@@ -137,6 +138,19 @@ class ProjectCreationForm(forms.ModelForm):
 
     def set_user(self, user):
         self.user = user
+
+    def clean_project_supervisor_email(self):
+        cleaned_data = super().clean()
+        email = cleaned_data['project_supervisor_email']
+        if '@' not in email:
+            raise forms.ValidationError('Needs to be a valid institutional email address.')
+        domain = email.split('@')[1]
+        domains = list(
+            Institution.objects.values_list('base_domain',flat=True)
+        )
+        if domain not in domains:
+            raise forms.ValidationError('Needs to be a valid institutional email address.')
+        return email
 
     def clean(self):
         self.instance.tech_lead = self.user
