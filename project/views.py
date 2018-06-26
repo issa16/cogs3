@@ -15,11 +15,30 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
+from django.contrib.auth.views import redirect_to_login
 
 from .forms import ProjectCreationForm
 from .forms import ProjectUserMembershipCreationForm
 from .models import Project
 from .models import ProjectUserMembership
+
+
+class PermissionAndLoginRequiredMixin(PermissionRequiredMixin):
+    """
+    CBV mixin which extends the PermissionRequiredMixin to verify
+    that the user is logged in and performs a separate action if not
+    """
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(reverse('home'))
+
+    def handle_not_logged_in(self):
+        return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_not_logged_in()
+        return super(PermissionAndLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
 class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
@@ -109,7 +128,7 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
         return super().form_valid(form)
 
 
-class ProjectUserRequestMembershipListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListView):
+class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, generic.ListView):
     permission_required = 'project.change_projectusermembership'
     context_object_name = 'project_user_membership_requests'
     template_name = 'project/membership/requests.html'
@@ -128,7 +147,7 @@ class ProjectUserRequestMembershipListView(PermissionRequiredMixin, LoginRequire
         return queryset.order_by('-created_time')
 
 
-class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequiredMixin, generic.UpdateView):
+class ProjectUserRequestMembershipUpdateView(PermissionAndLoginRequiredMixin, generic.UpdateView):
     permission_required = 'project.change_projectusermembership'
     success_url = reverse_lazy('project-user-membership-request-list')
     context_object_name = 'project_user_membership_requests'
@@ -149,7 +168,9 @@ class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequi
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
-            return HttpResponseRedirect(reverse('project-user-membership-request-list'))
+            return HttpResponseRedirect(
+                reverse('project-user-membership-request-list')
+            )
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
