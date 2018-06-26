@@ -29,6 +29,7 @@
 					<tr>
 						<th scope="col" style="width:20%">{% trans "Project Code" %}</th>
 						<th scope="col" style="width:40%">{% trans "Title" %}</th>
+						<th scope="col" style="width:40%">{% trans "Project Supervisor Email" %}</th>
 						<th scope="col" style="width:20%">{% trans "Institution" %}</th>
 						<th scope="col" style="width:20%">{% trans "Application Status" %}</th>
 					</tr>
@@ -50,6 +51,11 @@
 								{% endif %}
 							</td>
 							<td><a href="{% url 'project-application-detail' project.pk %}">{{project.title}}</a></td>
+							{% if project.project_supervisor_email %}
+								<td>{{project.project_supervisor_email}}</td>
+							{% else %}
+								<td>{{project.project_supervisor.email}}</td>
+							{% endif %}
 							<td>{% blocktrans with institution=project.institution %}{{institution}}{% endblocktrans %}</td>
 							<td>{{project.get_status_display}}</td>
 						</tr>

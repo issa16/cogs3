@@ -11,7 +11,7 @@ class email_checkbox_handler {
 		this.checkbox = document.createElement('input');
 		this.checkbox.type = 'checkbox';
 		this.label.appendChild(this.checkbox);
-		var text = document.createTextNode(" I am the PI ");
+		var text = document.createTextNode(" Use my email ");
 		this.label.appendChild(text);
 		var container = this.textbox.parentElement;
 		container.insertBefore(this.label,this.textbox);

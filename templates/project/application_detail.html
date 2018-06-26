@@ -57,11 +57,11 @@
 								<td>{{project.institution_reference}}</td>
 							</tr>
 							<tr>
-								<th scope="row">{% trans "Principal Investigator" %}</th>
-								{% if project.pi_email %}
-									<td>{{project.pi_email}}</td>
+								<th scope="row">{% trans "Project Supervisor" %}</th>
+								{% if project.project_supervisor_email %}
+									<td>{{project.project_supervisor_email}}</td>
 								{% else %}
-									<td>{{project.pi.email}}</td>
+									<td>{{project.project_supervisor.email}}</td>
 								{% endif %}
 							</tr>
 							<tr>
