@@ -25,9 +25,9 @@ class InstitutionTests(TestCase):
         """
         Ensure we can create an Institution instance.
         """
-        name = 'Bangor University'
-        base_domain = 'bangor.ac.uk'
-        identity_provider = 'https://idp.bangor.ac.uk/shibboleth'
+        name = 'Example University'
+        base_domain = 'example.ac.uk'
+        identity_provider = 'https://idp.example.ac.uk/shibboleth'
         institution = self.create_institution(
             name=name,
             base_domain=base_domain,
@@ -41,8 +41,8 @@ class InstitutionTests(TestCase):
 
     def test_id_str_produced(self):
         institution = self.create_institution(
-            name='Swansea University',
-            base_domain='swansea.ac.uk',
-            identity_provider='https://iss-openathensla-runtime.swan.ac.uk/oala/metadata',
+            name='Example University',
+            base_domain='example.ac.uk',
+            identity_provider='https://idp.example.ac.uk/shibboleth',
         )
-        self.assertEqual(institution.id_str(), "swansea-university")
+        self.assertEqual(institution.id_str(), "example-university")
