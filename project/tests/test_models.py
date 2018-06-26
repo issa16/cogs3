@@ -140,7 +140,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             code=code,
             institution_reference='BW-12345',
             department='School of Chemistry',
-            pi='Project Principal Investigator',
+            project_supervisor_email='supervisor@email.ac.uk',
             tech_lead=tech_lead,
             category=category,
             funding_source=funding_source,
@@ -190,7 +190,7 @@ class ProjectTests(ProjectModelTests, TestCase):
         """
         A test to ensure a project can be created when the title exists in the database.
 
-        Issues: 
+        Issues:
             - https://github.com/tystakartografen/cogs3/issues/30
             - https://github.com/tystakartografen/cogs3/issues/31
         """

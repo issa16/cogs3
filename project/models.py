@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from system.models import System
+from users.models import CustomUser
 
 
 class ProjectCategory(models.Model):
@@ -75,9 +76,17 @@ class Project(models.Model):
         blank=True,
         verbose_name=_('Department'),
     )
-    pi = models.CharField(
-        max_length=256,
-        verbose_name=_('Principal Investigator'),
+    project_supervisor_email = models.CharField(
+        max_length=128,
+        verbose_name=_('Project Supervisor Email'),
+        null=True,
+    )
+    project_supervisor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='project_as_project_supervisor',
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_('Project Supervisor'),
     )
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -191,6 +200,16 @@ class Project(models.Model):
             'title': self.title,
         }
         return '{code} - {title}'.format(**data)
+
+    def save(self, *args, **kwargs):
+        if getattr(self, 'project_supervisor_email_changed', True):
+            matching_users = CustomUser.objects.filter(email=self.project_supervisor_email)
+            if matching_users.exists():
+                self.project_supervisor = matching_users.get()
+                self.project_supervisor_email = None
+            elif self.project_supervisor:
+                self.project_supervisor = None
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = _('Projects')

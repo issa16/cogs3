@@ -7,6 +7,7 @@ from django.test import TestCase
 
 from institution.tests.test_models import InstitutionTests
 from project.forms import ProjectUserMembershipCreationForm
+from project.forms import ProjectCreationForm
 from project.models import Project
 from project.models import ProjectUserMembership
 from project.tests.test_models import ProjectCategoryTests
@@ -66,6 +67,37 @@ class ProjectFormTests(TestCase):
 
         # Ensure no project user membership requests have been created.
         self.assertEqual(ProjectUserMembership.objects.count(), 0)
+
+
+class ProjectCreationTests(ProjectFormTests, TestCase):
+    def test_form_with_an_invalid_supervisor_email(self):
+        """
+        Ensure it is not possible to create a project with an invalid supervisor email.
+        """
+        form = ProjectCreationForm(
+            data={
+                'project_supervisor_email': 'email@notaninstitution',
+            },
+        )
+        form.set_user(self.project_applicant)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['project_supervisor_email'],
+            ['Needs to be a valid institutional email address.'],
+        )
+
+    def test_form_with_a_valid_supervisor_email(self):
+        """
+        Ensure it is not possible to create a project with an invalid supervisor email.
+        """
+        form = ProjectCreationForm(
+            data={
+                'project_supervisor_email': self.project_owner.email,
+            },
+        )
+        form.set_user(self.project_owner)
+        if hasattr(form.errors, 'project_supervisor_email'):
+            raise AssertionError()
 
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
