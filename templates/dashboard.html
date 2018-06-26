@@ -19,28 +19,30 @@
 							<div class="card-header border-bottom-0">
 								<b>{% trans "Account Summary" %}</b>
 							</div>
-							<table class="table mb-0">
-								<tbody>
-									{% if user.profile.scw_username %}
+							<div class="table-responsive">
+								<table class="table mb-0">
+									<tbody>
+										{% if user.profile.scw_username %}
+											<tr>
+												<th>{% trans "SCW username" %}</th>
+												<td>{{user.profile.scw_username}}</td>
+											</tr>
+										{% endif %}
 										<tr>
-											<th>{% trans "SCW username" %}</th>
-											<td>{{user.profile.scw_username}}</td>
+											<th scope="row" style="width:35%">{% trans "Name" %}</th>
+											<td style="width:65%">{{user.first_name}} {{user.last_name}}</td>
 										</tr>
-									{% endif %}
-									<tr>
-										<th scope="row" style="width:35%">{% trans "Name" %}</th>
-										<td style="width:65%">{{user.first_name}} {{user.last_name}}</td>
-									</tr>
-									<tr>
-										<th>{% trans "Email" %}</th>
-										<td>{{user.email}}</td>
-									</tr>
-									<tr>
-										<th>{% trans "Status" %}</th>
-										<td>{{user.profile.get_account_status_display }}</td>
-									</tr>
-								</tbody>
-							</table>
+										<tr>
+											<th>{% trans "Email" %}</th>
+											<td>{{user.email}}</td>
+										</tr>
+										<tr>
+											<th>{% trans "Status" %}</th>
+											<td>{{user.profile.get_account_status_display }}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -72,18 +74,18 @@
 			</div>
 			<div class="col-md-7">
 				{% if user.profile.is_approved %}
-				<div class="row mb-3">
-					<div class="col">
-						<div class="card">
-							<div class="card-header">
-								<b>{% trans "Join a Project" %}</b>
-							</div>
-							<div class="card-body p-3">
-								{% include 'project/membership/form.html' %}
+					<div class="row mb-3">
+						<div class="col">
+							<div class="card">
+								<div class="card-header">
+									<b>{% trans "Join a Project" %}</b>
+								</div>
+								<div class="card-body p-3">
+									{% include 'project/membership/form.html' %}
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 				{% endif %}
 				<div class="row mb-3">
 					<div class="col">
