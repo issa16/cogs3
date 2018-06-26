@@ -6,6 +6,10 @@ from institution.exceptions import InvalidInstitution
 
 
 class Institution(models.Model):
+
+    class Meta:
+        ordering = ('name', )
+
     name = models.CharField(max_length=255, unique=True)
     base_domain = models.CharField(max_length=255, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
@@ -37,6 +41,3 @@ class Institution(models.Model):
 
     def id_str(self):
         return self.name.lower().replace(" ", "-")
-
-    class Meta:
-        ordering = ('name', )
