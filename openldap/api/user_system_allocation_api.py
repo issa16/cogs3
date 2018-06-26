@@ -4,9 +4,6 @@ import requests
 from django.conf import settings
 from django_rq import job
 
-from openldap import schemas
-from openldap.util import decode_response
-
 
 @job
 def get_system_allocation(email):
