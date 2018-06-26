@@ -43,7 +43,7 @@ create_user_json = {
                 "sn": {
                     "type": "string"
                 },
-                "gidnumber": {
+                "gidNumber": {
                     "type": "string"
                 },
                 "givenname": {
@@ -83,7 +83,7 @@ create_user_json = {
             "required": [
                 "cn",
                 "displayName",
-                "gidnumber",
+                "gidNumber",
                 "givenname",
                 "homedirectory",
                 "loginshell",
