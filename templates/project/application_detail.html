@@ -58,7 +58,11 @@
 							</tr>
 							<tr>
 								<th scope="row">{% trans "Principal Investigator" %}</th>
-								<td>{{project.pi}}</td>
+								{% if project.pi_email %}
+									<td>{{project.pi_email}}</td>
+								{% else %}
+									<td>{{project.pi.email}}</td>
+								{% endif %}
 							</tr>
 							<tr>
 								<th scope="row">{% trans "Funding source" %}</th>
