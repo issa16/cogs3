@@ -261,7 +261,7 @@ class Project(models.Model):
             # Propagate the changes to LDAP
             if created:
                 project_membership_api.create_project_membership(project_membership=project_membership)
-        except Exception as e:
+        except Exception:
             logger.exception('Failed assign project owner membership to the project\'s technical lead.')
 
     def _generate_project_code(self):
@@ -291,6 +291,7 @@ class ProjectSystemAllocation(models.Model):
 
     class Meta:
         verbose_name_plural = _('Project System Allocations')
+        unique_together = (('project', 'system'), )
 
     project = models.ForeignKey(
         Project,
@@ -324,10 +325,6 @@ class ProjectSystemAllocation(models.Model):
             'date_unallocated': self.date_unallocated
         }
         return _('{project} on {system} from {date_allocated} to {date_unallocated}').format(**data)
-
-    class Meta:
-        verbose_name_plural = _('Project System Allocations')
-        unique_together = (('project', 'system'), )
 
 
 class ProjectUserMembershipManager(models.Manager):

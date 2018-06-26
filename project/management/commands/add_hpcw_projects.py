@@ -1,7 +1,6 @@
 import csv
 import datetime
 
-from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -40,7 +39,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(str(e)))
 
     def parse_project(self, data):
-        project, created = Project.objects.get_or_create(
+        _, created = Project.objects.get_or_create(
             legacy_hpcw_id=data[0],
             title='Untitled' if data[2] is '' else data[2],
             description='',
@@ -69,7 +68,7 @@ class Command(BaseCommand):
         project_member_col_index = 8
         while (data[project_member_col_index].strip()):
             user = Profile.objects.get(hpcw_username__iexact=data[project_member_col_index].lower()).user
-            project_membership, created = ProjectUserMembership.objects.get_or_create(
+            _, created = ProjectUserMembership.objects.get_or_create(
                 project=Project.objects.get(legacy_hpcw_id=data[0]),
                 user=user,
                 status=ProjectUserMembership.AWAITING_AUTHORISATION,

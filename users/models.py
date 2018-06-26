@@ -104,8 +104,8 @@ class Profile(models.Model):
 
     @property
     def institution(self):
-        """ 
-        Return institution if shibboleth user, otherwise return None 
+        """
+        Return institution if shibboleth user, otherwise return None
         """
         if hasattr(self, 'shibbolethprofile'):
             return self.shibbolethprofile.institution

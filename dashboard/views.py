@@ -2,7 +2,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
 from project.models import ProjectUserMembership
-from users.models import Profile
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):

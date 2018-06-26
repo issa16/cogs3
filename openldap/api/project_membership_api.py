@@ -27,7 +27,7 @@ def list_project_memberships(project_code):
         )
         response.raise_for_status()
         response = decode_response(response)
-        jsonschema.validate(response, list_project_memeberships_json)
+        jsonschema.validate(response, list_project_memberships_json)
         raise_for_data_error(response.get('data'))
         return response
     except Exception as e:
