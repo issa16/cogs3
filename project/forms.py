@@ -1,5 +1,4 @@
 from django import forms
-from django.conf import settings
 from django.db.models import Q
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _

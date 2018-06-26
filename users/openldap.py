@@ -35,8 +35,8 @@ def reset_openldap_password(request):
             status=200,
             data={'data': message},
         )
-    except Exception as e:
-        return JsonResponse(status=400)
+    except Exception:
+        return JsonResponse(status=400, data={})
 
 
 def update_openldap_user(profile):

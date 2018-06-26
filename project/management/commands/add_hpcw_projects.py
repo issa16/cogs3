@@ -4,12 +4,10 @@ import datetime
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from institution.models import Institution
 from project.models import Project
 from project.models import ProjectCategory
 from project.models import ProjectFundingSource
 from project.models import ProjectUserMembership
-from users.models import CustomUser
 from users.models import Profile
 
 
