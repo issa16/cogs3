@@ -2,17 +2,19 @@ from django.test import TestCase
 from django.urls import reverse
 
 from institution.models import Institution
-from users.tests.test_models import CustomUserTests
+from users.models import CustomUser
 
 
 class DashboardViewTests(TestCase):
 
     fixtures = [
         'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
     ]
 
     def setUp(self):
         self.institution = Institution.objects.get(name='Example University')
+        self.user = CustomUser.objects.get(email='joe.bloggs@example.ac.uk')
 
     def test_view_without_required_headers(self):
         """
@@ -28,7 +30,7 @@ class DashboardViewTests(TestCase):
 
     def test_view_as_an_authorised_shibboleth_user_and_an_unregistered_application_user(self):
         """
-        If the required headers are present and the user is not a registered application
+        If the required shibboleth headers are present and the user is not a registered application
         user, then the user should be redirected to the account registration page.
         """
         headers = {
@@ -44,14 +46,12 @@ class DashboardViewTests(TestCase):
 
     def test_view_as_an_authorised_shibboleth_user_and_a_registered_application_user(self):
         """
-        If the required headers are present and the user is a registered application user,
-        then the user should be redirected to the dashboard page and have the option to logout.
+        If the required shibboleth headers are present and the user is a registered application 
+        user, then the user should be redirected to the dashboard page and have the option to logout.
         """
-        email = '@'.join(['user', self.institution.base_domain])
-        CustomUserTests.create_shibboleth_user(email=email)
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
-            'REMOTE_USER': email,
+            'REMOTE_USER': self.user.email,
         }
         response = self.client.get(
             reverse('home'),
