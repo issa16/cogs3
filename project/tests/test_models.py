@@ -9,7 +9,7 @@ from project.models import ProjectCategory
 from project.models import ProjectFundingSource
 from project.models import ProjectSystemAllocation
 from project.models import ProjectUserMembership
-from system.tests.test_models import SystemTests
+from system.models import System
 from users.tests.test_models import CustomUserTests
 
 
@@ -219,8 +219,14 @@ class ProjectTests(ProjectModelTests, TestCase):
 
 class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'system/fixtures/tests/systems.json',
+    ]
+
     def setUp(self):
         super(ProjectSystemAllocationTests, self).setUp()
+        self.system = System.objects.get(name='Nemesis')
 
         # Create a project.
         self.project = ProjectTests.create_project(
@@ -231,16 +237,9 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
             funding_source=self.funding_source,
         )
 
-        # Create a system.
-        self.system = SystemTests.create_system(
-            name='Nemesis',
-            description='Bangor University Cluster',
-            number_of_cores=10000,
-        )
-
-    def create_project_system_allocation(self):
+    def test_project_system_allocation_creation(self):
         """
-        Create a ProjectSystemAllocation instance.
+        Ensure we can create an ProjectSystemAllocation instance.
         """
         project_system_allocation = ProjectSystemAllocation.objects.create(
             project=self.project,
@@ -248,13 +247,6 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
             date_allocated=datetime.datetime.now(),
             date_unallocated=datetime.datetime.now() + datetime.timedelta(days=10),
         )
-        return project_system_allocation
-
-    def test_project_system_allocation_creation(self):
-        """
-        Ensure we can create an ProjectSystemAllocation instance.
-        """
-        project_system_allocation = self.create_project_system_allocation()
         self.assertTrue(isinstance(project_system_allocation, ProjectSystemAllocation))
         data = {
             'project': self.project,
