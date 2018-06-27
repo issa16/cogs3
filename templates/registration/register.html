@@ -13,7 +13,7 @@
 			{% include 'includes/errors.html' %}
 			<div class="form-group mb-3">
 				<label for="email">{% trans "Identifier" %}</label>
-				<input type="email" readonly class="form-control-plaintext" id="email" name="email" value="{{request.session.shib.username}}">
+				<p  id="email">{{request.session.shib.username}}</p>
 			</div>
 			<div class="form-group mb-3">
 				<label for="first-name">{% trans "First name" %}</label>
