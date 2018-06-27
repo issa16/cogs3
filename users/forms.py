@@ -90,6 +90,30 @@ class CustomUserCreationForm(forms.ModelForm):
                 raise forms.ValidationError(str(e))
 
 
+class RegisterForm(forms.ModelForm):
+    """
+    Creates a CustomUser without asking for an email.
+    The email is set in the view based on the request.
+    """
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'is_staff',
+            'is_active',
+            'is_shibboleth_login_required',
+            'first_name',
+            'last_name',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(RegisterForm, self).__init__(*args, **kwargs)
+
+        # Additionally required attributes
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
+
+
 class CustomUserChangeForm(UserChangeForm):
     """
     Form for updating CustomUser instances.
