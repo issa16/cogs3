@@ -35,7 +35,7 @@ class DashboardViewTests(TestCase):
         """
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
-            'REMOTE_USER': 'unregistered-application-user@bangor.ac.uk',
+            'REMOTE_USER': 'unregistered-application-user@example.ac.uk',
         }
         response = self.client.get(
             reverse('home'),
