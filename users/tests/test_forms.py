@@ -9,7 +9,7 @@ from users.models import CustomUser
 class CustomUserCreationFormTests(TestCase):
 
     fixtures = [
-        'institution/fixtures/tests/institutions.yaml',
+        'institution/fixtures/tests/institutions.json',
     ]
 
     def setUp(self):

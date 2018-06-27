@@ -64,8 +64,8 @@
 7. Load data fixtures into the database.
 
   ```sh
-  python manage.py loaddata institutions.yaml
-  python manage.py loaddata systems.yaml
+  python manage.py loaddata institutions.json
+  python manage.py loaddata systems.json
   ```
 
 8. Create an admin user.

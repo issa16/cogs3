@@ -15,8 +15,8 @@ from users.models import CustomUser
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
     fixtures = [
-        'institution/fixtures/institutions.yaml',
-        'project/fixtures/tests/funding_sources.yaml',
+        'institution/fixtures/institutions.json',
+        'project/fixtures/tests/funding_sources.json',
     ]
 
     serialized_rollback = True

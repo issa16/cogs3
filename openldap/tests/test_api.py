@@ -11,8 +11,8 @@ from users.models import CustomUser
 class OpenLDAPBaseAPITests(TestCase):
 
     fixtures = [
-        'institution/fixtures/tests/institutions.yaml',
-        'users/fixtures/tests/users.yaml',
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
     ]
 
     def setUp(self):

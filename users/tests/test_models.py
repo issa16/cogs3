@@ -11,7 +11,7 @@ from users.models import ShibbolethProfile
 class CustomUserTests(TestCase):
 
     fixtures = [
-        'institution/fixtures/tests/institutions.yaml',
+        'institution/fixtures/tests/institutions.json',
     ]
 
     def setUp(self):

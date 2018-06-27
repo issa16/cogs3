@@ -8,7 +8,7 @@ from users.tests.test_models import CustomUserTests
 class DashboardViewTests(TestCase):
 
     fixtures = [
-        'institution/fixtures/tests/institutions.yaml',
+        'institution/fixtures/tests/institutions.json',
     ]
 
     def setUp(self):

@@ -10,7 +10,7 @@ from users.views import RegisterView
 class UserViewTests(TestCase):
 
     fixtures = [
-        'institution/fixtures/tests/institutions.yaml',
+        'institution/fixtures/tests/institutions.json',
     ]
 
     def setUp(self):

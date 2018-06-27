@@ -1,0 +1,12 @@
+[
+  {
+    "model": "project.projectcategory",
+    "pk": 1,
+    "fields": {
+      "name": "Test",
+      "description": "Test project category",
+      "created_time": "2018-06-13T12:29:28.917Z",
+      "modified_time": "2018-06-13T12:29:28.917Z"
+    }
+  }
+]

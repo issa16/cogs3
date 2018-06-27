@@ -17,12 +17,12 @@ from users.models import CustomUser
 class ProjectFormTests(TestCase):
 
     fixtures = [
-        'institution/fixtures/tests/institutions.yaml',
-        'users/fixtures/tests/users.yaml',
-        'project/fixtures/tests/funding_sources.yaml',
-        'project/fixtures/tests/categories.yaml',
-        'project/fixtures/tests/projects.yaml',
-        'project/fixtures/tests/memberships.yaml',
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'project/fixtures/tests/funding_sources.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
     ]
 
     def setUp(self):

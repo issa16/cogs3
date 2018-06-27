@@ -8,7 +8,7 @@ from institution.models import Institution
 class InstitutionTests(TestCase):
 
     fixtures = [
-        'institution/fixtures/tests/institutions.yaml',
+        'institution/fixtures/tests/institutions.json',
     ]
 
     def test_valid_email_address(self):
