@@ -26,7 +26,7 @@ class RegisterView(generic.CreateView):
         form.instance.email = self.request.session['shib']['username']
         form.instance.username = form.instance.email
         form.instance.set_password(CustomUser.objects.make_random_password(length=30))
-        return super().form_valid(form)
+        return super(RegisterView).form_valid(form)
 
 
 class LogoutView(TemplateView):

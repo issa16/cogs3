@@ -198,7 +198,6 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
         if extra_fields.get('is_shibboleth_login_required') is not False:
             raise ValueError('Superuser must have is_shibboleth_login_required=False.')
-
         return self._create_user(email, password, **extra_fields)
 
 

@@ -51,7 +51,6 @@ class CustomUserCreationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CustomUserCreationForm, self).__init__(*args, **kwargs)
-
         # Additionally required attributes
         self.fields['email'].required = True
         self.fields['first_name'].required = True
@@ -66,19 +65,17 @@ class CustomUserCreationForm(forms.ModelForm):
         return user
 
     def clean(self):
-        is_shibboleth_login_required = self.cleaned_data.get('is_shibboleth_login_required')
-        email = self.cleaned_data.get('email')
-        if is_shibboleth_login_required:
+        if self.cleaned_data.get('is_shibboleth_login_required'):
             try:
-                Institution.is_valid_email_address(email)
+                Institution.is_valid_email_address(self.cleaned_data.get('email'))
             except InvalidInstitutionalEmailAddress as e:
                 raise forms.ValidationError(str(e))
 
 
 class RegisterForm(forms.ModelForm):
     """
-    Creates a CustomUser without asking for an email.
-    The email is set in the view based on the request.
+    Form for registering a new user.
+    The user's email address is parsed from the idp's authorisation response.
     """
 
     class Meta:
@@ -93,7 +90,6 @@ class RegisterForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(RegisterForm, self).__init__(*args, **kwargs)
-
         # Additionally required attributes
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
