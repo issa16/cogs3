@@ -182,6 +182,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if 'Authorised' not in self.selenium.page_source:
             raise AssertionError()
 
+
     def test_create_project_external(self):
         """
         Try to create a project as an external user
