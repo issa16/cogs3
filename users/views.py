@@ -25,10 +25,7 @@ class RegisterView(generic.CreateView):
         form.instance.is_shibboleth_login_required = True
         form.instance.email = self.request.session['shib']['username']
         form.instance.username = form.instance.email
-        form.instance.set_password(
-            CustomUser.objects.make_random_password(length=30)
-        )
-
+        form.instance.set_password(CustomUser.objects.make_random_password(length=30))
         return super().form_valid(form)
 
 
@@ -40,7 +37,5 @@ class LogoutView(TemplateView):
         if self.request.user.is_shibboleth_login_required:
             self.request.session[settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY] = True
             self.request.session.set_expiry(0)
-
         auth.logout(self.request)
-
         return redirect(reverse('logged_out'))

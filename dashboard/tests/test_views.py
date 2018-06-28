@@ -14,11 +14,12 @@ class DashboardViewTests(TestCase):
 
     def setUp(self):
         self.institution = Institution.objects.get(name='Example University')
-        self.user = CustomUser.objects.get(email='joe.bloggs@example.ac.uk')
+        self.user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
 
-    def test_view_without_required_headers(self):
+    def test_view_without_required_shibboleth_headers(self):
         """
-        If the required headers are not present then the user should be redirected to the login page.
+        If the required shibboleth headers are not present, then the user should be redirected to 
+        the login page.
         """
         headers = {}
         response = self.client.get(

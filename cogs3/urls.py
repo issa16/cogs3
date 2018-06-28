@@ -23,10 +23,6 @@ urlpatterns = i18n_patterns(
         include('django_rq.urls'),
     ),
     path(
-        'shib/',
-        include('shibboleth.urls', namespace='shibboleth'),
-    ),
-    path(
         '',
         include('dashboard.urls'),
     ),

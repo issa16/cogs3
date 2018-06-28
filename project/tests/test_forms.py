@@ -32,7 +32,7 @@ class ProjectFormTests(TestCase):
         self.project_code = 'scw0000'
         self.project = Project.objects.get(code=self.project_code)
         self.project_owner = self.project.tech_lead
-        self.project_applicant = CustomUser.objects.get(email='john.doe@example.ac.uk')
+        self.project_applicant = CustomUser.objects.get(email='guest.user@external.ac.uk')
 
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):

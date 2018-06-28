@@ -71,6 +71,17 @@ class Profile(models.Model):
         (SUSPENDED, 'Suspended'),
         (CLOSED, 'Closed'),
     )
+    PRE_APPROVED_OPTIONS = [
+        STATUS_CHOICES[AWAITING_APPROVAL],
+        STATUS_CHOICES[APPROVED],
+        STATUS_CHOICES[DECLINED],
+    ]
+    POST_APPROVED_OPTIONS = [
+        STATUS_CHOICES[APPROVED],
+        STATUS_CHOICES[REVOKED],
+        STATUS_CHOICES[SUSPENDED],
+        STATUS_CHOICES[CLOSED],
+    ]
     account_status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
         default=AWAITING_APPROVAL,
@@ -81,6 +92,12 @@ class Profile(models.Model):
         default=AWAITING_APPROVAL,
         verbose_name=_('Previous Status'),
     )
+
+    def get_account_status_choices(self):
+        if Profile.STATUS_CHOICES[self.account_status] in Profile.POST_APPROVED_OPTIONS:
+            return Profile.POST_APPROVED_OPTIONS
+        else:
+            return Profile.PRE_APPROVED_OPTIONS
 
     def is_awaiting_approval(self):
         return True if self.account_status == Profile.AWAITING_APPROVAL else False

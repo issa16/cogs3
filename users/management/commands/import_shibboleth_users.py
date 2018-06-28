@@ -8,14 +8,14 @@ from users.models import Profile
 
 
 class Command(BaseCommand):
-    help = 'Create Guest user accounts.'
+    help = 'Import Shibboleth user accounts from csv file.'
 
     def add_arguments(self, parser):
         parser.add_argument('csv_filename')
 
     def handle(self, *args, **options):
+        filename = options['csv_filename']
         try:
-            filename = options['csv_filename']
             with open(filename, newline='', encoding='ISO-8859-1') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
@@ -26,7 +26,7 @@ class Command(BaseCommand):
                                 email=row['institutional_address'].lower(),
                                 first_name=row['firstname'].title(),
                                 last_name=row['surname'].title(),
-                                is_shibboleth_login_required=False,
+                                is_shibboleth_login_required=True,
                             )
                             if created:
                                 user.set_password(CustomUser.objects.make_random_password())
@@ -48,6 +48,13 @@ class Command(BaseCommand):
                             profile.description = row['description']
                             profile.phone = row['phone']
                             profile.account_status = Profile.AWAITING_APPROVAL
+                            profile.shibboleth_id = row['institutional_address'].lower()
+                            # Pending new fields?
+                            # profile.department = row['department']?
+                            # profile.orcid = row['orcid']?
+                            # profile.scopus = row['scopus']?
+                            # profile.homepage = row['homepage']?
+                            # profile.cronfa = row['cronfa']?
                             profile.save()
 
                             message = 'Successfully updated user profile: {email}'.format(

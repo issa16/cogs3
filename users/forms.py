@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 
-from institution.exceptions import InvalidInstitution
+from institution.exceptions import InvalidInstitutionalEmailAddress
 from institution.models import Institution
 from users.models import CustomUser
 from users.models import Profile
@@ -9,6 +9,9 @@ from users.openldap import update_openldap_user
 
 
 class ProfileUpdateForm(forms.ModelForm):
+    """
+    Form for updating a Profile instance.
+    """
 
     class Meta:
         model = Profile
@@ -18,25 +21,7 @@ class ProfileUpdateForm(forms.ModelForm):
         super(ProfileUpdateForm, self).__init__(*args, **kwargs)
         if self.instance.user_id:
             self.initial_account_status = self.instance.account_status
-            self.fields['account_status'] = forms.ChoiceField(
-                choices=self._get_account_status_choices(self.instance.account_status), )
-
-    def _get_account_status_choices(self, account_status):
-        pre_approved_options = [
-            Profile.STATUS_CHOICES[Profile.AWAITING_APPROVAL],
-            Profile.STATUS_CHOICES[Profile.APPROVED],
-            Profile.STATUS_CHOICES[Profile.DECLINED],
-        ]
-        post_approved_options = [
-            Profile.STATUS_CHOICES[Profile.APPROVED],
-            Profile.STATUS_CHOICES[Profile.REVOKED],
-            Profile.STATUS_CHOICES[Profile.SUSPENDED],
-            Profile.STATUS_CHOICES[Profile.CLOSED],
-        ]
-        if Profile.STATUS_CHOICES[account_status] in post_approved_options:
-            return post_approved_options
-        else:
-            return pre_approved_options
+            self.fields['account_status'] = forms.ChoiceField(choices=self.instance.get_account_status_choices())
 
     def save(self, commit=True):
         profile = super(ProfileUpdateForm, self).save(commit=False)
@@ -86,7 +71,7 @@ class CustomUserCreationForm(forms.ModelForm):
         if is_shibboleth_login_required:
             try:
                 Institution.is_valid_email_address(email)
-            except InvalidInstitution as e:
+            except InvalidInstitutionalEmailAddress as e:
                 raise forms.ValidationError(str(e))
 
 
@@ -116,14 +101,12 @@ class RegisterForm(forms.ModelForm):
 
 class CustomUserChangeForm(UserChangeForm):
     """
-    Form for updating CustomUser instances.
+    Form for updating a CustomUser instance.
     """
 
     def clean(self):
-        is_shibboleth_login_required = self.cleaned_data.get('is_shibboleth_login_required')
-        email = self.cleaned_data.get('email')
-        if is_shibboleth_login_required:
+        if self.cleaned_data.get('is_shibboleth_login_required'):
             try:
-                Institution.is_valid_email_address(email)
-            except InvalidInstitution as e:
+                Institution.is_valid_email_address(self.cleaned_data.get('email'))
+            except InvalidInstitutionalEmailAddress as e:
                 raise forms.ValidationError(str(e))

@@ -9,7 +9,7 @@ from users.models import Profile
 
 def reset_openldap_password(request):
     """
-    Reset a user's SCW account password.
+    Reset a user's LDAP account password.
 
     Args:
         request (django.http.request.HttpRequest): Django HTTP request - required

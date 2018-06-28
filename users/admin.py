@@ -44,8 +44,8 @@ class CustomUserAdmin(UserAdmin):
         for user in queryset:
             user.profile.account_status = Profile.APPROVED
             user.save()
-            update_openldap_user(user.profile)
             rows_updated += 1
+            update_openldap_user(user.profile)
         message = self._account_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
 
@@ -56,8 +56,8 @@ class CustomUserAdmin(UserAdmin):
         for user in queryset:
             user.profile.account_status = Profile.REVOKED
             user.save()
-            update_openldap_user(user.profile)
             rows_updated += 1
+            update_openldap_user(user.profile)
         message = self._account_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
 
@@ -70,12 +70,12 @@ class CustomUserAdmin(UserAdmin):
     # Fields to be used when displaying a CustomUser instance.
     list_display = (
         'email',
-        'created_at',
-        'get_account_status',
         'first_name',
         'last_name',
+        'get_account_status',
         'is_staff',
         'is_shibboleth_login_required',
+        'created_at',
     )
 
     readonly_fields = (
@@ -147,7 +147,7 @@ class CustomUserAdmin(UserAdmin):
     def get_account_status(cls, instance):
         return instance.profile.get_account_status_display()
 
-    get_account_status.short_description = 'Account Status'
+    get_account_status.short_description = 'SCW Account Status'
 
     @classmethod
     def get_scw_username(cls, instance):

@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-# load environment variables from .env
+# Load environment variables from .env
 dotenv_file = os.path.join(BASE_DIR, 'cogs3', '.env')
 if os.path.isfile(dotenv_file):
     load_dotenv(dotenv_file)
@@ -49,25 +49,25 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
+    'cookielaw',
+    'dashboard.apps.DashboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django_rq',
+    'hreflang',
     'institution.apps.InstitutionConfig',
+    'openldap',
     'project.apps.ProjectConfig',
+    'security',
+    'shibboleth',
     'system.apps.SystemConfig',
     'users.apps.UsersConfig',
-    'dashboard.apps.DashboardConfig',
     'widget_tweaks',
-    'shibboleth',
-    'cookielaw',
-    'django_rq',
-    'security',
-    'hreflang',
-    'openldap',
 ]
 
 MIDDLEWARE = [
@@ -100,8 +100,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'shibboleth.context_processors.login_link',
-                'shibboleth.context_processors.logout_link',
             ],
         },
     },
@@ -197,7 +195,6 @@ SHIBBOLETH_FORCE_REAUTH_SESSION_KEY = 'shib_force_reauth'
 CREATE_UNKNOWN_USER = False
 
 # Redis Queue
-RQ_SHOW_ADMIN_LINK = True
 RQ_QUEUES = {
     'default': {
         'HOST': os.environ.get('RQ_HOST'),
@@ -207,6 +204,7 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': os.environ.get('RQ_DEFAULT_TIMEOUT'),
     }
 }
+RQ_SHOW_ADMIN_LINK = True
 
 # OpenLDAP
 OPENLDAP_HOST = os.environ.get('OPENLDAP_HOST')
@@ -372,5 +370,6 @@ LOGGING = {
     }
 }
 
+# Selenium testing
 SELENIUM_WEBDRIVER = webdriver.Firefox
 SELENIUM_WEBDRIVER_PROFILE = webdriver.FirefoxProfile

@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext as _
 
-from institution.exceptions import InvalidIndentityProvider
-from institution.exceptions import InvalidInstitution
+from institution.exceptions import InvalidInstitutionalEmailAddress
+from institution.exceptions import InvalidInstitutionalIndentityProvider
 
 
 class Institution(models.Model):
@@ -24,7 +24,7 @@ class Institution(models.Model):
     @classmethod
     def is_valid_email_address(cls, email):
         """
-        Ensure the email address is a valid institutional address.
+        Ensure the email address is a valid institutional email address.
 
         Args:
             email (str): An email address to validate.
@@ -33,7 +33,7 @@ class Institution(models.Model):
             _, domain = email.split('@')
             Institution.objects.get(base_domain=domain)
         except Exception:
-            raise InvalidInstitution('Email address domain is not supported.')
+            raise InvalidInstitutionalEmailAddress('Email address domain is not supported.')
         else:
             return True
 
@@ -48,7 +48,7 @@ class Institution(models.Model):
         try:
             Institution.objects.get(identity_provider=identity_provider)
         except Exception:
-            raise InvalidIndentityProvider('Identity provider is not supported.')
+            raise InvalidInstitutionalIndentityProvider('Identity provider is not supported.')
         else:
             return True
 
