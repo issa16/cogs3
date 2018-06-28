@@ -122,6 +122,10 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         project.code = 'code1'
         project.save()
 
+        # Check that the user was added to project_owners
+        if not self.user.groups.filter(name='project_owner').exists():
+            raise AssertionError()
+
         # Try the Project Applications and Project Memberships pages
         self.get_url('')
         self.click_link_by_url(reverse('project-application-list'))
@@ -181,6 +185,12 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         if 'Authorised' not in self.selenium.page_source:
             raise AssertionError()
+
+        # Delete the project and check the user was deleted from project_owners
+        project.delete()
+        if self.user.groups.filter(name='project_owner').exists():
+            raise AssertionError()
+
 
     def test_create_project_external(self):
         """
