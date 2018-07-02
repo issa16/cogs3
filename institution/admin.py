@@ -10,3 +10,8 @@ class InstitutionAdmin(admin.ModelAdmin):
         'base_domain',
         'identity_provider',
     )
+    search_fields = (
+        'name',
+        'base_domain',
+        'identity_provider',
+    )

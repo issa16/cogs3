@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.urls import resolve
 from django.urls import reverse
 
-from institution.exceptions import InvalidIndentityProvider
+from institution.exceptions import InvalidInstitutionalIndentityProvider
 from institution.models import Institution
 from shibboleth.middleware import ShibbolethRemoteUserMiddleware
 from shibboleth.middleware import ShibbolethValidationError
@@ -55,7 +55,7 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         # Ensure the Shib-Identity-Provider is supported / valid.
         try:
             Institution.is_valid_identity_provider(identity_provider)
-        except InvalidIndentityProvider:
+        except InvalidInstitutionalIndentityProvider:
             return
 
         # The REMOTE USER header may return the authenticated user's email address or username.

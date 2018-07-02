@@ -1,6 +1,6 @@
-class InvalidInstitution(Exception):
+class InvalidInstitutionalEmailAddress(Exception):
     pass
 
 
-class InvalidIndentityProvider(Exception):
+class InvalidInstitutionalIndentityProvider(Exception):
     pass

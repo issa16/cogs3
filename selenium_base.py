@@ -15,8 +15,8 @@ from users.models import CustomUser
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
     fixtures = [
-        'institution/fixtures/institutions.yaml',
-        'project/fixtures/funding_sources.yaml',
+        'institution/fixtures/institutions.json',
+        'project/fixtures/tests/funding_sources.json',
     ]
 
     serialized_rollback = True
@@ -56,11 +56,13 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.fill_form_by_id(form_fields)
         self.submit_form(form_fields)
         # Check that we didn't get the fail response
-        assert "Please enter a correct email and password" not in self.selenium.page_source
+        if "Please enter a correct email and password" in self.selenium.page_source:
+            raise AssertionError()
 
     def log_out(self):
         self.get_url(reverse('logout'))
-        assert "accounts/logged_out/" in self.selenium.current_url
+        if "accounts/logged_out/" not in self.selenium.current_url:
+            raise AssertionError()
         self.get_url('')
 
     def submit_form(self, form_fields):
@@ -68,7 +70,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
         # This seems to be necessary Geckodriver (Firefox)
         # I'm guessing it take a moment to process the submission
-        time.sleep(0.2)
+        time.sleep(1)
 
     def click_by_id(self, text):
         self.selenium.find_element_by_id(text).click()

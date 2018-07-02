@@ -1,7 +1,8 @@
 import datetime
-import os
 import mimetypes
+import os
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -11,15 +12,34 @@ from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.urls import reverse
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
-from django.utils.translation import gettext_lazy as _
-from django.conf import settings
+from django.contrib.auth.views import redirect_to_login
 
-from .forms import ProjectCreationForm
-from .forms import ProjectUserMembershipCreationForm
-from .models import Project
-from .models import ProjectUserMembership
+from project.forms import ProjectCreationForm
+from project.forms import ProjectUserMembershipCreationForm
+from project.models import Project
+from project.models import ProjectUserMembership
+from project.openldap import update_openldap_project_membership
+
+
+class PermissionAndLoginRequiredMixin(PermissionRequiredMixin):
+    """
+    CBV mixin which extends the PermissionRequiredMixin to verify
+    that the user is logged in and performs a separate action if not
+    """
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(reverse('home'))
+
+    def handle_not_logged_in(self):
+        return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_not_logged_in()
+        return super(PermissionAndLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
 class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
@@ -33,6 +53,7 @@ class ProjectCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateV
         if form_class is None:
             form_class = self.get_form_class()
         return form_class(self.request.user, **self.get_form_kwargs())
+
 
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'projects'
@@ -63,6 +84,7 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
             return HttpResponseRedirect(reverse('project-application-list'))
         return super().dispatch(request, *args, **kwargs)
 
+
 class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
 
     def user_passes_test(self, request):
@@ -75,11 +97,11 @@ class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
         if not self.user_passes_test(request):
             return HttpResponseRedirect(reverse('project-application-list'))
         project = Project.objects.get(id=self.kwargs['pk'])
-        filename = os.path.join(settings.MEDIA_ROOT,project.document.name)
+        filename = os.path.join(settings.MEDIA_ROOT, project.document.name)
         with open(filename, 'rb') as f:
             data = f.read()
         response = HttpResponse(data, content_type=mimetypes.guess_type(filename)[0])
-        response['Content-Disposition'] = 'attachment; filename="'+os.path.basename(filename)+'"'
+        response['Content-Disposition'] = 'attachment; filename="' + os.path.basename(filename) + '"'
         return response
 
 
@@ -108,7 +130,7 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
         return super().form_valid(form)
 
 
-class ProjectUserRequestMembershipListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListView):
+class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, generic.ListView):
     permission_required = 'project.change_projectusermembership'
     context_object_name = 'project_user_membership_requests'
     template_name = 'project/membership/requests.html'
@@ -127,7 +149,7 @@ class ProjectUserRequestMembershipListView(PermissionRequiredMixin, LoginRequire
         return queryset.order_by('-created_time')
 
 
-class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequiredMixin, generic.UpdateView):
+class ProjectUserRequestMembershipUpdateView(PermissionAndLoginRequiredMixin, generic.UpdateView):
     permission_required = 'project.change_projectusermembership'
     success_url = reverse_lazy('project-user-membership-request-list')
     context_object_name = 'project_user_membership_requests'
@@ -148,14 +170,17 @@ class ProjectUserRequestMembershipUpdateView(PermissionRequiredMixin, LoginRequi
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
-            return HttpResponseRedirect(reverse('project-user-membership-request-list'))
+            return HttpResponseRedirect(
+                reverse('project-user-membership-request-list')
+            )
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        if 'status' in form.changed_data:
+            update_openldap_project_membership(project_membership=form.instance)
         if self.request.is_ajax():
-            data = {'message': 'Successfully updated.'}
-            return JsonResponse(data)
+            return JsonResponse({'message': 'Successfully updated.'})
         else:
             return response
 

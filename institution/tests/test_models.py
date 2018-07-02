@@ -1,55 +1,15 @@
 from django.test import TestCase
 
+from institution.exceptions import InvalidInstitutionalEmailAddress
+from institution.exceptions import InvalidInstitutionalIndentityProvider
 from institution.models import Institution
 
 
 class InstitutionTests(TestCase):
+
     fixtures = [
-        'institution/fixtures/institutions.yaml',
+        'institution/fixtures/institutions.json',
     ]
-
-    @classmethod
-    def create_institution(cls, name, base_domain, identity_provider):
-        """
-        Create an Institution instance.
-
-        Args:
-            name (str): Name of the institution.
-            base_domain (str): Base domain of the institution.
-            identity_provider (str): Institution's Shibboleth identity provider.
-        """
-        return Institution.objects.create(
-            name=name,
-            base_domain=base_domain,
-            identity_provider=identity_provider,
-        )
-
-    def test_institution_creation(self):
-        """
-        Ensure we can create an Institution instance.
-        """
-        name = 'New University'
-        base_domain = 'new.ac.uk'
-        identity_provider = 'https://idp.new.ac.uk/shibboleth'
-        institution = self.create_institution(
-            name=name,
-            base_domain=base_domain,
-            identity_provider=identity_provider,
-        )
-        self.assertTrue(isinstance(institution, Institution))
-        self.assertEqual(institution.__str__(), institution.name)
-        self.assertEqual(institution.name, name)
-        self.assertEqual(institution.base_domain, base_domain)
-        self.assertEqual(institution.identity_provider, identity_provider)
-
-    def test_id_str_produced(self):
-        institution = self.create_institution(
-            name='New University',
-            base_domain='new.ac.uk',
-            identity_provider='https://new.ac.uk/shibboleth',
-        )
-        self.assertEqual(institution.id_str(), "new-university")
-
 
     def test_institutional_predicates(self):
         """
@@ -75,12 +35,35 @@ class InstitutionTests(TestCase):
             iss = institution.is_sunbird
             ics = institution.is_hawk
 
-            if inst_name in ['swansea','aber']:
+            if inst_name in ['swansea', 'aber']:
                 self.assertTrue(iss)
                 self.assertFalse(ics)
-            elif inst_name in ['cardiff','bangor']:
+            elif inst_name in ['cardiff', 'bangor']:
                 self.assertTrue(ics)
                 self.assertFalse(iss)
             else:
                 raise ValueError(f'Institution {inst_name} not recognised')
 
+    def test_valid_institutional_email_address(self):
+        self.assertTrue(Institution.is_valid_email_address('user@bangor.ac.uk'))
+
+    def test_invalid_institutional_email_address(self):
+        with self.assertRaises(InvalidInstitutionalEmailAddress) as e:
+            Institution.is_valid_email_address('invalid-email@invalid.ac.uk')
+        self.assertEqual(str(e.exception), 'Email address domain is not supported.')
+
+    def test_valid_institutional_identity_provider(self):
+        self.assertTrue(Institution.is_valid_identity_provider('https://idp.bangor.ac.uk/shibboleth'))
+
+    def test_invalid_institutional_identity_provider(self):
+        with self.assertRaises(InvalidInstitutionalIndentityProvider) as e:
+            Institution.is_valid_identity_provider('https://idp.invalid-identity-provider.ac.uk/shibboleth')
+        self.assertEqual(str(e.exception), 'Identity provider is not supported.')
+
+    def test_id_str_produced(self):
+        institution = Institution.objects.create(
+            name='New University',
+            base_domain='new.ac.uk',
+            identity_provider='https://new.ac.uk/shibboleth',
+        )
+        self.assertEqual(institution.id_str(), "new-university")

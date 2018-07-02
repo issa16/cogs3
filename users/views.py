@@ -6,11 +6,12 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import TemplateView
 
-from users.forms import CustomUserCreationForm
+from users.forms import RegisterForm
+from users.models import CustomUser
 
 
 class RegisterView(generic.CreateView):
-    form_class = CustomUserCreationForm
+    form_class = RegisterForm
     success_url = reverse_lazy('login')
     template_name = 'registration/register.html'
 
@@ -22,6 +23,9 @@ class RegisterView(generic.CreateView):
     def form_valid(self, form):
         form.instance.is_active = True
         form.instance.is_shibboleth_login_required = True
+        form.instance.email = self.request.session['shib']['username']
+        form.instance.username = form.instance.email
+        form.instance.set_password(CustomUser.objects.make_random_password(length=30))
         return super().form_valid(form)
 
 
@@ -33,7 +37,5 @@ class LogoutView(TemplateView):
         if self.request.user.is_shibboleth_login_required:
             self.request.session[settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY] = True
             self.request.session.set_expiry(0)
-
         auth.logout(self.request)
-
         return redirect(reverse('logged_out'))

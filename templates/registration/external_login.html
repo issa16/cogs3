@@ -12,10 +12,9 @@
     </ul>
     <form method="post" novalidate>
         {% csrf_token %}
-        <h6 class="m-4 text-center">{% trans "External Collaborators Login" %}</h6>
         {% include 'includes/generic_form.html' with form=form %}
         <p class="text-center">
-            {% trans "Forgotten Password?" %}
+            <a href="{% url 'password_reset' %}">{% trans "Forgotten Password?" %}</a>
         </p>
         <button type="submit" class="m-auto btn btn-lg btn-primary btn-block">{% trans "Login" %}</button>
     </form>

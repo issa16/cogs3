@@ -1,24 +1,51 @@
 from django.test import TestCase
-
 from django.urls import reverse
 
-from institution.tests.test_models import InstitutionTests
-from users.tests.test_models import CustomUserTests
+from institution.models import Institution
+from users.models import CustomUser
+from users.models import Profile
 from users.views import RegisterView
 
 
 class UserViewTests(TestCase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+    ]
+
     def setUp(self):
-        # Create an institution
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
+        self.institution = Institution.objects.get(name='Example University')
+        self.shibboleth_user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
+        self.guest_user = CustomUser.objects.get(email='guest.user@external.ac.uk')
 
 
 class RegisterViewTests(UserViewTests, TestCase):
+
+    def test_register_user(self):
+        """
+        Ensure the register form works when given valid data.
+        """
+        email = '@'.join(['authorised-user', self.institution.base_domain])
+        self.assertFalse(CustomUser.objects.filter(email=email).exists())
+        headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
+        }
+        data = {
+            'first_name': 'John',
+            'last_name': 'Smith',
+        }
+        response = self.client.post(
+            reverse('register'),
+            data,
+            **headers,
+        )
+        self.assertTrue(CustomUser.objects.filter(email=email).exists())
+        user = CustomUser.objects.get(email=email)
+        self.assertEqual(user.profile.account_status, Profile.AWAITING_APPROVAL)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('login'))
 
     def test_register_view_as_an_unauthorised_user(self):
         """
@@ -38,14 +65,11 @@ class RegisterViewTests(UserViewTests, TestCase):
 
     def test_register_view_as_an_authorised_user(self):
         """
-        Ensure an authorised user is redirected to the dashboard and can not access
-        the register view.
+        Ensure an authorised user is redirected to the dashboard.
         """
-        email = '@'.join(['user', self.institution.base_domain])
-        CustomUserTests.create_shibboleth_user(email=email)
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
-            'REMOTE_USER': email,
+            'REMOTE_USER': self.shibboleth_user.email,
         }
         response = self.client.get(
             reverse('register'),
@@ -59,7 +83,7 @@ class LoginViewTests(UserViewTests, TestCase):
 
     def test_login_view_as_an_unauthorised_user(self):
         """
-        Ensure an unauthorised user can access the register view.
+        Ensure an unauthorised user is redirected to the register view.
         """
         email = '@'.join(['unauthorised-user', self.institution.base_domain])
         headers = {
@@ -75,14 +99,11 @@ class LoginViewTests(UserViewTests, TestCase):
 
     def test_login_view_as_an_authorised_user(self):
         """
-        Ensure an authorised user is redirected to the dashboard and can not access
-        the register view.
+        Ensure an authorised user is redirected to the dashboard.
         """
-        email = '@'.join(['user', self.institution.base_domain])
-        CustomUserTests.create_shibboleth_user(email=email)
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
-            'REMOTE_USER': email,
+            'REMOTE_USER': self.shibboleth_user.email
         }
         response = self.client.get(
             reverse('login'),
@@ -90,7 +111,6 @@ class LoginViewTests(UserViewTests, TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
-
 
 
 class LogoutViewTests(UserViewTests, TestCase):
@@ -113,13 +133,11 @@ class LogoutViewTests(UserViewTests, TestCase):
 
     def test_logout_view_as_an_authorised_user(self):
         """
-        Ensure an authorised user can access the logout view.
+        Ensure an authorised user is redirected to the logout view.
         """
-        email = '@'.join(['user', self.institution.base_domain])
-        CustomUserTests.create_shibboleth_user(email=email)
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
-            'REMOTE_USER': email,
+            'REMOTE_USER': self.shibboleth_user.email,
         }
         response = self.client.get(
             reverse('logout'),

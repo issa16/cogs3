@@ -1,56 +1,207 @@
 import jsonschema
-import logging
 import requests
 
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+from django_rq import job
 
-from openldap import schemas
-from openldap.decorators import OpenLDAPException
+from openldap.schemas.project.activate_project import activate_project_json
+from openldap.schemas.project.create_project import create_project_json
+from openldap.schemas.project.get_project import get_project_json
+from openldap.schemas.project.list_projects import list_projects_json
 from openldap.util import decode_response
+from openldap.util import email_user
+from openldap.util import raise_for_data_error
+from openldap.util import verify_payload_data
 
-logger = logging.getLogger('openldap')
 
-
-@OpenLDAPException(logger)
+@job
 def list_projects():
     """
-    List all projects.
+    List all OpenLDAP projects.
     """
-    raise NotImplementedError('Not yet implemented.')
+    url = ''.join([settings.OPENLDAP_HOST, 'project/'])
+    headers = {'Cache-Control': 'no-cache'}
+    try:
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=5,
+        )
+        response.raise_for_status()
+        response = decode_response(response)
+        jsonschema.validate(response, list_projects_json)
+        raise_for_data_error(response.get('data'))
+        return response
+    except Exception as e:
+        raise e
 
 
-@OpenLDAPException(logger)
-def create_project(code, category, title, technical_lead):
+@job
+def get_project(project_code):
     """
-    Create a project.
+    Get an existing OpenLDAP project.
 
     Args:
-        code (str): Project code (prefix_00001) - required
-        category (str): Project category [1,2,3,4,5] - required
-        title (str): Project title - required
-        technical_lead (str): Project technical lead - required
+        project_code (str): Project code - required
     """
-    raise NotImplementedError('Not yet implemented.')
+    url = ''.join([settings.OPENLDAP_HOST, 'project/', project_code, '/'])
+    headers = {'Cache-Control': 'no-cache'}
+    try:
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=5,
+        )
+        response.raise_for_status()
+        response = decode_response(response)
+        jsonschema.validate(response, get_project_json)
+        raise_for_data_error(response.get('data'))
+        return response
+    except Exception as e:
+        raise e
 
 
-@OpenLDAPException(logger)
-def update_project(code, status):
+@job
+def create_project(project, notify_user=True):
     """
-    Update an existing project.
+    Create an OpenLDAP project.
 
     Args:
-        code (str): Project code (prefix_00001) - required
-        status (str): Project status [revoked, suspended, closed, approved] - required
+        project (Project): Project instance - required
+        notify_user (bool): Issue a notification email to the project technical lead? - optional
     """
-    raise NotImplementedError('Not yet implemented.')
+    url = ''.join([settings.OPENLDAP_HOST, 'project/'])
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cache-Control': 'no-cache',
+    }
+    title = '{title} (Principal Investigator = {pi}, Technical Lead = {tech_lead})'.format(
+        pi=project.pi,
+        tech_lead=project.tech_lead.email,
+        title=project.title,
+    )
+    payload = {
+        'code': project.code,
+        'category': project.category.id,
+        'title': title,
+        'technical_lead': project.tech_lead.profile.scw_username,
+    }
+    try:
+        response = requests.post(
+            url,
+            headers=headers,
+            data=payload,
+            timeout=5,
+        )
+        response.raise_for_status()
+        response = decode_response(response)
+        jsonschema.validate(response, create_project_json)
+        data = response.get('data')
+        raise_for_data_error(data)
+        mapping = {
+            'code': 'cn',
+            'technical_lead': 'memberUid',
+            'title': 'description',
+        }
+        verify_payload_data(payload, data, mapping)
+
+        # Update project details.
+        project.gid_number = data.get('gidNumber', '')
+        project.save()
+
+        if notify_user:
+            subject = _('{company_name} Project {code} Created'.format(
+                company_name=settings.COMPANY_NAME,
+                code=project.code,
+            ))
+            context = {
+                'first_name': project.tech_lead.first_name,
+                'to': project.tech_lead.email,
+                'status': project.get_status_display(),
+            }
+            text_template_path = 'notifications/project/update.txt'
+            html_template_path = 'notifications/project/update.html'
+            email_user(subject, context, text_template_path, html_template_path)
+        return response
+    except Exception as e:
+        if 'Existing Project' not in str(e):
+            project.reset_status()
+        raise e
 
 
-@OpenLDAPException(logger)
-def delete_project(code):
+@job
+def deactivate_project(project, notify_user=True):
     """
-    Delete a project.
+    Deactivate an OpenLDAP project.
 
     Args:
-        code (str): Project code (prefix_00001) - required
+        code (str): Project code - required
     """
-    raise NotImplementedError('Not yet implemented.')
+    url = ''.join([settings.OPENLDAP_HOST, 'project/', project.code, '/'])
+    headers = {'Cache-Control': 'no-cache'}
+    try:
+        response = requests.delete(
+            url,
+            headers=headers,
+            timeout=5,
+        )
+        response.raise_for_status()
+
+        if notify_user:
+            subject = _('{company_name} Project {code} Deactivated'.format(
+                company_name=settings.COMPANY_NAME,
+                code=project.code,
+            ))
+            context = {
+                'first_name': project.tech_lead.first_name,
+                'to': project.tech_lead.email,
+                'status': project.get_status_display(),
+            }
+            text_template_path = 'notifications/project/update.txt'
+            html_template_path = 'notifications/project/update.html'
+            email_user(subject, context, text_template_path, html_template_path)
+        return response
+    except Exception as e:
+        project.reset_status()
+        raise e
+
+
+@job
+def activate_project(project, notify_user=True):
+    """
+    Activate an OpenLDAP project.
+
+    Args:
+        code (str): Project code - required
+    """
+    url = ''.join([settings.OPENLDAP_HOST, 'project/enable/', project.code, '/'])
+    headers = {'Cache-Control': 'no-cache'}
+    try:
+        response = requests.put(
+            url,
+            headers=headers,
+            timeout=5,
+        )
+        response.raise_for_status()
+        response = decode_response(response)
+        jsonschema.validate(response, activate_project_json)
+        raise_for_data_error(response.get('data'))
+
+        if notify_user:
+            subject = _('{company_name} Project {code} Activated'.format(
+                company_name=settings.COMPANY_NAME,
+                code=project.code,
+            ))
+            context = {
+                'first_name': project.tech_lead.first_name,
+                'to': project.tech_lead.email,
+                'status': project.get_status_display(),
+            }
+            text_template_path = 'notifications/project/update.txt'
+            html_template_path = 'notifications/project/update.html'
+            email_user(subject, context, text_template_path, html_template_path)
+        return response
+    except Exception as e:
+        project.reset_status()
+        raise e
