@@ -6,12 +6,18 @@ from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from institution.models import Institution
+from institution.tests.test_models import InstitutionTests
+from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
 from project.models import ProjectCategory
 from project.models import ProjectFundingSource
 from project.models import ProjectUserMembership
+from project.tests.test_models import ProjectCategoryTests
+from project.tests.test_models import ProjectFundingSourceTests
+from project.tests.test_models import ProjectTests
 from users.models import CustomUser
+from users.tests.test_models import CustomUserTests
 
 
 class ProjectFormTests(TestCase):
@@ -33,6 +39,18 @@ class ProjectFormTests(TestCase):
         self.project = Project.objects.get(code=self.project_code)
         self.project_owner = self.project.tech_lead
         self.project_applicant = CustomUser.objects.get(email='guest.user@external.ac.uk')
+
+        # Create users for each institution
+        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+
+    def test_project_form_arcca_field(self):
+        for i in self.institution_names:
+            user = self.institution_users[i]
+            form = ProjectCreationForm(user)
+            if user.profile.institution.is_cardiff:
+                self.assertTrue('legacy_arcca_id' in form.fields)
+            else:
+                self.assertFalse('legacy_arcca_id' in form.fields)
 
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):

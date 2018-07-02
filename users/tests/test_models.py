@@ -2,6 +2,7 @@ from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from institution.models import Institution
+from institution.models import Institution
 from users.admin import CustomUserAdmin
 from users.models import CustomUser
 from users.models import CustomUserManager
@@ -226,3 +227,18 @@ class CustomUserTests(TestCase):
             email=email,
             is_shibboleth_login_required=False,
         )
+
+    @classmethod
+    def create_institutional_users(cls):
+        inst_all = Institution.objects.all()
+
+        names = [i.base_domain.split('.')[0] for i in inst_all]
+        users = {}
+
+        for i in names:
+            username = f'{i}_user'
+            email = f'{i}@{i}.ac.uk'
+
+            users[i] = CustomUserTests.create_custom_user(email=email)
+
+            return (names, users)

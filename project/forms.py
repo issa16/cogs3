@@ -165,6 +165,12 @@ class ProjectCreationForm(forms.ModelForm):
             }),
         }
 
+    def __init__(self, user, *args, **kwargs):
+        super(ProjectCreationForm, self).__init__(*args, **kwargs)
+        self.user = user
+        if self.user.profile.institution is not None and not self.user.profile.institution.is_cardiff:
+            del self.fields['legacy_arcca_id']
+
     def set_user(self, user):
         self.user = user
 
