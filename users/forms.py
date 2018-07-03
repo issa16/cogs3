@@ -29,7 +29,7 @@ class ProfileUpdateForm(forms.ModelForm):
 
         # Assign the project.add permission to an approved user.
         if profile.account_status == Profile.APPROVED:
-            if not profile.user.has_perm('add_project'):
+            if not profile.user.has_perm('project.add_project'):
                 permission = Permission.objects.get(codename='add_project')
                 profile.user.user_permissions.add(permission)
 
