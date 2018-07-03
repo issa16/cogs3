@@ -24,7 +24,7 @@ class RegisterViewTests(UserViewTests, TestCase):
 
     def test_register_user(self):
         """
-        Ensure the register form works when given valid data.
+        Ensure the register view is accessible for an authenticated shibboleth user.
         """
         email = '@'.join(['authorised-user', self.institution.base_domain])
         self.assertFalse(CustomUser.objects.filter(email=email).exists())
@@ -35,23 +35,26 @@ class RegisterViewTests(UserViewTests, TestCase):
         data = {
             'first_name': 'John',
             'last_name': 'Smith',
+            'reason_for_account': 'HPC',
+            'accepted_terms_and_conditions': True,
         }
         response = self.client.post(
             reverse('register'),
             data,
             **headers,
         )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('login'))
         self.assertTrue(CustomUser.objects.filter(email=email).exists())
         user = CustomUser.objects.get(email=email)
         self.assertEqual(user.profile.account_status, Profile.AWAITING_APPROVAL)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse('login'))
+        self.assertFalse(user.get_all_permissions())
 
-    def test_register_view_as_an_unauthorised_user(self):
+    def test_register_view_as_unregistered_application_user(self):
         """
-        Ensure an unauthorised user can access the register view.
+        Ensure the register view is accessible to an unregistred application user.
         """
-        email = '@'.join(['unauthorised-user', self.institution.base_domain])
+        email = '@'.join(['unregistred-user', self.institution.base_domain])
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
             'REMOTE_USER': email,
@@ -63,12 +66,12 @@ class RegisterViewTests(UserViewTests, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data['view'], RegisterView))
 
-    def test_register_view_as_an_authorised_user(self):
+    def test_register_view_as_authorised_application_user(self):
         """
-        Ensure an authorised user is redirected to the dashboard.
+        Ensure an authorised application user is redirected to the dashboard.
         """
         headers = {
-            'Shib-Identity-Provider': self.institution.identity_provider,
+            'Shib-Identity-Provider': self.shibboleth_user.profile.institution.identity_provider,
             'REMOTE_USER': self.shibboleth_user.email,
         }
         response = self.client.get(

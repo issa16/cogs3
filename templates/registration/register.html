@@ -3,13 +3,13 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
-	<div class="form-logo mx-auto mt-4">
+	<div class="form-logo mx-auto mt-3">
 		<img class="img-fluid" src="{% static "img/scw.png" %}" alt="{% trans "Supercomputing Wales" %}">
 	</div>
-	<div class="mx-auto mt-4 form-signin">
+	<div class="mx-auto mt-3 form-signin">
 		<form method="post">
 			{% csrf_token %}
-			<h5 class="text-center mb-4 mt-2">{% trans "Create a Supercomputing Wales account" %}</h5>
+			<h5 class="text-center mb-4 mt-3">{% trans "Create a Supercomputing Wales account" %}</h5>
 			{% include 'includes/errors.html' %}
 			<div class="form-group mb-3">
 				<label for="email">{% trans "Identifier" %}</label>
@@ -17,26 +17,84 @@
 			</div>
 			<div class="form-group mb-3">
 				<label for="first-name">{% trans "First name" %}</label>
-				<input type="text" class="form-control" id="first-name" name="first_name">
+				<input type="text" class="form-control" id="first-name" name="first_name" required>
 			</div>
 			<div class="form-group mb-3">
 				<label for="last-name">{% trans "Last name" %}</label>
-				<input type="text" class="form-control" id="last-name" name="last_name">
+				<input type="text" class="form-control" id="last-name" name="last_name" required>
 			</div>
 			<div class="form-group mb-3">
-				<label for="last-name">{% trans "Reason for application" %}</label>
-				<input type="text" class="form-control" id="last-name" name="last_name">
+				<label for="reason-for-account">{% trans "Reason for account" %}</label>
+				<textarea rows="5" class="form-control" id="reason-for-account" name="reason_for_account" required></textarea>
 			</div>
 			<div class="form-group text-center mb-3">
 				<div class="form-check">
-					<input class="form-check-input" type="checkbox" id="tandc-check" name="tandc_check">
-					<label class="form-check-label" for="tandc-check">
-						{% trans "I agree to the Terms and Conditions." %}
+					<input class="form-check-input" type="checkbox" id="accepted-terms-and-conditions" name="accepted_terms_and_conditions" required>
+					<label class="form-check-label" for="accepted-terms-and-conditions">
+						{% trans "I agree to the" %} <a href="#" data-toggle="modal" data-target="#terms-and-conditions-modal">{% trans "Terms and Conditions" %}</a>.
 					</label>
 				</div>
 			</div>
 			<button class="btn btn-primary btn-block" type="submit">{% trans "Create a Supercomputing Wales account" %}</button>
-			<p class="mt-3 mb-1 text-center text-muted">© {% trans "cogs3" %}</p>
+			<p class="mt-3 mb-1 text-center text-muted">© {% trans "Supercomputing Wales" %}</p>
 		</form>
+	</div>
+	<div id="terms-and-conditions-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">{% trans "Terms and Conditions" %}</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>
+						Access to the Supercomputing Wales systems is subject to the following Terms & Conditions.  If you do not accept them, you must not use the systems.
+					</p>
+					<p>
+						Usage must be in compliance with your host institution's Acceptable Use Policy and the JANET Acceptable Use Policy.
+						<ul>
+							<li>
+								<a href="https://community.ja.net/library/acceptable-use-policy">The JANET document</a>
+							</li>
+							<li>
+								<a href="https://www.aber.ac.uk/en/is/regulations/networkuse/">Aberystwyth University's policy</a>
+							</li>
+							<li>
+								<a href="https://www.bangor.ac.uk/itservices/policies/acceptable-regulations.pdf">Bangor University's policy</a>
+							</li>
+							<li>
+								<a href="https://sites.cardiff.ac.uk/isf/policies/information-services-regulations-and-acceptable-use/">Cardiff University's policy</a>
+							</li>
+							<li>
+								<a href="http://www.swansea.ac.uk/it-services/policies-and-procedures">Swansea University's policy</a>
+							</li>
+						</ul>
+					</p>
+					<p>
+						All data stored on the Supercomputing Wales systems is at the owner's own risk.
+					</p>
+					<p>
+						Unless explicitly advised, backups will not be taken of data by Supercomputing Wales.  You are advised to maintain your own backups of important or not easily recreated data.
+					</p>
+					<p>
+						Supercomputing Wales accepts no liability for any loss of data.
+					</p>
+					<p>
+						Any user found breaching acceptable use will have their accounts immediately suspended and will be reported to their host institution and be subject to the appropriate disciplinary action.
+					</p>
+					<p>
+						Any software used on the cluster is under the correct licensing conditions. If a user presents a license for software to be installed on the Supercomputing Wales systems they are confirming that they have the original software suppliers consent for it to be installed on a 3rd party system.
+					</p>
+					<p>
+						Unauthorised access to commercial software will result in access being immediately suspended pending further investigation.
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Close" %}</button>
+				</div>
+			</div>
+		</div>
 	</div>
 {% endblock %}

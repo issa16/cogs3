@@ -255,6 +255,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         max_length=30,
         verbose_name='last name',
     )
+    reason_for_account = models.TextField(
+        blank=True,
+        max_length=1024,
+        verbose_name=_('Reason for account'),
+    )
+    accepted_terms_and_conditions = models.BooleanField(
+        default=False,
+        verbose_name='Terms and Conditions',
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -279,9 +288,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                     'institution': institution,
                 },
             )
-            if created:
-                permission = Permission.objects.get(codename='add_project')
-                self.user_permissions.add(permission)
         else:
             Profile.objects.update_or_create(user=self)
         self.profile.save()

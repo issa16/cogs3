@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.models import Permission
 
 from institution.exceptions import InvalidInstitutionalEmailAddress
 from institution.models import Institution
@@ -25,9 +26,18 @@ class ProfileUpdateForm(forms.ModelForm):
 
     def save(self, commit=True):
         profile = super(ProfileUpdateForm, self).save(commit=False)
+
+        # Assign the project.add permission to an approved user.
+        if profile.account_status == Profile.APPROVED:
+            if not profile.user.has_perm('add_project'):
+                permission = Permission.objects.get(codename='add_project')
+                profile.user.user_permissions.add(permission)
+
+        # Ensure any updates to the account status are propagated to LDAP.
         profile.previous_account_status = self.initial_account_status
         if self.initial_account_status != profile.account_status:
             update_openldap_user(profile)
+
         if commit:
             profile.save()
         return profile
@@ -81,11 +91,10 @@ class RegisterForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = (
-            'is_staff',
-            'is_active',
-            'is_shibboleth_login_required',
             'first_name',
             'last_name',
+            'reason_for_account',
+            'accepted_terms_and_conditions',
         )
 
     def __init__(self, *args, **kwargs):
@@ -93,6 +102,8 @@ class RegisterForm(forms.ModelForm):
         # Additionally required attributes
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
+        self.fields['reason_for_account'].required = True
+        self.fields['accepted_terms_and_conditions'].required = True
 
 
 class CustomUserChangeForm(UserChangeForm):

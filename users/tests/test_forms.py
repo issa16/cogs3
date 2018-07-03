@@ -186,11 +186,13 @@ class RegisterFormTests(TestCase):
         """
         Ensure the registration form works for shibboleth users.
         """
-        form = RegisterForm(data={
-            'is_shibboleth_login_required': True,
-            'first_name': 'Joe',
-            'last_name': 'Bloggs',
-        })
+        form = RegisterForm(
+            data={
+                'first_name': 'Joe',
+                'last_name': 'Bloggs',
+                'reason_for_account': 'HPC',
+                'accepted_terms_and_conditions': True,
+            })
         self.assertTrue(form.is_valid())
 
     def test_without_required_fields(self):
@@ -201,6 +203,8 @@ class RegisterFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['first_name'], ['This field is required.'])
         self.assertEqual(form.errors['last_name'], ['This field is required.'])
+        self.assertEqual(form.errors['reason_for_account'], ['This field is required.'])
+        self.assertEqual(form.errors['accepted_terms_and_conditions'], ['This field is required.'])
 
 
 class CustomUserChangeFormTests(TestCase):
