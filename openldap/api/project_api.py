@@ -63,7 +63,7 @@ def get_project(project_code):
 
 
 @job
-def create_project(project, notify_user=True):
+def create_project(project, notify_user=False):
     """
     Create an OpenLDAP project.
 
@@ -131,7 +131,7 @@ def create_project(project, notify_user=True):
 
 
 @job
-def deactivate_project(project, notify_user=True):
+def deactivate_project(project, notify_user=False):
     """
     Deactivate an OpenLDAP project.
 
@@ -168,7 +168,7 @@ def deactivate_project(project, notify_user=True):
 
 
 @job
-def activate_project(project, notify_user=True):
+def activate_project(project, notify_user=False):
     """
     Activate an OpenLDAP project.
 

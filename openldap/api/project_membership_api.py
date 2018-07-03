@@ -35,7 +35,7 @@ def list_project_memberships(project_code):
 
 
 @job
-def create_project_membership(project_membership, notify_user=True):
+def create_project_membership(project_membership, notify_user=False):
     """
     Create an OpenLDAP project membership.
 
@@ -81,7 +81,7 @@ def create_project_membership(project_membership, notify_user=True):
 
 
 @job
-def delete_project_membership(project_membership, notify_user=True):
+def delete_project_membership(project_membership, notify_user=False):
     """
     Delete an OpenLDAP project membership.
 

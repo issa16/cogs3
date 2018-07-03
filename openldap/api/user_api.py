@@ -39,7 +39,7 @@ def list_users():
 
 
 @job
-def create_user(user, notify_user=True):
+def create_user(user, notify_user=False):
     """
     Create an OpenLDAP user account.
 
@@ -154,7 +154,7 @@ def get_user_by_email_address(email_address):
 
 
 @job
-def reset_user_password(user, password, notify_user=True):
+def reset_user_password(user, password, notify_user=False):
     """
     Reset a user's OpenLDAP account password.
 
@@ -196,7 +196,7 @@ def reset_user_password(user, password, notify_user=True):
 
 
 @job
-def deactivate_user_account(user, notify_user=True):
+def deactivate_user_account(user, notify_user=False):
     """
     Deactivate an existing user's OpenLDAP account.
 
@@ -231,7 +231,7 @@ def deactivate_user_account(user, notify_user=True):
 
 
 @job
-def activate_user_account(user, notify_user=True):
+def activate_user_account(user, notify_user=False):
     """
     Activate an existing user's OpenLDAP account.
 
