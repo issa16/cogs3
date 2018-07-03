@@ -19,7 +19,7 @@ from openldap.util import verify_payload_data
 @job
 def list_users():
     """
-    List all OpenLDAP user accounts.
+    List all LDAP user accounts.
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/'])
     headers = {'Cache-Control': 'no-cache'}
@@ -41,7 +41,7 @@ def list_users():
 @job
 def create_user(user, notify_user=False):
     """
-    Create an OpenLDAP user account.
+    Create an LDAP user account.
 
     Args:
         user (CustomUser): User instance - required
@@ -106,7 +106,7 @@ def create_user(user, notify_user=False):
 @job
 def get_user_by_id(user_id):
     """
-    Get an existing user's OpenLDAP account details by user id.
+    Get an existing user's LDAP account details by user id.
 
     Args:
         user_id (str): User id - required
@@ -131,7 +131,7 @@ def get_user_by_id(user_id):
 @job
 def get_user_by_email_address(email_address):
     """
-    Get an existing user's OpenLDAP account details by email address.
+    Get an existing user's LDAP account details by email address.
 
     Args:
         email_address (str): Email address - required
@@ -154,9 +154,9 @@ def get_user_by_email_address(email_address):
 
 
 @job
-def reset_user_password(user, password, notify_user=False):
+def reset_user_password(user, password, notify_user=True):
     """
-    Reset a user's OpenLDAP account password.
+    Reset a user's LDAP account password.
 
     Args:
         user (CustomUser): User instance - required
@@ -182,7 +182,7 @@ def reset_user_password(user, password, notify_user=False):
         raise_for_data_error(response.get('data'))
 
         if notify_user:
-            subject = _('{company_name} Password Reset'.format(company_name=settings.COMPANY_NAME))
+            subject = _('{company_name} Password Reset Request'.format(company_name=settings.COMPANY_NAME))
             context = {
                 'first_name': user.first_name,
                 'to': user.email,
@@ -198,7 +198,7 @@ def reset_user_password(user, password, notify_user=False):
 @job
 def deactivate_user_account(user, notify_user=False):
     """
-    Deactivate an existing user's OpenLDAP account.
+    Deactivate an existing user's LDAP account.
 
     Args:
         user (CustomUser): User instance - required
@@ -233,7 +233,7 @@ def deactivate_user_account(user, notify_user=False):
 @job
 def activate_user_account(user, notify_user=False):
     """
-    Activate an existing user's OpenLDAP account.
+    Activate an existing user's LDAP account.
 
     Args:
         user (CustomUser): User instance - required
