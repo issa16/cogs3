@@ -62,8 +62,8 @@ class InstitutionTests(TestCase):
 
     def test_id_str_produced(self):
         institution = Institution.objects.create(
-            name='New University',
-            base_domain='new.ac.uk',
-            identity_provider='https://new.ac.uk/shibboleth',
+            name='example University',
+            base_domain='example.ac.uk',
+            identity_provider='https://example.ac.uk/shibboleth',
         )
-        self.assertEqual(institution.id_str(), "new-university")
+        self.assertEqual(institution.id_str(), "example-university")

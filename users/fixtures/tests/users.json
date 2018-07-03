@@ -15,7 +15,7 @@
       "updated_at": "2018-06-26T12:16:34.736Z",
       "first_name": "Joe",
       "last_name": "Bloggs",
-      "groups": [],
+      "groups": [1],
       "user_permissions": []
     }
   },
@@ -60,6 +60,26 @@
     }
   },
   {
+    "model": "users.customuser",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$100000$pDsB4aYMG1pK$Llfae4PRrAiNzFhsuWWWyb758Mjxvzsb2jW1B2ebpgU=",
+      "last_login": "2018-06-26T12:16:52.434Z",
+      "username": "norman.gordon@example.ac.uk",
+      "email": "norman.gordon@example.ac.uk",
+      "is_shibboleth_login_required": true,
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "created_at": "2018-06-26T10:50:45.805Z",
+      "updated_at": "2018-06-26T12:16:34.736Z",
+      "first_name": "Norman",
+      "last_name": "Gordon",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
     "model": "users.shibbolethprofile",
     "pk": 1,
     "fields": {
@@ -73,18 +93,31 @@
     }
   },
   {
+    "model": "users.shibbolethprofile",
+    "pk": 4,
+    "fields": {
+      "shibboleth_id": "norman.gordon@example.ac.uk",
+      "institution": 1,
+      "department": "Physics",
+      "orcid": "xxxxxxxxxxxxxxxx",
+      "scopus": "http://example.ac.uk/scopus",
+      "homepage": "http://example.ac.uk/homepage",
+      "cronfa": "http://example.ac.uk/cronfa"
+    }
+  },
+  {
     "model": "users.profile",
     "pk": 1,
     "fields": {
       "user": 1,
-      "scw_username": "x.shibboleth.user",
+      "scw_username": "e.shibboleth.user",
       "hpcw_username": "",
       "hpcw_email": "",
       "raven_username": "",
       "raven_email": "",
       "uid_number": null,
       "description": "",
-      "phone": "",
+      "phone": "00000-000-000",
       "account_status": 1,
       "previous_account_status": 0
     }
@@ -101,7 +134,7 @@
       "raven_email": "",
       "uid_number": null,
       "description": "",
-      "phone": "",
+      "phone": "00000-000-000",
       "account_status": 1,
       "previous_account_status": 0
     }
@@ -112,6 +145,23 @@
     "fields": {
       "user": 3,
       "scw_username": "",
+      "hpcw_username": "",
+      "hpcw_email": "",
+      "raven_username": "",
+      "raven_email": "",
+      "uid_number": null,
+      "description": "",
+      "phone": "00000-000-000",
+      "account_status": 1,
+      "previous_account_status": 0
+    }
+  },
+  {
+    "model": "users.profile",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "scw_username": "e.norman.gordon",
       "hpcw_username": "",
       "hpcw_email": "",
       "raven_username": "",

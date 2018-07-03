@@ -3,6 +3,7 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 
+from django.contrib.auth.models import Group
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.utils.translation import activate
@@ -10,6 +11,8 @@ from django.utils.translation import activate
 from cogs3.settings import LANGUAGE_CODE
 from cogs3.settings import SELENIUM_WEBDRIVER
 from cogs3.settings import SELENIUM_WEBDRIVER_PROFILE
+from django.core.exceptions import ObjectDoesNotExist
+from institution.models import Institution
 from users.models import CustomUser
 
 
@@ -25,7 +28,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.selenium.get(self.live_server_url + url)
 
     def click_link_by_url(self, url):
-        selector = 'a[href*="' + url + '"]'
+        selector = 'a[href="' + url + '"]'
         link = self.selenium.find_element_by_css_selector(selector)
         link.click()
 
@@ -83,6 +86,13 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         user.save()
         user.profile.account_status = user.profile.APPROVED
         user.save()
+        try:
+            domain = user.email.split('@')[1]
+            institute = Institution.objects.get(base_domain=domain)
+            self.user.profile.institution = institute
+            self.user.profile.save()
+        except ObjectDoesNotExist:
+            pass
 
     def tearDown(self):
         super(SeleniumTestsBase, self).tearDown()
@@ -95,10 +105,14 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             email="user@swansea.ac.uk",
             first_name='User',
             last_name='User',
-            is_staff=True,
+            is_staff=False,
             is_shibboleth_login_required=True,
         )
         self.create_test_user(self.user)
+
+        # Assign the project owner permission to the user
+        project_owner_group = Group.objects.get(name='project_owner')
+        self.user.groups.add(project_owner_group)
 
         self.external = CustomUser(
             username="external@gmail.com",

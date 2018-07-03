@@ -60,6 +60,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
                 raise AssertionError()
 
     def test_create_project(self):
+
         self.sign_in(self.user)
 
         self.get_url('')
@@ -82,8 +83,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Check the project status
-        self.get_url('')
-        self.click_link_by_url(reverse('project-application-list'))
+        self.get_url(reverse('project-application-list'))
         if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
             raise AssertionError()
         if 'Awaiting Approval' not in self.selenium.page_source:
@@ -123,8 +123,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         project.save()
 
         # Try the Project Applications and Project Memberships pages
-        self.get_url('')
-        self.click_link_by_url(reverse('project-application-list'))
+        self.get_url(reverse('project-application-list'))
         if 'code1' not in self.selenium.page_source:
             raise AssertionError()
         if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
@@ -188,14 +187,8 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         """
         self.sign_in(self.external)
         self.get_url('')
-        self.click_link_by_url(reverse('create-project'))
 
-        self.fill_form_by_id(self.default_project_form_fields)
-        self.select_from_dropdown_by_id('id_funding_source', 1)
-
-        self.submit_form(self.default_project_form_fields)
-
-        if "Only users which belong to an institution can create projects." not in self.selenium.page_source:
+        if "Create Project Application" in self.selenium.page_source:
             raise AssertionError()
 
     def test_create_project_unauthorized(self):

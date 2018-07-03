@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
 from project.openldap import update_openldap_project

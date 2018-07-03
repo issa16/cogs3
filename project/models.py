@@ -48,6 +48,12 @@ class ProjectFundingSource(models.Model):
         return self.name
 
 
+class ProjectManager(models.Manager):
+
+    def awaiting_approval(self, user):
+        return Project.objects.filter(tech_lead=user, status=Project.AWAITING_APPROVAL)
+
+
 class Project(models.Model):
 
     class Meta:
@@ -219,6 +225,8 @@ class Project(models.Model):
     )
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
+
+    objects = ProjectManager()
 
     def is_awaiting_approval(self):
         return True if self.status == Project.AWAITING_APPROVAL else False
