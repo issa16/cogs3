@@ -1,13 +1,23 @@
 import datetime
+import logging
 
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openldap.api import project_membership_api
 from system.models import System
+
+logger = logging.getLogger('apps')
 
 
 class ProjectCategory(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('Project Categories')
+        ordering = ('name', )
+
     name = models.CharField(
         max_length=128,
         unique=True,
@@ -19,12 +29,13 @@ class ProjectCategory(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name_plural = _('Project Categories')
-        ordering = ('name', )
-
 
 class ProjectFundingSource(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('Project Funding Sources')
+        ordering = ('name', )
+
     name = models.CharField(
         max_length=128,
         unique=True,
@@ -36,12 +47,18 @@ class ProjectFundingSource(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name_plural = _('Project Funding Sources')
-        ordering = ('name', )
+
+class ProjectManager(models.Manager):
+
+    def awaiting_approval(self, user):
+        return Project.objects.filter(tech_lead=user, status=Project.AWAITING_APPROVAL)
 
 
 class Project(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('Projects')
+
     title = models.CharField(
         max_length=256,
         verbose_name=_('Project Title'),
@@ -66,8 +83,14 @@ class Project(models.Model):
         max_length=20,
         verbose_name=_('Project code assigned by SCW'),
     )
+    gid_number = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_('OpenLDAP GID Number'),
+    )
     institution_reference = models.CharField(
         max_length=128,
+        blank=True,
         verbose_name=_('Owning institution project reference'),
     )
     department = models.CharField(
@@ -77,7 +100,7 @@ class Project(models.Model):
     )
     pi = models.CharField(
         max_length=256,
-        verbose_name=_('Principal Investigator'),
+        verbose_name=_("Principal Investigator's name, position and email"),
     )
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -96,32 +119,58 @@ class Project(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_('Funding source'),
     )
-    start_date = models.DateField(verbose_name=_('Start date'), )
-    end_date = models.DateField(verbose_name=_('End date'), )
+    start_date = models.DateField(verbose_name=_('Start date'))
+    end_date = models.DateField(verbose_name=_('End date'))
     economic_user = models.BooleanField(
         default=False,
         verbose_name=_('Economic user'),
     )
     requirements_software = models.TextField(
         max_length=512,
+        blank=True,
         help_text=_('Software name and versions'),
-        verbose_name=_('Requirements software'),
+        verbose_name=_('Software Requirements'),
     )
     requirements_gateways = models.TextField(
         max_length=512,
+        blank=True,
         help_text=_('Web gateway or portal name and versions'),
-        verbose_name=_('Requirements gateways'),
+        verbose_name=_('Gateway Requirements'),
     )
-    requirements_training = models.TextField(max_length=512, verbose_name=_('Requirements training'))
-    requirements_onboarding = models.TextField(max_length=512, verbose_name=_('Requirements onboarding'))
+    requirements_training = models.TextField(
+        max_length=512,
+        blank=True,
+        verbose_name=_('Training Requirements'),
+    )
+    requirements_onboarding = models.TextField(
+        max_length=512,
+        blank=True,
+        verbose_name=_('Onboarding Requirements'),
+    )
     allocation_rse = models.BooleanField(
         default=False,
         verbose_name=_('RSE available to?'),
     )
-    allocation_cputime = models.PositiveIntegerField(verbose_name=_('CPU time allocation in hours'))
-    allocation_memory = models.PositiveIntegerField(verbose_name=_('RAM allocation in GB'))
-    allocation_storage_home = models.PositiveIntegerField(verbose_name=_('Home storage in GB'))
-    allocation_storage_scratch = models.PositiveIntegerField(verbose_name=_('Scratch storage in GB'))
+    allocation_cputime = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_('CPU time allocation in hours'),
+    )
+    allocation_memory = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_('RAM allocation in GB'),
+    )
+    allocation_storage_home = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_('Home storage in GB'),
+    )
+    allocation_storage_scratch = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_('Scratch storage in GB'),
+    )
     document = models.FileField(
         verbose_name=_('Upload Supporting Documents'),
         upload_to="documents/%Y/%m/%d/%M/",
@@ -138,12 +187,12 @@ class Project(models.Model):
         through='ProjectUserMembership',
         verbose_name=_('Members'),
     )
-    AWAITING_APPROVAL = 1
-    APPROVED = 2
-    DECLINED = 3
-    REVOKED = 4
-    SUSPENDED = 5
-    CLOSED = 6
+    AWAITING_APPROVAL = 0
+    APPROVED = 1
+    DECLINED = 2
+    REVOKED = 3
+    SUSPENDED = 4
+    CLOSED = 5
     STATUS_CHOICES = (
         (AWAITING_APPROVAL, _('Awaiting Approval')),
         (APPROVED, _('Approved')),
@@ -155,7 +204,12 @@ class Project(models.Model):
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
         default=AWAITING_APPROVAL,
-        verbose_name=_('Status'),
+        verbose_name=_('Current Status'),
+    )
+    previous_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_APPROVAL,
+        verbose_name=_('Previous Status'),
     )
     reason_decision = models.TextField(
         max_length=256,
@@ -163,9 +217,16 @@ class Project(models.Model):
         verbose_name=_('Reason for the project status decision:'),
         help_text=_('The reason will be emailed to the project\'s technical lead upon project status update.'),
     )
-    notes = models.TextField(max_length=512, blank=True, help_text=_('Internal project notes'), verbose_name=_('Notes'))
+    notes = models.TextField(
+        max_length=512,
+        blank=True,
+        help_text=_('Internal project notes'),
+        verbose_name=_('Notes'),
+    )
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
+
+    objects = ProjectManager()
 
     def is_awaiting_approval(self):
         return True if self.status == Project.AWAITING_APPROVAL else False
@@ -185,18 +246,61 @@ class Project(models.Model):
     def is_closed(self):
         return True if self.status == Project.CLOSED else False
 
-    def __str__(self):
-        data = {
-            'code': self.code,
-            'title': self.title,
-        }
-        return '{code} - {title}'.format(**data)
+    def reset_status(self):
+        """
+        Reset the current status to the previous status.
+        """
+        self.status = self.previous_status
+        self.save()
 
-    class Meta:
-        verbose_name_plural = _('Projects')
+    def _assign_project_owner_project_membership(self):
+        try:
+            project_membership, created = ProjectUserMembership.objects.get_or_create(
+                project=self,
+                user=self.tech_lead,
+                date_joined=datetime.date.today(),
+                status=ProjectUserMembership.AUTHORISED,
+                previous_status=ProjectUserMembership.AUTHORISED,
+            )
+            # Assign the 'project_owner' group to the project's technical lead.
+            group = Group.objects.get(name='project_owner')
+            self.tech_lead.groups.add(group)
+
+            # Propagate the changes to LDAP
+            if created:
+                project_membership_api.create_project_membership(project_membership=project_membership)
+        except Exception:
+            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
+
+    def _generate_project_code(self):
+        prefix = 'scw'
+        last_project = Project.objects.order_by('id').last()
+        if not last_project:
+            if self.legacy_arcca_id or self.legacy_hpcw_id:
+                return prefix + '0000'
+            else:
+                return prefix + '1000'
+        else:
+            code = last_project.code.split(prefix)[1]
+            return prefix + str(int(code) + 1).zfill(4)
+
+    def save(self, *args, **kwargs):
+        if self.code is '':
+            self.code = self._generate_project_code()
+        if self.status == Project.APPROVED:
+            self._assign_project_owner_project_membership()
+        super(Project, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.code
 
 
 class ProjectSystemAllocation(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('Project System Allocations')
+        unique_together = (('project', 'system'), )
+
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
@@ -209,19 +313,15 @@ class ProjectSystemAllocation(models.Model):
     date_unallocated = models.DateField()
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
-    CREATE = 1
-    CREATED = 2
-    DEACTIVATE = 3
-    DEACTIVATED = 4
+    ACTIVE = 1
+    INACTIVE = 2
     STATUS_CHOICES = (
-        (CREATE, 'Create System Resources'),
-        (CREATED, 'Created System Resources'),
-        (DEACTIVATE, 'Deactivate System Resources'),
-        (DEACTIVATED, 'Deactivated System Resources'),
+        (ACTIVE, 'Active'),
+        (INACTIVE, 'Inactive'),
     )
     openldap_status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
-        default=CREATE,
+        default=ACTIVE,
         verbose_name='OpenLDAP status',
     )
 
@@ -233,10 +333,6 @@ class ProjectSystemAllocation(models.Model):
             'date_unallocated': self.date_unallocated
         }
         return _('{project} on {system} from {date_allocated} to {date_unallocated}').format(**data)
-
-    class Meta:
-        verbose_name_plural = _('Project System Allocations')
-        unique_together = (('project', 'system'), )
 
 
 class ProjectUserMembershipManager(models.Manager):
@@ -251,6 +347,11 @@ class ProjectUserMembershipManager(models.Manager):
 
 
 class ProjectUserMembership(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('Project User Memberships')
+        unique_together = ('project', 'user')
+
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
@@ -259,11 +360,11 @@ class ProjectUserMembership(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    AWAITING_AUTHORISATION = 1
-    AUTHORISED = 2
-    DECLINED = 3
-    REVOKED = 4
-    SUSPENDED = 5
+    AWAITING_AUTHORISATION = 0
+    AUTHORISED = 1
+    DECLINED = 2
+    REVOKED = 3
+    SUSPENDED = 4
     STATUS_CHOICES = (
         (AWAITING_AUTHORISATION, _('Awaiting Authorisation')),
         (AUTHORISED, _('Authorised')),
@@ -274,6 +375,12 @@ class ProjectUserMembership(models.Model):
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,
         default=AWAITING_AUTHORISATION,
+        verbose_name=_('Current Status'),
+    )
+    previous_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_AUTHORISATION,
+        verbose_name=_('Previous Status'),
     )
     date_joined = models.DateField()
     date_left = models.DateField(default=datetime.date.max)
@@ -296,6 +403,13 @@ class ProjectUserMembership(models.Model):
         ]
         return True if self.status in revoked_states else False
 
+    def reset_status(self):
+        """
+        Reset the current status to the previous status.
+        """
+        self.status = self.previous_status
+        self.save()
+
     def __str__(self):
         data = {
             'user': self.user,
@@ -304,7 +418,3 @@ class ProjectUserMembership(models.Model):
             'date_left': self.date_left
         }
         return _('{user} on {project} from {date_joined} to {date_left}').format(**data)
-
-    class Meta:
-        verbose_name_plural = _('Project User Memberships')
-        unique_together = ('project', 'user')

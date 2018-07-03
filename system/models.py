@@ -15,6 +15,11 @@ class System(models.Model):
 
 
 class SystemToInstitutionMap(models.Model):
+
+    class Meta:
+        verbose_name_plural = 'System to Institution Mappings'
+        unique_together = (('system', 'institution'), )
+
     system = models.ForeignKey(
         System,
         on_delete=models.CASCADE,
@@ -23,7 +28,3 @@ class SystemToInstitutionMap(models.Model):
         Institution,
         on_delete=models.CASCADE,
     )
-
-    class Meta:
-        verbose_name_plural = 'System to Institution Mappings'
-        unique_together = (('system', 'institution'), )

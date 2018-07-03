@@ -1,6 +1,6 @@
 body {
     background-color: #F2F2F2;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Lato', sans-serif;
     font-size: 15px;
     line-height: 24px;
     color: #2F3B3F;
@@ -54,24 +54,6 @@ main {
 
 .form-signin .form-control:focus {
     z-index: 2;
-}
-
-.form-signin .top {
-    margin-bottom: -1px;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.form-signin .bottom {
-    margin-bottom: 10px;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-}
-
-.form-signin .password_1 {
-    margin-bottom: -1px;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
 }
 
 .password_reset {

@@ -5,70 +5,43 @@ import string
 from django.contrib.auth.models import Group
 from django.test import TestCase
 
+from institution.models import Institution
 from institution.tests.test_models import InstitutionTests
-from project.forms import ProjectUserMembershipCreationForm, ProjectCreationForm
+from project.forms import ProjectCreationForm
+from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
+from project.models import ProjectCategory
+from project.models import ProjectFundingSource
 from project.models import ProjectUserMembership
 from project.tests.test_models import ProjectCategoryTests
 from project.tests.test_models import ProjectFundingSourceTests
 from project.tests.test_models import ProjectTests
+from users.models import CustomUser
 from users.tests.test_models import CustomUserTests
 
 
 class ProjectFormTests(TestCase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'project/fixtures/tests/funding_sources.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
+
     def setUp(self):
-        # Create an institution
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
-
-        # Create a project owner.
-        group = Group.objects.get(name='project_owner')
-        project_owner_email = '@'.join(['project_owner', self.institution.base_domain])
-        self.project_owner = CustomUserTests.create_custom_user(
-            email=project_owner_email,
-            group=group,
-        )
-
-        # Create a project applicant.
-        project_applicant_email = '@'.join(['project_applicant', self.institution.base_domain])
-        self.project_applicant = CustomUserTests.create_custom_user(email=project_applicant_email)
-
-        # Create a project category
-        name = 'A project category name'
-        description = 'A project category description'
-        self.category = ProjectCategoryTests.create_project_category(
-            name=name,
-            description=description,
-        )
-
-        # Create a funding source
-        name = 'A project function source name'
-        description = 'A project funding source description'
-        self.funding_source = ProjectFundingSourceTests.create_project_funding_source(
-            name=name,
-            description=description,
-        )
-
-        # Create a project.
-        self.title = 'Project title'
-        self.code = 'scw-00001',
-        self.project = ProjectTests.create_project(
-            title=self.title,
-            code=self.code,
-            tech_lead=self.project_owner,
-            category=self.category,
-            funding_source=self.funding_source,
-        )
+        self.institution = Institution.objects.get(name='Example University')
+        self.category = ProjectCategory.objects.get(name='Test')
+        self.funding_source = ProjectFundingSource.objects.get(name='Test')
+        self.project_code = 'scw0000'
+        self.project = Project.objects.get(code=self.project_code)
+        self.project_owner = self.project.tech_lead
+        self.project_applicant = CustomUser.objects.get(email='guest.user@external.ac.uk')
 
         # Create users for each institution
         self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
-
-        # Ensure no project user membership requests have been created.
-        self.assertEqual(ProjectUserMembership.objects.count(), 0)
 
     def test_project_form_arcca_field(self):
         for i in self.institution_names:
@@ -122,7 +95,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
                 'user': self.project_applicant,
             },
             data={
-                'project_code': self.code,
+                'project_code': self.project_code,
             },
         )
         self.assertFalse(form.is_valid())
@@ -142,7 +115,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
                 'user': self.project_applicant,
             },
             data={
-                'project_code': self.code,
+                'project_code': self.project_code,
             },
         )
         self.assertTrue(form.is_valid())
@@ -175,28 +148,27 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         """
         accounts = [
             self.project_owner,
-            self.project_applicant,
+            # self.project_applicant,
         ]
 
-        for account in accounts:
-            # Create a project.
-            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            project = ProjectTests.create_project(
-                title=self.title,
-                code='scw-' + code,
-                tech_lead=account,
-                category=self.category,
-                funding_source=self.funding_source,
-            )
-            self.approve_project(project)
+        # Authorise a project user membership for the project applicant.
+        ProjectUserMembership.objects.create(
+            project=self.project,
+            user=self.project_applicant,
+            status=ProjectUserMembership.AUTHORISED,
+            date_joined=datetime.datetime.now(),
+            date_left=datetime.datetime.now() + datetime.timedelta(days=10),
+        )
 
+        for account in accounts:
+            self.approve_project(self.project)
             # A request to create a project user membership should be rejected.
             form = ProjectUserMembershipCreationForm(
                 initial={
                     'user': account,
                 },
                 data={
-                    'project_code': project.code,
+                    'project_code': self.project_code,
                 },
             )
             self.assertFalse(form.is_valid())
@@ -214,20 +186,11 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         Ensure it is not possible to create a project user membership when a user has a
         membership request awaiting authorisation.
         """
-        # Create a project.
-        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        project = ProjectTests.create_project(
-            title=self.title,
-            code='scw-' + code,
-            tech_lead=self.project_owner,
-            category=self.category,
-            funding_source=self.funding_source,
-        )
-        self.approve_project(project)
+        self.approve_project(self.project)
 
         # Create a project user membership.
         ProjectUserMembership.objects.create(
-            project=project,
+            project=self.project,
             user=self.project_applicant,
             status=ProjectUserMembership.AWAITING_AUTHORISATION,
             date_joined=datetime.datetime.now(),
@@ -237,7 +200,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         # Ensure the project user membership status is currently set to awaiting authorisation.
         membership = ProjectUserMembership.objects.get(
             user=self.project_applicant,
-            project=project,
+            project=self.project,
         )
         self.assertTrue(membership.is_awaiting_authorisation())
 
@@ -247,7 +210,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
                 'user': self.project_applicant,
             },
             data={
-                'project_code': project.code,
+                'project_code': self.project_code,
             },
         )
         self.assertFalse(form.is_valid())

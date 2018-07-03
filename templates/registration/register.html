@@ -13,7 +13,7 @@
 			{% include 'includes/errors.html' %}
 			<div class="form-group mb-3">
 				<label for="email">{% trans "Identifier" %}</label>
-				<input type="email" readonly class="form-control-plaintext" id="email" name="email" value="{{request.session.shib.username}}">
+				<p  id="email">{{request.session.shib.username}}</p>
 			</div>
 			<div class="form-group mb-3">
 				<label for="first-name">{% trans "First name" %}</label>
@@ -21,6 +21,10 @@
 			</div>
 			<div class="form-group mb-3">
 				<label for="last-name">{% trans "Last name" %}</label>
+				<input type="text" class="form-control" id="last-name" name="last_name">
+			</div>
+			<div class="form-group mb-3">
+				<label for="last-name">{% trans "Reason for application" %}</label>
 				<input type="text" class="form-control" id="last-name" name="last_name">
 			</div>
 			<div class="form-group text-center mb-3">

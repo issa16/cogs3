@@ -1,23 +1,25 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from institution.tests.test_models import InstitutionTests
-from users.tests.test_models import CustomUserTests
+from institution.models import Institution
+from users.models import CustomUser
 
 
 class DashboardViewTests(TestCase):
 
-    def setUp(self):
-        # Create an institution.
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+    ]
 
-    def test_view_without_required_headers(self):
+    def setUp(self):
+        self.institution = Institution.objects.get(name='Example University')
+        self.user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
+
+    def test_view_without_required_shibboleth_headers(self):
         """
-        If the required headers are not present then the user should be redirected to the login page.
+        If the required shibboleth headers are not present, then the user should be redirected to 
+        the login page.
         """
         headers = {}
         response = self.client.get(
@@ -29,12 +31,12 @@ class DashboardViewTests(TestCase):
 
     def test_view_as_an_authorised_shibboleth_user_and_an_unregistered_application_user(self):
         """
-        If the required headers are present and the user is not a registered application
+        If the required shibboleth headers are present and the user is not a registered application
         user, then the user should be redirected to the account registration page.
         """
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
-            'REMOTE_USER': 'unregistered-application-user@bangor.ac.uk',
+            'REMOTE_USER': 'unregistered-application-user@example.ac.uk',
         }
         response = self.client.get(
             reverse('home'),
@@ -45,21 +47,18 @@ class DashboardViewTests(TestCase):
 
     def test_view_as_an_authorised_shibboleth_user_and_a_registered_application_user(self):
         """
-        If the required headers are present and the user is a registered application user,
-        then the user should be redirected to the dashboard page and have the option to logout.
+        If the required shibboleth headers are present and the user is a registered application 
+        user, then the user should be redirected to the dashboard page and have the option to logout.
         """
-        email = '@'.join(['user', self.institution.base_domain])
-        CustomUserTests.create_shibboleth_user(email=email)
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
-            'REMOTE_USER': email,
+            'REMOTE_USER': self.user.email,
         }
         response = self.client.get(
             reverse('home'),
             **headers,
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context_data.get('project_user_requests_count'), 0)
 
         # Logout the user.
         response = self.client.get(reverse('logout'))

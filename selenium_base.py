@@ -3,6 +3,7 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 
+from django.contrib.auth.models import Group
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.utils.translation import activate
@@ -10,15 +11,15 @@ from django.utils.translation import activate
 from cogs3.settings import LANGUAGE_CODE
 from cogs3.settings import SELENIUM_WEBDRIVER
 from cogs3.settings import SELENIUM_WEBDRIVER_PROFILE
-from users.models import CustomUser
-from institution.models import Institution
 from django.core.exceptions import ObjectDoesNotExist
+from institution.models import Institution
+from users.models import CustomUser
 
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
     fixtures = [
-        'institution/fixtures/institutions.yaml',
-        'project/fixtures/funding_sources.yaml',
+        'institution/fixtures/institutions.json',
+        'project/fixtures/tests/funding_sources.json',
     ]
 
     serialized_rollback = True
@@ -72,7 +73,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
         # This seems to be necessary Geckodriver (Firefox)
         # I'm guessing it take a moment to process the submission
-        time.sleep(0.2)
+        time.sleep(1)
 
     def click_by_id(self, text):
         self.selenium.find_element_by_id(text).click()
@@ -104,10 +105,14 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             email="user@swansea.ac.uk",
             first_name='User',
             last_name='User',
-            is_staff=True,
+            is_staff=False,
             is_shibboleth_login_required=True,
         )
         self.create_test_user(self.user)
+
+        # Assign the project owner permission to the user
+        project_owner_group = Group.objects.get(name='project_owner')
+        self.user.groups.add(project_owner_group)
 
         self.external = CustomUser(
             username="external@gmail.com",
