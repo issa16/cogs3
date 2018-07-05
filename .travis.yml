@@ -28,7 +28,8 @@ addons:
   firefox: "60.0"
 
 before_script:
-  - mysql -e 'create database cogs3;'
+  - mysql -e 'DROP DATABASE IF EXISTS `cogs3`;
+  - mysql -e 'CREATE DATABASE `cogs3`;
   
 script:
   - pip install mysqlclient
