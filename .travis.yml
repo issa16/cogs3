@@ -31,7 +31,7 @@ before_script:
   - mysql -e 'create database cogs3;'
   
 script:
-  - pip install mysql-python
+  - pip install mysqlclient
   - pip install -r requirements.txt
   - coverage run manage.py test
 
