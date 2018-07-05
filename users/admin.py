@@ -97,6 +97,12 @@ class CustomUserAdmin(UserAdmin):
                 'last_name',
             )
         }),
+        ('Account', {
+            'fields': (
+                'reason_for_account',
+                'accepted_terms_and_conditions',
+            )
+        }),
         ('Permissions', {
             'fields': (
                 'is_shibboleth_login_required',
