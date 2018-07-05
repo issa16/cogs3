@@ -128,7 +128,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
             raise AssertionError()
 
-        self.click_link_by_url(reverse('project-application-detail', kwargs={'pk': 1}))
+        self.click_link_by_url(reverse('project-application-detail', kwargs={'pk': project.id}))
         if self.default_project_form_fields["id_description"] not in self.selenium.page_source:
             raise AssertionError()
 
