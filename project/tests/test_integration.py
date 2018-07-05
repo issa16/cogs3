@@ -99,6 +99,9 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         # Get the project
         project = matching_projects.first()
 
+        print(project)
+        print(project.__dict__)
+        print(matching_projects.values_list())
         # Check that the technical lead is the user
         tech_lead_id = matching_projects.values_list('tech_lead', flat=True).get(pk=1)
         user_id = self.user.id
