@@ -35,7 +35,7 @@ class InstitutionTests(TestCase):
             iss = institution.is_sunbird
             ics = institution.is_hawk
 
-            if inst_name in ['swansea', 'aber']:
+            if inst_name in ['swan', 'aber']:
                 self.assertTrue(iss)
                 self.assertFalse(ics)
             elif inst_name in ['cardiff', 'bangor']:

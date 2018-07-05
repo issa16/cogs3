@@ -60,8 +60,8 @@ class Institution(models.Model):
         return self.base_domain == 'cardiff.ac.uk'
 
     @property
-    def is_swansea(self):
-        return self.base_domain == 'swansea.ac.uk'
+    def is_swan(self):
+        return self.base_domain == 'swan.ac.uk'
 
     @property
     def is_bangor(self):
@@ -73,7 +73,7 @@ class Institution(models.Model):
 
     @property
     def is_sunbird(self):
-        return self.is_swansea or self.is_aber
+        return self.is_swan or self.is_aber
 
     @property
     def is_hawk(self):
