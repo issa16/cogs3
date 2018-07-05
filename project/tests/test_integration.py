@@ -104,8 +104,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Check that the project is not active
-        status = matching_projects.values_list('status', flat=True).get(pk=1)
-        if status != Project.AWAITING_APPROVAL:
+        if project.status != Project.AWAITING_APPROVAL:
             raise AssertionError()
 
         # Check that the file was uploaded
