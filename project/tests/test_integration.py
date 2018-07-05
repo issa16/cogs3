@@ -90,20 +90,15 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Check that the project was created
-        print(Project.objects.all())
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
-        print(matching_projects)
         if matching_projects.count() != 1:
             raise AssertionError()
 
         # Get the project
         project = matching_projects.first()
 
-        print(project)
-        print(project.__dict__)
-        print(matching_projects.values_list())
         # Check that the technical lead is the user
-        tech_lead_id = matching_projects.values_list('tech_lead', flat=True).get(pk=1)
+        tech_lead_id = project.tech_lead.id
         user_id = self.user.id
         if tech_lead_id != user_id:
             raise AssertionError()
