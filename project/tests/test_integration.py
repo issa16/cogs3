@@ -90,7 +90,9 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Check that the project was created
+        print(Project.objects.all())
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
+        print(matching_projects)
         if matching_projects.count() != 1:
             raise AssertionError()
 
