@@ -64,6 +64,9 @@ class ProjectAdminForm(forms.ModelForm):
         self.initial_status = self.instance.status
         self.fields['document_download'].widget = FileLinkWidget(self.instance)
         self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status))
+        # Project must be created in order to generate a project code, before the status can be updated.
+        if self.instance.id is None:
+            self.fields['status'] = forms.ChoiceField(choices=[Project.STATUS_CHOICES[Project.AWAITING_APPROVAL]])
 
     def clean_code(self):
         """
@@ -157,12 +160,8 @@ class ProjectCreationForm(forms.ModelForm):
             'document',
         ]
         widgets = {
-            'start_date': forms.DateInput(attrs={
-                'class': 'datepicker'
-            }),
-            'end_date': forms.DateInput(attrs={
-                'class': 'datepicker'
-            }),
+            'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
+            'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
         }
 
     def __init__(self, user, *args, **kwargs):
