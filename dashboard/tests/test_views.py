@@ -29,14 +29,14 @@ class DashboardViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/en-gb/accounts/login/?next=/en-gb/')
 
-    def test_view_as_authorised_shibboleth_user_and_unauthorised_application_user(self):
+    def test_view_as_authorised_shibboleth_user_and_unregistered_application_user(self):
         """
-        If the required shibboleth headers are present and the user is an unauthorised application
+        If the required shibboleth headers are present and the user is an unregistered application
         user, then the user should be redirected to the account registration page.
         """
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
-            'REMOTE_USER': 'unauthorised-application-user@example.ac.uk',
+            'REMOTE_USER': 'unregistered-application-user@example.ac.uk',
         }
         response = self.client.get(
             reverse('home'),
@@ -45,9 +45,9 @@ class DashboardViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('register'))
 
-    def test_view_as_authorised_shibboleth_and_application_user(self):
+    def test_view_as_authorised_shibboleth_and_registered_application_user(self):
         """
-        If the required shibboleth headers are present and the user is an authorised application 
+        If the required shibboleth headers are present and the user is a registered application 
         user, then the user should be redirected to the dashboard page and have the option to logout.
         """
         headers = {
