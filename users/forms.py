@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import Permission
+from django.utils.translation import gettext_lazy as _
 
 from institution.exceptions import InvalidInstitutionalEmailAddress
 from institution.models import Institution
@@ -117,3 +118,18 @@ class CustomUserChangeForm(UserChangeForm):
                 Institution.is_valid_email_address(self.cleaned_data.get('email'))
             except InvalidInstitutionalEmailAddress as e:
                 raise forms.ValidationError(str(e))
+
+
+class TermsOfServiceForm(forms.ModelForm):
+    """
+    A form to allow a user to accept the terms of service.
+    """
+
+    class Meta:
+        model = CustomUser
+        fields = ('accepted_terms_and_conditions', )
+
+    def clean(self):
+        if not self.cleaned_data.get('accepted_terms_and_conditions'):
+            raise forms.ValidationError(_('To continue please accept the terms and conditions.'))
+        return self.cleaned_data

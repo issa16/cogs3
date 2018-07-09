@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth import load_backend
 from django.contrib.auth.backends import RemoteUserBackend
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.urls import resolve
 from django.urls import reverse
@@ -12,6 +13,20 @@ from institution.exceptions import InvalidInstitutionalIndentityProvider
 from institution.models import Institution
 from shibboleth.middleware import ShibbolethRemoteUserMiddleware
 from shibboleth.middleware import ShibbolethValidationError
+
+
+class TermsOfServiceMiddleware:
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if not request.path.startswith(reverse('terms-of-service')):
+            if request.user.is_authenticated:
+                if not request.user.accepted_terms_and_conditions:
+                    return HttpResponseRedirect(reverse('terms-of-service'))
+        return response
 
 
 class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):

@@ -11,6 +11,7 @@ from institution.models import Institution
 from users.openldap import reset_openldap_password
 from users.views import LogoutView
 from users.views import RegisterView
+from users.views import TermsOfService
 
 # Admin config
 admin.site.site_header = 'Cogs3 Administration'
@@ -77,5 +78,10 @@ urlpatterns = i18n_patterns(
     path(
         'admin/',
         admin.site.urls,
+    ),
+    path(
+        'terms-and-conditions/',
+        TermsOfService.as_view(),
+        name='terms-of-service',
     ),
 )

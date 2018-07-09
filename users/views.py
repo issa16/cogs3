@@ -1,13 +1,24 @@
 from django.conf import settings
 from django.contrib import auth
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views import generic
-from django.views.generic import TemplateView
 
 from users.forms import RegisterForm
+from users.forms import TermsOfServiceForm
 from users.models import CustomUser
+
+
+class TermsOfService(LoginRequiredMixin, generic.UpdateView):
+    form_class = TermsOfServiceForm
+    model = CustomUser
+    success_url = reverse_lazy('home')
+    template_name = 'terms_of_service/index.html'
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
 
 class RegisterView(generic.CreateView):
@@ -31,7 +42,7 @@ class RegisterView(generic.CreateView):
         return super().form_valid(form)
 
 
-class LogoutView(TemplateView):
+class LogoutView(generic.TemplateView):
 
     def get(self, *args, **kwargs):
         # If the user has logged in via a shibboleth identity provider, then they must
