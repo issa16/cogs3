@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'project.apps.ProjectConfig',
     'security',
     'shibboleth',
+    'stats',
     'system.apps.SystemConfig',
     'users.apps.UsersConfig',
     'widget_tweaks',
