@@ -45,7 +45,7 @@ DEBUG = ast.literal_eval(os.environ.get('DEBUG', 'False'))
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS')
 
 # Application definition
 INSTALLED_APPS = [
