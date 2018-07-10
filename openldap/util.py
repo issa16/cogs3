@@ -33,6 +33,7 @@ def email_user(subject, context, text_template_path, html_template_path):
         text_alternative,
         settings.DEFAULT_FROM_EMAIL,
         [context['to']],
+        bcc=[settings.DEFAULT_BCC_EMAIL],
     )
     email.attach_alternative(html_alternative, "text/html")
     email.send(fail_silently=False)
