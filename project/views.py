@@ -61,7 +61,7 @@ class ProjectCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, ge
 class ProjectListView(PermissionAndLoginRequiredMixin, generic.ListView):
     context_object_name = 'projects'
     model = Project
-    paginate_by = 10
+    paginate_by = 50
     template_name = 'project/applications.html'
     permission_required = 'project.add_project'
 
@@ -126,7 +126,7 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
 
 class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, generic.ListView):
     context_object_name = 'project_user_membership_requests'
-    paginate_by = 10
+    paginate_by = 50
     model = ProjectUserMembership
     template_name = 'project/membership/requests.html'
     permission_required = 'project.change_projectusermembership'
@@ -188,7 +188,7 @@ class ProjectUserMembershipListView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'project_memberships'
     template_name = 'project/memberships.html'
     model = ProjectUserMembership
-    paginate_by = 10
+    paginate_by = 50
 
     def get_queryset(self):
         queryset = super().get_queryset()
