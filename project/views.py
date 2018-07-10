@@ -64,12 +64,12 @@ class ProjectListView(PermissionAndLoginRequiredMixin, generic.ListView):
     paginate_by = 50
     template_name = 'project/applications.html'
     permission_required = 'project.add_project'
+    ordering = ['-created_time']
 
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset()
-        queryset = queryset.filter(Q(tech_lead=user))
-        return queryset.order_by('-created_time')
+        return queryset.filter(Q(tech_lead=user))
 
 
 class ProjectDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):
@@ -130,6 +130,7 @@ class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, gene
     model = ProjectUserMembership
     template_name = 'project/membership/requests.html'
     permission_required = 'project.change_projectusermembership'
+    ordering = ['-created_time']
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -139,8 +140,7 @@ class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, gene
         )
         queryset = queryset.filter(project__in=projects)
         # Omit the user's membership request
-        queryset = queryset.exclude(user=self.request.user)
-        return queryset.order_by('-created_time')
+        return queryset.exclude(user=self.request.user)
 
 
 class ProjectUserRequestMembershipUpdateView(PermissionAndLoginRequiredMixin, generic.UpdateView):
@@ -149,6 +149,7 @@ class ProjectUserRequestMembershipUpdateView(PermissionAndLoginRequiredMixin, ge
     model = ProjectUserMembership
     fields = ['status']
     permission_required = 'project.change_projectusermembership'
+    ordering = ['date_joined']
 
     def user_passes_test(self, request):
         # Ensure the project belongs to the user attempting to update the membership status
@@ -189,9 +190,9 @@ class ProjectUserMembershipListView(LoginRequiredMixin, generic.ListView):
     template_name = 'project/memberships.html'
     model = ProjectUserMembership
     paginate_by = 50
+    ordering = ['-modified_time']
 
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(user=self.request.user)
-        queryset = queryset.filter(project__status=Project.APPROVED)
-        return queryset.order_by('-modified_time')
+        return queryset.filter(project__status=Project.APPROVED)
