@@ -1,0 +1,5 @@
+Project {{code}} Membership Update
+
+Dear {{first_name}},
+
+Your project membership for project {{code}} has been {{status}}.
