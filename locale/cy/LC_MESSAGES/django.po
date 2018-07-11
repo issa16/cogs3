@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-11 10:29+0000\n"
+"POT-Creation-Date: 2018-07-11 11:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -508,6 +508,7 @@ msgstr ""
 #: templates/notifications/project/update.html:8
 #: templates/notifications/project_membership/update.html:8
 #: templates/notifications/user/password_reset.html:11
+#: templates/notifications/user/update.html:8
 #, python-format
 msgid "Dear %(first_name)s"
 msgstr ""
@@ -545,6 +546,15 @@ msgid ""
 "Didn't change your password? Contact <a href=\"mailto:support@supercomputing."
 "wales\">Supercomputing Wales</a> so we can make sure no one else is trying "
 "to access your account."
+msgstr ""
+
+#: templates/notifications/user/update.html:4
+msgid "User Account Update"
+msgstr ""
+
+#: templates/notifications/user/update.html:11
+#, python-format
+msgid "Your Supercomputing Wales account has been %(status)s"
 msgstr ""
 
 #: templates/project/application_detail.html:6

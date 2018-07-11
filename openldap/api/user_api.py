@@ -39,7 +39,7 @@ def list_users():
 
 
 @job
-def create_user(user, notify_user=False):
+def create_user(user, notify_user=True):
     """
     Create an LDAP user account.
 
@@ -91,7 +91,7 @@ def create_user(user, notify_user=False):
             context = {
                 'first_name': user.first_name,
                 'to': user.email,
-                'status': user.profile.get_account_status_display(),
+                'status': user.profile.get_account_status_display().lower(),
             }
             text_template_path = 'notifications/user/update.txt'
             html_template_path = 'notifications/user/update.html'
@@ -109,7 +109,7 @@ def get_user_by_id(user_id):
     Get an existing user's LDAP account details by user id.
 
     Args:
-        user_id (str): User id - required
+        user_id(str): User id - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', user_id, '/'])
     headers = {'Cache-Control': 'no-cache'}
@@ -134,7 +134,7 @@ def get_user_by_email_address(email_address):
     Get an existing user's LDAP account details by email address.
 
     Args:
-        email_address (str): Email address - required
+        email_address(str): Email address - required
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', email_address, '/'])
     headers = {'Cache-Control': 'no-cache'}
@@ -159,9 +159,9 @@ def reset_user_password(user, password, notify_user=True):
     Reset a user's LDAP account password.
 
     Args:
-        user (CustomUser): User instance - required
-        password (str): New password - required
-        notify_user (bool): Issue a notification email to the user? - optional
+        user(CustomUser): User instance - required
+        password(str): New password - required
+        notify_user(bool): Issue a notification email to the user? - optional
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/resetPassword/', user.email, '/'])
     headers = {
@@ -196,13 +196,13 @@ def reset_user_password(user, password, notify_user=True):
 
 
 @job
-def deactivate_user_account(user, notify_user=False):
+def deactivate_user_account(user, notify_user=True):
     """
     Deactivate an existing user's LDAP account.
 
     Args:
-        user (CustomUser): User instance - required
-        notify_user (bool): Issue a notification email to the user? - optional
+        user(CustomUser): User instance - required
+        notify_user(bool): Issue a notification email to the user? - optional
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/', user.email, '/'])
     headers = {'Cache-Control': 'no-cache'}
@@ -219,7 +219,7 @@ def deactivate_user_account(user, notify_user=False):
             context = {
                 'first_name': user.first_name,
                 'to': user.email,
-                'status': user.profile.get_account_status_display(),
+                'status': user.profile.get_account_status_display().lower(),
             }
             text_template_path = 'notifications/user/update.txt'
             html_template_path = 'notifications/user/update.html'
@@ -231,13 +231,13 @@ def deactivate_user_account(user, notify_user=False):
 
 
 @job
-def activate_user_account(user, notify_user=False):
+def activate_user_account(user, notify_user=True):
     """
     Activate an existing user's LDAP account.
 
     Args:
-        user (CustomUser): User instance - required
-        notify_user (bool): Issue a notification email to the user? - optional
+        user(CustomUser): User instance - required
+        notify_user(bool): Issue a notification email to the user? - optional
     """
     url = ''.join([settings.OPENLDAP_HOST, 'user/enable/', user.email, '/'])
     headers = {'Cache-Control': 'no-cache'}
@@ -257,7 +257,7 @@ def activate_user_account(user, notify_user=False):
             context = {
                 'first_name': user.first_name,
                 'to': user.email,
-                'status': user.profile.get_account_status_display(),
+                'status': user.profile.get_account_status_display().lower(),
             }
             text_template_path = 'notifications/user/update.txt'
             html_template_path = 'notifications/user/update.html'
