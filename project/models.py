@@ -382,9 +382,15 @@ class ProjectUserMembership(models.Model):
         default=AWAITING_AUTHORISATION,
         verbose_name=_('Previous Status'),
     )
+    initiated_by_user = models.BooleanField(
+        default=True,
+        verbose_name=_('Initiated by User'),
+        help_text=_('Determines who needs to approve the membership. The initating user is assumend to have approved it.'),
+    )
     date_joined = models.DateField()
     date_left = models.DateField(default=datetime.date.max)
     created_time = models.DateTimeField(auto_now_add=True)
+    approved_time = models.DateField(default=datetime.date.max)
     modified_time = models.DateTimeField(auto_now=True)
 
     objects = ProjectUserMembershipManager()
@@ -402,6 +408,25 @@ class ProjectUserMembership(models.Model):
             ProjectUserMembership.DECLINED,
         ]
         return True if self.status in revoked_states else False
+
+    def is_user_editable(self):
+        ''' Check if the user is allowed to edit current state '''
+        allowed_states = [
+            ProjectUserMembership.AWAITING_AUTHORISATION,
+            ProjectUserMembership.AUTHORISED,
+            ProjectUserMembership.DECLINED,
+        ]
+        condition = not self.initiated_by_user and self.status in allowed_states
+        return condition
+
+    def is_owner_editable(self):
+        ''' Check if the tech lead is allowed to edit current state '''
+        forbidden_states = [
+            ProjectUserMembership.AWAITING_AUTHORISATION,
+            ProjectUserMembership.DECLINED,
+        ]
+        condition = self.initiated_by_user or self.status not in forbidden_states
+        return condition
 
     def reset_status(self):
         """

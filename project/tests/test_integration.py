@@ -7,6 +7,7 @@ from django.conf import settings
 from django.urls import reverse
 
 from project.models import Project
+from project.models import ProjectUserMembership
 
 
 class ProjectIntegrationTests(SeleniumTestsBase):
@@ -37,7 +38,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
     def test_create_project_missing_fields(self):
         """
-        Create a new project
+        Test project creation and project membership workflows
         """
         self.sign_in(self.user)
 
@@ -146,6 +147,8 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         self.fill_form_by_id({'project_code': project.code})
         self.submit_form({'project_code': project.code})
+
+        assert ProjectUserMembership.objects.filter(project=project, user=self.student).exists()
         if 'Successfully submitted a project membership request' not in self.selenium.page_source:
             raise AssertionError()
 
@@ -179,6 +182,35 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         if 'Authorised' not in self.selenium.page_source:
             raise AssertionError()
+
+        # Log in as tech lead and invite a different user
+        self.log_out()
+        self.sign_in(self.user)
+        self.get_url("")
+        self.click_link_by_url(reverse('project-application-list'))
+        self.click_link_by_url(reverse('project-application-detail',kwargs={'pk': project.id}))
+        self.click_link_by_url(reverse('project-membership-invite',kwargs={'pk': project.id}))
+        self.fill_form_by_id({'email': self.external.email})
+        self.submit_form({'email': self.external.email})
+
+        assert 'Successfully submitted an invitation.' in self.selenium.page_source
+        assert ProjectUserMembership.objects.filter(project=project, user=self.external).exists()
+
+        # Check that the request is visible in user-requests
+        self.get_url('')
+        self.click_link_by_url(reverse('project-user-membership-request-list'))
+        assert self.external.email in self.selenium.page_source
+        assert 'Awaiting Authorisation' in self.selenium.page_source
+
+        # Login as external and authorise the invitation
+        self.log_out()
+        self.sign_in(self.external)
+        self.click_link_by_url(reverse('project-membership-list'))
+        assert project.code in self.selenium.page_source
+        self.select_from_first_dropdown(1)
+
+        assert 'Authorised' in self.selenium.page_source
+
 
     def test_create_project_external(self):
         """
