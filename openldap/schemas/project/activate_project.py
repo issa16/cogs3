@@ -1,8 +1,8 @@
-delete_user_json = {
+activate_project_json = {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "$ref": "#/definitions/DeleteUser",
+    "$ref": "#/definitions/ActivateProject",
     "definitions": {
-        "DeleteUser": {
+        "ActivateProject": {
             "type": "object",
             "additionalProperties": False,
             "properties": {
@@ -29,7 +29,7 @@ delete_user_json = {
                 "iss",
                 "nbf",
             ],
-            "title": "DeleteUser"
+            "title": "ActivateProject"
         },
         "Data": {
             "type": "object",

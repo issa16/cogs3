@@ -8,17 +8,20 @@ from django.urls import path
 from django.views.generic.base import TemplateView
 
 from institution.models import Institution
+from users.openldap import reset_openldap_password
 from users.views import LogoutView
 from users.views import RegisterView
+from users.views import TermsOfService
+
+# Admin config
+admin.site.site_header = 'Cogs3 Administration'
+admin.site.index_title = 'Cogs3'
+admin.site.site_title = 'Administration'
 
 urlpatterns = i18n_patterns(
     path(
         'queue/',
         include('django_rq.urls'),
-    ),
-    path(
-        'shib/',
-        include('shibboleth.urls', namespace='shibboleth'),
     ),
     path(
         '',
@@ -68,11 +71,21 @@ urlpatterns = i18n_patterns(
         include('funding.urls'),
     ),
     path(
+        'accounts/scw/password-reset/',
+        reset_openldap_password,
+        name='scw-password-reset',
+    ),
+    path(
         'projects/',
         include('project.urls'),
     ),
     path(
         'admin/',
         admin.site.urls,
+    ),
+    path(
+        'terms-and-conditions/',
+        TermsOfService.as_view(),
+        name='terms-of-service',
     ),
 )

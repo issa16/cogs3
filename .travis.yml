@@ -6,6 +6,9 @@ python:
 env:
   - DJANGO_VERSION=2.0.2
 
+services:
+  - mysql
+
 before_install:
   # Setup X to allow non-headless browsers to run
   - export DISPLAY=:99.0
@@ -24,7 +27,12 @@ install:
 addons:
   firefox: "60.0"
 
+before_script:
+  - mysql -e 'DROP DATABASE IF EXISTS `cogs3`';
+  - mysql -e 'CREATE DATABASE `cogs3`';
+  
 script:
+  - pip install mysqlclient
   - pip install -r requirements.txt
   - coverage run manage.py test
 

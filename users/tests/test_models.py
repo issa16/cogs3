@@ -1,22 +1,185 @@
 from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission
 from django.test import TestCase
 
-from institution.tests.test_models import InstitutionTests
+from institution.models import Institution
+from institution.models import Institution
 from users.admin import CustomUserAdmin
 from users.models import CustomUser
+from users.models import CustomUserManager
 from users.models import Profile
 from users.models import ShibbolethProfile
 
 
-class CustomUserTests(TestCase):
+class ProfileTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+    ]
 
     def setUp(self):
-        # Create an institution
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
+        self.institution = Institution.objects.get(name='Example University')
+        self.shibboleth_user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
+        self.guest_user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+
+    def test_is_awaiting_approval_status(self):
+        self.shibboleth_user.profile.account_status = Profile.AWAITING_APPROVAL
+        self.assertTrue(self.shibboleth_user.profile.is_awaiting_approval())
+
+    def test_is_approved_status(self):
+        self.shibboleth_user.profile.account_status = Profile.APPROVED
+        self.assertTrue(self.shibboleth_user.profile.is_approved())
+
+    def test_is_declined_status(self):
+        self.shibboleth_user.profile.account_status = Profile.DECLINED
+        self.assertTrue(self.shibboleth_user.profile.is_declined())
+
+    def test_is_revoked_status(self):
+        self.shibboleth_user.profile.account_status = Profile.REVOKED
+        self.assertTrue(self.shibboleth_user.profile.is_revoked())
+
+    def test_is_suspended_status(self):
+        self.shibboleth_user.profile.account_status = Profile.SUSPENDED
+        self.assertTrue(self.shibboleth_user.profile.is_suspended())
+
+    def test_is_closed_status(self):
+        self.shibboleth_user.profile.account_status = Profile.CLOSED
+        self.assertTrue(self.shibboleth_user.profile.is_closed())
+
+    def test_get_pre_approved_account_status_choices(self):
+        self.shibboleth_user.profile.account_status = Profile.AWAITING_APPROVAL
+        expected_choices = Profile.PRE_APPROVED_OPTIONS
+        actual_choices = self.shibboleth_user.profile.get_account_status_choices()
+        self.assertEqual(actual_choices, expected_choices)
+
+    def test_get_post_account_status_choices(self):
+        self.shibboleth_user.profile.account_status = Profile.APPROVED
+        expected_choices = Profile.POST_APPROVED_OPTIONS
+        actual_choices = self.shibboleth_user.profile.get_account_status_choices()
+        self.assertEqual(actual_choices, expected_choices)
+
+    def test_institution_property_for_shibboleth_user(self):
+        expected = self.institution
+        actual = self.shibboleth_user.profile.institution
+        self.assertEqual(actual, expected)
+
+    def test_institution_property_for_guest_user(self):
+        self.assertIsNone(self.guest_user.profile.institution)
+
+    def test_reset_account_status(self):
+        self.shibboleth_user.profile.previous_account_status = Profile.AWAITING_APPROVAL
+        self.shibboleth_user.profile.account_status = Profile.APPROVED
+        self.assertEqual(self.shibboleth_user.profile.previous_account_status, Profile.AWAITING_APPROVAL)
+        self.assertEqual(self.shibboleth_user.profile.account_status, Profile.APPROVED)
+        self.shibboleth_user.profile.reset_account_status()
+        self.assertEqual(self.shibboleth_user.profile.account_status, Profile.AWAITING_APPROVAL)
+
+    def test_str(self):
+        expected = str(self.shibboleth_user.email)
+        actual = str(self.shibboleth_user.profile)
+        self.assertEqual(actual, expected)
+
+
+class CustomUserManagerTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+    ]
+
+    def setUp(self):
+        self.institution = Institution.objects.get(name='Example University')
+
+    def test_create_superuser(self):
+        user = CustomUser.objects.create_superuser(
+            email='@'.join(['test-user', self.institution.base_domain]),
+            password=CustomUser.objects.make_random_password(length=30),
         )
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.is_shibboleth_login_required)
+
+    def test_email_is_set_validation_error(self):
+        with self.assertRaises(ValueError) as e:
+            user = CustomUser.objects.create_superuser(
+                email=None,
+                password=CustomUser.objects.make_random_password(length=30),
+            )
+        self.assertEqual(str(e.exception), 'The Email must be set.')
+
+    def test_is_staff_validation_error(self):
+        with self.assertRaises(ValueError) as e:
+            user = CustomUser.objects.create_superuser(
+                email='@'.join(['test-user', self.institution.base_domain]),
+                password=CustomUser.objects.make_random_password(length=30),
+                is_staff=False,
+            )
+        self.assertEqual(str(e.exception), 'Superuser must have is_staff=True.')
+
+    def test_is_superuser_validation_error(self):
+        with self.assertRaises(ValueError) as e:
+            user = CustomUser.objects.create_superuser(
+                email='@'.join(['test-user', self.institution.base_domain]),
+                password=CustomUser.objects.make_random_password(length=30),
+                is_superuser=False,
+            )
+        self.assertEqual(str(e.exception), 'Superuser must have is_superuser=True.')
+
+    def test_is_shibboleth_login_required_validation_error(self):
+        with self.assertRaises(ValueError) as e:
+            user = CustomUser.objects.create_superuser(
+                email='@'.join(['test-user', self.institution.base_domain]),
+                password=CustomUser.objects.make_random_password(length=30),
+                is_shibboleth_login_required=True,
+            )
+        self.assertEqual(str(e.exception), 'Superuser must have is_shibboleth_login_required=False.')
+
+
+class CustomUserTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+    ]
+
+    def setUp(self):
+        self.institution = Institution.objects.get(name='Example University')
+        self.shibboleth_user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
+        self.guest_user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+
+    def test_get_full_name(self):
+        expected = self.shibboleth_user.email
+        actual = self.shibboleth_user.get_full_name()
+        self.assertEqual(actual, expected)
+
+    def test_get_short_name(self):
+        expected = self.shibboleth_user.email
+        actual = self.shibboleth_user.get_short_name()
+        self.assertEqual(actual, expected)
+
+    def test_save_for_user_accounts(self):
+        user_accounts = [
+            self.shibboleth_user,
+            self.guest_user,
+        ]
+        for user in user_accounts:
+            user.first_name = 'John'
+            user.save()
+            self.assertEqual(user.first_name, 'John')
+
+    def test_save_guest_user(self):
+        pass
+
+    def test_str(self):
+        data = {
+            'first_name': self.shibboleth_user.first_name,
+            'last_name': self.shibboleth_user.last_name,
+            'email': self.shibboleth_user.email,
+        }
+        expected = '{first_name} {last_name} ({email})'.format(**data)
+        actual = str(self.shibboleth_user)
+        self.assertEqual(actual, expected)
 
     @classmethod
     def create_custom_user(cls, email, group=None, is_shibboleth_login_required=True):
@@ -48,10 +211,8 @@ class CustomUserTests(TestCase):
         Args:
             email (str): Email address.
         """
-        group = Group.objects.get(name='project_owner')
         return CustomUserTests.create_custom_user(
             email=email,
-            group=group,
             is_shibboleth_login_required=True,
         )
 
@@ -63,65 +224,22 @@ class CustomUserTests(TestCase):
         Args:
             email (str): Email address.
         """
-        group = Group.objects.get(name='project_owner')
         return CustomUserTests.create_custom_user(
             email=email,
-            group=group,
             is_shibboleth_login_required=False,
         )
 
-    def verify_user_data(self, user):
-        self.assertTrue(isinstance(user, CustomUser))
-        self.assertEqual(user.__str__(), user.email)
-        self.assertEqual(user.get_full_name(), user.email)
-        self.assertEqual(user.get_short_name(), user.email)
-        self.assertEqual(user.username, user.email)
-        self.assertEqual(user.groups.get(), Group.objects.get(name='project_owner'))
+    @classmethod
+    def create_institutional_users(cls):
+        inst_all = Institution.objects.all()
 
-    def test_shibboleth_user_creation(self):
-        """
-        Ensure a shibboleth custom user is created correctly.
-        """
-        username = 'joe.bloggs'
-        email = '@'.join([username, self.institution.base_domain])
-        user = self.create_shibboleth_user(email=email)
+        names = [i.base_domain.split('.')[0] for i in inst_all]
+        users = {}
 
-        # User
-        self.verify_user_data(user)
-        self.assertTrue(user.is_shibboleth_login_required)
+        for i in names:
+            username = f'{i}_user'
+            email = f'{i}@{i}.ac.uk'
 
-        # Profile
-        profile = user.profile
-        self.assertTrue(isinstance(profile, ShibbolethProfile))
-        self.assertEqual(CustomUserAdmin.get_scw_username(user), profile.scw_username)
-        self.assertEqual(CustomUserAdmin.get_account_status(user), profile.get_account_status_display())
-        self.assertEqual(profile.shibboleth_id, email)
-        self.assertEqual(profile.institution, self.institution)
-        self.assertEqual(profile.department, '')
-        self.assertEqual(profile.orcid, '')
-        self.assertEqual(profile.scopus, '')
-        self.assertEqual(profile.homepage, '')
-        self.assertEqual(profile.cronfa, '')
+            users[i] = CustomUserTests.create_custom_user(email=email)
 
-    def test_non_shibboleth_user_creation(self):
-        """
-        Ensure a non shibboleth custom user is created correctly.
-        """
-        email = '@'.join(['joe.bloggs', self.institution.base_domain])
-        user = self.create_non_shibboleth_user(email=email)
-
-        # User
-        self.verify_user_data(user)
-        self.assertFalse(user.is_shibboleth_login_required)
-
-        # Profile
-        profile = user.profile
-        self.assertTrue(isinstance(profile, Profile))
-        self.assertEqual(CustomUserAdmin.get_scw_username(user), profile.scw_username)
-        self.assertEqual(CustomUserAdmin.get_account_status(user), profile.get_account_status_display())
-        self.assertEqual(profile.scw_username, '')
-        self.assertEqual(profile.hpcw_username, '')
-        self.assertEqual(profile.hpcw_email, '')
-        self.assertEqual(profile.description, '')
-        self.assertEqual(profile.phone, '')
-        self.assertEqual(profile.account_status, Profile.AWAITING_APPROVAL)
+            return (names, users)

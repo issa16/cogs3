@@ -11,6 +11,10 @@ class SystemAdmin(admin.ModelAdmin):
         'description',
         'number_of_cores',
     )
+    search_fields = (
+        'name',
+        'description',
+    )
 
 
 @admin.register(SystemToInstitutionMap)

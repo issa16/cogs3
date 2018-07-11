@@ -1,0 +1,24 @@
+[
+  {
+    "model": "system.system",
+    "pk": 1,
+    "fields": {
+      "name": "Hawk",
+      "description": "Cardiff SCW Cluster",
+      "number_of_cores": 8000,
+      "created_time": "2018-05-15T13:38:05.966Z",
+      "modified_time": "2018-05-17T14:34:03.106Z"
+    }
+  },
+  {
+    "model": "system.system",
+    "pk": 2,
+    "fields": {
+      "name": "Sunbird",
+      "description": "Swansea SCW Cluster",
+      "number_of_cores": 5000,
+      "created_time": "2018-05-15T13:38:28.307Z",
+      "modified_time": "2018-05-17T14:33:51.878Z"
+    }
+  }
+]

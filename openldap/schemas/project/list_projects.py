@@ -1,8 +1,8 @@
-enable_account_json = {
+list_projects_json = {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "$ref": "#/definitions/EnableAccount",
+    "$ref": "#/definitions/ListProjects",
     "definitions": {
-        "EnableAccount": {
+        "ListProjects": {
             "type": "object",
             "additionalProperties": False,
             "properties": {
@@ -29,18 +29,28 @@ enable_account_json = {
                 "iss",
                 "nbf",
             ],
-            "title": "EnableAccount"
+            "title": "ListProjects"
         },
         "Data": {
             "type": "object",
             "additionalProperties": False,
             "properties": {
-                "enable": {
+                "0": {
                     "type": "string"
+                },
+                "1": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "count": {
+                    "type": "integer"
                 }
             },
             "required": [
-                "enable",
+                "count",
+                "error",
             ],
             "title": "Data"
         }

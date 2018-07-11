@@ -43,7 +43,7 @@ create_user_json = {
                 "sn": {
                     "type": "string"
                 },
-                "gidnumber": {
+                "gidNumber": {
                     "type": "string"
                 },
                 "givenname": {
@@ -53,6 +53,9 @@ create_user_json = {
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "telephonenumber": {
                     "type": "string"
                 },
                 "homedirectory": {
@@ -75,19 +78,18 @@ create_user_json = {
                 },
                 "uidnumber": {
                     "type": "string"
-                },
+                }
             },
             "required": [
                 "cn",
                 "displayName",
-                "gidnumber",
+                "gidNumber",
                 "givenname",
                 "homedirectory",
                 "loginshell",
                 "mail",
                 "objectclass",
                 "sn",
-                "title",
                 "uid",
                 "uidnumber",
             ],

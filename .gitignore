@@ -116,6 +116,7 @@ misc.txt
 util
 logs
 tmp
+*.csv
 
 # sqlite
 db.sqlite*

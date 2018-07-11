@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
-import os
-
+import ast
 import dj_database_url
+import os
 
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
@@ -25,10 +25,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-# load environment variables from .env
+# Load environment variables from .env
 dotenv_file = os.path.join(BASE_DIR, 'cogs3', '.env')
 if os.path.isfile(dotenv_file):
     load_dotenv(dotenv_file)
+
+COMPANY_NAME = os.environ.get('COMPANY_NAME')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -37,38 +39,38 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', False)
+DEBUG = ast.literal_eval(os.environ.get('DEBUG', 'False'))
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS')
 
 # Application definition
 INSTALLED_APPS = [
+    'cookielaw',
+    'dashboard.apps.DashboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django_extensions',
     'django.forms',
     'institution.apps.InstitutionConfig',
     'funding.apps.FundingConfig',
     'project.apps.ProjectConfig',
+    'django_rq',
+    'hreflang',
+    'openldap',
+    'security',
+    'shibboleth',
+    'stats',
     'system.apps.SystemConfig',
     'users.apps.UsersConfig',
-    'dashboard.apps.DashboardConfig',
     'widget_tweaks',
-    'shibboleth',
-    'cookielaw',
-    'django_rq',
-    'security',
-    'openldap',
-    'notification',
-    'hreflang',
 ]
 
 MIDDLEWARE = [
@@ -80,6 +82,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'users.middleware.SCWRemoteUserMiddleware',
+    'users.middleware.TermsOfServiceMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -101,8 +104,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'shibboleth.context_processors.login_link',
-                'shibboleth.context_processors.logout_link',
             ],
         },
     },
@@ -177,11 +178,17 @@ MESSAGE_TAGS = {
 }
 
 # Email
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+DEFAULT_BCC_EMAIL = os.environ.get('DEFAULT_BCC_EMAIL')
+DEFAULT_CONTACT_EMAIL = os.environ.get('DEFAULT_CONTACT_EMAIL')
+
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_FILE_PATH = os.environ.get('EMAIL_FILE_PATH')
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', False)
 
 # Shibboleth
 SHIBBOLETH_IDENTITY_PROVIDER_LOGIN = os.environ.get('SHIBBOLETH_IDENTITY_PROVIDER_LOGIN')
@@ -194,7 +201,6 @@ SHIBBOLETH_FORCE_REAUTH_SESSION_KEY = 'shib_force_reauth'
 CREATE_UNKNOWN_USER = False
 
 # Redis Queue
-RQ_SHOW_ADMIN_LINK = True
 RQ_QUEUES = {
     'default': {
         'HOST': os.environ.get('RQ_HOST'),
@@ -204,6 +210,7 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': os.environ.get('RQ_DEFAULT_TIMEOUT'),
     }
 }
+RQ_SHOW_ADMIN_LINK = True
 
 # OpenLDAP
 OPENLDAP_HOST = os.environ.get('OPENLDAP_HOST')
@@ -369,5 +376,6 @@ LOGGING = {
     }
 }
 
+# Selenium testing
 SELENIUM_WEBDRIVER = webdriver.Firefox
 SELENIUM_WEBDRIVER_PROFILE = webdriver.FirefoxProfile
