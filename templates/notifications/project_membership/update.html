@@ -1,13 +1,13 @@
 {% extends 'notifications/email_base.html' %}
 {% load i18n %}
 {% block title %}
-	{% trans "Project {{code}} Membership Update" %}
+	{% blocktrans %}Project {{code}} Membership Update{% endblocktrans %}
 {% endblock %}
 {% block content %}
 	<p>
-		Dear {{first_name}},
+		{% blocktrans %}Dear {{first_name}}{% endblocktrans %},
 	</p>
 	<p>
-		Your project membership for project {{code}} has been {{status}}.
+		{% blocktrans %}Your project membership for project {{code}} has been {{status}}{% endblocktrans %}.
 	</p>
 {% endblock %}

@@ -1,13 +1,13 @@
 {% extends 'notifications/email_base.html' %}
 {% load i18n %}
 {% block title %}
-	{% trans "Project {{code}} Update" %}
+	{% blocktrans %}Project {{code}} Update{% endblocktrans %}
 {% endblock %}
 {% block content %}
 	<p>
-		Dear {{first_name}},
+		{% blocktrans %}Dear {{first_name}}{% endblocktrans %},
 	</p>
 	<p>
-		Your Supercomputing Wales project {{code}} has been {{status}}.
+		{% blocktrans %}Your Supercomputing Wales project {{code}} has been {{status}}{% endblocktrans %}.
 	</p>
 {% endblock %}

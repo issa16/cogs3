@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-17 13:41+0000\n"
+"POT-Creation-Date: 2018-07-11 10:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,297 +35,318 @@ msgstr ""
 msgid "Aberystwyth University"
 msgstr ""
 
-#: openldap/api/project_api.py:80
+#: openldap/api/project_api.py:113
 #, python-brace-format
 msgid "{company_name} Project {code} Created"
 msgstr ""
 
-#: openldap/api/project_api.py:154
+#: openldap/api/project_api.py:152
 #, python-brace-format
 msgid "{company_name} Project {code} Deactivated"
 msgstr ""
 
-#: openldap/api/user_api.py:104
+#: openldap/api/project_api.py:193
+#, python-brace-format
+msgid "{company_name} Project {code} Activated"
+msgstr ""
+
+#: openldap/api/project_membership_api.py:67
+#, python-brace-format
+msgid "{company_name} Project Membership Created"
+msgstr ""
+
+#: openldap/api/project_membership_api.py:109
+#, python-brace-format
+msgid "{company_name} Project Membership Deleted"
+msgstr ""
+
+#: openldap/api/user_api.py:90
 #, python-brace-format
 msgid "{company_name} Account Created"
 msgstr ""
 
-#: openldap/api/user_api.py:198
+#: openldap/api/user_api.py:185
 #, python-brace-format
-msgid "{company_name} Password Reset"
+msgid "{company_name} Password Reset Request"
 msgstr ""
 
-#: openldap/api/user_api.py:231
+#: openldap/api/user_api.py:218
 #, python-brace-format
 msgid "{company_name} Account Deactivated"
 msgstr ""
 
-#: openldap/api/user_api.py:268
+#: openldap/api/user_api.py:256
 #, python-brace-format
 msgid "{company_name} Account Activated"
 msgstr ""
 
-#: project/forms.py:73
+#: project/forms.py:79
 msgid "Project code must be unique."
 msgstr ""
 
-#: project/forms.py:84
+#: project/forms.py:90
 msgid "Project legacy HPCW id must be unique."
 msgstr ""
 
-#: project/forms.py:95
+#: project/forms.py:101
 msgid "Project legacy ARCCA id must be unique."
 msgstr ""
 
-#: project/forms.py:169
+#: project/forms.py:194
 msgid "You are currently a member of the project."
 msgstr ""
 
-#: project/forms.py:171
+#: project/forms.py:196
 msgid "The project is currently awaiting approval."
 msgstr ""
 
-#: project/forms.py:173
+#: project/forms.py:198
 msgid "A membership request for this project already exists."
 msgstr ""
 
-#: project/forms.py:175
+#: project/forms.py:200
 msgid "Invalid Project Code."
 msgstr ""
 
-#: project/models.py:17
+#: project/models.py:18
 msgid "Project Categories"
 msgstr ""
 
-#: project/models.py:35
+#: project/models.py:36
 msgid "Project Funding Sources"
 msgstr ""
 
-#: project/models.py:53
+#: project/models.py:60
 msgid "Projects"
 msgstr ""
 
-#: project/models.py:57
+#: project/models.py:64
 msgid "Project Title"
 msgstr ""
 
-#: project/models.py:61
+#: project/models.py:68
 msgid "Project Description"
 msgstr ""
 
-#: project/models.py:66 templates/project/application_detail.html:41
+#: project/models.py:73 templates/project/application_detail.html:41
 msgid "Legacy HPC Wales ID"
 msgstr ""
 
-#: project/models.py:67
+#: project/models.py:74
 msgid "Project legacy ID from HPC Wales"
 msgstr ""
 
-#: project/models.py:72 templates/project/application_detail.html:47
+#: project/models.py:79 templates/project/application_detail.html:47
 msgid "Legacy ARCCA ID"
 msgstr ""
 
-#: project/models.py:73
+#: project/models.py:80
 msgid "Project legacy ID ARCCA"
 msgstr ""
 
-#: project/models.py:77
+#: project/models.py:84
 msgid "Project code assigned by SCW"
 msgstr ""
 
-#: project/models.py:82
+#: project/models.py:89
+msgid "OpenLDAP GID Number"
+msgstr ""
+
+#: project/models.py:94
 msgid "Owning institution project reference"
 msgstr ""
 
-#: project/models.py:87
+#: project/models.py:99
 msgid "Department"
 msgstr ""
 
-#: project/models.py:91 templates/project/application_detail.html:60
-msgid "Principal Investigator"
+#: project/models.py:103
+msgid "Principal Investigator's name, position and email"
 msgstr ""
 
-#: project/models.py:97
+#: project/models.py:109
 msgid "Technical Lead"
 msgstr ""
 
-#: project/models.py:103
+#: project/models.py:115
 msgid "Category"
 msgstr ""
 
-#: project/models.py:108 templates/project/application_detail.html:64
+#: project/models.py:120 templates/project/application_detail.html:64
 msgid "Funding source"
 msgstr ""
 
-#: project/models.py:110 templates/project/application_detail.html:68
+#: project/models.py:122 templates/project/application_detail.html:68
 msgid "Start date"
 msgstr ""
 
-#: project/models.py:111 templates/project/application_detail.html:72
+#: project/models.py:123 templates/project/application_detail.html:72
 msgid "End date"
 msgstr ""
 
-#: project/models.py:114
+#: project/models.py:126
 msgid "Economic user"
 msgstr ""
 
-#: project/models.py:119
+#: project/models.py:131
 msgid "Software name and versions"
 msgstr ""
 
-#: project/models.py:120 templates/project/application_detail.html:76
-msgid "Requirements software"
+#: project/models.py:132
+msgid "Software Requirements"
 msgstr ""
 
-#: project/models.py:125
+#: project/models.py:137
 msgid "Web gateway or portal name and versions"
 msgstr ""
 
-#: project/models.py:126 templates/project/application_detail.html:80
-msgid "Requirements gateways"
+#: project/models.py:138
+msgid "Gateway Requirements"
 msgstr ""
 
-#: project/models.py:131 templates/project/application_detail.html:84
-msgid "Requirements training"
+#: project/models.py:143
+msgid "Training Requirements"
 msgstr ""
 
-#: project/models.py:136 templates/project/application_detail.html:88
-msgid "Requirements onboarding"
+#: project/models.py:148
+msgid "Onboarding Requirements"
 msgstr ""
 
-#: project/models.py:140
+#: project/models.py:152
 msgid "RSE available to?"
 msgstr ""
 
-#: project/models.py:142 templates/project/application_detail.html:92
+#: project/models.py:157 templates/project/application_detail.html:92
 msgid "CPU time allocation in hours"
 msgstr ""
 
-#: project/models.py:143 templates/project/application_detail.html:96
+#: project/models.py:162 templates/project/application_detail.html:96
 msgid "RAM allocation in GB"
 msgstr ""
 
-#: project/models.py:144 templates/project/application_detail.html:100
+#: project/models.py:167 templates/project/application_detail.html:100
 msgid "Home storage in GB"
 msgstr ""
 
-#: project/models.py:145 templates/project/application_detail.html:104
+#: project/models.py:172 templates/project/application_detail.html:104
 msgid "Scratch storage in GB"
 msgstr ""
 
-#: project/models.py:147
+#: project/models.py:175
 msgid "Upload Supporting Documents"
 msgstr ""
 
-#: project/models.py:155
+#: project/models.py:183
 msgid "Allocation systems"
 msgstr ""
 
-#: project/models.py:160
+#: project/models.py:188
 msgid "Members"
 msgstr ""
 
-#: project/models.py:169
+#: project/models.py:197
 msgid "Awaiting Approval"
 msgstr ""
 
-#: project/models.py:170
+#: project/models.py:198
 msgid "Approved"
 msgstr ""
 
-#: project/models.py:171 project/models.py:330
+#: project/models.py:199 project/models.py:371
 msgid "Declined"
 msgstr ""
 
-#: project/models.py:172 project/models.py:331
+#: project/models.py:200 project/models.py:372
 msgid "Revoked"
 msgstr ""
 
-#: project/models.py:173 project/models.py:332
+#: project/models.py:201 project/models.py:373
 msgid "Suspended"
 msgstr ""
 
-#: project/models.py:174
+#: project/models.py:202
 msgid "Closed"
 msgstr ""
 
-#: project/models.py:179 templates/project/application_detail.html:36
-#: templates/project/membership/requests.html:32
-msgid "Status"
+#: project/models.py:207 project/models.py:378 users/models.py:88
+msgid "Current Status"
 msgstr ""
 
-#: project/models.py:184
+#: project/models.py:212 project/models.py:383 users/models.py:93
+msgid "Previous Status"
+msgstr ""
+
+#: project/models.py:217
 msgid "Reason for the project status decision:"
 msgstr ""
 
-#: project/models.py:185
+#: project/models.py:218
 msgid ""
 "The reason will be emailed to the project's technical lead upon project "
 "status update."
 msgstr ""
 
-#: project/models.py:190
+#: project/models.py:223
 msgid "Internal project notes"
 msgstr ""
 
-#: project/models.py:191
+#: project/models.py:224
 msgid "Notes"
 msgstr ""
 
-#: project/models.py:193
+#: project/models.py:226
 msgid "Created time"
 msgstr ""
 
-#: project/models.py:194
+#: project/models.py:227
 msgid "Modified time"
 msgstr ""
 
-#: project/models.py:257 project/models.py:293
+#: project/models.py:301
 msgid "Project System Allocations"
 msgstr ""
 
-#: project/models.py:290
+#: project/models.py:335
 #, python-brace-format
 msgid "{project} on {system} from {date_allocated} to {date_unallocated}"
 msgstr ""
 
-#: project/models.py:311
+#: project/models.py:352
 msgid "Project User Memberships"
 msgstr ""
 
-#: project/models.py:328
+#: project/models.py:369
 msgid "Awaiting Authorisation"
 msgstr ""
 
-#: project/models.py:329
+#: project/models.py:370
 msgid "Authorised"
 msgstr ""
 
-#: project/models.py:366
+#: project/models.py:420
 #, python-brace-format
 msgid "{user} on {project} from {date_joined} to {date_left}"
 msgstr ""
 
-#: project/views.py:28
+#: project/views.py:48
 msgid "Successfully submitted a project application."
 msgstr ""
 
-#: project/views.py:90
+#: project/views.py:105
 msgid "Successfully submitted a project membership request."
 msgstr ""
 
-#: templates/base.html:14 templates/base.html:31
+#: templates/base.html:14 templates/base.html:30
+#: templates/registration/logged_out.html:7
 #: templates/registration/logged_out.html:12
-#: templates/registration/login.html:23
-#: templates/registration/password_reset_done.html:18
-#: templates/registration/password_reset_form.html:22
-#: templates/registration/register.html:35
-msgid "cogs3"
+#: templates/registration/login.html:7 templates/registration/login.html:23
+#: templates/registration/register.html:7
+#: templates/registration/register.html:39
+msgid "Supercomputing Wales"
 msgstr ""
 
-#: templates/base.html:30 templates/registration/logged_out.html:7
-#: templates/registration/login.html:7 templates/registration/register.html:7
-msgid "Supercomputing Wales"
+#: templates/base.html:31
+msgid "My SCW"
 msgstr ""
 
 #: templates/base.html:48 templates/dashboard.html:4
@@ -347,81 +368,127 @@ msgstr ""
 msgid "Okay, thanks."
 msgstr ""
 
-#: templates/dashboard.html:27 templates/project/membership/create.html:6
-#: templates/project/membership/create.html:12
-msgid "Join a project"
+#: templates/dashboard.html:20
+msgid "Account Summary"
 msgstr ""
 
-#: templates/dashboard.html:39
-msgid "Quick Action Links"
+#: templates/dashboard.html:27
+msgid "SCW username"
 msgstr ""
 
-#: templates/dashboard.html:43
-msgid "Create Project Application"
+#: templates/dashboard.html:32
+msgid "Name"
 msgstr ""
 
-#: templates/dashboard.html:46
+#: templates/dashboard.html:36
+msgid "Identity"
+msgstr ""
+
+#: templates/dashboard.html:40 templates/project/application_detail.html:36
+#: templates/project/membership/requests.html:32
+msgid "Status"
+msgstr ""
+
+#: templates/dashboard.html:45
+msgid "HPCW username"
+msgstr ""
+
+#: templates/dashboard.html:51
+msgid "HPCW email"
+msgstr ""
+
+#: templates/dashboard.html:57
+msgid "Raven username"
+msgstr ""
+
+#: templates/dashboard.html:63
+msgid "Raven email"
+msgstr ""
+
+#: templates/dashboard.html:77
+msgid "Actions"
+msgstr ""
+
+#: templates/dashboard.html:82
 msgid "Access SCW System"
 msgstr ""
 
-#: templates/dashboard.html:49 templates/dashboard.html:83
+#: templates/dashboard.html:85 templates/dashboard.html:152
 msgid "Reset SCW Password"
 msgstr ""
 
-#: templates/dashboard.html:59
-msgid "Summary"
+#: templates/dashboard.html:89
+msgid "Create Project Application"
 msgstr ""
 
-#: templates/dashboard.html:64 templates/project/membership/requests.html:6
+#: templates/dashboard.html:94
+msgid "Submit Support Ticket"
+msgstr ""
+
+#: templates/dashboard.html:97 templates/registration/register.html:34
+#: templates/registration/register.html:46
+#: templates/terms_of_service/index.html:4
+#: templates/terms_of_service/index.html:10
+msgid "Terms and Conditions"
+msgstr ""
+
+#: templates/dashboard.html:110
+msgid "Join a Project"
+msgstr ""
+
+#: templates/dashboard.html:123
+msgid "Projects Summary"
+msgstr ""
+
+#: templates/dashboard.html:128 templates/project/membership/requests.html:6
 #: templates/project/membership/requests.html:12
 msgid "Project User Requests"
 msgstr ""
 
-#: templates/dashboard.html:69 templates/project/applications.html:6
+#: templates/dashboard.html:134 templates/project/applications.html:6
 #: templates/project/applications.html:12
 msgid "Project Applications"
 msgstr ""
 
-#: templates/dashboard.html:72 templates/project/memberships.html:6
+#: templates/dashboard.html:139 templates/project/memberships.html:6
 #: templates/project/memberships.html:12
 msgid "Project Memberships"
 msgstr ""
 
-#: templates/dashboard.html:95
+#: templates/dashboard.html:164
 msgid "Your new password must comply with the following format"
 msgstr ""
 
-#: templates/dashboard.html:98
+#: templates/dashboard.html:167
 msgid "Must contain uppercase and lowercase characters."
 msgstr ""
 
-#: templates/dashboard.html:99
+#: templates/dashboard.html:168
 msgid "Must contain at least one number."
 msgstr ""
 
-#: templates/dashboard.html:100
+#: templates/dashboard.html:169
 msgid "Minimum length should be at least 8 characters."
 msgstr ""
 
-#: templates/dashboard.html:103
-#: templates/registration/password_reset_confirm.html:23
+#: templates/dashboard.html:172
 msgid "New Password"
 msgstr ""
 
-#: templates/dashboard.html:107
-#: templates/registration/password_reset_confirm.html:25
+#: templates/dashboard.html:176
 msgid "Confirm Password"
 msgstr ""
 
-#: templates/dashboard.html:113
+#: templates/dashboard.html:182
 msgid "Submit"
 msgstr ""
 
-#: templates/dashboard.html:114 templates/includes/messages.html:5
+#: templates/dashboard.html:183 templates/includes/messages.html:5
+#: templates/registration/register.html:55
 msgid "Close"
 msgstr ""
 
-#: templates/dashboard.html:130
+#: templates/dashboard.html:199
 msgid "The passwords you have entered do not match."
 msgstr ""
 
@@ -433,33 +500,51 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: templates/notifications/account_activated.html:4
-msgid "Account Activated"
+#: templates/notifications/project/update.html:4
+#, python-format
+msgid "Project %(code)s Update"
 msgstr ""
 
-#: templates/notifications/account_created.html:4
-msgid "Account Status Update"
+#: templates/notifications/project/update.html:8
+#: templates/notifications/project_membership/update.html:8
+#: templates/notifications/user/password_reset.html:11
+#, python-format
+msgid "Dear %(first_name)s"
 msgstr ""
 
-#: templates/notifications/account_deactivated.html:4
-msgid "Account Deactivated"
+#: templates/notifications/project/update.html:11
+#, python-format
+msgid "Your Supercomputing Wales project %(code)s has been %(status)s"
 msgstr ""
 
-#: templates/notifications/password_reset.html:4
-#: templates/registration/password_reset_complete.html:8
-msgid "Password Reset"
+#: templates/notifications/project_membership/update.html:4
+#, python-format
+msgid "Project %(code)s Membership Update"
 msgstr ""
 
-#: templates/notifications/project_created.html:4
-msgid "Project Created"
+#: templates/notifications/project_membership/update.html:11
+#, python-format
+msgid "Your project membership for project %(code)s has been %(status)s"
 msgstr ""
 
-#: templates/notifications/project_membership_update.html:4
-msgid "Project Membership Update"
+#: templates/notifications/user/password_reset.html:4
+msgid "Password Reset Request"
 msgstr ""
 
-#: templates/notifications/project_status_update.html:4
-msgid "Project Status Update"
+#: templates/notifications/user/password_reset.html:8
+msgid "Your password has been changed"
+msgstr ""
+
+#: templates/notifications/user/password_reset.html:14
+msgid ""
+"This is confirmation that your Supercomputing Wales password has been changed"
+msgstr ""
+
+#: templates/notifications/user/password_reset.html:17
+msgid ""
+"Didn't change your password? Contact <a href=\"mailto:support@supercomputing."
+"wales\">Supercomputing Wales</a> so we can make sure no one else is trying "
+"to access your account."
 msgstr ""
 
 #: templates/project/application_detail.html:6
@@ -484,16 +569,39 @@ msgid "Description"
 msgstr ""
 
 #: templates/project/application_detail.html:52
-#: templates/project/applications.html:32 templates/project/memberships.html:32
-msgid "Institution"
+msgid "Institution of technical lead"
 msgstr ""
 
 #: templates/project/application_detail.html:56
 msgid "Institution project reference"
 msgstr ""
 
+#: templates/project/application_detail.html:60
+msgid "Principal Investigator"
+msgstr ""
+
+#: templates/project/application_detail.html:76
+msgid "Requirements software"
+msgstr ""
+
+#: templates/project/application_detail.html:80
+msgid "Requirements gateways"
+msgstr ""
+
+#: templates/project/application_detail.html:84
+msgid "Requirements training"
+msgstr ""
+
+#: templates/project/application_detail.html:88
+msgid "Requirements onboarding"
+msgstr ""
+
 #: templates/project/applications.html:30 templates/project/memberships.html:30
 msgid "Project Code"
+msgstr ""
+
+#: templates/project/applications.html:32 templates/project/memberships.html:32
+msgid "Institution"
 msgstr ""
 
 #: templates/project/applications.html:33
@@ -511,6 +619,11 @@ msgstr ""
 #: templates/project/applications.html:53
 #, python-format
 msgid "%(institution)s"
+msgstr ""
+
+#: templates/project/membership/create.html:6
+#: templates/project/membership/create.html:12
+msgid "Join a project"
 msgstr ""
 
 #: templates/project/membership/form.html:6
@@ -576,15 +689,11 @@ msgstr ""
 msgid "{{institution}}"
 msgstr ""
 
-#: templates/registration/external_login.html:15
-msgid "External Collaborators Login"
-msgstr ""
-
-#: templates/registration/external_login.html:18
+#: templates/registration/external_login.html:17
 msgid "Forgotten Password?"
 msgstr ""
 
-#: templates/registration/external_login.html:20
+#: templates/registration/external_login.html:19
 msgid "Login"
 msgstr ""
 
@@ -610,70 +719,75 @@ msgid ""
 "logging in."
 msgstr ""
 
-#: templates/registration/password_reset_complete.html:10
+#: templates/registration/password_reset_complete.html:6
+msgid "Password Reset"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:8
 msgid "Your password has been changed."
 msgstr ""
 
-#: templates/registration/password_reset_complete.html:13
-#: templates/registration/password_reset_done.html:16
-#: templates/registration/password_reset_form.html:20
+#: templates/registration/password_reset_complete.html:11
 msgid "Back to login page"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:11
+#: templates/registration/password_reset_confirm.html:9
 msgid "Create a new password"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:20
+#: templates/registration/password_reset_confirm.html:11
 msgid "Please enter (and confirm) your new password."
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:26
+#: templates/registration/password_reset_confirm.html:21
+msgid "New password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:25
+msgid "Confirm password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:28
 msgid "Change Password"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:32
+#: templates/registration/password_reset_confirm.html:31
 msgid "Password reset failed"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:34
+#: templates/registration/password_reset_confirm.html:33
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used."
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:37
+#: templates/registration/password_reset_confirm.html:35
 msgid "Please request a new password reset."
 msgstr ""
 
-#: templates/registration/password_reset_done.html:8
+#: templates/registration/password_reset_done.html:6
 #: templates/registration/password_reset_form.html:10
-#: templates/registration/password_reset_form.html:18
 msgid "Reset Password"
 msgstr ""
 
-#: templates/registration/password_reset_done.html:10
+#: templates/registration/password_reset_done.html:8
 msgid "We've emailed you instructions for setting your password."
 msgstr ""
 
-#: templates/registration/password_reset_done.html:13
+#: templates/registration/password_reset_done.html:9
 msgid "If they haven't arrived in a few minutes, check your spam folder."
 msgstr ""
 
 #: templates/registration/password_reset_email.html:2
-#, python-format
-msgid ""
-"Someone asked for password reset for email %(email)s. Follow\n"
-"the link below:"
+msgid "Please use the following link to reset your MySCW password:"
 msgstr ""
 
-#: templates/registration/password_reset_form.html:16
-#: templates/registration/password_reset_form.html:17
-msgid "Email address"
+#: templates/registration/password_reset_form.html:8
+msgid "Password Reset Request Form"
 msgstr ""
 
 #: templates/registration/register.html:12
-#: templates/registration/register.html:34
+#: templates/registration/register.html:38
 msgid "Create a Supercomputing Wales account"
 msgstr ""
 
@@ -689,41 +803,19 @@ msgstr ""
 msgid "Last name"
 msgstr ""
 
-#: templates/registration/register.html:30
-msgid "I agree to the Terms and Conditions."
+#: templates/registration/register.html:27 users/models.py:260
+msgid "Reason for account"
 msgstr ""
 
-#: users/models.py:94
-msgid "access request is currently awaiting approval."
+#: templates/registration/register.html:34
+msgid "I agree to the"
 msgstr ""
 
-#: users/models.py:97
-msgid ""
-"access request has been approved and your account is currently being created."
+#: users/forms.py:134
+msgid "To continue please accept the terms and conditions."
 msgstr ""
 
-#: users/models.py:99
-msgid "access request has been declined."
-msgstr ""
-
-#: users/models.py:101
-msgid "access has been revoked."
-msgstr ""
-
-#: users/models.py:103
-msgid "access has been suspended."
-msgstr ""
-
-#: users/models.py:105
-msgid "has been closed."
-msgstr ""
-
-#: users/models.py:106
-#, python-brace-format
-msgid "Your {company_name} account {message}"
-msgstr ""
-
-#: users/views.py:69
+#: users/openldap.py:32
 msgid ""
 "Successfully submitted a password reset request. You should receive a "
 "confirmation email once the request has been processed."
