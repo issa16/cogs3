@@ -1,0 +1,34 @@
+<!-- templates/terms_of_service/index.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Terms and Conditions" %}{% endblock %}
+{% block content %}
+	<div class="my-3 p-3 p-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4 class="">{% trans "Terms and Conditions" %}</h4>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				{% include 'terms_of_service/tos.html' %}
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				{% include 'includes/errors.html'%}
+				{% if not user.accepted_terms_and_conditions %}
+					<form method="post" class="text-center">
+						{% csrf_token %}
+						<div class="form-check form-check-inline">
+							<input class="form-check-input mr-3" type="checkbox" id="accepted-terms-and-conditions" name="accepted_terms_and_conditions" required>
+							<input type="submit" class="btn btn-primary" value="I agree to the terms and conditions" />
+						</div>
+					</form>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

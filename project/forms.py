@@ -1,14 +1,17 @@
 from django import forms
 from django.db.models import Q
+from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from institution.models import Institution
 from project.models import Project
 from project.models import ProjectUserMembership
+from project.openldap import update_openldap_project
+from project.openldap import update_openldap_project_membership
 from users.models import CustomUser
 
 
 class FileLinkWidget(forms.Widget):
+
     def __init__(self, obj, attrs=None):
         self.object = obj
         super(FileLinkWidget, self).__init__(attrs)
@@ -16,7 +19,6 @@ class FileLinkWidget(forms.Widget):
     def render(self, name, value, attrs=None):
         if self.object.pk:
             return u'<a target="_blank" href="/en/projects/applications/%s/document">Download</a>' % (self.object.id)
-
         else:
             return u''
 
@@ -32,9 +34,9 @@ class ProjectAdminForm(forms.ModelForm):
             'description',
             'legacy_hpcw_id',
             'legacy_arcca_id',
-            'code', 'institution',
             'institution_reference',
             'department',
+            'gid_number',
             'pi',
             'tech_lead',
             'category',
@@ -49,7 +51,8 @@ class ProjectAdminForm(forms.ModelForm):
             'allocation_rse',
             'allocation_cputime',
             'allocation_memory',
-            'allocation_storage_home', 'allocation_storage_scratch',
+            'allocation_storage_home',
+            'allocation_storage_scratch',
             'document',
             'document_download',
             'status',
@@ -59,7 +62,12 @@ class ProjectAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectAdminForm, self).__init__(*args, **kwargs)
+        self.initial_status = self.instance.status
         self.fields['document_download'].widget = FileLinkWidget(self.instance)
+        self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status))
+        # Project must be created in order to generate a project code, before the status can be updated.
+        if self.instance.id is None:
+            self.fields['status'] = forms.ChoiceField(choices=[Project.STATUS_CHOICES[Project.AWAITING_APPROVAL]])
 
     def clean_code(self):
         """
@@ -74,7 +82,7 @@ class ProjectAdminForm(forms.ModelForm):
 
     def clean_legacy_hpcw_id(self):
         """
-        Ensure the project legacy hpcw id is unique.
+        Ensure the project legacy HPCW id is unique.
         """
         current_legacy_hpcw_id = self.instance.legacy_hpcw_id
         updated_legacy_hpcw_id = self.cleaned_data['legacy_hpcw_id']
@@ -85,7 +93,7 @@ class ProjectAdminForm(forms.ModelForm):
 
     def clean_legacy_arcca_id(self):
         """
-        Ensure the project legacy arcca id is unique.
+        Ensure the project legacy ARCCA id is unique.
         """
         current_legacy_arcca_id = self.instance.legacy_arcca_id
         updated_legacy_arcca_id = self.cleaned_data['legacy_arcca_id']
@@ -93,6 +101,32 @@ class ProjectAdminForm(forms.ModelForm):
             if Project.objects.filter(legacy_arcca_id=updated_legacy_arcca_id).exists():
                 raise forms.ValidationError(_('Project legacy ARCCA id must be unique.'))
         return updated_legacy_arcca_id
+
+    def _get_status_choices(self, status):
+        pre_approved_options = [
+            Project.STATUS_CHOICES[Project.AWAITING_APPROVAL],
+            Project.STATUS_CHOICES[Project.APPROVED],
+            Project.STATUS_CHOICES[Project.DECLINED],
+        ]
+        post_approved_options = [
+            Project.STATUS_CHOICES[Project.APPROVED],
+            Project.STATUS_CHOICES[Project.REVOKED],
+            Project.STATUS_CHOICES[Project.SUSPENDED],
+            Project.STATUS_CHOICES[Project.CLOSED],
+        ]
+        if Project.STATUS_CHOICES[status] in post_approved_options:
+            return post_approved_options
+        else:
+            return pre_approved_options
+
+    def save(self, commit=True):
+        project = super(ProjectAdminForm, self).save(commit=False)
+        project.previous_status = self.initial_status
+        if self.initial_status != project.status:
+            update_openldap_project(project)
+        if commit:
+            project.save()
+        return project
 
 
 class LocalizeModelChoiceField(forms.ModelChoiceField):
@@ -110,7 +144,6 @@ class ProjectCreationForm(forms.ModelForm):
             'description',
             'legacy_hpcw_id',
             'legacy_arcca_id',
-            'institution',
             'institution_reference',
             'department',
             'pi',
@@ -128,20 +161,23 @@ class ProjectCreationForm(forms.ModelForm):
             'document',
         ]
         widgets = {
-            'start_date': forms.DateInput(attrs={
-                'class': 'datepicker'
-            }),
-            'end_date': forms.DateInput(attrs={
-                'class': 'datepicker'
-            }),
+            'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
+            'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(ProjectCreationForm, self).__init__(*args, **kwargs)
-        self.fields['institution'] = LocalizeModelChoiceField(
-            queryset=Institution.objects.all(),
-            label=_('Institution'),
-        )
+        self.user = user
+        if self.user.profile.institution is not None and not self.user.profile.institution.is_cardiff:
+            del self.fields['legacy_arcca_id']
+
+    def set_user(self, user):
+        self.user = user
+
+    def clean(self):
+        self.instance.tech_lead = self.user
+        if self.instance.tech_lead.profile.institution is None:
+            raise ValidationError('Only users which belong to an institution can create projects.')
 
 
 class ProjectUserMembershipCreationForm(forms.Form):
@@ -186,3 +222,46 @@ class ProjectUserInviteForm(forms.Form):
             raise forms.ValidationError(_("A membership request for this project already exists."))
 
         return email
+
+
+class ProjectUserMembershipAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = ProjectUserMembership
+        fields = [
+            'project',
+            'user',
+            'status',
+            'date_joined',
+            'date_left',
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectUserMembershipAdminForm, self).__init__(*args, **kwargs)
+        self.initial_status = self.instance.status
+        self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status))
+
+    def _get_status_choices(self, status):
+        pre_approved_options = [
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.AWAITING_AUTHORISATION],
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.AUTHORISED],
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.DECLINED],
+        ]
+        post_approved_options = [
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.AUTHORISED],
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.REVOKED],
+            ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.SUSPENDED],
+        ]
+        if ProjectUserMembership.STATUS_CHOICES[status] in post_approved_options:
+            return post_approved_options
+        else:
+            return pre_approved_options
+
+    def save(self, commit=True):
+        project_user_membership = super(ProjectUserMembershipAdminForm, self).save(commit=False)
+        if self.initial_status != project_user_membership.status:
+            update_openldap_project_membership(project_user_membership)
+        if commit:
+            project_user_membership.save()
+        return project_user_membership
+

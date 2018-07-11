@@ -5,8 +5,15 @@ import requests
 from django.conf import settings
 from django.test import TestCase
 
+from users.models import CustomUser
+
 
 class OpenLDAPBaseAPITests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+    ]
 
     def setUp(self):
         settings.OPENLDAP_HOST = 'https://example.com/'
@@ -14,6 +21,8 @@ class OpenLDAPBaseAPITests(TestCase):
         settings.OPENLDAP_JWT_ISSUER = 'https://openldap.example.com/'
         settings.OPENLDAP_JWT_AUDIENCE = 'https://openldap.example.com/'
         settings.OPENLDAP_JWT_ALGORITHM = 'HS256'
+
+        self.user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
 
     def _mock_response(self, content=None, status=200, json_data=None, raise_for_status=None):
         mock_resp = mock.Mock()

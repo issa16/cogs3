@@ -1,17 +1,7 @@
-import jsonschema
-import logging
-import requests
-
-from django.conf import settings
-
-from openldap import schemas
-from openldap.decorators import OpenLDAPException
-from openldap.util import decode_response
-
-logger = logging.getLogger('openldap')
+from django_rq import job
 
 
-@OpenLDAPException(logger)
+@job
 def get_system_allocation(email):
     """
     Get a system allocation.
@@ -22,7 +12,7 @@ def get_system_allocation(email):
     raise NotImplementedError('Not yet implemented.')
 
 
-@OpenLDAPException(logger)
+@job
 def update_system_allocation(email, system_id):
     """
     Update a system allocation.
@@ -34,7 +24,7 @@ def update_system_allocation(email, system_id):
     raise NotImplementedError('Not yet implemented.')
 
 
-@OpenLDAPException(logger)
+@job
 def delete_system_allocation(email, system_id):
     """
     Delete a system allocation.

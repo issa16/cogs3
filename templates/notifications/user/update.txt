@@ -1,0 +1,5 @@
+User Account Update
+
+Dear {{first_name}},
+
+Your Supercomputing Wales account has been {{status}}.

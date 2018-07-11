@@ -1,9 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from django.utils.translation import gettext as _
 
+from project.models import Project
 from project.models import ProjectUserMembership
-from users.models import Profile
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -16,9 +15,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             num_requests = ProjectUserMembership.objects.awaiting_authorisation(self.request.user).count()
             context['project_user_requests_count'] = num_requests
 
-        if self.request.user.profile.account_status == Profile.AWAITING_APPROVAL:
-            context['account_status_message'] = _(
-                'Your account is currently being configured. You should receive an email shortly '
-                'with instructions on how to access the compute cluster.')
+        if self.request.user.has_perm('project.add_project'):
+            num_requests = Project.objects.awaiting_approval(self.request.user).count()
+            context['project_application_count'] = num_requests
 
         return context

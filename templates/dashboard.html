@@ -12,22 +12,60 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-12">
-				{% if account_status_message %}
-					<div class="alert alert-warning" role="alert">
-						{{account_status_message}}
-					</div>
-				{% endif %}
-			</div>
 			<div class="col-md-5 col-sm-12 mb-3 pr-md-0">
 				<div class="row">
 					<div class="col">
 						<div class="card">
-							<div class="card-header">
-								<b>{% trans "Join a project" %}</b>
+							<div class="card-header border-bottom-0">
+								<b>{% trans "Account Summary" %}</b>
 							</div>
-							<div class="card-body p-3">
-								{% include 'project/membership/form.html' %}
+							<div class="table-responsive">
+								<table class="table mb-0">
+									<tbody>
+										{% if user.profile.scw_username %}
+											<tr>
+												<th>{% trans "SCW username" %}</th>
+												<td>{{user.profile.scw_username}}</td>
+											</tr>
+										{% endif %}
+										<tr>
+											<th scope="row" style="width:35%">{% trans "Name" %}</th>
+											<td style="width:65%">{{user.first_name}} {{user.last_name}}</td>
+										</tr>
+										<tr>
+											<th>{% trans "Identity" %}</th>
+											<td>{{user.email}}</td>
+										</tr>
+										<tr>
+											<th>{% trans "Status" %}</th>
+											<td>{{user.profile.get_account_status_display }}</td>
+										</tr>
+										{% if user.profile.hpcw_username %}
+											<tr>
+												<th>{% trans "HPCW username" %}</th>
+												<td>{{user.profile.hpcw_username}}</td>
+											</tr>
+										{% endif %}
+										{% if user.profile.hpcw_email %}
+											<tr>
+												<th>{% trans "HPCW email" %}</th>
+												<td>{{user.profile.hpcw_email}}</td>
+											</tr>
+										{% endif %}
+										{% if user.profile.raven_username %}
+											<tr>
+												<th>{% trans "Raven username" %}</th>
+												<td>{{user.profile.raven_username}}</td>
+											</tr>
+										{% endif %}
+										{% if user.profile.raven_email %}
+											<tr>
+												<th>{% trans "Raven email" %}</th>
+												<td>{{user.profile.raven_email}}</td>
+											</tr>
+										{% endif %}
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>
@@ -36,44 +74,160 @@
 					<div class="col">
 						<div class="card">
 							<div class="card-header">
-								<b>{% trans "Quick Action Links" %}</b>
+								<b>{% trans "Actions" %}</b>
 							</div>
 							<ul class="list-group list-group-flush">
+								{% if user.profile.is_approved %}
+									<li class="list-group-item d-flex justify-content-between align-items-center disabled">
+										<a href="https://portal.supercomputing.wales/index.php/index/accessing-the-system/">{% trans "Access SCW System" %}</a>
+									</li>
+									<li class="list-group-item d-flex justify-content-between align-items-center disabled">
+										<a href="#" data-toggle="modal" data-target="#password-reset-modal">{% trans "Reset SCW Password" %}</a>
+									</li>
+									{% if perms.project.add_project %}
+										<li class="list-group-item d-flex justify-content-between align-items-center">
+											<a href="{% url 'create-project' %}">{% trans "Create Project Application" %}</a>
+										</li>
+									{% endif %}
+								{% endif %}
 								<li class="list-group-item d-flex justify-content-between align-items-center">
-									<a href="{% url 'create-project' %}">{% trans "Create Project Application" %}</a>
+									<a href="https://portal.supercomputing.wales/index.php/index/submit-support-ticket/">{% trans "Submit Support Ticket" %}</a>
 								</li>
-								<li class="list-group-item d-flex justify-content-between align-items-center disabled">
-									<a href="#">{% trans "Access SCW Cluster" %}</a>
-								</li>
-								<li class="list-group-item d-flex justify-content-between align-items-center disabled">
-									<a href="#">{% trans "Reset Password" %}</a>
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									<a href="{% url 'terms-of-service' %}">{% trans "Terms and Conditions" %}</a>
 								</li>
 							</ul>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="col-md-7 mb-3">
-				<div class="card">
-					<div class="card-header">
-						<b>{% trans "Summary" %}</b>
+			<div class="col-md-7">
+				{% if user.profile.is_approved %}
+					<div class="row mb-3">
+						<div class="col">
+							<div class="card">
+								<div class="card-header">
+									<b>{% trans "Join a Project" %}</b>
+								</div>
+								<div class="card-body p-3">
+									{% include 'project/membership/form.html' %}
+								</div>
+							</div>
+						</div>
 					</div>
-					<ul class="list-group list-group-flush">
-						{% if perms.project.add_project %}
-							<li class="list-group-item d-flex justify-content-between align-items-center">
-								<a href="{% url 'project-user-membership-request-list' %}">{% trans "Project User Requests" %}</a>
-								<span class="badge badge-primary badge-pill float-right">{{ project_user_requests_count }}</span>
-							</li>
-						{% endif %}
-						<li class="list-group-item d-flex justify-content-between align-items-center">
-							<a href="{% url 'project-application-list' %}">{% trans "Project Applications" %}</a>
-						</li>
-						<li class="list-group-item d-flex justify-content-between align-items-center">
-							<a href="{% url 'project-membership-list' %}">{% trans "Project Memberships" %}</a>
-						</li>
-					</ul>
+				{% endif %}
+				<div class="row mb-3">
+					<div class="col">
+						<div class="card">
+							<div class="card-header">
+								<b>{% trans "Projects Summary" %}</b>
+							</div>
+							<ul class="list-group list-group-flush">
+								{% if perms.project.change_projectusermembership %}
+									<li class="list-group-item d-flex justify-content-between align-items-center">
+										<a href="{% url 'project-user-membership-request-list' %}">{% trans "Project User Requests" %}</a>
+										<span class="badge badge-primary badge-pill float-right">{{ project_user_requests_count }}</span>
+									</li>
+								{% endif %}
+								{% if user.profile.is_approved and perms.project.add_project %}
+									<li class="list-group-item d-flex justify-content-between align-items-center">
+										<a href="{% url 'project-application-list' %}">{% trans "Project Applications" %}</a>
+										<span class="badge badge-primary badge-pill float-right">{{ project_application_count }}</span>
+									</li>
+								{% endif %}
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									<a href="{% url 'project-membership-list' %}">{% trans "Project Memberships" %}</a>
+								</li>
+							</ul>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+	<div id="password-reset-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">{% trans "Reset SCW Password" %}</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form id="password-reset" method="post">
+					{% csrf_token %}
+					<div class="modal-body">
+						<div id="form-errors" class="alert alert-danger d-none"></div>
+						<div id="form-success" class="alert alert-success d-none"></div>
+						<div id="password-policy">
+							<p>
+								{% trans "Your new password must comply with the following format" %}:
+							</p>
+							<ul>
+								<li>{% trans "Must contain uppercase and lowercase characters." %}</li>
+								<li>{% trans "Must contain at least one number." %}</li>
+								<li>{% trans "Minimum length should be at least 8 characters." %}</li>
+							</ul>
+							<div class="form-group">
+								<label for="password" class="col-form-label">{% trans "New Password" %}:</label>
+								<input class="form-control" name="password" type="password" autocomplete="off" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+							</div>
+							<div class="form-group">
+								<label for="password-confirm" class="col-form-label">{% trans "Confirm Password" %}:</label>
+								<input class="form-control" name="password-confirm" type="password" autocomplete="off" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Close" %}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block custom_js %}
+	<script>
+		$("#password-reset").submit(function(event) {
+			event.preventDefault();
+			var csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			// Ensure password fields match
+			var password = $('input[name=password]').val();
+			var password_confirm = $('input[name=password-confirm]').val();
+			if (password != password_confirm) {
+				$('#form-errors').text('{% trans "The passwords you have entered do not match." %}');
+				$('#form-errors').removeClass('d-none');
+			} else {
+				$('#form-errors').addClass('d-none');
+				// Submit a password reset request
+				$.ajax({
+					type: 'POST',
+					url: "{% url 'scw-password-reset' %}",
+					data: {
+						'password': password,
+						'password_confirm': password_confirm,
+						'csrfmiddlewaretoken': csrfmiddlewaretoken,
+					},
+					dataType: 'json',
+					encode: true,
+					success: function(msg) {
+						// Hide password reset form
+						$('#password-policy').addClass('d-none');
+						$('#password-reset > .modal-footer > .btn-primary').addClass('d-none');
+						// Show success message
+						$('#form-success').text(msg.data);
+						$('#form-success').removeClass('d-none');
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						// Hide any success messages
+						$('#form-success').addClass('d-none');
+						// Show error message
+						$('#form-errors').text('Invalid password reset request.');
+						$('#form-errors').removeClass('d-none');
+					},
+				});
+			}
+	});
+	</script>
 {% endblock %}

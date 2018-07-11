@@ -3,6 +3,7 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 
+from django.contrib.auth.models import Group
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.utils.translation import activate
@@ -10,13 +11,15 @@ from django.utils.translation import activate
 from cogs3.settings import LANGUAGE_CODE
 from cogs3.settings import SELENIUM_WEBDRIVER
 from cogs3.settings import SELENIUM_WEBDRIVER_PROFILE
+from django.core.exceptions import ObjectDoesNotExist
+from institution.models import Institution
 from users.models import CustomUser
 
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
     fixtures = [
-        'institution/fixtures/institutions.yaml',
-        'project/fixtures/funding_sources.yaml',
+        'institution/fixtures/institutions.json',
+        'project/fixtures/tests/funding_sources.json',
     ]
 
     serialized_rollback = True
@@ -25,7 +28,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.selenium.get(self.live_server_url + url)
 
     def click_link_by_url(self, url):
-        selector = 'a[href*="' + url + '"]'
+        selector = 'a[href="' + url + '"]'
         link = self.selenium.find_element_by_css_selector(selector)
         link.click()
 
@@ -56,11 +59,13 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.fill_form_by_id(form_fields)
         self.submit_form(form_fields)
         # Check that we didn't get the fail response
-        assert "Please enter a correct email and password" not in self.selenium.page_source
+        if "Please enter a correct email and password" in self.selenium.page_source:
+            raise AssertionError()
 
     def log_out(self):
         self.get_url(reverse('logout'))
-        assert "accounts/logged_out/" in self.selenium.current_url
+        if "accounts/logged_out/" not in self.selenium.current_url:
+            raise AssertionError()
         self.get_url('')
 
     def submit_form(self, form_fields):
@@ -68,7 +73,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
         # This seems to be necessary Geckodriver (Firefox)
         # I'm guessing it take a moment to process the submission
-        time.sleep(0.2)
+        time.sleep(1)
 
     def click_by_id(self, text):
         self.selenium.find_element_by_id(text).click()
@@ -81,6 +86,13 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         user.save()
         user.profile.account_status = user.profile.APPROVED
         user.save()
+        try:
+            domain = user.email.split('@')[1]
+            institute = Institution.objects.get(base_domain=domain)
+            self.user.profile.institution = institute
+            self.user.profile.save()
+        except ObjectDoesNotExist:
+            pass
 
     def tearDown(self):
         super(SeleniumTestsBase, self).tearDown()
@@ -89,14 +101,19 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
     def setUp(self):
         self.user_password = "password"
         self.user = CustomUser(
-            username="user@swansea.ac.uk",
-            email="user@swansea.ac.uk",
+            username="user@swan.ac.uk",
+            email="user@swan.ac.uk",
             first_name='User',
             last_name='User',
-            is_staff=True,
-            is_shibboleth_login_required=False,
+            is_staff=False,
+            is_shibboleth_login_required=True,
+            accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.user)
+
+        # Assign the project owner permission to the user
+        project_owner_group = Group.objects.get(name='project_owner')
+        self.user.groups.add(project_owner_group)
 
         self.external = CustomUser(
             username="external@gmail.com",
@@ -104,37 +121,41 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             first_name='External',
             last_name='External',
             is_shibboleth_login_required=False,
+            accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.external)
 
         self.student = CustomUser(
-            username="123456@swansea.ac.uk",
-            email="123456@swansea.ac.uk",
+            username="123456@swan.ac.uk",
+            email="123456@swan.ac.uk",
             first_name='Student',
             last_name='Student',
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
+            accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.student)
 
         self.rse = CustomUser(
-            username="rse@swansea.ac.uk",
-            email="rse@swansea.ac.uk",
+            username="rse@swan.ac.uk",
+            email="rse@swan.ac.uk",
             first_name='Rse',
             last_name='Rse',
             is_staff=True,
             is_superuser=True,
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
+            accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.rse)
 
         self.admin = CustomUser(
-            username="admin@swansea.ac.uk",
-            email="admin@swansea.ac.uk",
+            username="admin@swan.ac.uk",
+            email="admin@swan.ac.uk",
             first_name='Admin',
             last_name='Admin',
             is_staff=True,
             is_superuser=True,
-            is_shibboleth_login_required=False,
+            is_shibboleth_login_required=True,
+            accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.admin)
 

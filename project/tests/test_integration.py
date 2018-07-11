@@ -20,7 +20,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
     default_project_form_fields = {
         "id_title": "Test project",
         "id_description": "This project aims to test the submission of projects",
-        "id_institution": "swansea",
         "id_institution_reference": "test1",
         "id_department": "SA2C",
         "id_pi": "Joe Bloggs",
@@ -37,7 +36,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         'id_document': test_file,
     }
 
-    def test_create_project(self):
+    def test_create_project_missing_fields(self):
         """
         Test project creation and project membership workflows
         """
@@ -47,7 +46,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         missing_fields = [
             'id_title',
             'id_description',
-            'id_institution',
             'id_start_date',
             'id_end_date',
         ]
@@ -59,7 +57,12 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             self.fill_form_by_id(form_field)
             self.select_from_dropdown_by_id('id_funding_source', 1)
             self.submit_form(self.default_project_form_fields)
-            assert "This field is required." in self.selenium.page_source
+            if "This field is required." not in self.selenium.page_source:
+                raise AssertionError()
+
+    def test_create_project(self):
+
+        self.sign_in(self.user)
 
         self.get_url('')
         self.click_link_by_url(reverse('create-project'))
@@ -75,37 +78,44 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         # Submit the form
         self.submit_form(self.default_project_form_fields)
 
-        assert "This field is required." not in self.selenium.page_source
-        assert "Successfully submitted a project application." in self.selenium.page_source
+        if "This field is required." in self.selenium.page_source:
+            raise AssertionError()
+        if "Successfully submitted a project application." not in self.selenium.page_source:
+            raise AssertionError()
 
         # Check the project status
-        self.get_url('')
-        self.click_link_by_url(reverse('project-application-list'))
-        assert self.default_project_form_fields["id_title"] in self.selenium.page_source
-        assert 'Awaiting Approval' in self.selenium.page_source
+        self.get_url(reverse('project-application-list'))
+        if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
+            raise AssertionError()
+        if 'Awaiting Approval' not in self.selenium.page_source:
+            raise AssertionError()
 
         # Check that the project was created
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
-        assert matching_projects.count() == 1
+        if matching_projects.count() != 1:
+            raise AssertionError()
 
         # Get the project
         project = matching_projects.first()
 
         # Check that the technical lead is the user
-        tech_lead_id = matching_projects.values_list('tech_lead', flat=True).get(pk=1)
+        tech_lead_id = project.tech_lead.id
         user_id = self.user.id
-        assert tech_lead_id == user_id
+        if tech_lead_id != user_id:
+            raise AssertionError()
 
         # Check that the project is not active
-        status = matching_projects.values_list('status', flat=True).get(pk=1)
-        assert status == Project.AWAITING_APPROVAL
+        if project.status != Project.AWAITING_APPROVAL:
+            raise AssertionError()
 
         # Check that the file was uploaded
         rootpath = os.path.join(os.path.dirname(self.test_file), os.pardir, os.pardir, 'tmp')
         uploadpath = os.path.join(rootpath, project.document.name)
         uploadpath = os.path.normpath(uploadpath)
-        assert os.path.isfile(uploadpath)
-        assert filecmp.cmp(uploadpath, self.test_file)
+        if not os.path.isfile(uploadpath):
+            raise AssertionError()
+        if not filecmp.cmp(uploadpath, self.test_file):
+            raise AssertionError()
 
         # Approve the project and set a code
         project.status = Project.APPROVED
@@ -113,18 +123,23 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         project.save()
 
         # Try the Project Applications and Project Memberships pages
-        self.get_url('')
-        self.click_link_by_url(reverse('project-application-list'))
-        assert 'code1' in self.selenium.page_source
-        assert self.default_project_form_fields["id_title"] in self.selenium.page_source
+        self.get_url(reverse('project-application-list'))
+        if 'code1' not in self.selenium.page_source:
+            raise AssertionError()
+        if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
+            raise AssertionError()
 
-        self.click_link_by_url(reverse('project-application-detail', kwargs={'pk': 1}))
-        assert self.default_project_form_fields["id_description"] in self.selenium.page_source
+        self.click_link_by_url(reverse('project-application-detail', kwargs={'pk': project.id}))
+        if self.default_project_form_fields["id_description"] not in self.selenium.page_source:
+            raise AssertionError()
 
         self.get_url(reverse('project-membership-list'))
-        assert 'code1' in self.selenium.page_source
-        assert self.default_project_form_fields["id_title"] in self.selenium.page_source
-        assert 'Project Owner' in self.selenium.page_source
+        if 'code1' not in self.selenium.page_source:
+            raise AssertionError()
+        if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
+            raise AssertionError()
+        if 'Project Owner' not in self.selenium.page_source:
+            raise AssertionError()
 
         # Login with a different user (student) and add the project
         self.log_out()
@@ -132,26 +147,31 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         self.fill_form_by_id({'project_code': project.code})
         self.submit_form({'project_code': project.code})
-        assert 'Successfully submitted a project membership request' in self.selenium.page_source
+
         assert ProjectUserMembership.objects.filter(project=project, user=self.student).exists()
+        if 'Successfully submitted a project membership request' not in self.selenium.page_source:
+            raise AssertionError()
 
         # Try an invalid code
         self.get_url('')
         self.fill_form_by_id({'project_code': 'Invalidcode1'})
         self.submit_form({'project_code': project.code})
-        assert 'Invalid Project Code' in self.selenium.page_source
+        if 'Invalid Project Code' not in self.selenium.page_source:
+            raise AssertionError()
 
         # Check that the project membership is visible
         self.get_url('')
         self.click_link_by_url(reverse('project-membership-list'))
-        assert 'Awaiting Authorisation' in self.selenium.page_source
+        if 'Awaiting Authorisation' not in self.selenium.page_source:
+            raise AssertionError()
 
         # Login with as the tech lead and authorize the new user
         self.log_out()
         self.sign_in(self.user)
         self.get_url(reverse('project-user-membership-request-list'))
 
-        assert self.student.email in self.selenium.page_source
+        if self.student.email not in self.selenium.page_source:
+            raise AssertionError()
         self.select_from_first_dropdown(1)
 
         # Login with student again and check authorisation
@@ -160,7 +180,8 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.get_url('')
         self.click_link_by_url(reverse('project-membership-list'))
 
-        assert 'Authorised' in self.selenium.page_source
+        if 'Authorised' not in self.selenium.page_source:
+            raise AssertionError()
 
         # Log in as tech lead and invite a different user
         self.log_out()
@@ -197,15 +218,9 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         """
         self.sign_in(self.external)
         self.get_url('')
-        self.click_link_by_url(reverse('create-project'))
 
-        self.fill_form_by_id(self.default_project_form_fields)
-        self.select_from_dropdown_by_id('id_funding_source', 1)
-
-        self.submit_form(self.default_project_form_fields)
-
-        assert "This field is required." not in self.selenium.page_source
-        assert "Successfully submitted a project application." in self.selenium.page_source
+        if "Create Project Application" in self.selenium.page_source:
+            raise AssertionError()
 
     def test_create_project_unauthorized(self):
         """
@@ -215,4 +230,5 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.get_url(reverse('create-project'))
 
         # This should throw us to the login page
-        assert "accounts/login" in self.selenium.current_url
+        if "accounts/login" not in self.selenium.current_url:
+            raise AssertionError()
