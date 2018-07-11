@@ -1,0 +1,5 @@
+Project {{code}} Update
+
+Dear {{first_name}},
+
+Your Supercomputing Wales project {{code}} has been {{status}}.

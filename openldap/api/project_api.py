@@ -63,7 +63,7 @@ def get_project(project_code):
 
 
 @job
-def create_project(project, notify_user=False):
+def create_project(project, notify_user=True):
     """
     Create an OpenLDAP project.
 
@@ -117,7 +117,8 @@ def create_project(project, notify_user=False):
             context = {
                 'first_name': project.tech_lead.first_name,
                 'to': project.tech_lead.email,
-                'status': project.get_status_display(),
+                'code': project.code,
+                'status': project.get_status_display().lower(),
             }
             text_template_path = 'notifications/project/update.txt'
             html_template_path = 'notifications/project/update.html'
@@ -130,7 +131,7 @@ def create_project(project, notify_user=False):
 
 
 @job
-def deactivate_project(project, notify_user=False):
+def deactivate_project(project, notify_user=True):
     """
     Deactivate an OpenLDAP project.
 
@@ -155,7 +156,8 @@ def deactivate_project(project, notify_user=False):
             context = {
                 'first_name': project.tech_lead.first_name,
                 'to': project.tech_lead.email,
-                'status': project.get_status_display(),
+                'code': project.code,
+                'status': project.get_status_display().lower(),
             }
             text_template_path = 'notifications/project/update.txt'
             html_template_path = 'notifications/project/update.html'
@@ -167,7 +169,7 @@ def deactivate_project(project, notify_user=False):
 
 
 @job
-def activate_project(project, notify_user=False):
+def activate_project(project, notify_user=True):
     """
     Activate an OpenLDAP project.
 
@@ -195,7 +197,8 @@ def activate_project(project, notify_user=False):
             context = {
                 'first_name': project.tech_lead.first_name,
                 'to': project.tech_lead.email,
-                'status': project.get_status_display(),
+                'code': project.code,
+                'status': project.get_status_display().lower(),
             }
             text_template_path = 'notifications/project/update.txt'
             html_template_path = 'notifications/project/update.html'
