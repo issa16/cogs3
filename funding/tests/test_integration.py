@@ -7,6 +7,10 @@ from django.urls import reverse
 
 class FundingSourceIntegrationTests(SeleniumTestsBase):
 
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+    ]
+
     def test_create_funding_source_missing_fields(self):
         """
         Try creating a funding source with a required field missing

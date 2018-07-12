@@ -288,26 +288,18 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
         """
         accounts = [
             self.project_owner,
-            self.project_applicant,
         ]
 
         for account in accounts:
             # Create a project.
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            project = ProjectTests.create_project(
-                title=self.title,
-                code='scw-' + code,
-                institution=self.institution,
-                tech_lead=account,
-                category=self.category,
-                funding_source=self.funding_source,
-            )
+            project = Project.objects.get(title="Project title")
             self.approve_project(project)
 
             # A request to create a project user membership should be rejected.
             form = ProjectUserInviteForm(
                 initial={
-                    'project_id': 1,
+                    'project_id': project.id,
                 },
                 data={
                     'email': account.email,
@@ -326,14 +318,7 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
         """
         # Create a project.
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        project = ProjectTests.create_project(
-            title=self.title,
-            code='scw-' + code,
-            institution=self.institution,
-            tech_lead=self.project_owner,
-            category=self.category,
-            funding_source=self.funding_source,
-        )
+        project = Project.objects.get(title="Project title")
         self.approve_project(project)
 
         # Create a project user membership.

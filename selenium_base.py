@@ -139,8 +139,8 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.create_test_user(self.external)
 
         self.student = CustomUser(
-            username="123456@swan.ac.uk",
-            email="123456@swan.ac.uk",
+            username="123456@example.ac.uk",
+            email="123456@example.ac.uk",
             first_name='Student',
             last_name='Student',
             is_shibboleth_login_required=True,
@@ -149,8 +149,8 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.create_test_user(self.student)
 
         self.rse = CustomUser(
-            username="rse@swan.ac.uk",
-            email="rse@swan.ac.uk",
+            username="rse@example.ac.uk",
+            email="rse@example.ac.uk",
             first_name='Rse',
             last_name='Rse',
             is_staff=True,
@@ -161,8 +161,8 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.create_test_user(self.rse)
 
         self.admin = CustomUser(
-            username="admin@swan.ac.uk",
-            email="admin@swan.ac.uk",
+            username="admin@example.ac.uk",
+            email="admin@example.ac.uk",
             first_name='Admin',
             last_name='Admin',
             is_staff=True,

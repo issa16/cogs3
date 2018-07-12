@@ -182,6 +182,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if 'Authorised' not in self.selenium.page_source:
             raise AssertionError()
 
+<<<<<<< Updated upstream
         # Log in as tech lead and invite a different user
         self.log_out()
         self.sign_in(self.user)
@@ -210,6 +211,12 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         assert 'Authorised' in self.selenium.page_source
 
+=======
+        # Delete the project and check the user was deleted from project_owners
+        project.delete()
+        if self.user.groups.filter(name='project_owner').exists():
+            raise AssertionError()
+>>>>>>> Stashed changes
 
     def test_create_project_external(self):
         """
