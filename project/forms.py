@@ -7,6 +7,7 @@ from project.models import ProjectUserMembership
 from funding.models import FundingSource
 from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
+from users.models import CustomUser
 
 
 class FileLinkWidget(forms.Widget):
@@ -211,6 +212,28 @@ class ProjectUserMembershipCreationForm(forms.Form):
         return project_code
 
 
+class ProjectUserInviteForm(forms.Form):
+    email = forms.CharField(max_length=50)
+    initiated_by_user = False
+
+    def clean_email(self):
+        # Verify that the user exists and the project is approved
+        email = self.cleaned_data['email']
+        project = Project.objects.filter(id=self.initial['project_id']).first()
+        user = CustomUser.objects.filter(email=email).first()
+        # The technical lead will automatically be added as a member of the of project.
+        if not user:
+            raise forms.ValidationError(_("No user exists with given email."))
+        if project.tech_lead == user:
+            raise forms.ValidationError(_("You are currently a member of the project."))
+        if project.is_awaiting_approval():
+            raise forms.ValidationError(_("The project is currently awaiting approval."))
+        if ProjectUserMembership.objects.filter(project=project, user=user).exists():
+            raise forms.ValidationError(_("A membership request for this project already exists."))
+
+        return email
+
+
 class ProjectUserMembershipAdminForm(forms.ModelForm):
 
     class Meta:
@@ -251,3 +274,4 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
         if commit:
             project_user_membership.save()
         return project_user_membership
+

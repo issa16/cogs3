@@ -9,6 +9,10 @@ from django.urls import reverse
 from institution.models import Institution
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
+from project.tests.test_models import ProjectCategoryTests
+from project.tests.test_models import ProjectFundingSourceTests
+from project.tests.test_models import ProjectTests
+from project.tests.test_models import ProjectUserMembershipTests
 from project.models import Project
 from project.models import ProjectCategory
 from funding.models import FundingBody
@@ -313,6 +317,145 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
 
 
 class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
+
+    def test_view_as_an_authorised_user(self):
+        """
+        Ensure the correct account types can access the project user membership list view.
+        """
+        accounts = [
+            {
+                'email': self.project_applicant_email,
+                'expected_status_code': 200,
+            },
+            {
+                'email': self.project_owner_email,
+                'expected_status_code': 200,
+            },
+        ]
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': self.institution.identity_provider,
+                'REMOTE_USER': account.get('email'),
+            }
+            response = self.client.get(
+                reverse('project-membership-list'),
+                **headers,
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('view'), ProjectUserMembershipListView))
+
+    def test_view_as_an_unauthorised_user(self):
+        """
+        Ensure unauthorised users can not access the project user membership list view.
+        """
+        self.access_view_as_unauthorisied_user(reverse('project-membership-list'))
+
+
+class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
+
+    def setUp(self):
+        super().setUp()
+        email = '@'.join(['user', self.institution.base_domain])
+        self.user = CustomUserTests.create_shibboleth_user(email=email)
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        self.project = ProjectTests.create_project(
+            title='Project Title',
+            code='scw-' + code,
+            institution=self.institution,
+            tech_lead=self.project_owner,
+            category=self.category,
+            funding_source=self.funding_source,
+        )
+        self.membership = ProjectUserMembershipTests.create_project_user_membership(
+            user=self.user,
+            project=self.project,
+        )
+
+    def post_status_change(self, email, status_in, status_set):
+        ''' Sign in with email and post a status change from status_in
+        to status_set
+        '''
+        # Set the starting status
+        self.membership.status = status_in
+        self.membership.save()
+        self.membership.refresh_from_db()
+
+        # Sign in as the user
+        headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': email,
+        }
+        self.client.get(reverse('login'), **headers)
+
+        # Set up request data
+        url = reverse('project-user-membership-update',kwargs={'pk': self.project.id})
+        data = {
+            'project_id': self.project.id,
+            'request_id': self.membership.id,
+        }
+        data['status'] = status_set
+
+        # Post the change
+        self.client.post(url, data)
+        self.client.get(reverse('logout'))
+
+    def test_accept_invite(self):
+        ''' Check that the user can accept or decline the invitation to join a
+        project, but cannot revoke or suspend membership'''
+
+        self.membership.initiated_by_user = False
+        self.membership.save()
+
+        cases = [
+            [ProjectUserMembership.AWAITING_AUTHORISATION, ProjectUserMembership.AUTHORISED, True],
+            [ProjectUserMembership.AWAITING_AUTHORISATION, ProjectUserMembership.DECLINED, True],
+            [ProjectUserMembership.AUTHORISED, ProjectUserMembership.REVOKED, False],
+            [ProjectUserMembership.AUTHORISED, ProjectUserMembership.SUSPENDED, False],
+        ]
+        for status_in, status_set, result in cases:
+            self.post_status_change(self.user.email, status_in, status_set)
+            self.membership.refresh_from_db()
+            assert (self.membership.status == status_set) == result
+
+    def test_change_invited_member_status(self):
+        ''' Check that the tech cannot accept or decline the invite, but can
+        revoke or suspend the membership once accepted'''
+
+        self.membership.initiated_by_user = False
+        self.membership.save()
+
+        cases = [
+            [ProjectUserMembership.AWAITING_AUTHORISATION, ProjectUserMembership.AUTHORISED, False],
+            [ProjectUserMembership.AWAITING_AUTHORISATION, ProjectUserMembership.DECLINED, False],
+            [ProjectUserMembership.AUTHORISED, ProjectUserMembership.REVOKED, True],
+            [ProjectUserMembership.AUTHORISED, ProjectUserMembership.SUSPENDED, True],
+        ]
+        for status_in, status_set, result in cases:
+            self.post_status_change(self.project_owner.email, status_in, status_set)
+            self.membership.refresh_from_db()
+            assert (self.membership.status == status_set) == result
+
+    def test_change_member_requset_status(self):
+        ''' Check that only the tech lead can change the
+        change the status of a membership initiated by the tech lead '''
+
+        self.membership.initiated_by_user = True
+        self.membership.save()
+
+        cases = [
+            [ProjectUserMembership.AWAITING_AUTHORISATION, ProjectUserMembership.AUTHORISED],
+            [ProjectUserMembership.AWAITING_AUTHORISATION, ProjectUserMembership.DECLINED],
+            [ProjectUserMembership.AUTHORISED, ProjectUserMembership.REVOKED],
+            [ProjectUserMembership.AUTHORISED, ProjectUserMembership.SUSPENDED],
+        ]
+        for status_in, status_set in cases:
+            self.post_status_change(self.user.email, status_in, status_set)
+            self.membership.refresh_from_db()
+            assert self.membership.status == status_in
+
+            self.post_status_change(self.project_owner.email, status_in, status_set)
+            self.membership.refresh_from_db()
+            assert self.membership.status == status_set
 
     def test_view_as_authorised_application_user(self):
         """

@@ -17,7 +17,10 @@ from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
 
+from users.models import CustomUser
+
 from project.forms import ProjectCreationForm
+from project.forms import ProjectUserInviteForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
 from project.models import ProjectUserMembership
@@ -151,21 +154,30 @@ class ProjectUserRequestMembershipUpdateView(PermissionAndLoginRequiredMixin, ge
     permission_required = 'project.change_projectusermembership'
     ordering = ['date_joined']
 
-    def user_passes_test(self, request):
+    def request_allowed(self, request):
         # Ensure the project belongs to the user attempting to update the membership status
         try:
             project_id = request.POST.get('project_id')
             request_id = request.POST.get('request_id')
+            status = int(request.POST.get('status'))
             user = self.request.user
-            project = Project.objects.get(id=project_id, tech_lead=user)
-            ProjectUserMembership.objects.get(id=request_id, project=project)
-            return True
+            project = Project.objects.get(id=project_id)
+            membership = ProjectUserMembership.objects.get(id=request_id)
+            if membership.is_user_editable() and user == membership.user:
+                allowed_states = [
+                    ProjectUserMembership.AUTHORISED,
+                    ProjectUserMembership.DECLINED,
+                ]
+                if status in allowed_states:
+                    return True
+            condition = membership.is_owner_editable() and project.tech_lead == user
+            return condition
         except Exception:
             return False
 
     def dispatch(self, request, *args, **kwargs):
-        if not self.user_passes_test(request):
-            return HttpResponseRedirect(reverse('project-user-membership-request-list'))
+        if not self.request_allowed(request):
+            return HttpResponseRedirect(reverse('project-membership-list'))
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -196,3 +208,47 @@ class ProjectUserMembershipListView(LoginRequiredMixin, generic.ListView):
         queryset = super().get_queryset()
         queryset = queryset.filter(user=self.request.user)
         return queryset.filter(project__status=Project.APPROVED)
+
+
+class ProjectMembesrshipInviteView(PermissionRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, FormView):
+    ''' As tech lead, invite a user to the a project using an email address '''
+    permission_required = 'project.change_projectusermembership'
+    form_class = ProjectUserInviteForm
+    success_message = _("Successfully submitted an invitation.")
+    template_name = 'project/membership/invite.html'
+    model = Project
+
+    def get_initial(self):
+        data = super().get_initial()
+        data.update({'project_id': self.kwargs['pk']})
+        return data
+
+    def get_success_url(self):
+        return reverse_lazy('project-application-detail', args = [self.kwargs['pk']])
+
+    def project_passes_test(self, request):
+        try:
+            project = Project.objects.filter(
+                id=self.kwargs['pk'],
+                tech_lead=self.request.user
+            ).first()
+            return project.is_approved()
+        except Exception:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.project_passes_test(request):
+            return HttpResponseRedirect(reverse_lazy('project-application-detail', args = [self.kwargs['pk']]))
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        project = Project.objects.filter(id=self.kwargs['pk']).first()
+        user = CustomUser.objects.filter(email=email).first()
+        ProjectUserMembership.objects.create(
+            project=project,
+            user=user,
+            initiated_by_user=False,
+            date_joined=datetime.date.today(),
+        )
+        return super().form_valid(form)

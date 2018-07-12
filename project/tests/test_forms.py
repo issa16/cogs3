@@ -7,6 +7,7 @@ from django.test import TestCase
 from institution.models import Institution
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
+from project.forms import ProjectUserInviteForm
 from project.models import Project
 from project.models import ProjectUserMembership
 from users.models import CustomUser
@@ -232,3 +233,132 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
             form.errors['project_code'],
             ['Ensure this value has at most 20 characters (it has 21).'],
         )
+
+
+class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
+
+    @classmethod
+    def approve_project(cls, project):
+        """
+        The approval process will trigger the creation of a project user membership for the
+        technical lead user see project/signals.py.
+
+        Args:
+            project (Project): Project to approve.
+        """
+        project.status = Project.APPROVED
+        project.save()
+
+    def test_form_when_project_is_awaiting_approval(self):
+        """
+        Ensure it is not possible to create a project user membership whilst the project is
+        currently awaiting approval.
+        """
+        form = ProjectUserInviteForm(
+            initial={
+                'project_id': 1,
+            },
+            data={
+                'email': self.project_applicant.email,
+            },
+        )
+        self.assertFalse(form.is_valid())
+
+    def test_form_after_the_project_has_been_approved(self):
+        """
+        Ensure it is possible to create a project user membership after the project has been approved.
+        """
+        self.approve_project(self.project)
+
+        form = ProjectUserInviteForm(
+            initial={
+                'project_id': 1,
+            },
+            data={
+                'email': self.project_applicant.email,
+            },
+        )
+        self.assertTrue(form.is_valid())
+
+    def test_form_with_an_authorised_project_member(self):
+        """
+        Ensure it is not possible to create a project user membership when a user is an
+        authorised member of the project. By default, when the project is approved, a project user
+        membership will be created for the technical lead.
+        """
+        accounts = [
+            self.project_owner,
+            self.project_applicant,
+        ]
+
+        for account in accounts:
+            # Create a project.
+            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            project = ProjectTests.create_project(
+                title=self.title,
+                code='scw-' + code,
+                institution=self.institution,
+                tech_lead=account,
+                category=self.category,
+                funding_source=self.funding_source,
+            )
+            self.approve_project(project)
+
+            # A request to create a project user membership should be rejected.
+            form = ProjectUserInviteForm(
+                initial={
+                    'project_id': 1,
+                },
+                data={
+                    'email': account.email,
+                },
+            )
+            self.assertFalse(form.is_valid())
+
+            # Ensure the project user membership status is currently set authorised.
+            membership = ProjectUserMembership.objects.get(user=account)
+            self.assertTrue(membership.is_authorised())
+
+    def test_form_when_a_user_has_a_request_awaiting_authorisation(self):
+        """
+        Ensure it is not possible to create a project user membership when a user has a
+        membership request awaiting authorisation.
+        """
+        # Create a project.
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        project = ProjectTests.create_project(
+            title=self.title,
+            code='scw-' + code,
+            institution=self.institution,
+            tech_lead=self.project_owner,
+            category=self.category,
+            funding_source=self.funding_source,
+        )
+        self.approve_project(project)
+
+        # Create a project user membership.
+        ProjectUserMembership.objects.create(
+            project=project,
+            user=self.project_applicant,
+            status=ProjectUserMembership.AWAITING_AUTHORISATION,
+            date_joined=datetime.datetime.now(),
+            date_left=datetime.datetime.now() + datetime.timedelta(days=10),
+        )
+
+        # Ensure the project user membership status is currently set to awaiting authorisation.
+        membership = ProjectUserMembership.objects.get(
+            user=self.project_applicant,
+            project=project,
+        )
+        self.assertTrue(membership.is_awaiting_authorisation())
+
+        # A request to create a project user membership should be rejected.
+        form = ProjectUserInviteForm(
+            initial={
+                'project_id': 1,
+            },
+            data={
+                'email': self.project_applicant.email,
+            },
+        )
+        self.assertFalse(form.is_valid())
