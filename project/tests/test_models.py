@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth.models import Group
 from django.test import TestCase
 
-from institution.tests.test_models import InstitutionTests
+from institution.models import Institution
 from funding.tests.test_models import FundingBodyTests
 from funding.tests.test_models import FundingSourceTests
 from project.models import Project

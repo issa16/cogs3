@@ -169,17 +169,11 @@ class ProjectCreationForm(forms.ModelForm):
         }
 
     def __init__(self, user, *args, **kwargs):
-<<<<<<< HEAD
-=======
         super(ProjectCreationForm, self).__init__(*args, **kwargs)
         self.user = user
         if self.user.profile.institution is not None and not self.user.profile.institution.is_cardiff:
             del self.fields['legacy_arcca_id']
 
-    def set_user(self, user):
->>>>>>> 3927612e97317e0910364ec126ef72422168775c
-        self.user = user
-        super(forms.ModelForm, self).__init__(*args, **kwargs)
         self.fields['funding_sources'] = forms.ModelMultipleChoiceField(
             label="Select Funding sources",
             widget=SelectMultipleTickbox(),

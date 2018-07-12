@@ -37,27 +37,21 @@ class ProjectViewTests(TestCase):
     ]
 
     def setUp(self):
-        # Create a funding body
-        name = 'A function source name'
-        description = 'A funding source description'
-        self.funding_body = FundingBodyTests.create_funding_body(
-            name=name,
-            description=description,
+        # Load the user
+        self.project_owner = CustomUser.objects.get(
+            username="shibboleth.user@example.ac.uk"
         )
 
-        # Create a funding source
-        title = 'A funding source title'
-        identifier = 'A funding source identifier'
-        pi_email = '@'.join(['pi', self.institution.base_domain])
-        self.funding_source = FundingSourceTests.create_funding_source(
-            title=title,
-            identifier=identifier,
-            funding_body=self.funding_body,
-            owner=self.project_owner,
-            pi_email=pi_email,
+        self.project_applicant = CustomUser.objects.get(
+            username="norman.gordon@example.ac.uk"
         )
 
-    def access_view_as_unauthorisied_user(self, path):
+        # Load the funding source
+        self.funding_source = FundingSource.objects.filter(
+            created_by=self.project_owner
+        ).first()
+
+    def _access_view_as_unauthorisied_application_user(self, url, expected_redirect_url):
         """
         Ensure an unauthorised application user can not access a url.
 
@@ -178,7 +172,7 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
             'REMOTE_USER': self.project_applicant.email,
         }
         response = self.client.get(
-            reverse('project-application-detail', args=[self.project.id]),
+            reverse('project-application-detail', args=[1]),
             **headers,
         )
         self.assertEqual(response.status_code, 302)
@@ -189,24 +183,26 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         Ensure the project detail view is accessible to an authorised application user,
         who does have the required permissions.
         """
+        project = Project.objects.get(tech_lead=self.project_owner)
         headers = {
             'Shib-Identity-Provider': self.project_owner.profile.institution.identity_provider,
             'REMOTE_USER': self.project_owner.email,
         }
         response = self.client.get(
-            reverse('project-application-detail', args=[self.project.id]),
+            reverse('project-application-detail', args=[project.id]),
             **headers,
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context_data.get('project'), self.project)
+        self.assertEqual(response.context_data.get('project'), project)
         self.assertTrue(isinstance(response.context_data.get('view'), ProjectDetailView))
 
     def test_view_as_unauthorised_application_user(self):
         """
         Ensure the project detail view is not accessible to an unauthorised application user.
         """
+        project = Project.objects.get(tech_lead=self.project_owner)
         self._access_view_as_unauthorisied_application_user(
-            reverse('project-application-detail', args=[self.project.id]),
+            reverse('project-application-detail', args=[project.id]),
             '/en-gb/accounts/login/?next=/en-gb/projects/applications/1/',
         )
 

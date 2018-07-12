@@ -20,7 +20,9 @@ from funding.models import FundingBody
 class SeleniumTestsBase(StaticLiveServerTestCase):
     fixtures = [
         'institution/fixtures/institutions.json',
-        'project/fixtures/tests/funding_sources.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/funding_sources.json',
     ]
 
     serialized_rollback = True
@@ -109,9 +111,11 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
 
         # Create a number of user for different roles
         self.user_password = "password"
+        institution = Institution.objects.get(id=1)
+        email = '@'.join(['user', institution.base_domain])
         self.user = CustomUser(
-            username="user@swan.ac.uk",
-            email="user@swan.ac.uk",
+            username=email,
+            email=email,
             first_name='User',
             last_name='User',
             is_staff=False,

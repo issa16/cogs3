@@ -1,36 +1,22 @@
-from django.contrib.auth.models import Group
 from django.test import TestCase
 
-from institution.tests.test_models import InstitutionTests
-from funding.tests.test_models import FundingBodyTests
-from users.tests.test_models import CustomUserTests
-
 from funding.forms import FundingSourceForm
+from users.models import CustomUser
+from funding.models import FundingBody
+from institution.models import Institution
 
 
 class FundingFormTests(TestCase):
 
-    def setUp(self):
-        # Create an institution for owner
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
-
-        # Create the owner
-        group = Group.objects.get(name='project_owner')
-        self.owner_email = '@'.join(['project_owner', self.institution.base_domain])
-        self.owner = CustomUserTests.create_custom_user(
-            email=self.owner_email,
-            group=group,
-        )
-
-        # Create a funding body
-        self.funding_body = FundingBodyTests.create_funding_body(
-            name='A function source name',
-            description='A funding source description',
-        )
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/funding_sources.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
 
 
 class FundingSourceFormTests(FundingFormTests, TestCase):
@@ -39,12 +25,14 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
         """
         The form should raise ValidationError when given a non-institutional PI email
         """
+        funding_body = FundingBody.objects.get(name="Test")
+        user = CustomUser.objects.get(email="admin.user@example.ac.uk")
         form = FundingSourceForm(
-            user = self.owner,
+            user=user,
             data={
                 'title': 'Title',
                 'identifier': 'Id',
-                'funding_body': self.funding_body.id,
+                'funding_body': funding_body.id,
                 'pi_email': 'myemail@gmail.com',
             },
         )
@@ -58,13 +46,17 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
         """
         The form should be accepted with an institutional email
         """
+        funding_body = FundingBody.objects.get(name="Test")
+        institution = Institution.objects.get(name="Example University")
+        email = '@'.join(['myemail', institution.base_domain])
+        user = CustomUser.objects.get(email="admin.user@example.ac.uk")
         form = FundingSourceForm(
-            user = self.owner,
+            user=user,
             data={
                 'title': 'Title',
                 'identifier': 'Id',
-                'funding_body': self.funding_body.id,
-                'pi_email': 'myemail@bangor.ac.uk'
+                'funding_body': funding_body.id,
+                'pi_email': email
             },
         )
         self.assertTrue(form.is_valid())
@@ -73,13 +65,17 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
         """
         The form should be accepted with an institutional email
         """
+        funding_body = FundingBody.objects.get(name="Test")
+        institution = Institution.objects.get(name="Example University")
+        email = '@'.join(['myemail', institution.base_domain])
+        user = CustomUser.objects.get(email="admin.user@example.ac.uk")
         form = FundingSourceForm(
-            user = self.owner,
+            user=user,
             data={
                 'title': 'Title',
                 'identifier': 'Id',
-                'funding_body': self.funding_body.id,
-                'pi_email': 'owner_email@bangor.ac.uk'
+                'funding_body': funding_body.id,
+                'pi_email': email
             },
         )
         self.assertTrue(form.is_valid())

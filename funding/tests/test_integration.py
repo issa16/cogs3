@@ -1,5 +1,6 @@
 from selenium_base import SeleniumTestsBase
 from funding.models import FundingSource
+from institution.models import Institution
 
 from django.urls import reverse
 
@@ -49,7 +50,8 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         """
         self.sign_in(self.user)
 
-        email = 'test@swansea.ac.uk'
+        institution = Institution.objects.get(name="Example University")
+        email = '@'.join(['test', institution.base_domain])
 
         form_fields = {
             'id_title': 'Title',
@@ -68,6 +70,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         # Check that the funding source was created
         matching_sources = FundingSource.objects.filter(identifier=form_fields['id_identifier'])
         if matching_sources.count() != 1:
+            print("Found", matching_sources.count(), "projects")
             raise AssertionError()
 
         # Get the object

@@ -1,6 +1,6 @@
 [
   {
-    "model": "project.ProjectFundingSource",
+    "model": "funding.FundingBody",
     "pk": 1,
     "fields": {
       "name": "Test",

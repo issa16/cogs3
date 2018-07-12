@@ -1,13 +1,22 @@
-from django.contrib.auth.models import Group
 from django.test import TestCase
 
-from institution.tests.test_models import InstitutionTests
 from funding.models import FundingSource
 from funding.models import FundingBody
-from users.tests.test_models import CustomUserTests
+from institution.models import Institution
+from users.models import CustomUser
 
 
 class FundingBodyTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/funding_sources.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
 
     @classmethod
     def create_funding_body(cls, name, description):
@@ -42,27 +51,15 @@ class FundingBodyTests(TestCase):
 
 class FundingSourceTests(TestCase):
 
-    def setUp(self):
-        # Create an institution for owner
-        self.institution = InstitutionTests.create_institution(
-            name='Bangor University',
-            base_domain='bangor.ac.uk',
-            identity_provider='https://idp.bangor.ac.uk/shibboleth',
-        )
-
-        # Create the owner
-        group = Group.objects.get(name='project_owner')
-        self.owner_email = '@'.join(['project_owner', self.institution.base_domain])
-        self.owner = CustomUserTests.create_custom_user(
-            email=self.owner_email,
-            group=group,
-        )
-
-        # Create a funding body
-        self.funding_body = FundingBodyTests.create_funding_body(
-            name='A function source name',
-            description='A funding source description',
-        )
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/funding_sources.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
 
     @classmethod
     def create_funding_source(cls, title, identifier, funding_body, owner, pi_email):
@@ -88,19 +85,23 @@ class FundingSourceTests(TestCase):
         Ensure we can create a FundingBody instance.
         """
 
+        fundingbody = FundingBody.objects.get(name="Test")
+        institution = Institution.objects.get(name="Example University")
+        user = CustomUser.objects.get(email="admin.user@example.ac.uk")
+
         title = 'A funding source title'
         identifier = 'A funding source identifier'
-        pi_email = '@'.join(['pi', self.institution.base_domain])
+        pi_email = '@'.join(['pi', institution.base_domain])
         funding_source = self.create_funding_source(
             title=title,
             identifier=identifier,
-            funding_body=self.funding_body,
-            owner=self.owner,
+            funding_body=fundingbody,
+            owner=user,
             pi_email=pi_email,
         )
         self.assertTrue(isinstance(funding_source, FundingSource))
         self.assertEqual(funding_source.__str__(), funding_source.title)
         self.assertEqual(funding_source.title, title)
         self.assertEqual(funding_source.identifier, identifier)
-        self.assertEqual(funding_source.created_by, self.owner)
-        self.assertEqual(funding_source.funding_body, self.funding_body)
+        self.assertEqual(funding_source.created_by, user)
+        self.assertEqual(funding_source.funding_body, fundingbody)
