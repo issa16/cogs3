@@ -13,22 +13,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name='project',
-            name='pi',
+            old_name='pi',
+            new_name='project_supervisor',
         ),
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name='project',
-            name='pi_email',
-        ),
-        migrations.AddField(
-            model_name='project',
-            name='project_supervisor',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='project_as_project_supervisor', to=settings.AUTH_USER_MODEL, verbose_name='Project Supervisor'),
-        ),
-        migrations.AddField(
-            model_name='project',
-            name='project_supervisor_email',
-            field=models.CharField(max_length=128, null=True, verbose_name='Project Supervisor Email'),
+            old_name='pi_email',
+            new_name='project_supervisor',
         ),
     ]
