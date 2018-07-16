@@ -25,6 +25,14 @@ from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
 from project.models import ProjectUserMembership
 from project.openldap import update_openldap_project_membership
+from funding.models import FundingSource
+
+
+def list_sources(request):
+    sources = FundingSource.objects.filter(
+        created_by=1
+    ).values('title', 'id')
+    return JsonResponse({'results': list(sources)})
 
 
 class PermissionAndLoginRequiredMixin(PermissionRequiredMixin):
