@@ -2,21 +2,14 @@ import datetime
 import random
 import string
 
-from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from institution.models import Institution
-from institution.tests.test_models import InstitutionTests
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.forms import ProjectUserInviteForm
 from project.models import Project
-from project.models import ProjectCategory
-from project.models import ProjectFundingSource
 from project.models import ProjectUserMembership
-from project.tests.test_models import ProjectCategoryTests
-from project.tests.test_models import ProjectFundingSourceTests
-from project.tests.test_models import ProjectTests
 from users.models import CustomUser
 from users.tests.test_models import CustomUserTests
 
@@ -26,7 +19,8 @@ class ProjectFormTests(TestCase):
     fixtures = [
         'institution/fixtures/tests/institutions.json',
         'users/fixtures/tests/users.json',
-        'project/fixtures/tests/funding_sources.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/funding_sources.json',
         'project/fixtures/tests/categories.json',
         'project/fixtures/tests/projects.json',
         'project/fixtures/tests/memberships.json',
@@ -34,8 +28,6 @@ class ProjectFormTests(TestCase):
 
     def setUp(self):
         self.institution = Institution.objects.get(name='Example University')
-        self.category = ProjectCategory.objects.get(name='Test')
-        self.funding_source = ProjectFundingSource.objects.get(name='Test')
         self.project_code = 'scw0000'
         self.project = Project.objects.get(code=self.project_code)
         self.project_owner = self.project.tech_lead
@@ -296,26 +288,18 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
         """
         accounts = [
             self.project_owner,
-            self.project_applicant,
         ]
 
         for account in accounts:
             # Create a project.
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            project = ProjectTests.create_project(
-                title=self.title,
-                code='scw-' + code,
-                institution=self.institution,
-                tech_lead=account,
-                category=self.category,
-                funding_source=self.funding_source,
-            )
+            project = Project.objects.get(title="Project title")
             self.approve_project(project)
 
             # A request to create a project user membership should be rejected.
             form = ProjectUserInviteForm(
                 initial={
-                    'project_id': 1,
+                    'project_id': project.id,
                 },
                 data={
                     'email': account.email,
@@ -334,14 +318,7 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
         """
         # Create a project.
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        project = ProjectTests.create_project(
-            title=self.title,
-            code='scw-' + code,
-            institution=self.institution,
-            tech_lead=self.project_owner,
-            category=self.category,
-            funding_source=self.funding_source,
-        )
+        project = Project.objects.get(title="Project title")
         self.approve_project(project)
 
         # Create a project user membership.

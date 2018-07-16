@@ -10,12 +10,12 @@ from institution.models import Institution
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.tests.test_models import ProjectCategoryTests
-from project.tests.test_models import ProjectFundingSourceTests
 from project.tests.test_models import ProjectTests
 from project.tests.test_models import ProjectUserMembershipTests
 from project.models import Project
 from project.models import ProjectCategory
-from project.models import ProjectFundingSource
+from funding.models import FundingBody
+from funding.models import FundingSource
 from project.models import ProjectUserMembership
 from project.views import ProjectCreateView
 from project.views import ProjectDetailView
@@ -34,18 +34,30 @@ class ProjectViewTests(TestCase):
     fixtures = [
         'institution/fixtures/tests/institutions.json',
         'users/fixtures/tests/users.json',
-        'project/fixtures/tests/funding_sources.json',
         'project/fixtures/tests/categories.json',
         'project/fixtures/tests/projects.json',
         'project/fixtures/tests/memberships.json',
     ]
 
     def setUp(self):
-        self.project_owner = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
-        self.project_applicant = CustomUser.objects.get(email='norman.gordon@example.ac.uk')
-        self.project = Project.objects.get(code='scw0000')
+        # Load the user
+        self.project_owner = CustomUser.objects.get(
+            username="shibboleth.user@example.ac.uk"
+        )
 
-    def _access_view_as_unauthorisied_application_user(self, url, expected_redirect_url):
+        self.project_applicant = CustomUser.objects.get(
+            username="norman.gordon@example.ac.uk"
+        )
+
+        # Load the institution
+        self.institution = Institution.objects.get(name="Example University")
+
+        # Load the funding source
+        self.funding_source = FundingSource.objects.filter(
+            created_by=self.project_owner
+        ).first()
+
+    def _access_view_as_unauthorised_application_user(self, url, expected_redirect_url):
         """
         Ensure an unauthorised application user can not access a url.
 
@@ -59,7 +71,7 @@ class ProjectViewTests(TestCase):
         }
         response = self.client.get(
             url,
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, expected_redirect_url)
@@ -104,7 +116,7 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
         """
         Ensure the project create view is not accessible to an unauthorised application user.
         """
-        self._access_view_as_unauthorisied_application_user(
+        self._access_view_as_unauthorised_application_user(
             reverse('create-project'),
             '/en-gb/accounts/login/?next=/en-gb/projects/create/',
         )
@@ -148,7 +160,7 @@ class ProjectListViewTests(ProjectViewTests, TestCase):
         """
         Ensure the project list view is not accessible to an unauthorised application user.
         """
-        self._access_view_as_unauthorisied_application_user(
+        self._access_view_as_unauthorised_application_user(
             reverse('project-application-list'),
             '/en-gb/accounts/login/?next=/en-gb/projects/applications/',
         )
@@ -166,7 +178,7 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
             'REMOTE_USER': self.project_applicant.email,
         }
         response = self.client.get(
-            reverse('project-application-detail', args=[self.project.id]),
+            reverse('project-application-detail', args=[1]),
             **headers,
         )
         self.assertEqual(response.status_code, 302)
@@ -177,24 +189,26 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         Ensure the project detail view is accessible to an authorised application user,
         who does have the required permissions.
         """
+        project = Project.objects.get(tech_lead=self.project_owner)
         headers = {
             'Shib-Identity-Provider': self.project_owner.profile.institution.identity_provider,
             'REMOTE_USER': self.project_owner.email,
         }
         response = self.client.get(
-            reverse('project-application-detail', args=[self.project.id]),
+            reverse('project-application-detail', args=[project.id]),
             **headers,
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context_data.get('project'), self.project)
+        self.assertEqual(response.context_data.get('project'), project)
         self.assertTrue(isinstance(response.context_data.get('view'), ProjectDetailView))
 
     def test_view_as_unauthorised_application_user(self):
         """
         Ensure the project detail view is not accessible to an unauthorised application user.
         """
-        self._access_view_as_unauthorisied_application_user(
-            reverse('project-application-detail', args=[self.project.id]),
+        project = Project.objects.get(tech_lead=self.project_owner)
+        self._access_view_as_unauthorised_application_user(
+            reverse('project-application-detail', args=[project.id]),
             '/en-gb/accounts/login/?next=/en-gb/projects/applications/1/',
         )
 
@@ -219,10 +233,10 @@ class ProjectUserMembershipFormViewTests(ProjectViewTests, TestCase):
 
     def test_view_as_unauthorised_application_user(self):
         """
-        Ensure the project user membership form view is not accessible to an unauthorised 
+        Ensure the project user membership form view is not accessible to an unauthorised
         application user.
         """
-        self._access_view_as_unauthorisied_application_user(
+        self._access_view_as_unauthorised_application_user(
             reverse('project-membership-create'),
             '/en-gb/accounts/login/?next=/en-gb/projects/join/',
         )
@@ -232,7 +246,7 @@ class ProjectUserRequestMembershipListViewTests(ProjectViewTests, TestCase):
 
     def test_view_as_authorised_application_user_without_project_change_membership_permission(self):
         """
-        Ensure the project user request membership list view is not accessible to an authorised 
+        Ensure the project user request membership list view is not accessible to an authorised
         application user, who does not have the required permissions.
         """
         headers = {
@@ -248,7 +262,7 @@ class ProjectUserRequestMembershipListViewTests(ProjectViewTests, TestCase):
 
     def test_view_as_authorised_application_user_with_project_change_membership_permission(self):
         """
-        Ensure the project user request membership list view is accessible to an authorised 
+        Ensure the project user request membership list view is accessible to an authorised
         application user, who does not have the required permissions.
         """
         headers = {
@@ -267,7 +281,7 @@ class ProjectUserRequestMembershipListViewTests(ProjectViewTests, TestCase):
         Ensure the project user request membership list view is not accessible to an unauthorised
         application user.
         """
-        self._access_view_as_unauthorisied_application_user(
+        self._access_view_as_unauthorised_application_user(
             reverse('project-user-membership-request-list'),
             '/en-gb/accounts/login/?next=/en-gb/projects/memberships/user-requests/',
         )
@@ -277,14 +291,14 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
 
     def test_view_as_authorised_application_user_without_project_change_membership_permission(self):
         """
-        Ensure the project user request membership update view is not accessible to an authorised 
+        Ensure the project user request membership update view is not accessible to an authorised
         application user, who does not have the required permissions.
         """
         pass
 
     def test_view_as_authorised_application_user_with_project_change_membership_permission(self):
         """
-        Ensure the project user request membership update view is accessible to an authorised 
+        Ensure the project user request membership update view is accessible to an authorised
         application user, who does not have the required permissions.
         """
         pass
@@ -298,7 +312,7 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
 
     def test_view_as_unauthorised_application_user(self):
         """
-        Ensure the project user request membership update view is not accessible to an unauthorised 
+        Ensure the project user request membership update view is not accessible to an unauthorised
         application user.
         """
         pass
@@ -312,11 +326,11 @@ class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
         """
         accounts = [
             {
-                'email': self.project_applicant_email,
+                'email': self.project_applicant.email,
                 'expected_status_code': 200,
             },
             {
-                'email': self.project_owner_email,
+                'email': self.project_owner.email,
                 'expected_status_code': 200,
             },
         ]
@@ -336,28 +350,22 @@ class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
         """
         Ensure unauthorised users can not access the project user membership list view.
         """
-        self.access_view_as_unauthorisied_user(reverse('project-membership-list'))
+        self._access_view_as_unauthorised_application_user(
+            reverse('project-membership-list'),
+            '/en-gb/accounts/login/?next=/en-gb/projects/memberships/'
+        )
 
 
 class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
 
     def setUp(self):
         super().setUp()
-        email = '@'.join(['user', self.institution.base_domain])
-        self.user = CustomUserTests.create_shibboleth_user(email=email)
+        email = '@'.join(['norman.gordon',
+            self.institution.base_domain])
+        self.user = CustomUser.objects.get(email=email)
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        self.project = ProjectTests.create_project(
-            title='Project Title',
-            code='scw-' + code,
-            institution=self.institution,
-            tech_lead=self.project_owner,
-            category=self.category,
-            funding_source=self.funding_source,
-        )
-        self.membership = ProjectUserMembershipTests.create_project_user_membership(
-            user=self.user,
-            project=self.project,
-        )
+        self.project = Project.objects.get(tech_lead=self.project_owner)
+        self.membership = ProjectUserMembership.objects.get(user=self.user)
 
     def post_status_change(self, email, status_in, status_set):
         ''' Sign in with email and post a status change from status_in
@@ -447,7 +455,7 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
 
     def test_view_as_authorised_application_user(self):
         """
-        Ensure the project user membership list view is accessible to an unauthorised application 
+        Ensure the project user membership list view is accessible to an unauthorised application
         user.
         """
         headers = {
@@ -463,10 +471,10 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
 
     def test_view_as_unauthorised_application_user(self):
         """
-        Ensure the project user membership list view is not accessible to an unauthorised 
+        Ensure the project user membership list view is not accessible to an unauthorised
         application user.
         """
-        self._access_view_as_unauthorisied_application_user(
+        self._access_view_as_unauthorised_application_user(
             reverse('project-membership-list'),
             '/en-gb/accounts/login/?next=/en-gb/projects/memberships/',
         )

@@ -67,6 +67,10 @@ urlpatterns = i18n_patterns(
         name='register',
     ),
     path(
+        'funding/',
+        include('funding.urls'),
+    ),
+    path(
         'accounts/scw/password-reset/',
         reset_openldap_password,
         name='scw-password-reset',

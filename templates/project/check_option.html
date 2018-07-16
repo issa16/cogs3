@@ -1,0 +1,56 @@
+<!-- includes/check_option.html -->
+<div id='funding_sources_list' >
+{% for group, options, index in widget.optgroups %}
+  {% for option in options %}
+  <div class="checkbox">
+    <label for="{{ option.attrs.id }}" >
+      <input type="{{ option.type }}" name="{{ option.name }}" value="{{ option.value|stringformat:'s' }}">
+      {{ option.label }}
+    </label>
+  </div>
+  {% endfor %}
+{% endfor %}
+</div>
+<div id='id_Fundingsources'>
+  <a class="related-widget-wrapper-link add-related" id="id_add_funding_sources"  href="/funding/create/?_popup=1" onclick='return showPopup(this);'>
+    add
+  </a>
+</div>
+<script  type='text/javascript' >
+function updateField(win){
+  var container = document.getElementById('funding_sources_list');
+  $.getJSON("/projects/list_sources/", {},
+    function(sources) {
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+      var results = sources.results;
+      var index=0;
+      for( key in results){
+        var div = document.createElement('div');
+        div.className = 'checkbox';
+        container.appendChild(div);
+        var label = document.createElement('label');
+        label.for = 'id_funding_sources_'+results[key].id;
+        div.appendChild(label);
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = 'funding_sources_'+index;
+        checkbox.value = results[key].id;
+        label.appendChild(checkbox);
+        var text = document.createTextNode( " "+results[key].title );
+        label.appendChild(text);
+        index+=1;
+      }
+    }
+  );
+}
+function showPopup(triggeringLink) {
+  var href = triggeringLink.href;
+  var win = window.open(href, '', 'height=640,width=800');
+  win.onload = function(){ insert_handle_save(win); };
+  win.focus();
+
+  return false;
+}
+</script>

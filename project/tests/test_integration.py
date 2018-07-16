@@ -55,7 +55,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             form_field = dict(self.default_project_form_fields)
             form_field.pop(missing_field)
             self.fill_form_by_id(form_field)
-            self.select_from_dropdown_by_id('id_funding_source', 1)
             self.submit_form(self.default_project_form_fields)
             if "This field is required." not in self.selenium.page_source:
                 raise AssertionError()
@@ -69,7 +68,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         # Correctly fill the form
         self.fill_form_by_id(self.default_project_form_fields)
-        self.select_from_dropdown_by_id('id_funding_source', 1)
+        # self.select_from_dropdown_by_id('id_funding_source', 1)
 
         # Check that the project does not exist yet
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
@@ -183,6 +182,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if 'Authorised' not in self.selenium.page_source:
             raise AssertionError()
 
+<<<<<<< Updated upstream
         # Log in as tech lead and invite a different user
         self.log_out()
         self.sign_in(self.user)
@@ -211,6 +211,12 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         assert 'Authorised' in self.selenium.page_source
 
+=======
+        # Delete the project and check the user was deleted from project_owners
+        project.delete()
+        if self.user.groups.filter(name='project_owner').exists():
+            raise AssertionError()
+>>>>>>> Stashed changes
 
     def test_create_project_external(self):
         """
