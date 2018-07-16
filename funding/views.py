@@ -4,6 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
 from .forms import FundingSourceForm
@@ -28,6 +29,14 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         fundingsource = form.save(commit=False)
         fundingsource.created_by = self.request.user
         fundingsource.save()
+        if self.request.GET.get('_popup'):
+            return HttpResponse('''
+                Closing popup
+                <script>
+                opener.updateField(window);
+                window.close();
+                </script>
+            ''')
         return HttpResponseRedirect(reverse_lazy('list-funding-sources'))
 
 

@@ -74,7 +74,6 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         # Check that the funding source was created
         matching_sources = FundingSource.objects.filter(identifier=form_fields['id_identifier'])
         if matching_sources.count() != 1:
-            print("Found", matching_sources.count(), "projects")
             raise AssertionError()
 
         # Get the object
