@@ -126,8 +126,8 @@ class ProjectAdminForm(forms.ModelForm):
     def save(self, commit=True):
         project = super(ProjectAdminForm, self).save(commit=False)
         project.previous_status = self.initial_status
-        if self.initial_status != project.status:
-            update_openldap_project(project)
+        #if self.initial_status != project.status:
+        #    update_openldap_project(project)
         if commit:
             project.save()
         return project
@@ -274,4 +274,3 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
         if commit:
             project_user_membership.save()
         return project_user_membership
-

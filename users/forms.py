@@ -36,8 +36,8 @@ class ProfileUpdateForm(forms.ModelForm):
 
         # Ensure any updates to the account status are propagated to LDAP.
         profile.previous_account_status = self.initial_account_status
-        if self.initial_account_status != profile.account_status:
-            update_openldap_user(profile)
+        #if self.initial_account_status != profile.account_status:
+        #    update_openldap_user(profile)
 
         if commit:
             profile.save()
