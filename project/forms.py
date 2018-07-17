@@ -42,7 +42,7 @@ class ProjectAdminForm(forms.ModelForm):
             'department',
             'gid_number',
             'pi',
-            'funding_sources',
+            'attributions',
             'tech_lead',
             'category',
             'start_date',
@@ -151,7 +151,7 @@ class ProjectCreationForm(forms.ModelForm):
             'institution_reference',
             'department',
             'pi',
-            'funding_sources',
+            'attributions',
             'start_date',
             'end_date',
             'requirements_software',
@@ -175,7 +175,7 @@ class ProjectCreationForm(forms.ModelForm):
         if self.user.profile.institution is not None and not self.user.profile.institution.is_cardiff:
             del self.fields['legacy_arcca_id']
 
-        self.fields['funding_sources'] = forms.ModelMultipleChoiceField(
+        self.fields['attributions'] = forms.ModelMultipleChoiceField(
             label="Select Funding sources",
             widget=SelectMultipleTickbox(),
             queryset=FundingSource.objects.filter(

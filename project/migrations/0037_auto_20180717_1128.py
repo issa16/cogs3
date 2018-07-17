@@ -3,18 +3,6 @@
 from django.db import migrations, models
 
 
-def forwards(apps, schema_editor):
-    Project = apps.get_model('project', 'Project')
-    for p in Project.objects.all():
-        print('p', p.funding_sources)
-
-
-def backwards(apps, schema_editor):
-    Project = apps.get_model('project', 'Project')
-    for p in Project.objects.all():
-        print('p', p.funding_sources)
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -25,8 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='project',
-            name='funding_sources',
-            field=models.ManyToManyField(blank=True, to='funding.FundingSource'),
+            name='attributions',
+            field=models.ManyToManyField(blank=True, to='funding.Attribution'),
         ),
-        migrations.RunPython(forwards, backwards),
     ]

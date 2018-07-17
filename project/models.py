@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openldap.api import project_membership_api
 from system.models import System
-from funding.models import FundingSource
+from funding.models import Attribution
 
 logger = logging.getLogger('apps')
 
@@ -85,8 +85,8 @@ class Project(models.Model):
         max_length=256,
         verbose_name=_("Principal Investigator's name, position and email"),
     )
-    funding_sources = models.ManyToManyField(
-        FundingSource,
+    attributions = models.ManyToManyField(
+        Attribution,
         blank=True,
     )
     tech_lead = models.ForeignKey(

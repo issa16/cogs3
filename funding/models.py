@@ -26,21 +26,27 @@ class FundingBody(models.Model):
         ordering = ('name', )
 
 
-class FundingSource(models.Model):
-    '''An individual funding source, such as a grant'''
+class Attribution(models.Model):
+    ''' An attribution that can be added to a project '''
     title = models.CharField(max_length=128)
     identifier = models.CharField(max_length=512)
-    funding_body = models.ForeignKey(
-        FundingBody,
-        on_delete=models.CASCADE,
-        null=True,
-        verbose_name=_('Funding Body'),
-    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='created_by',
         on_delete=models.CASCADE,
         verbose_name=_('Created By'),
+    )
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+
+class FundingSource(Attribution):
+    '''An individual funding source, such as a grant'''
+    funding_body = models.ForeignKey(
+        FundingBody,
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_('Funding Body'),
     )
     pi_email = models.CharField(
         max_length=128,
@@ -54,8 +60,6 @@ class FundingSource(models.Model):
         null=True,
         verbose_name=_('PI'),
     )
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title

@@ -4,6 +4,7 @@ from django.db.migrations.executor import MigrationExecutor
 from django.db import connection
 from django.core import serializers
 
+from funding.models import FundingSource
 from project.models import Project
 
 
@@ -75,17 +76,20 @@ class TestMigrationToFunding(TestMigrations):
         project = Project.objects.get(id=1)
 
         # The project should have one funding source
-        funding_source = project.funding_sources.all().get()
+        attribution = project.attributions.all().get()
 
         # Any meaningful content should be copied over
-        self.assertEqual(funding_source.title, '')
-        self.assertEqual(funding_source.identifier, '')
-        self.assertEqual(funding_source.created_by, project.tech_lead)
+        self.assertEqual(attribution.title, '')
+        self.assertEqual(attribution.identifier, '')
+        self.assertEqual(attribution.created_by, project.tech_lead)
+
+        # The attribution should have a funding source
+        fundingsource = FundingSource.objects.get(attribution_ptr=attribution)
         # The pi is left empty, may not be project pi or tech lead
-        # self.assertEqual(funding_source.pi, project.tech_lead)
+        # self.assertEqual(fundingsource.pi, project.tech_lead)
 
         # The funding source should refer to a funding body
-        funding_body = funding_source.funding_body
+        funding_body = fundingsource.funding_body
 
         # Essentially this is the original funding source"
         self.assertEqual(funding_body.name, 'Test')

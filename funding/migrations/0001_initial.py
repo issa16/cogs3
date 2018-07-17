@@ -29,27 +29,19 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='FundingSource',
+            name='Attribution',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=128)),
                 ('identifier', models.CharField(max_length=512)),
                 ('created_time', models.DateTimeField(auto_now_add=True)),
                 ('modified_time', models.DateTimeField(auto_now=True)),
-                ('funding_body', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='funding.FundingBody', verbose_name='Funding Body')),
+                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_by', to=settings.AUTH_USER_MODEL, verbose_name='Created By')),
             ],
-            options={
-                'verbose_name_plural': 'Project Funding Sources',
-                'ordering': ('created_time',),
-            },
         ),
         migrations.AlterModelOptions(
             name='fundingbody',
             options={'ordering': ('name',), 'verbose_name_plural': 'Funding Bodies'},
-        ),
-        migrations.AlterModelOptions(
-            name='fundingsource',
-            options={'ordering': ('created_time',), 'verbose_name_plural': 'Funding Sources'},
         ),
         migrations.AddField(
             model_name='fundingbody',
@@ -74,30 +66,18 @@ class Migration(migrations.Migration):
             field=models.CharField(default=' ', max_length=128, unique=True),
             preserve_default=False,
         ),
-        migrations.AddField(
-            model_name='fundingsource',
-            name='created_by',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='created_by', to=settings.AUTH_USER_MODEL, verbose_name='Created By'),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='fundingsource',
-            name='pi',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='pi', to=settings.AUTH_USER_MODEL, verbose_name='PI'),
-        ),
-        migrations.AddField(
-            model_name='fundingsource',
-            name='pi_email',
-            field=models.CharField(max_length=128, null=True, verbose_name='PI Email'),
-        ),
-        migrations.AlterField(
-            model_name='fundingsource',
-            name='identifier',
-            field=models.CharField(max_length=512, verbose_name='The local unique identifier for the grant'),
-        ),
-        migrations.AlterField(
-            model_name='fundingsource',
-            name='identifier',
-            field=models.CharField(max_length=512),
+        migrations.CreateModel(
+            name='FundingSource',
+            fields=[
+                ('attribution_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='funding.Attribution')),
+                ('pi_email', models.CharField(max_length=128, null=True, verbose_name='PI Email')),
+                ('funding_body', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='funding.FundingBody', verbose_name='Funding Body')),
+                ('pi', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='pi', to=settings.AUTH_USER_MODEL, verbose_name='PI')),
+            ],
+            options={
+                'verbose_name_plural': 'Funding Sources',
+                'ordering': ('created_time',),
+            },
+            bases=('funding.attribution',),
         ),
     ]

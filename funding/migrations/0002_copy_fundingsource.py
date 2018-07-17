@@ -32,7 +32,7 @@ def forwards(apps, schema_editor):
         fs.save()
         print('saved')
         # Save it to the ManyToManyField
-        p.funding_sources.add(fs)
+        p.attributions.add(fs)
         print('added to project')
 
 
@@ -48,6 +48,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-
         migrations.RunPython(forwards, backwards),
     ]
