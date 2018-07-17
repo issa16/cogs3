@@ -29,7 +29,6 @@ class FundingBody(models.Model):
 class Attribution(models.Model):
     ''' An attribution that can be added to a project '''
     title = models.CharField(max_length=128)
-    identifier = models.CharField(max_length=512)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='created_by',
@@ -39,9 +38,23 @@ class Attribution(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name_plural = _('Attributions')
+        ordering = ('created_time', )
+
 
 class FundingSource(Attribution):
     '''An individual funding source, such as a grant'''
+
+    # AMS number
+    identifier = models.CharField(
+        max_length=128,
+        null=True,
+        verbose_name=_('Local Institutional Identifier'),
+    )
     funding_body = models.ForeignKey(
         FundingBody,
         on_delete=models.CASCADE,
@@ -61,9 +74,6 @@ class FundingSource(Attribution):
         verbose_name=_('PI'),
     )
 
-    def __str__(self):
-        return self.title
-
     class Meta:
         verbose_name_plural = _('Funding Sources')
         ordering = ('created_time', )
@@ -78,3 +88,19 @@ class FundingSource(Attribution):
                 self.pi = None
 
         super().save(*args, **kwargs)
+
+
+class Publication(Attribution):
+    '''An individual funding source, such as a grant'''
+    identifier = models.CharField(
+        max_length=128,
+        null=True,
+        verbose_name=_('Local Institutional Identifier or DOI'),
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name_plural = _('Publications')
+        ordering = ('created_time', )

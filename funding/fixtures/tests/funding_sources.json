@@ -3,12 +3,9 @@
     "model": "funding.FundingSource",
     "pk": 1,
     "fields": {
-      "title": "Test funding source",
-      "identifier": "scw001",
-      "created_by": 1,
-      "pi_email": "john.doe@example.ac.uk",
-      "created_time": "2018-04-16T12:00:28Z",
-      "modified_time": "2018-04-16T12:00:28Z"
+      "attribution_ptr": 1,
+      "identifier": "scw0001",
+      "pi_email": "john.doe@example.ac.uk"
     }
   }
 ]

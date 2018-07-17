@@ -33,11 +33,14 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=128)),
-                ('identifier', models.CharField(max_length=512)),
                 ('created_time', models.DateTimeField(auto_now_add=True)),
                 ('modified_time', models.DateTimeField(auto_now=True)),
                 ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_by', to=settings.AUTH_USER_MODEL, verbose_name='Created By')),
             ],
+        ),
+        migrations.AlterModelOptions(
+            name='attribution',
+            options={'ordering': ('created_time',), 'verbose_name_plural': 'Attributions'},
         ),
         migrations.AlterModelOptions(
             name='fundingbody',
@@ -76,6 +79,23 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name_plural': 'Funding Sources',
+                'ordering': ('created_time',),
+            },
+            bases=('funding.attribution',),
+        ),
+        migrations.AddField(
+            model_name='fundingsource',
+            name='identifier',
+            field=models.CharField(max_length=128, null=True, verbose_name='Local Institutional Identifier'),
+        ),
+        migrations.CreateModel(
+            name='Publication',
+            fields=[
+                ('attribution_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='funding.Attribution')),
+                ('identifier', models.CharField(max_length=128, null=True, verbose_name='Local Institutional Identifier or DOI')),
+            ],
+            options={
+                'verbose_name_plural': 'Publications',
                 'ordering': ('created_time',),
             },
             bases=('funding.attribution',),
