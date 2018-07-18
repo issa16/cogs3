@@ -8,36 +8,42 @@ from funding.models import FundingSource
 from project.models import Project
 
 
-class TestMigrations(TestCase):
+class TestMigration(TestCase):
 
     migrate_from = None
     migrate_to = None
 
     def setUp(self):
         assert self.migrate_from and self.migrate_to, \
-            "TestCase '{}' must define migrate_from and migrate_to properties".format(type(self).__name__)
-        self.migrate_from = self.migrate_from
-        self.migrate_to = self.migrate_to
+            "migrate_to and migrate_from mist be defined"
         executor = MigrationExecutor(connection)
-        old_apps = executor.loader.project_state(self.migrate_from).apps
+        apps = executor.loader.project_state(self.migrate_from).apps
 
         # Reverse to the original migration
         executor.migrate(self.migrate_from)
 
-        self.setUpBeforeMigration(old_apps)
+        for fixture in self.fixtures_before:
+            self.load_fixture(apps, fixture)
 
         # Run the migration to test
         executor = MigrationExecutor(connection)
-        executor.loader.build_graph()  # reload.
+        executor.loader.build_graph()
         executor.migrate(self.migrate_to)
 
         self.apps = executor.loader.project_state(self.migrate_to).apps
 
-    def setUpBeforeMigration(self, apps):
-        pass
+    def load_fixture(self, apps, fixture_file):
+        original_apps = serializers.python.apps
+        serializers.python.apps = apps
+        fixture = open(fixture_file)
+        objects = serializers.deserialize('json', fixture, ignorenonexistent=True)
+        for obj in objects:
+            obj.save()
+        fixture.close()
+        serializers.python.apps = original_apps
 
 
-class TestMigrationToFunding(TestMigrations):
+class TestMigrationToFunding(TestMigration):
 
     fixtures = [
         'institution/fixtures/tests/institutions.json',
@@ -53,24 +59,6 @@ class TestMigrationToFunding(TestMigrations):
     migrate_from = [('project','0035_auto_20180626_2111')]
     migrate_to = [('funding','0002_copy_fundingsource')]
 
-    def load_fixture(self, apps, fixture_file):
-        original_apps = serializers.python.apps
-        serializers.python.apps = apps
-        fixture = open(fixture_file)
-        objects = serializers.deserialize('json', fixture, ignorenonexistent=True)
-        for obj in objects:
-            obj.save()
-        fixture.close()
-        serializers.python.apps = original_apps
-
-    def setUpBeforeMigration(self, apps):
-        for fixture in self.fixtures_before:
-            self.load_fixture(apps, fixture)
-        Project = apps.get_model('project', 'Project')
-        project = Project.objects.first()
-        print(project)
-        print(project.funding_source)
-
     def test_migrated(self):
         # Get the project descriped in the phase 1 fixture
         project = Project.objects.get(id=1)
@@ -80,11 +68,11 @@ class TestMigrationToFunding(TestMigrations):
 
         # Any meaningful content should be copied over
         self.assertEqual(attribution.title, '')
-        self.assertEqual(attribution.identifier, '')
         self.assertEqual(attribution.created_by, project.tech_lead)
 
         # The attribution should have a funding source
         fundingsource = FundingSource.objects.get(attribution_ptr=attribution)
+        self.assertEqual(fundingsource.identifier, '')
         # The pi is left empty, may not be project pi or tech lead
         # self.assertEqual(fundingsource.pi, project.tech_lead)
 

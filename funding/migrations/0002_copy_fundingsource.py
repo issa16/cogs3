@@ -16,13 +16,10 @@ def forwards(apps, schema_editor):
             description=pfs.description,
         )
         fb.save()
-        print("created funding body #", fb.id)
 
     for p in Project.objects.all():
         # Create a funding source matching the old funding source
         fb = FundingBody.objects.get(id=p.funding_source.id)
-        print('new funding body id', fb.id)
-        print('Creating funding source')
         fs = FundingSource(
             title='',
             identifier='',
@@ -30,10 +27,8 @@ def forwards(apps, schema_editor):
             funding_body=fb,
         )
         fs.save()
-        print('saved')
         # Save it to the ManyToManyField
         p.attributions.add(fs)
-        print('added to project')
 
 
 def backwards(apps, schema_editor):
