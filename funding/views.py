@@ -89,7 +89,6 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
     model = Attribution
     success_message = _("Successfully modified attribution.")
     success_url = reverse_lazy('list-attributions')
-    template_name = 'funding/create.html'
 
     def get_object(self, queryset=None):
         ''' Fetch the child object, not the attribution '''

@@ -54,8 +54,8 @@ urlpatterns = [
         name='project-application-document',
     ),
     path(
-        'list_sources/',
-        views.list_sources,
-        name='list_sources',
+        'list_attributions/',
+        views.list_attributions,
+        name='list_attributions',
     ),
 ]

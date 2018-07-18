@@ -71,10 +71,20 @@
 								<td>{{project.pi}}</td>
 							</tr>
 							<tr>
-								<th scope="row">{% trans "Funding sources" %}</th>
+								<th scope="row">{% trans "Attributions" %}</th>
 								<td>
-									{% for source in project.funding_sources.all %}
+									{% trans "Funding Sources" %}
+									{% for source in project.attributions.all %}
+									  {% if source.is_fundingsource %}
 										<li>{{source.title}}</li>
+										{% endif %}
+									{% endfor %}
+								  </br>
+									{% trans "Publications" %}
+									{% for source in project.attributions.all %}
+									  {% if source.is_publication %}
+										<li>{{source.title}}</li>
+										{% endif %}
 									{% endfor %}</td>
 							</tr>
 							<tr>

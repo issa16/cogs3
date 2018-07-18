@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from project.models import Project
 from project.models import ProjectUserMembership
-from funding.models import FundingSource
+from funding.models import Attribution
 from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
 from users.models import CustomUser
@@ -24,7 +24,7 @@ class FileLinkWidget(forms.Widget):
 
 
 class SelectMultipleTickbox(forms.widgets.CheckboxSelectMultiple):
-    template_name = 'project/check_option.html'
+    template_name = 'project/attributionwidget.html'
 
 
 class ProjectAdminForm(forms.ModelForm):
@@ -176,9 +176,9 @@ class ProjectCreationForm(forms.ModelForm):
             del self.fields['legacy_arcca_id']
 
         self.fields['attributions'] = forms.ModelMultipleChoiceField(
-            label="Select Funding sources",
+            label="Add Attributions",
             widget=SelectMultipleTickbox(),
-            queryset=FundingSource.objects.filter(
+            queryset=Attribution.objects.filter(
                 created_by=self.user
             ),
             required=False,
