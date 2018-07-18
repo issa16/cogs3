@@ -8,16 +8,19 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
 from .forms import FundingSourceForm
+from .forms import PublicationForm
 from .models import FundingSource
+from .models import Publication
+from .models import Attribution
 
 # Create your views here.
 
 
 class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     model = FundingSource
-    success_url = reverse_lazy('list-funding-sources')
+    success_url = reverse_lazy('list-attributions')
     success_message = _("Successfully added funding source.")
-    template_name = 'funding/create.html'
+    template_name = 'funding/fundingsource_form.html'
 
     def get_form(self):
         return FundingSourceForm(
@@ -37,13 +40,34 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
                 window.close();
                 </script>
             ''')
-        return HttpResponseRedirect(reverse_lazy('list-funding-sources'))
+        return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
 
-class FundingSourceListView(LoginRequiredMixin, generic.ListView):
-    context_object_name = 'sources'
+class PublicationCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
+    model = Publication
+    success_url = reverse_lazy('list-attributions')
+    success_message = _("Successfully added funding source.")
+    fields = ['title','identifier']
+
+    def form_valid(self, form):
+        publication = form.save(commit=False)
+        publication.created_by = self.request.user
+        publication.save()
+        if self.request.GET.get('_popup'):
+            return HttpResponse('''
+                Closing popup
+                <script>
+                opener.updateField(window);
+                window.close();
+                </script>
+            ''')
+        return HttpResponseRedirect(reverse_lazy('list-attributions'))
+
+
+class AttributionListView(LoginRequiredMixin, generic.ListView):
+    context_object_name = 'attributions'
     template_name = 'funding/list.html'
-    model = FundingSource
+    model = Attribution
     paginate_by = 10
 
     def get_queryset(self):
@@ -53,31 +77,52 @@ class FundingSourceListView(LoginRequiredMixin, generic.ListView):
         return queryset.order_by('-created_time')
 
 
-class FundingSourceUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):
+class PublicationListView(AttributionListView):
+    model = Publication
+
+
+class FundingSourceListView(AttributionListView):
     model = FundingSource
-    success_message = _("Successfully modified funding source.")
-    success_url = reverse_lazy('list-funding-sources')
+
+
+class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):
+    model = Attribution
+    success_message = _("Successfully modified attribution.")
+    success_url = reverse_lazy('list-attributions')
     template_name = 'funding/create.html'
 
+    def get_object(self, queryset=None):
+        ''' Fetch the child object, not the attribution '''
+        obj = super(generic.UpdateView, self).get_object(queryset=queryset)
+        self.type = obj.type
+        return obj.child
+
     def get_form(self):
-        return FundingSourceForm(
-            self.request.user,
-            **self.get_form_kwargs()
-        )
+        ''' Get a form based on the type of the child object '''
+        if self.type == 'fundingsource':
+            return FundingSourceForm(
+                self.request.user,
+                **self.get_form_kwargs()
+            )
+        if self.type == 'publication':
+            return PublicationForm(
+                **self.get_form_kwargs()
+            )
 
     def user_passes_test(self, request):
-        return FundingSource.objects.filter(id=self.kwargs['pk'], created_by=self.request.user).exists()
+        return Attribution.objects.filter(id=self.kwargs['pk'], created_by=self.request.user).exists()
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
-            return HttpResponseRedirect(reverse('list-funding-sources'))
+            return HttpResponseRedirect(reverse('list-attributions'))
         return super().dispatch(request, *args, **kwargs)
 
 
-class FundingSourceDeleteView(LoginRequiredMixin, generic.DeleteView):
-    model = FundingSource
+class AttributioneDeleteView(LoginRequiredMixin, generic.DeleteView):
+    ''' Delete an attribution. This will also delete the child. '''
+    model = Attribution
     success_message = _("Funding source deleted.")
-    success_url = reverse_lazy('list-funding-sources')
+    success_url = reverse_lazy('list-attributions')
     template_name = 'funding/delete.html'
 
     def user_passes_test(self, request):
@@ -85,5 +130,5 @@ class FundingSourceDeleteView(LoginRequiredMixin, generic.DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
-            return HttpResponseRedirect(reverse('list-funding-sources'))
+            return HttpResponseRedirect(reverse('list-attributions'))
         return super().dispatch(request, *args, **kwargs)

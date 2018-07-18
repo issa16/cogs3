@@ -38,6 +38,45 @@ class Attribution(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
+    @property
+    def is_fundingsource(self):
+        try:
+            self.fundingsource
+            return True
+        except self._meta.model.fundingsource.RelatedObjectDoesNotExist:
+            import sys
+            return False
+
+    @property
+    def is_publication(self):
+        try:
+            self.publication
+            return True
+        except self._meta.model.fundingsource.RelatedObjectDoesNotExist:
+            return False
+
+    @property
+    def type(self):
+        if self.is_fundingsource:
+            return 'fundingsource'
+        else:
+            return 'publication'
+
+    @property
+    def verbose_type(self):
+        if self.is_fundingsource:
+            return 'Funding Source'
+        else:
+            return 'Publication'
+
+    @property
+    def child(self):
+        try:
+            child = self.fundingsource
+            return child
+        except self._meta.model.fundingsource.RelatedObjectDoesNotExist:
+            return self.publication
+
     def __str__(self):
         return self.title
 
@@ -92,6 +131,7 @@ class FundingSource(Attribution):
 
 class Publication(Attribution):
     '''An individual funding source, such as a grant'''
+    # Cronfa ID
     identifier = models.CharField(
         max_length=128,
         null=True,

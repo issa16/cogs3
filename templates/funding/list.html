@@ -3,13 +3,13 @@
 {% load i18n %}
 {% load static %}
 {% load widget_tweaks %}
-{% block title %}{% trans "Funding Sources" %}{% endblock %}
+{% block title %}{% trans "Attributions" %}{% endblock %}
 {% block content %}
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>{% trans "Funding Sources" %}</h4>
+					<h4>{% trans "Attributions" %}</h4>
 				</div>
 			</div>
 		</div>
@@ -23,28 +23,36 @@
 				{% include 'includes/messages.html'%}
 			</div>
 		</div>
+		<div class="row">
+			<div class="col">
+				<div class="mb-2">
+					<div class="dropdown">
+						<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">Show
+			  		<span class="caret"></span></button>
+			  		<div class="dropdown-menu">
+			    		<a href="{% url 'list-attributions' %}" class="list-group-item">{% trans "All" %}	</a>
+			    		<a href="{% url 'list-funding_sources' %}" class="list-group-item">{% trans "Funding Sources" %}	</a>
+			    		<a href="{% url 'list-publications' %}" class="list-group-item">{% trans "Publications" %}	</a>
+			  		</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="table-responsive">
 			<table class="table table-bordered">
 				<thead class="thead-light">
 					<tr>
-						<th scope="col" style="width:20%">{% trans "Identifier" %}</th>
-						<th scope="col" style="width:40%">{% trans "Title" %}</th>
-						<th scope="col" style="width:20%">{% trans "Funding Body" %}</th>
+						<th scope="col" style="width:20%">{% trans "Type" %}</th>
+						<th scope="col" style="width:80%">{% trans "Title" %}</th>
 						<th scope="col" style="width:20%"></th>
 					</tr>
 				</thead>
 				<tbody>
-					{% for source in sources %}
+					{% for attribution in attributions %}
 						<tr>
-							<td>
-								{% if source.identifier %}
-									{{source.identifier}}
-									</br>
-								{% endif %}
-							</td>
-							<td><a href="{% url 'funding-source-update' source.pk %}">{{source.title}}</a></td>
-							<td>{{source.funding_body}}</td>
-							<td><a class="btn btn-primary" href="{% url 'delete-funding-source' source.pk %}">{% trans "Delete" %}</a></td>
+							<td>{{attribution.verbose_type}}</td>
+							<td><a href="{% url 'update-attribution' attribution.pk %}">{{attribution.title}}</a></td>
+							<td><a class="btn btn-danger" href="{% url 'delete-attribution' attribution.pk %}">{% trans "Delete" %}</a></td>
 						</tr>
 					{% endfor %}
 				</tbody>
@@ -53,7 +61,14 @@
 		<div class="row">
 			<div class="col">
 				<div class="mb-2">
-					<a class="btn btn-primary" href="{% url 'create-funding-source' %}">{% trans "Add New" %}	</a>
+					<div class="dropdown">
+						<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add
+			  		<span class="caret"></span></button>
+			  		<div class="dropdown-menu">
+			    		<a href="{% url 'create-funding-source' %}" class="list-group-item">{% trans "Funding Source" %}	</a>
+			    		<a href="{% url 'create-publication' %}" class="list-group-item">{% trans "Publication" %}	</a>
+			  		</div>
+					</div>
 				</div>
 			</div>
 		</div>

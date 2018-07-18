@@ -31,7 +31,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         ]
         for missing_field in missing_fields:
             self.get_url('')
-            self.click_link_by_url(reverse('list-funding-sources'))
+            self.click_link_by_url(reverse('list-attributions'))
             self.click_link_by_url(reverse('create-funding-source'))
             form_field = dict(all_form_fields)
             form_field.pop(missing_field)
@@ -41,7 +41,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             if "This field is required." not in self.selenium.page_source:
                 raise AssertionError()
 
-        self.get_url(reverse('list-funding-sources'))
+        self.get_url(reverse('list-attributions'))
         self.click_link_by_url(reverse('create-funding-source'))
         self.fill_form_by_id(all_form_fields)
         self.submit_form(all_form_fields)
@@ -63,7 +63,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             'id_pi_email': email,
         }
 
-        self.get_url(reverse('list-funding-sources'))
+        self.get_url(reverse('list-attributions'))
         self.click_link_by_url(reverse('create-funding-source'))
         self.fill_form_by_id(form_fields)
         self.select_from_dropdown_by_id('id_funding_body', 1)
@@ -95,7 +95,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             'id_pi_email': self.user.email,
         }
 
-        self.get_url(reverse('list-funding-sources'))
+        self.get_url(reverse('list-attributions'))
         self.click_link_by_url(reverse('create-funding-source'))
         self.fill_form_by_id(form_fields)
         self.select_from_dropdown_by_id('id_funding_body', 1)
@@ -126,7 +126,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         # Click the update link and edit the title
         self.click_link_by_url(
             reverse(
-                'funding-source-update',
+                'update-attribution',
                 args=[funding_source.id]
             )
         )
@@ -144,7 +144,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         # Now delete the funding source
         self.click_link_by_url(
             reverse(
-                'delete-funding-source',
+                'delete-attribution',
                 args=[funding_source.id]
             )
         )

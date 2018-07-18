@@ -1,5 +1,6 @@
 from django import forms
 from .models import FundingSource
+from .models import Publication
 from institution.models import Institution
 
 
@@ -26,3 +27,9 @@ class FundingSourceForm(forms.ModelForm):
         if domain not in domains:
             raise forms.ValidationError('Needs to be a valid institutional email address.')
         return email
+
+
+class PublicationForm(forms.ModelForm):
+    class Meta:
+        model = Publication
+        fields = ['title','identifier']

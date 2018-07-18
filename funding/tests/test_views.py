@@ -106,7 +106,7 @@ class FundingSourceListViewTests(FundingViewTests, TestCase):
                 'REMOTE_USER': account.get('email'),
             }
             response = self.client.get(
-                reverse('list-funding-sources'),
+                reverse('list-attributions'),
                 **headers
             )
             self.assertEqual(response.status_code, account.get('expected_status_code'))
@@ -116,7 +116,7 @@ class FundingSourceListViewTests(FundingViewTests, TestCase):
         """
         Ensure unauthorised users can not access the project create view.
         """
-        self.access_view_as_unauthorised_user(reverse('list-funding-sources'))
+        self.access_view_as_unauthorised_user(reverse('list-attributions'))
 
 
 class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
@@ -142,7 +142,7 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
             }
             response = self.client.get(
                 reverse(
-                    'funding-source-update',
+                    'update-attribution',
                     args=[funding_source.id]
                 ),
                 **headers
@@ -172,7 +172,7 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
             }
             response = self.client.get(
                 reverse(
-                    'funding-source-update',
+                    'update-attribution',
                     args=[funding_source.id]
                 ),
                 **headers
@@ -181,7 +181,7 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
 
         self.access_view_as_unauthorised_user(
             reverse(
-                'funding-source-update',
+                'update-attribution',
                 args=[funding_source.id]
             )
         )
@@ -210,7 +210,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             }
             response = self.client.get(
                 reverse(
-                    'delete-funding-source',
+                    'delete-attribution',
                     args=[funding_source.id]
                 ),
                 **headers
@@ -244,7 +244,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             }
             response = self.client.get(
                 reverse(
-                    'delete-funding-source',
+                    'delete-attribution',
                     args=[funding_source.id]
                 ),
                 **headers
@@ -253,7 +253,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
 
         self.access_view_as_unauthorised_user(
             reverse(
-                'delete-funding-source',
+                'delete-attribution',
                 args=[funding_source.id]
             )
         )
