@@ -42,3 +42,4 @@ six==1.11.0
 urllib3==1.22
 whitenoise==3.3.1
 wrapt==1.10.11
+django-simple-history==2.2.0

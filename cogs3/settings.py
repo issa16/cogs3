@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'system.apps.SystemConfig',
     'users.apps.UsersConfig',
     'widget_tweaks',
+    'simple_history',
 ]
 
 MIDDLEWARE = [
@@ -84,6 +85,7 @@ MIDDLEWARE = [
     'users.middleware.SCWRemoteUserMiddleware',
     'users.middleware.TermsOfServiceMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (

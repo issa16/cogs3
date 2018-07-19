@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from simple_history.models import HistoricalRecords
 
 from openldap.api import project_membership_api
 from system.models import System
@@ -26,6 +27,8 @@ class ProjectCategory(models.Model):
     description = models.TextField(max_length=512)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -273,6 +276,8 @@ class Project(models.Model):
             self._assign_project_owner_project_membership()
         super(Project, self).save(*args, **kwargs)
 
+    history = HistoricalRecords()
+
     def __str__(self):
         return self.code
 
@@ -306,6 +311,8 @@ class ProjectSystemAllocation(models.Model):
         default=ACTIVE,
         verbose_name='OpenLDAP status',
     )
+
+    history = HistoricalRecords()
 
     def __str__(self):
         data = {
@@ -416,6 +423,8 @@ class ProjectUserMembership(models.Model):
         """
         self.status = self.previous_status
         self.save()
+
+    history = HistoricalRecords()
 
     def __str__(self):
         data = {

@@ -8,15 +8,16 @@ from project.models import ProjectSystemAllocation
 from project.models import ProjectUserMembership
 from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
+from simple_history.admin import SimpleHistoryAdmin
 
 
 @admin.register(ProjectCategory)
-class ProjectCategoryAdmin(admin.ModelAdmin):
+class ProjectCategoryAdmin(SimpleHistoryAdmin):
     list_display = ('name', )
 
 
 @admin.register(ProjectSystemAllocation)
-class ProjectSystemAllocationAdmin(admin.ModelAdmin):
+class ProjectSystemAllocationAdmin(SimpleHistoryAdmin):
     list_display = (
         'project',
         'system',
@@ -24,7 +25,7 @@ class ProjectSystemAllocationAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProjectUserMembership)
-class ProjectUserMembershipAdmin(admin.ModelAdmin):
+class ProjectUserMembershipAdmin(SimpleHistoryAdmin):
 
     def _project_membership_action_message(self, rows_updated):
         if rows_updated == 1:
@@ -74,7 +75,7 @@ class ProjectUserMembershipAdmin(admin.ModelAdmin):
 
 
 @admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
+class ProjectAdmin(SimpleHistoryAdmin):
 
     def _project_action_message(self, rows_updated):
         if rows_updated == 1:

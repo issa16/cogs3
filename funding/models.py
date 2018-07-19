@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from simple_history.models import HistoricalRecords
 
 from users.models import CustomUser
 
@@ -17,6 +18,8 @@ class FundingBody(models.Model):
     description = models.CharField(max_length=512)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -76,6 +79,8 @@ class Attribution(models.Model):
         except self._meta.model.fundingsource.RelatedObjectDoesNotExist:
             return self.publication
 
+    history = HistoricalRecords()
+
     def __str__(self):
         return self.title
 
@@ -112,6 +117,8 @@ class FundingSource(Attribution):
         verbose_name=_('PI'),
     )
 
+    history = HistoricalRecords()
+
     class Meta:
         verbose_name_plural = _('Funding Sources')
         ordering = ('created_time', )
@@ -136,6 +143,8 @@ class Publication(Attribution):
         null=True,
         verbose_name=_('Local Institutional Identifier or DOI'),
     )
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.title
