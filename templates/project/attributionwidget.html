@@ -13,7 +13,7 @@
 {% endfor %}
 </div>
 <span class="dropdown">
-  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Funding Sources
+  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" id='fundingsources_dropdown'>Funding Sources
   <span class="caret"></span></button>
   <div class="dropdown-menu">
     <div id='fundingsources'> </div>
@@ -22,7 +22,7 @@
   </div>
 </span>
 <span class="dropdown">
-  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Publications
+  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" id='publication_dropdown'>Publications
   <span class="caret"></span></button>
   <div class="dropdown-menu">
     <div id='publications' class='list-group'></div>
@@ -68,6 +68,7 @@ function updateField(){
           fundingsources.appendChild(label);
         }
         label.htmlFor = 'id_attributions_'+index;
+        label.id = 'id_attributions_'+index;
         label.className = 'dropdown-item';
         label.onclick = function(e){label_click(e);};
         var checkbox = document.createElement('input');
@@ -79,7 +80,7 @@ function updateField(){
         var text = document.createTextNode( " "+results[key].title );
         label.appendChild(text);
         if( selected.indexOf(results[key].id.toString()) != -1 )
-          checkbox.click();
+          label.click();
         index+=1;
       }
     }
