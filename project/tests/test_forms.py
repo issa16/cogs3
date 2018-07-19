@@ -27,6 +27,7 @@ class ProjectFormTests(TestCase):
     ]
 
     def setUp(self):
+        self.title = "Example project title"
         self.institution = Institution.objects.get(name='Example University')
         self.project_code = 'scw0000'
         self.project = Project.objects.get(code=self.project_code)
@@ -308,7 +309,7 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
             self.assertFalse(form.is_valid())
 
             # Ensure the project user membership status is currently set authorised.
-            membership = ProjectUserMembership.objects.get(user=account)
+            membership = ProjectUserMembership.objects.get(user=account, project=project)
             self.assertTrue(membership.is_authorised())
 
     def test_form_when_a_user_has_a_request_awaiting_authorisation(self):
