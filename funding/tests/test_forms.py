@@ -12,7 +12,7 @@ class FundingFormTests(TestCase):
         'institution/fixtures/tests/institutions.json',
         'users/fixtures/tests/users.json',
         'funding/fixtures/tests/funding_bodies.json',
-        'funding/fixtures/tests/funding_sources.json',
+        'funding/fixtures/tests/attributions.json',
         'project/fixtures/tests/categories.json',
         'project/fixtures/tests/projects.json',
         'project/fixtures/tests/memberships.json',

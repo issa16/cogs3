@@ -44,7 +44,6 @@ class Attribution(models.Model):
             self.fundingsource
             return True
         except self._meta.model.fundingsource.RelatedObjectDoesNotExist:
-            import sys
             return False
 
     @property

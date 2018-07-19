@@ -32,6 +32,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         for missing_field in missing_fields:
             self.get_url('')
             self.click_link_by_url(reverse('list-attributions'))
+            self.click_by_id('add_attribution_dropdown')
             self.click_link_by_url(reverse('create-funding-source'))
             form_field = dict(all_form_fields)
             form_field.pop(missing_field)
@@ -42,6 +43,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
                 raise AssertionError()
 
         self.get_url(reverse('list-attributions'))
+        self.click_by_id('add_attribution_dropdown')
         self.click_link_by_url(reverse('create-funding-source'))
         self.fill_form_by_id(all_form_fields)
         self.submit_form(all_form_fields)
@@ -64,6 +66,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         }
 
         self.get_url(reverse('list-attributions'))
+        self.click_by_id('add_attribution_dropdown')
         self.click_link_by_url(reverse('create-funding-source'))
         self.fill_form_by_id(form_fields)
         self.select_from_dropdown_by_id('id_funding_body', 1)
@@ -96,6 +99,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         }
 
         self.get_url(reverse('list-attributions'))
+        self.click_by_id('add_attribution_dropdown')
         self.click_link_by_url(reverse('create-funding-source'))
         self.fill_form_by_id(form_fields)
         self.select_from_dropdown_by_id('id_funding_body', 1)

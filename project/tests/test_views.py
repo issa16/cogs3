@@ -42,10 +42,13 @@ class ProjectViewTests(TestCase):
     ]
 
     def setUp(self):
-        self.project_owner = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
         self.project_applicant = CustomUser.objects.get(email='norman.gordon@example.ac.uk')
-        self.project_member = CustomUser.objects.get(email='project.member@example.ac.uk')
+
         self.project = Project.objects.get(code='scw0000')
+        self.project_owner = self.project.tech_lead
+
+        self.projectmembership = ProjectUserMembership.objects.get(id=2)
+        self.project_member = self.projectmembership.user
 
     def _access_view_as_unauthorised_application_user(self, url, expected_redirect_url):
         """
@@ -351,12 +354,7 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
 
     def setUp(self):
         super().setUp()
-        email = '@'.join(['norman.gordon',
-            self.institution.base_domain])
-        self.user = CustomUser.objects.get(email=email)
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        self.project = Project.objects.get(tech_lead=self.project_owner)
-        self.membership = ProjectUserMembership.objects.get(user=self.user)
 
     @patch('project.openldap.project_membership_api',spec=[
         'list_project_memberships', 'create_project_membership', 'delete_project_membership'])
@@ -365,9 +363,9 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
         to status_set
         '''
         # Set the starting status
-        self.membership.status = status_in
-        self.membership.save()
-        self.membership.refresh_from_db()
+        self.projectmembership.status = status_in
+        self.projectmembership.save()
+        self.projectmembership.refresh_from_db()
 
         # Sign in as the user
         headers = {
@@ -380,9 +378,9 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
         url = reverse('project-user-membership-update',kwargs={'pk': self.project.id})
         data = {
             'project_id': self.project.id,
-            'request_id': self.membership.id,
+            'request_id': self.projectmembership.id,
+            'status': status_set
         }
-        data['status'] = status_set
 
         # Post the change
         self.client.post(url, data)
@@ -392,8 +390,8 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
         ''' Check that the user can accept or decline the invitation to join a
         project, but cannot revoke or suspend membership'''
 
-        self.membership.initiated_by_user = False
-        self.membership.save()
+        self.projectmembership.initiated_by_user = False
+        self.projectmembership.save()
 
         cases = [
             [ProjectUserMembership.AWAITING_AUTHORISATION, ProjectUserMembership.AUTHORISED, True],
@@ -403,15 +401,15 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
         ]
         for status_in, status_set, result in cases:
             self.post_status_change(self.project_member, status_in, status_set)
-            self.membership.refresh_from_db()
-            assert (self.membership.status == status_set) == result
+            self.projectmembership.refresh_from_db()
+            assert (self.projectmembership.status == status_set) == result
 
     def test_change_invited_member_status(self):
-        ''' Check that the tech cannot accept or decline the invite, but can
+        ''' Check that the tech lead cannot accept or decline the invite, but can
         revoke or suspend the membership once accepted'''
 
-        self.membership.initiated_by_user = False
-        self.membership.save()
+        self.projectmembership.initiated_by_user = False
+        self.projectmembership.save()
 
         cases = [
             [ProjectUserMembership.AWAITING_AUTHORISATION, ProjectUserMembership.AUTHORISED, False],
@@ -421,15 +419,15 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
         ]
         for status_in, status_set, result in cases:
             self.post_status_change(self.project_owner, status_in, status_set)
-            self.membership.refresh_from_db()
-            assert (self.membership.status == status_set) == result
+            self.projectmembership.refresh_from_db()
+            assert (self.projectmembership.status == status_set) == result
 
     def test_change_member_request_status(self):
         ''' Check that only the tech lead can change the
         status of a membership initiated by the tech lead '''
 
-        self.membership.initiated_by_user = True
-        self.membership.save()
+        self.projectmembership.initiated_by_user = True
+        self.projectmembership.save()
 
         cases = [
             [ProjectUserMembership.AWAITING_AUTHORISATION, ProjectUserMembership.AUTHORISED],
@@ -439,12 +437,12 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
         ]
         for status_in, status_set in cases:
             self.post_status_change(self.project_member, status_in, status_set)
-            self.membership.refresh_from_db()
-            assert self.membership.status == status_in
+            self.projectmembership.refresh_from_db()
+            assert self.projectmembership.status == status_in
 
             self.post_status_change(self.project_owner, status_in, status_set)
-            self.membership.refresh_from_db()
-            assert self.membership.status == status_set
+            self.projectmembership.refresh_from_db()
+            assert self.projectmembership.status == status_set
 
     def test_view_as_authorised_application_user(self):
         """

@@ -136,7 +136,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             allocation_storage_scratch='1000',
             notes='Project notes',
         )
-        project.funding_sources.set([funding_source])
+        project.attributions.set([funding_source.attribution_ptr])
         return project
 
     def _verify_project_details(self, project, title, code):

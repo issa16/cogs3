@@ -20,7 +20,7 @@ class ProjectFormTests(TestCase):
         'institution/fixtures/tests/institutions.json',
         'users/fixtures/tests/users.json',
         'funding/fixtures/tests/funding_bodies.json',
-        'funding/fixtures/tests/funding_sources.json',
+        'funding/fixtures/tests/attributions.json',
         'project/fixtures/tests/categories.json',
         'project/fixtures/tests/projects.json',
         'project/fixtures/tests/memberships.json',
@@ -32,7 +32,7 @@ class ProjectFormTests(TestCase):
         self.project_code = 'scw0000'
         self.project = Project.objects.get(code=self.project_code)
         self.project_owner = self.project.tech_lead
-        self.project_applicant = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.project_applicant = CustomUser.objects.get(email='admin.user@example.ac.uk')
 
         # Create users for each institution
         self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()

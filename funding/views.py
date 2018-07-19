@@ -45,9 +45,9 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
 
 class PublicationCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     model = Publication
+    form_class = PublicationForm
     success_url = reverse_lazy('list-attributions')
     success_message = _("Successfully added funding source.")
-    fields = ['title','identifier']
 
     def form_valid(self, form):
         publication = form.save(commit=False)
