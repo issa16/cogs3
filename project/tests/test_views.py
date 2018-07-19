@@ -28,6 +28,8 @@ from users.models import CustomUser
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import Permission
 
+from unittest.mock import patch
+
 
 class ProjectViewTests(TestCase):
 
@@ -361,7 +363,9 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
             project=self.project,
         )
 
-    def post_status_change(self, email, status_in, status_set):
+    @patch('project.openldap.project_membership_api',spec=[
+        'list_project_memberships', 'create_project_membership', 'delete_project_membership'])
+    def post_status_change(self, user, status_in, status_set, project_membership_api_mock):
         ''' Sign in with email and post a status change from status_in
         to status_set
         '''
