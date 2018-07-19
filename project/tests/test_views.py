@@ -43,6 +43,7 @@ class ProjectViewTests(TestCase):
     def setUp(self):
         self.project_owner = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
         self.project_applicant = CustomUser.objects.get(email='norman.gordon@example.ac.uk')
+        self.project_member = CustomUser.objects.get(email='project.member@example.ac.uk')
         self.project = Project.objects.get(code='scw0000')
 
     def _access_view_as_unauthorisied_application_user(self, url, expected_redirect_url):
@@ -312,18 +313,19 @@ class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
         """
         accounts = [
             {
-                'email': self.project_applicant_email,
+                'user': self.project_applicant,
                 'expected_status_code': 200,
             },
             {
-                'email': self.project_owner_email,
+                'user': self.project_owner,
                 'expected_status_code': 200,
             },
         ]
         for account in accounts:
+            user = account.get('user')
             headers = {
-                'Shib-Identity-Provider': self.institution.identity_provider,
-                'REMOTE_USER': account.get('email'),
+                'Shib-Identity-Provider': user.profile.institution.identity_provider,
+                'REMOTE_USER': user.email,
             }
             response = self.client.get(
                 reverse('project-membership-list'),
@@ -336,26 +338,26 @@ class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
         """
         Ensure unauthorised users can not access the project user membership list view.
         """
-        self.access_view_as_unauthorisied_user(reverse('project-membership-list'))
-
+        self._access_view_as_unauthorisied_application_user(
+            reverse('project-membership-list'),
+            "/en-gb/accounts/login/?next=/en-gb/projects/memberships/")
 
 class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
 
     def setUp(self):
         super().setUp()
-        email = '@'.join(['user', self.institution.base_domain])
-        self.user = CustomUserTests.create_shibboleth_user(email=email)
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        category = ProjectCategory.objects.first()
+        funding_source = ProjectFundingSource.objects.first()
         self.project = ProjectTests.create_project(
             title='Project Title',
             code='scw-' + code,
-            institution=self.institution,
             tech_lead=self.project_owner,
-            category=self.category,
-            funding_source=self.funding_source,
+            category=category,
+            funding_source=funding_source,
         )
         self.membership = ProjectUserMembershipTests.create_project_user_membership(
-            user=self.user,
+            user=self.project_member,
             project=self.project,
         )
 
@@ -370,8 +372,8 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
 
         # Sign in as the user
         headers = {
-            'Shib-Identity-Provider': self.institution.identity_provider,
-            'REMOTE_USER': email,
+            'Shib-Identity-Provider': user.profile.institution.identity_provider,
+            'REMOTE_USER': user.email,
         }
         self.client.get(reverse('login'), **headers)
 
@@ -401,7 +403,7 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
             [ProjectUserMembership.AUTHORISED, ProjectUserMembership.SUSPENDED, False],
         ]
         for status_in, status_set, result in cases:
-            self.post_status_change(self.user.email, status_in, status_set)
+            self.post_status_change(self.project_member, status_in, status_set)
             self.membership.refresh_from_db()
             assert (self.membership.status == status_set) == result
 
@@ -419,13 +421,13 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
             [ProjectUserMembership.AUTHORISED, ProjectUserMembership.SUSPENDED, True],
         ]
         for status_in, status_set, result in cases:
-            self.post_status_change(self.project_owner.email, status_in, status_set)
+            self.post_status_change(self.project_owner, status_in, status_set)
             self.membership.refresh_from_db()
             assert (self.membership.status == status_set) == result
 
-    def test_change_member_requset_status(self):
+    def test_change_member_request_status(self):
         ''' Check that only the tech lead can change the
-        change the status of a membership initiated by the tech lead '''
+        status of a membership initiated by the tech lead '''
 
         self.membership.initiated_by_user = True
         self.membership.save()
@@ -437,11 +439,11 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
             [ProjectUserMembership.AUTHORISED, ProjectUserMembership.SUSPENDED],
         ]
         for status_in, status_set in cases:
-            self.post_status_change(self.user.email, status_in, status_set)
+            self.post_status_change(self.project_member, status_in, status_set)
             self.membership.refresh_from_db()
             assert self.membership.status == status_in
 
-            self.post_status_change(self.project_owner.email, status_in, status_set)
+            self.post_status_change(self.project_owner, status_in, status_set)
             self.membership.refresh_from_db()
             assert self.membership.status == status_set
 
