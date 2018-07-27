@@ -13,6 +13,7 @@
     "department": "Chemistry",
     "pi": "John Doe, Technical Directory, john.doe@example.ac.uk",
     "tech_lead": 1,
+    "funding_source": 1,
     "category": 1,
     "start_date": "2018-06-26",
     "end_date": "2018-06-26",

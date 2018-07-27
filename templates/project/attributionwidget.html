@@ -1,0 +1,111 @@
+<!-- includes/attributionwidget.html -->
+{% load i18n %}
+<div id='std_container' >
+{% for group, options, index in widget.optgroups %}
+  {% for option in options %}
+  <div class="checkbox">
+    <label for="{{ option.attrs.id }}" >
+      <input type="{{ option.type }}" name="{{ option.name }}" value="{{ option.value|stringformat:'s' }}">
+      {{ option.label }}
+    </label>
+  </div>
+  {% endfor %}
+{% endfor %}
+</div>
+<span class="dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" id='fundingsources_dropdown'>Funding Sources
+  <span class="caret"></span></button>
+  <div class="dropdown-menu">
+    <div id='fundingsources'> </div>
+    <div class="dropdown-divider"></div>
+    <a href="{% url 'create-funding-source' %}?_popup=1" onclick='return showPopup(this);' class="dropdown-item" >{% trans "Add New" %}	</a>
+  </div>
+</span>
+<span class="dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" id='publication_dropdown'>Publications
+  <span class="caret"></span></button>
+  <div class="dropdown-menu">
+    <div id='publications' class='list-group'></div>
+    <div class="dropdown-divider"></div>
+    <a href="{% url 'create-publication' %}?_popup=1" onclick='return showPopup(this);' class="dropdown-item" >{% trans "Add New" %}	</a>
+  </div>
+</span>
+
+<script  type='text/javascript' >
+function updateField(){
+  var std_container = document.getElementById('std_container');
+  while (std_container.firstChild)
+    std_container.removeChild(std_container.firstChild);
+
+  var fundingsources = document.getElementById('fundingsources');
+  var publications = document.getElementById('publications');
+  fundingsources.onclick = function(e){ e.stopPropagation(); }
+  publications.onclick = function(e){ e.stopPropagation(); }
+
+  selected = [];
+  while (fundingsources.firstChild){
+    if(fundingsources.firstChild.nodeType === Node.ELEMENT_NODE)
+      if(fundingsources.firstChild.firstChild.checked)
+        selected.push(fundingsources.firstChild.firstChild.value);
+    fundingsources.removeChild(fundingsources.firstChild);
+  }
+  while (publications.firstChild){
+    if(publications.firstChild.nodeType === Node.ELEMENT_NODE)
+      if(publications.firstChild.firstChild.checked)
+        selected.push(publications.firstChild.firstChild.value);
+    publications.removeChild(publications.firstChild);
+  }
+
+  $.getJSON("/projects/list_attributions/", {},
+    function(attributions) {
+      var results = attributions.results;
+      var index = 0;
+      for( key in results){
+        var label = document.createElement('label');
+        if(results[key].type=='publication'){
+          publications.appendChild(label);
+        } else {
+          fundingsources.appendChild(label);
+        }
+        label.htmlFor = 'id_attributions_'+index;
+        label.id = 'id_attributions_'+index;
+        label.className = 'dropdown-item';
+        label.onclick = function(e){label_click(e);};
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = 'attributions';
+        checkbox.value = results[key].id;
+        checkbox.style.display = 'None';
+        label.appendChild(checkbox);
+        var text = document.createTextNode( " "+results[key].title );
+        label.appendChild(text);
+        if( selected.indexOf(results[key].id.toString()) != -1 )
+          label.click();
+        index+=1;
+      }
+    }
+  );
+}
+function label_click( event ){
+  var label = event.target;
+  var checkbox = label.firstChild;
+  console.log('c',checkbox);
+  //checkbox.click();
+  if( checkbox.checked ){
+    label.className = 'dropdown-item';
+    checkbox.checked = false;
+  } else {
+    label.className = 'dropdown-item active';
+    checkbox.checked = true;
+  }
+}
+function showPopup(triggeringLink) {
+  var href = triggeringLink.href;
+  var win = window.open(href, '', 'height=640,width=800');
+  win.onload = function(){ insert_handle_save(win); };
+  win.focus();
+
+  return false;
+}
+window.onload = function(){ updateField(); };
+</script>

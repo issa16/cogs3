@@ -4,9 +4,10 @@ from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from institution.models import Institution
+from funding.tests.test_models import FundingBodyTests
+from funding.tests.test_models import FundingSourceTests
 from project.models import Project
 from project.models import ProjectCategory
-from project.models import ProjectFundingSource
 from project.models import ProjectSystemAllocation
 from project.models import ProjectUserMembership
 from system.models import System
@@ -45,39 +46,6 @@ class ProjectCategoryTests(TestCase):
         self.assertEqual(project_category.description, description)
 
 
-class ProjectFundingSourceTests(TestCase):
-
-    @classmethod
-    def create_project_funding_source(cls, name, description):
-        """
-        Create a ProjectFundingSource instance.
-
-        Args:
-            name (str): Project funding source name.
-            description (str): Project funding source description.
-        """
-        project_funding_source = ProjectFundingSource.objects.create(
-            name=name,
-            description=description,
-        )
-        return project_funding_source
-
-    def test_project_funding_source_creation(self):
-        """
-        Ensure we can create a ProjectFundingSource instance.
-        """
-        name = 'A project function source name'
-        description = 'A project funding source description'
-        project_funding_source = self.create_project_funding_source(
-            name=name,
-            description=description,
-        )
-        self.assertTrue(isinstance(project_funding_source, ProjectFundingSource))
-        self.assertEqual(project_funding_source.__str__(), project_funding_source.name)
-        self.assertEqual(project_funding_source.name, name)
-        self.assertEqual(project_funding_source.description, description)
-
-
 class ProjectModelTests(TestCase):
 
     fixtures = [
@@ -107,12 +75,24 @@ class ProjectModelTests(TestCase):
             description=description,
         )
 
-        # Create a funding source
-        name = 'A project function source name'
-        description = 'A project funding source description'
-        self.funding_source = ProjectFundingSourceTests.create_project_funding_source(
+        # Create a funding body
+        name = 'A function source name'
+        description = 'A funding source description'
+        self.funding_body = FundingBodyTests.create_funding_body(
             name=name,
             description=description,
+        )
+
+        # Create a funding source
+        title = 'A funding source title'
+        identifier = 'A funding source identifier'
+        pi_email = '@'.join(['pi', self.institution.base_domain])
+        self.funding_source = FundingSourceTests.create_funding_source(
+            title=title,
+            identifier=identifier,
+            funding_body=self.funding_body,
+            owner=self.project_owner,
+            pi_email=pi_email,
         )
 
 
@@ -129,7 +109,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             institution (Institution): Institution project is based.
             tech_lead (settings.AUTH_USER_MODEL): Project technical lead user.
             category (ProjectCategory): Project category.
-            funding_source (ProjectFundingSource): Project funding source.
+            funding_source (FundingSource): Project funding source.
         """
         project = Project.objects.create(
             title=title,
@@ -142,7 +122,6 @@ class ProjectTests(ProjectModelTests, TestCase):
             pi='Project Principal Investigator',
             tech_lead=tech_lead,
             category=category,
-            funding_source=funding_source,
             start_date=datetime.datetime.now(),
             end_date=datetime.datetime.now() + datetime.timedelta(days=10),
             economic_user=True,
@@ -157,6 +136,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             allocation_storage_scratch='1000',
             notes='Project notes',
         )
+        project.attributions.set([funding_source.attribution_ptr])
         return project
 
     def _verify_project_details(self, project, title, code):

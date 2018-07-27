@@ -58,11 +58,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django.forms',
+    'institution.apps.InstitutionConfig',
+    'funding.apps.FundingConfig',
+    'project.apps.ProjectConfig',
     'django_rq',
     'hreflang',
-    'institution.apps.InstitutionConfig',
     'openldap',
-    'project.apps.ProjectConfig',
     'security',
     'shibboleth',
     'stats',
@@ -106,6 +108,8 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'cogs3.wsgi.application'
 

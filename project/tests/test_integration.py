@@ -1,5 +1,6 @@
 import filecmp
 import os
+import time
 
 from selenium_base import SeleniumTestsBase
 
@@ -55,7 +56,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             form_field = dict(self.default_project_form_fields)
             form_field.pop(missing_field)
             self.fill_form_by_id(form_field)
-            self.select_from_dropdown_by_id('id_funding_source', 1)
             self.submit_form(self.default_project_form_fields)
             if "This field is required." not in self.selenium.page_source:
                 raise AssertionError()
@@ -69,11 +69,53 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         # Correctly fill the form
         self.fill_form_by_id(self.default_project_form_fields)
-        self.select_from_dropdown_by_id('id_funding_source', 1)
+        # self.select_from_dropdown_by_id('id_funding_source', 1)
 
         # Check that the project does not exist yet
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
         assert matching_projects.count() == 0
+
+        # Add a funding source and include it
+        self.click_by_id('fundingsources_dropdown')
+        time.sleep(1)
+        self.click_link_by_url(reverse('create-funding-source')+'?_popup=1')
+
+        main_window_handle = self.selenium.current_window_handle
+        self.selenium.switch_to.window(self.selenium.window_handles[1])
+
+        fundingsource_fields = {
+            'id_title': 'Title',
+            'id_identifier': 'Id',
+            'id_pi_email': self.user.email,
+        }
+        self.select_from_dropdown_by_id('id_funding_body', 1)
+        self.fill_form_by_id(fundingsource_fields)
+        self.submit_form(fundingsource_fields)
+
+        self.selenium.switch_to.window(main_window_handle)
+        self.click_by_id('fundingsources_dropdown')
+        time.sleep(1)
+        self.click_by_id('id_attributions_0')
+
+        # Add a publication and include it
+        self.click_by_id('publication_dropdown')
+        time.sleep(1)
+        self.click_link_by_url(reverse('create-publication')+'?_popup=1')
+
+        main_window_handle = self.selenium.current_window_handle
+        self.selenium.switch_to.window(self.selenium.window_handles[1])
+
+        publication_fields = {
+            'id_title': 'Title',
+            'id_identifier': 'Id',
+        }
+        self.fill_form_by_id(publication_fields)
+        self.submit_form(publication_fields)
+
+        self.selenium.switch_to.window(main_window_handle)
+        self.click_by_id('publication_dropdown')
+        time.sleep(1)
+        self.click_by_id('id_attributions_1')
 
         # Submit the form
         self.submit_form(self.default_project_form_fields)
@@ -211,6 +253,10 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         assert 'Authorised' in self.selenium.page_source
 
+        # Delete the project and check the user was deleted from project_owners
+        project.delete()
+        if self.user.groups.filter(name='project_owner').exists():
+            raise AssertionError()
 
     def test_create_project_external(self):
         """

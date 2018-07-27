@@ -14,12 +14,16 @@ from cogs3.settings import SELENIUM_WEBDRIVER_PROFILE
 from django.core.exceptions import ObjectDoesNotExist
 from institution.models import Institution
 from users.models import CustomUser
+from users.models import Profile
+from funding.models import FundingBody
 
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
     fixtures = [
         'institution/fixtures/institutions.json',
-        'project/fixtures/tests/funding_sources.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
     ]
 
     serialized_rollback = True
@@ -83,26 +87,30 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
 
     def create_test_user(self, user):
         user.set_password(self.user_password)
+        domain = user.email.split('@')[1]
         user.save()
         user.profile.account_status = user.profile.APPROVED
         user.save()
-        try:
-            domain = user.email.split('@')[1]
-            institute = Institution.objects.get(base_domain=domain)
-            self.user.profile.institution = institute
-            self.user.profile.save()
-        except ObjectDoesNotExist:
-            pass
 
     def tearDown(self):
         super(SeleniumTestsBase, self).tearDown()
         self.selenium.quit()
 
     def setUp(self):
+        # Create a funding body
+        self.funding_body = FundingBody(
+            name='A function source name',
+            description='A funding source description',
+        )
+        self.funding_body.save()
+
+        # Create a number of user for different roles
         self.user_password = "password"
+        institution = Institution.objects.get(id=1)
+        email = '@'.join(['user', institution.base_domain])
         self.user = CustomUser(
-            username="user@swan.ac.uk",
-            email="user@swan.ac.uk",
+            username=email,
+            email=email,
             first_name='User',
             last_name='User',
             is_staff=False,
@@ -125,9 +133,10 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         )
         self.create_test_user(self.external)
 
+        email = '@'.join(['123456', institution.base_domain])
         self.student = CustomUser(
-            username="123456@swan.ac.uk",
-            email="123456@swan.ac.uk",
+            username=email,
+            email=email,
             first_name='Student',
             last_name='Student',
             is_shibboleth_login_required=True,
@@ -135,9 +144,10 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         )
         self.create_test_user(self.student)
 
+        email = '@'.join(['rse', institution.base_domain])
         self.rse = CustomUser(
-            username="rse@swan.ac.uk",
-            email="rse@swan.ac.uk",
+            username=email,
+            email=email,
             first_name='Rse',
             last_name='Rse',
             is_staff=True,
@@ -147,9 +157,10 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         )
         self.create_test_user(self.rse)
 
+        email = '@'.join(['admin', institution.base_domain])
         self.admin = CustomUser(
-            username="admin@swan.ac.uk",
-            email="admin@swan.ac.uk",
+            username=email,
+            email=email,
             first_name='Admin',
             last_name='Admin',
             is_staff=True,

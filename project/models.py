@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openldap.api import project_membership_api
 from system.models import System
+from funding.models import Attribution
 
 logger = logging.getLogger('apps')
 
@@ -23,24 +24,6 @@ class ProjectCategory(models.Model):
         unique=True,
     )
     description = models.TextField(max_length=512)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-
-class ProjectFundingSource(models.Model):
-
-    class Meta:
-        verbose_name_plural = _('Project Funding Sources')
-        ordering = ('name', )
-
-    name = models.CharField(
-        max_length=128,
-        unique=True,
-    )
-    description = models.CharField(max_length=512)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
@@ -102,6 +85,10 @@ class Project(models.Model):
         max_length=256,
         verbose_name=_("Principal Investigator's name, position and email"),
     )
+    attributions = models.ManyToManyField(
+        Attribution,
+        blank=True,
+    )
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='project_as_tech_lead',
@@ -113,11 +100,6 @@ class Project(models.Model):
         on_delete=models.CASCADE,
         null=True,
         verbose_name=_('Category'),
-    )
-    funding_source = models.ForeignKey(
-        ProjectFundingSource,
-        on_delete=models.CASCADE,
-        verbose_name=_('Funding source'),
     )
     start_date = models.DateField(verbose_name=_('Start date'))
     end_date = models.DateField(verbose_name=_('End date'))

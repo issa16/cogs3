@@ -15,7 +15,7 @@
       "updated_at": "2018-06-26T12:16:34.736Z",
       "first_name": "Joe",
       "last_name": "Bloggs",
-      "reason_for_account": "",
+      "reason_for_account": "testing",
       "accepted_terms_and_conditions": true,
       "groups": [
         1
@@ -39,7 +39,7 @@
       "updated_at": "2018-06-26T12:16:34.736Z",
       "first_name": "John",
       "last_name": "Smith",
-      "reason_for_account": "",
+      "reason_for_account": "testing",
       "accepted_terms_and_conditions": true,
       "groups": [],
       "user_permissions": []
@@ -61,7 +61,7 @@
       "updated_at": "2018-06-26T12:16:34.736Z",
       "first_name": "Jane",
       "last_name": "Smith",
-      "reason_for_account": "",
+      "reason_for_account": "testing",
       "accepted_terms_and_conditions": true,
       "groups": [],
       "user_permissions": []
@@ -83,7 +83,7 @@
       "updated_at": "2018-06-26T12:16:34.736Z",
       "first_name": "Norman",
       "last_name": "Gordon",
-      "reason_for_account": "",
+      "reason_for_account": "testing",
       "accepted_terms_and_conditions": true,
       "groups": [],
       "user_permissions": []

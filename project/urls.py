@@ -53,4 +53,9 @@ urlpatterns = [
         views.ProjectDocumentView.as_view(),
         name='project-application-document',
     ),
+    path(
+        'list_attributions/',
+        views.list_attributions,
+        name='list_attributions',
+    ),
 ]

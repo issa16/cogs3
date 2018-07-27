@@ -1,10 +1,10 @@
 from django import forms
 from django.db.models import Q
-from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from project.models import Project
 from project.models import ProjectUserMembership
+from funding.models import Attribution
 from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
 from users.models import CustomUser
@@ -23,6 +23,10 @@ class FileLinkWidget(forms.Widget):
             return u''
 
 
+class SelectMultipleTickbox(forms.widgets.CheckboxSelectMultiple):
+    template_name = 'project/attributionwidget.html'
+
+
 class ProjectAdminForm(forms.ModelForm):
 
     document_download = forms.CharField(label='Download Supporting Document', required=False)
@@ -38,9 +42,9 @@ class ProjectAdminForm(forms.ModelForm):
             'department',
             'gid_number',
             'pi',
+            'attributions',
             'tech_lead',
             'category',
-            'funding_source',
             'start_date',
             'end_date',
             'economic_user',
@@ -122,8 +126,8 @@ class ProjectAdminForm(forms.ModelForm):
     def save(self, commit=True):
         project = super(ProjectAdminForm, self).save(commit=False)
         project.previous_status = self.initial_status
-        if self.initial_status != project.status:
-            update_openldap_project(project)
+        #if self.initial_status != project.status:
+        #    update_openldap_project(project)
         if commit:
             project.save()
         return project
@@ -147,7 +151,7 @@ class ProjectCreationForm(forms.ModelForm):
             'institution_reference',
             'department',
             'pi',
-            'funding_source',
+            'attributions',
             'start_date',
             'end_date',
             'requirements_software',
@@ -171,13 +175,19 @@ class ProjectCreationForm(forms.ModelForm):
         if self.user.profile.institution is not None and not self.user.profile.institution.is_cardiff:
             del self.fields['legacy_arcca_id']
 
-    def set_user(self, user):
-        self.user = user
+        self.fields['attributions'] = forms.ModelMultipleChoiceField(
+            label="Add Attributions",
+            widget=SelectMultipleTickbox(),
+            queryset=Attribution.objects.filter(
+                created_by=self.user
+            ),
+            required=False,
+        )
 
     def clean(self):
         self.instance.tech_lead = self.user
         if self.instance.tech_lead.profile.institution is None:
-            raise ValidationError('Only users which belong to an institution can create projects.')
+            raise forms.ValidationError('Only users which belong to an institution can create projects.')
 
 
 class ProjectUserMembershipCreationForm(forms.Form):
@@ -232,6 +242,7 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
             'project',
             'user',
             'status',
+            'initiated_by_user',
             'date_joined',
             'date_left',
         ]
@@ -264,4 +275,3 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
         if commit:
             project_user_membership.save()
         return project_user_membership
-
