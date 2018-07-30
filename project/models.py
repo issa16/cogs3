@@ -257,6 +257,20 @@ class Project(models.Model):
         except Exception:
             logger.exception('Failed assign project owner membership to the project\'s technical lead.')
 
+    def _remove_from_project_owner(self, old_techlead):
+        try:
+            # If the old tech lead no longer has any projects,
+            # remove them from the project_owner group
+            techlead_projects = Project.objects.filter(
+                tech_lead=old_techlead,
+                status=Project.APPROVED,
+            )
+            if techlead_projects.count() == 1:
+                group = Group.objects.get(name='project_owner')
+                old_techlead.groups.remove(group)
+        except Exception:
+            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
+
     def _generate_project_code(self):
         prefix = 'scw'
         last_project = Project.objects.order_by('id').last()
@@ -272,8 +286,18 @@ class Project(models.Model):
     def save(self, *args, **kwargs):
         if self.code is '':
             self.code = self._generate_project_code()
+
         if self.status == Project.APPROVED:
             self._assign_project_owner_project_membership()
+
+        # If the project already exists check for changes
+        if(Project.objects.filter(pk=self.id).exists()):
+            current = Project.objects.get(pk=self.id)
+            if current.status == Project.APPROVED:
+                if self.tech_lead != current.tech_lead or \
+                   self.status != current.status:
+                    self._remove_from_project_owner(current.tech_lead)
+
         super(Project, self).save(*args, **kwargs)
 
     history = HistoricalRecords()
