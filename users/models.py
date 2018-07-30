@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import Permission
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
@@ -280,13 +281,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         if self.is_shibboleth_login_required:
             _, domain = self.email.split('@')
             institution = Institution.objects.get(base_domain=domain)
-            ShibbolethProfile.objects.update_or_create(
+            obj, created = ShibbolethProfile.objects.update_or_create(
                 user=self,
                 defaults={
                     'shibboleth_id': self.email,
                     'institution': institution,
                 },
             )
+            # Shibboleth users by default should be able to create project applications.
+            if created:
+                if not obj.user.has_perm('project.add_project'):
+                    permission = Permission.objects.get(codename='add_project')
+                    obj.user.user_permissions.add(permission)
         else:
             Profile.objects.update_or_create(user=self)
         self.profile.save()
