@@ -4,9 +4,6 @@ from django.db.migrations.executor import MigrationExecutor
 from django.db import connection
 from django.core import serializers
 
-from funding.models import FundingSource
-from project.models import Project
-
 
 class TestMigration(TestCase):
 
@@ -60,6 +57,9 @@ class TestMigrationToFunding(TestMigration):
     migrate_to = [('funding','0002_copy_fundingsource')]
 
     def test_migrated(self):
+        Project = self.apps.get_model('project', 'Project')
+        FundingSource = self.apps.get_model('funding', 'FundingSource')
+
         # Get the project descriped in the phase 1 fixture
         project = Project.objects.get(id=1)
 

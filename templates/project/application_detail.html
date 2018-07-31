@@ -67,8 +67,10 @@
 								<td>{{project.institution_reference}}</td>
 							</tr>
 							<tr>
-								<th scope="row">{% trans "Principal Investigator" %}</th>
-								<td>{{project.pi}}</td>
+								<th scope="row">{% trans "Project Leader" %}</th>
+								<td>{{project.supervisor_name}} <br>
+									{{project.supervisor_position}} <br>
+									{{project.supervisor_email}}</td>
 							</tr>
 							<tr>
 								<th scope="row">{% trans "Attributions" %}</th>

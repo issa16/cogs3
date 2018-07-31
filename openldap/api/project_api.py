@@ -76,8 +76,8 @@ def create_project(project, notify_user=True):
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cache-Control': 'no-cache',
     }
-    title = '{title} (Principal Investigator = {pi}, Technical Lead = {tech_lead})'.format(
-        pi=project.pi,
+    title = '{title} (Project Leader = {supervisor}, Technical Lead = {tech_lead})'.format(
+        supervisor=project.supervisor_name,
         tech_lead=project.tech_lead.email,
         title=project.title,
     )

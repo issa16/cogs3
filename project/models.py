@@ -84,9 +84,24 @@ class Project(models.Model):
         blank=True,
         verbose_name=_('Department'),
     )
-    pi = models.CharField(
+    pi_legacy = models.CharField(
         max_length=256,
-        verbose_name=_("Principal Investigator's name, position and email"),
+        verbose_name=_("[Deprecated]Principal Investigator's name, position and email"),
+    )
+    supervisor_name = models.CharField(
+        max_length=256,
+        verbose_name=_("Project Leader's name"),
+        blank=True,
+    )
+    supervisor_position = models.CharField(
+        max_length=256,
+        verbose_name=_("Project Leader's position"),
+        blank=True,
+    )
+    supervisor_email = models.CharField(
+        max_length=256,
+        verbose_name=_("Project Leader's email"),
+        blank=True,
     )
     attributions = models.ManyToManyField(
         Attribution,
