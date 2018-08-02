@@ -1,6 +1,7 @@
 from django_rq import job
 
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 from users.notifications import email_user
 
 
@@ -9,7 +10,7 @@ def project_created_notification(project):
     """
     Notify support that a new project has been created.
     """
-    subject = 'Project Created'
+    subject = _('{company_name} Project Created'.format(company_name=settings.COMPANY_NAME))
     context = {
         'code': project.code,
         'university': project.tech_lead.profile.institution.name,
@@ -27,7 +28,7 @@ def project_membership_created(membership):
     """
     Notify the project's technical lead that a project membership has been created.
     """
-    subject = 'Project Memebership Request'
+    subject = _('{company_name} Project Membership Request'.format(company_name=settings.COMPANY_NAME))
     context = {
         'code': membership.project.code,
         'tech_lead_first_name': membership.project.tech_lead.first_name,

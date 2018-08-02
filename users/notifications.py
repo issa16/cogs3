@@ -3,6 +3,7 @@ from django_rq import job
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
+from django.utils.translation import gettext_lazy as _
 
 
 def email_user(subject, context, text_template_path, html_template_path):
@@ -36,6 +37,7 @@ def user_created_notification(user):
     Notify support that a user has created an account. 
     """
     subject = 'User Account Created'
+    subject = _('{company_name} User Account Created'.format(company_name=settings.COMPANY_NAME))
     context = {
         'first_name': user.first_name,
         'last_name': user.last_name,
