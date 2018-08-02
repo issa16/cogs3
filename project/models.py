@@ -7,6 +7,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from openldap.api import project_membership_api
+from project.notifications import project_created_notification
 from system.models import System
 
 logger = logging.getLogger('apps')
@@ -287,6 +288,7 @@ class Project(models.Model):
     def save(self, *args, **kwargs):
         if self.code is '':
             self.code = self._generate_project_code()
+            project_created_notification.delay(self)
         if self.status == Project.APPROVED:
             self._assign_project_owner_project_membership()
         super(Project, self).save(*args, **kwargs)

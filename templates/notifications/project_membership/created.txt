@@ -1,0 +1,7 @@
+Project Membership Request
+
+Dear {{tech_lead_first_name}},
+
+{{applicant_first_name}} {{applicant_last_name}} from {{applicant_university}} has requested to join your Supercomputing Wales project {{code}}.
+
+Project user requests can be managed via our online MySCW service (https://my.supercomputing.wales).

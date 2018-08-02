@@ -1,0 +1,19 @@
+{% extends 'notifications/email_base.html' %}
+{% load i18n %}
+{% block title %}
+	{% blocktrans %}Project Membership Request{% endblocktrans %}
+{% endblock %}
+{% block content %}
+	<p>
+		<b>{% blocktrans %}Project Membership Request{% endblocktrans %}.</b>
+	</p>
+	<p>
+		{% blocktrans %}Dear {{tech_lead_first_name}}{% endblocktrans %},
+	</p>
+	<p>
+		{% blocktrans %}{{applicant_first_name}} {{applicant_last_name}} from {{applicant_university}} has requested to join your Supercomputing Wales project {{code}}{% endblocktrans %}.
+	</p>
+	<p>
+		{% blocktrans %}Project user requests can be managed via our online <a href="https://my.supercomputing.wales">MySCW</a> service.{% endblocktrans %}.
+	</p>
+{% endblock %}

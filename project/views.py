@@ -21,6 +21,7 @@ from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
 from project.models import ProjectUserMembership
+from project.notifications import project_membership_created
 from project.openldap import update_openldap_project_membership
 
 
@@ -116,11 +117,12 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
             code=project_code,
             status=Project.APPROVED,
         )
-        ProjectUserMembership.objects.create(
+        membership = ProjectUserMembership.objects.create(
             project=project,
             user=self.request.user,
             date_joined=datetime.date.today(),
         )
+        project_membership_created.delay(membership)
         return super().form_valid(form)
 
 

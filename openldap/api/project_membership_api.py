@@ -9,8 +9,8 @@ from openldap.schemas.project_membership.create_project_membership import create
 from openldap.schemas.project_membership.delete_project_membership import delete_project_membership_json
 from openldap.schemas.project_membership.list_project_memberships import list_project_memberships_json
 from openldap.util import decode_response
-from openldap.util import email_user
 from openldap.util import raise_for_data_error
+from users.notifications import email_user
 
 
 @job
@@ -89,10 +89,12 @@ def delete_project_membership(project_membership, notify_user=True):
         project_membership (str): Project Membership - required
         notify_user (bool): Issue a notification email to the user? - optional
     """
-    url = ''.join([
-        settings.OPENLDAP_HOST, 'project/member/', project_membership.project.code, '/', project_membership.user.email,
-        '/'
-    ])
+    url = ''.join(
+        [
+            settings.OPENLDAP_HOST, 'project/member/', project_membership.project.code, '/',
+            project_membership.user.email, '/'
+        ]
+    )
     headers = {'Cache-Control': 'no-cache'}
     try:
         response = requests.delete(

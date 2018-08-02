@@ -8,6 +8,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from institution.models import Institution
+from users.notifications import user_created_notification
 
 
 class Profile(models.Model):
@@ -293,6 +294,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 if not obj.user.has_perm('project.add_project'):
                     permission = Permission.objects.get(codename='add_project')
                     obj.user.user_permissions.add(permission)
+                user_created_notification.delay(obj.user)
         else:
             Profile.objects.update_or_create(user=self)
         self.profile.save()

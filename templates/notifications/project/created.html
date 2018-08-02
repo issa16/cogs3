@@ -1,0 +1,25 @@
+{% extends 'notifications/email_base.html' %}
+{% load i18n %}
+{% block title %}
+	{% blocktrans %}Project {{code}} Created{% endblocktrans %}
+{% endblock %}
+{% block content %}
+	<p>
+		<b>{% blocktrans %}Project {{code}} Created{% endblocktrans %}.</b>
+	</p>
+	<p>
+		{% blocktrans %}A project application has been created and is awaiting approval{% endblocktrans %}.
+	</p>
+	<p>
+		<b>University:</b>
+		{{university}}
+	</p>
+	<p>
+		<b>Technical lead:</b>
+		{{technical_lead}}
+	</p>
+	<p>
+		<b>Title:</b>
+		{{title}}
+	</p>
+{% endblock %}
