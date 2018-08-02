@@ -16,7 +16,7 @@ def project_created_notification(project):
         'university': project.tech_lead.profile.institution.name,
         'technical_lead': project.tech_lead,
         'title': project.title,
-        'to': settings.DEFAULT_CONTACT_EMAIL,
+        'to': settings.DEFAULT_SUPPORT_EMAIL,
     }
     text_template_path = 'notifications/project/created.txt'
     html_template_path = 'notifications/project/created.html'

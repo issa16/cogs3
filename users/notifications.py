@@ -43,7 +43,7 @@ def user_created_notification(user):
         'last_name': user.last_name,
         'university': user.profile.institution.name,
         'reason': user.reason_for_account,
-        'to': settings.DEFAULT_CONTACT_EMAIL,
+        'to': settings.DEFAULT_SUPPORT_EMAIL,
     }
     text_template_path = 'notifications/user/created.txt'
     html_template_path = 'notifications/user/created.html'
