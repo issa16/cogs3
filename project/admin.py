@@ -77,37 +77,7 @@ class ProjectUserMembershipAdmin(SimpleHistoryAdmin):
 @admin.register(Project)
 class ProjectAdmin(SimpleHistoryAdmin):
 
-    def _project_action_message(self, rows_updated):
-        if rows_updated == 1:
-            message = '1 project was'
-        else:
-            message = '{rows} project were'.format(rows=rows_updated)
-        return message
-
-    def activate_projects(self, request, queryset):
-        rows_updated = 0
-        for project in queryset:
-            project.save()
-            update_openldap_project(project)
-            rows_updated += 1
-        message = self._project_action_message(rows_updated)
-        self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
-
-    activate_projects.short_description = 'Activate selected projects in LDAP'
-
-    def deactivate_projects(self, request, queryset):
-        rows_updated = 0
-        for project in queryset:
-            project.save()
-            update_openldap_project(project)
-            rows_updated += 1
-        message = self._project_action_message(rows_updated)
-        self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
-
-    deactivate_projects.short_description = 'Deactivate selected projects in LDAP'
-
     form = ProjectAdminForm
-    actions = [activate_projects, deactivate_projects]
 
     # Fields to be used when displaying a Project instance.
     list_display = (
@@ -133,16 +103,41 @@ class ProjectAdmin(SimpleHistoryAdmin):
 @admin.register(SystemAllocationRequest)
 class SystemAllocationRequestAdmin(SimpleHistoryAdmin):
 
-    def _project_action_message(self, rows_updated):
+    def _allocation_action_message(self, rows_updated):
         if rows_updated == 1:
             message = '1 allocation request was'
         else:
             message = '{rows} allocation requests were'.format(rows=rows_updated)
         return message
 
-    form = SystemAllocationRequestAdminForm
+    def activate_allocations(self, request, queryset):
+        rows_updated = 0
+        for allocation in queryset:
+            allocation.status = SystemAllocationRequest.APPROVED
+            allocation.save()
+            update_openldap_project(allocation.project)
+            rows_updated += 1
+        message = self._allocation_action_message(rows_updated)
+        self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
 
-    # Fields to be used when displaying a Project instance.
+    activate_allocations.short_description = 'Activate selected allocations in LDAP'
+
+    def deactivate_allocations(self, request, queryset):
+        rows_updated = 0
+        for allocation in queryset:
+            allocation.status = SystemAllocationRequest.APPROVED
+            allocation.save()
+            update_openldap_project(allocation.project)
+            rows_updated += 1
+        message = self._allocation_action_message(rows_updated)
+        self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
+
+    deactivate_allocations.short_description = 'Deactivate selected allocations in LDAP'
+
+    form = SystemAllocationRequestAdminForm
+    actions = [activate_allocations, deactivate_allocations]
+
+    # Fields to be used when displaying a SystemAllocationRequestAdminForm instance.
     list_display = (
         'project',
         'start_date',
