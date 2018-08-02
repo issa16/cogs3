@@ -9,6 +9,11 @@ urlpatterns = [
         name='create-project',
     ),
     path(
+        'create-project-and-allocation/',
+        views.ProjectAndAllocationCreateView.as_view(),
+        name='create-project-and-allocation',
+    ),
+    path(
         'join/',
         views.ProjectUserMembershipFormView.as_view(),
         name='project-membership-create',
@@ -57,5 +62,10 @@ urlpatterns = [
         'list_attributions/',
         views.list_attributions,
         name='list_attributions',
+    ),
+    path(
+        'allocations/create',
+        views.SystemAllocationCreateView.as_view(),
+        name='create_application',
     ),
 ]

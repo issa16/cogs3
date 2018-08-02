@@ -19,7 +19,7 @@ from django.views.generic.edit import FormView
 
 from users.models import CustomUser
 
-from project.forms import ProjectCreationForm
+from project.forms import ProjectCreationForm, SystemAllocationRequestCreationForm
 from project.forms import ProjectUserInviteForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
@@ -68,6 +68,37 @@ class ProjectCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, ge
         if form_class is None:
             form_class = self.get_form_class()
         return form_class(self.request.user, **self.get_form_kwargs())
+
+
+class SystemAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
+    form_class = SystemAllocationRequestCreationForm
+    success_url = reverse_lazy('project-application-list')
+    success_message = _('Successfully submitted a system allocation application.')
+    template_name = 'project/create.html'
+    permission_required = 'project.add_project'
+
+
+class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.TemplateView):
+    template_name = 'project/createprojectandallocation.html'
+
+    permission_required = 'project.add_project'
+    success_message = _('Successfully submitted a project application.')
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectAndAllocationCreateView, self).get_context_data(**kwargs)
+
+        context['project_form'] = ProjectCreationForm(self.request.user)
+        context['allocation_form'] = SystemAllocationRequestCreationForm()
+
+        # These two fields are unnecessary in the combined view
+        del context['allocation_form'].fields['information']
+        del context['allocation_form'].fields['project']
+
+        return context
+
+    def post(self, request):
+        print(request)
+        return HttpResponse('project-application-list')
 
 
 class ProjectListView(PermissionAndLoginRequiredMixin, generic.ListView):

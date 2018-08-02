@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from project.forms import ProjectAdminForm
+from project.forms import ProjectAdminForm, SystemAllocationRequestAdminForm
 from project.forms import ProjectUserMembershipAdminForm
-from project.models import Project
+from project.models import Project, SystemAllocationRequest
 from project.models import ProjectCategory
 from project.models import ProjectSystemAllocation
 from project.models import ProjectUserMembership
@@ -87,7 +87,6 @@ class ProjectAdmin(SimpleHistoryAdmin):
     def activate_projects(self, request, queryset):
         rows_updated = 0
         for project in queryset:
-            project.status = Project.APPROVED
             project.save()
             update_openldap_project(project)
             rows_updated += 1
@@ -99,7 +98,6 @@ class ProjectAdmin(SimpleHistoryAdmin):
     def deactivate_projects(self, request, queryset):
         rows_updated = 0
         for project in queryset:
-            project.status = Project.REVOKED
             project.save()
             update_openldap_project(project)
             rows_updated += 1
@@ -115,11 +113,8 @@ class ProjectAdmin(SimpleHistoryAdmin):
     list_display = (
         'code',
         'created_time',
-        'start_date',
         'tech_lead',
-        'status',
     )
-    list_filter = ('status', )
     search_fields = (
         'title',
         'legacy_hpcw_id',
@@ -132,4 +127,25 @@ class ProjectAdmin(SimpleHistoryAdmin):
         'tech_lead__first_name',
         'tech_lead__last_name',
         'tech_lead__email',
+    )
+
+
+@admin.register(SystemAllocationRequest)
+class SystemAllocationRequestAdmin(SimpleHistoryAdmin):
+
+    def _project_action_message(self, rows_updated):
+        if rows_updated == 1:
+            message = '1 allocation request was'
+        else:
+            message = '{rows} allocation requests were'.format(rows=rows_updated)
+        return message
+
+    form = SystemAllocationRequestAdminForm
+
+    # Fields to be used when displaying a Project instance.
+    list_display = (
+        'project',
+        'start_date',
+        'end_date',
+        'allocation_cputime',
     )

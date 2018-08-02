@@ -2,7 +2,7 @@ from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from project.models import Project
+from project.models import Project, SystemAllocationRequest
 from project.models import ProjectUserMembership
 from funding.models import Attribution
 from project.openldap import update_openldap_project
@@ -29,8 +29,6 @@ class SelectMultipleTickbox(forms.widgets.CheckboxSelectMultiple):
 
 class ProjectAdminForm(forms.ModelForm):
 
-    document_download = forms.CharField(label='Download Supporting Document', required=False)
-
     class Meta:
         model = Project
         fields = [
@@ -47,33 +45,11 @@ class ProjectAdminForm(forms.ModelForm):
             'attributions',
             'tech_lead',
             'category',
-            'start_date',
-            'end_date',
             'economic_user',
-            'requirements_software',
-            'requirements_gateways',
-            'requirements_training',
-            'requirements_onboarding',
-            'allocation_rse',
-            'allocation_cputime',
-            'allocation_memory',
-            'allocation_storage_home',
-            'allocation_storage_scratch',
-            'document',
-            'document_download',
-            'status',
-            'reason_decision',
-            'notes',
         ]
 
     def __init__(self, *args, **kwargs):
         super(ProjectAdminForm, self).__init__(*args, **kwargs)
-        self.initial_status = self.instance.status
-        self.fields['document_download'].widget = FileLinkWidget(self.instance)
-        self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status))
-        # Project must be created in order to generate a project code, before the status can be updated.
-        if self.instance.id is None:
-            self.fields['status'] = forms.ChoiceField(choices=[Project.STATUS_CHOICES[Project.AWAITING_APPROVAL]])
 
     def clean_code(self):
         """
@@ -108,6 +84,48 @@ class ProjectAdminForm(forms.ModelForm):
                 raise forms.ValidationError(_('Project legacy ARCCA id must be unique.'))
         return updated_legacy_arcca_id
 
+    def save(self, commit=True):
+        project = super(ProjectAdminForm, self).save(commit=False)
+        project.previous_status = self.initial_status
+        if commit:
+            project.save()
+        return project
+
+
+class SystemAllocationRequestAdminForm(forms.ModelForm):
+
+    document_download = forms.CharField(label='Download Supporting Document', required=False)
+
+    class Meta:
+        model = SystemAllocationRequest
+        fields = [
+            'project',
+            'information',
+            'start_date',
+            'end_date',
+            'allocation_rse',
+            'allocation_cputime',
+            'allocation_memory',
+            'allocation_storage_home',
+            'allocation_storage_scratch',
+            'requirements_software',
+            'requirements_training',
+            'requirements_onboarding',
+            'document',
+            'document_download',
+            'status',
+            'reason_decision',
+            'notes',
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super(SystemAllocationRequestAdminForm, self).__init__(*args, **kwargs)
+        self.initial_status = self.instance.status
+        self.fields['document_download'].widget = FileLinkWidget(self.instance)
+        self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status))
+        if self.instance.id is None:
+            self.fields['status'] = forms.ChoiceField(choices=[Project.STATUS_CHOICES[Project.AWAITING_APPROVAL]])
+
     def _get_status_choices(self, status):
         pre_approved_options = [
             Project.STATUS_CHOICES[Project.AWAITING_APPROVAL],
@@ -126,13 +144,14 @@ class ProjectAdminForm(forms.ModelForm):
             return pre_approved_options
 
     def save(self, commit=True):
-        project = super(ProjectAdminForm, self).save(commit=False)
-        project.previous_status = self.initial_status
-        #if self.initial_status != project.status:
-        #    update_openldap_project(project)
+        allocation = super(SystemAllocationRequestAdminForm, self).save(commit=False)
+        allocation.previous_status = self.initial_status
+        if self.initial_status != allocation.status:
+            # TODO: Check if there is another open allocation
+            update_openldap_project(allocation.project)
         if commit:
-            project.save()
-        return project
+            allocation.save()
+        return allocation
 
 
 class LocalizeModelChoiceField(forms.ModelChoiceField):
@@ -156,22 +175,7 @@ class ProjectCreationForm(forms.ModelForm):
             'supervisor_position',
             'supervisor_email',
             'attributions',
-            'start_date',
-            'end_date',
-            'requirements_software',
-            'requirements_gateways',
-            'requirements_training',
-            'requirements_onboarding',
-            'allocation_cputime',
-            'allocation_memory',
-            'allocation_storage_home',
-            'allocation_storage_scratch',
-            'document',
         ]
-        widgets = {
-            'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
-            'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
-        }
 
     def __init__(self, user, *args, **kwargs):
         super(ProjectCreationForm, self).__init__(*args, **kwargs)
@@ -192,6 +196,30 @@ class ProjectCreationForm(forms.ModelForm):
         self.instance.tech_lead = self.user
         if self.instance.tech_lead.profile.institution is None:
             raise forms.ValidationError('Only users which belong to an institution can create projects.')
+
+
+class SystemAllocationRequestCreationForm(forms.ModelForm):
+
+    class Meta:
+        model = SystemAllocationRequest
+        fields = [
+            'project',
+            'information',
+            'start_date',
+            'end_date',
+            'allocation_cputime',
+            'allocation_memory',
+            'allocation_storage_home',
+            'allocation_storage_scratch',
+            'requirements_software',
+            'requirements_training',
+            'requirements_onboarding',
+            'document',
+        ]
+        widgets = {
+            'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
+            'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
+        }
 
 
 class ProjectUserMembershipCreationForm(forms.Form):
