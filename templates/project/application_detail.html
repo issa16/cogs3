@@ -5,7 +5,7 @@
 {% load widget_tweaks %}
 {% block title %}{% trans "Project details" %}{% endblock %}
 {% block content %}
-	<div class="my-3 px-3 pt-3 bg-white rounded box-shadow">
+	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
@@ -112,6 +112,7 @@
 						</tbody>
 					</table>
 				</div>
+				<a class='btn btn-primary' href="{% url 'create-allocation' %}">New Allocation Request</a>
 			</div>
 		</div>
 	</div>

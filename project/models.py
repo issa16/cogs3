@@ -34,12 +34,6 @@ class ProjectCategory(models.Model):
         return self.name
 
 
-# class ProjectManager(models.Manager):
-# 
-#     def awaiting_approval(self, user):
-#         return Project.objects.filter(tech_lead=user, status=Project.AWAITING_APPROVAL)
-
-
 class Project(models.Model):
 
     class Meta:

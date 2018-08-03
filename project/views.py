@@ -166,7 +166,6 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
         project_code = form.cleaned_data['project_code']
         project = Project.objects.get(
             code=project_code,
-            # status=Project.APPROVED,
         )
         ProjectUserMembership.objects.create(
             project=project,
@@ -188,7 +187,6 @@ class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, gene
         queryset = super().get_queryset()
         projects = Project.objects.filter(
             tech_lead=self.request.user,
-            # status=Project.APPROVED,
         )
         queryset = queryset.filter(project__in=projects)
         # Omit the user's membership request

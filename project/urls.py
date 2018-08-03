@@ -9,6 +9,11 @@ urlpatterns = [
         name='create-project',
     ),
     path(
+        'create-allocation/',
+        views.SystemAllocationCreateView.as_view(),
+        name='create-allocation',
+    ),
+    path(
         'create-project-and-allocation/',
         views.ProjectAndAllocationCreateView.as_view(),
         name='create-project-and-allocation',
