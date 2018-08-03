@@ -199,8 +199,7 @@ class Project(models.Model):
         if self.code is '':
             self.code = self._generate_project_code()
 
-        if self.status == Project.APPROVED:
-            self._assign_project_owner_project_membership()
+        self._assign_project_owner_project_membership()
 
         # If the project already exists check for changes
         if(Project.objects.filter(pk=self.id).exists()):
@@ -223,6 +222,7 @@ class SystemAllocationRequest(models.Model):
 
     information = models.TextField(
         max_length=1024,
+        blank=True,
         verbose_name=_('Additional details of the allocation request not present in the project description'),
     )
     project = models.ForeignKey(

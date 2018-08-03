@@ -8,6 +8,7 @@ from institution.models import Institution
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.forms import ProjectUserInviteForm
+from project.forms import SystemAllocationRequestCreationForm
 from project.models import Project
 from project.models import ProjectUserMembership
 from users.models import CustomUser
@@ -47,6 +48,36 @@ class ProjectFormTests(TestCase):
                 self.assertFalse('legacy_arcca_id' in form.fields)
 
 
+class AllocationRequestFormTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
+
+    def setUp(self):
+        self.title = "Example project title"
+        self.institution = Institution.objects.get(name='Example University')
+        self.project_code = 'scw0000'
+        self.project = Project.objects.get(code=self.project_code)
+        self.project_owner = self.project.tech_lead
+        self.project_applicant = CustomUser.objects.get(email='admin.user@example.ac.uk')
+
+        # Create users for each institution
+        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+
+    def test_project_form_arcca_field(self):
+        for i in self.institution_names:
+            user = self.institution_users[i]
+            form = SystemAllocationRequestCreationForm(user)
+            
+
+
 class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
 
     def test_request_membership_form_with_valid_data(self):
@@ -67,42 +98,47 @@ class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
 
 class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
 
-    @classmethod
-    def approve_project(cls, project):
-        """
-        The approval process will trigger the creation of a project user membership for the
-        technical lead user see project/signals.py.
-
-        Args:
-            project (Project): Project to approve.
-        """
-        project.status = Project.APPROVED
-        project.save()
+    # Project are no longer approved, allocations are. Members can be added immediately
+    # when a project is created.
+    # @classmethod
+    # def approve_project(cls, project):
+    #     """
+    #     The approval process will trigger the creation of a project user membership for the
+    #     technical lead user see project/signals.py.
+    #     Args:
+    #         project (Project): Project to approve.
+    #     """
+    #     project.status = Project.APPROVED
+    #     project.save()
 
     def test_form_when_project_is_awaiting_approval(self):
         """
+        Project are no longer approved, allocations are. Members can be added immediately
+        when a project is created.
+
         Ensure it is not possible to create a project user membership whilst the project is
         currently awaiting approval.
         """
-        form = ProjectUserMembershipCreationForm(
-            initial={
-                'user': self.project_applicant,
-            },
-            data={
-                'project_code': self.project_code,
-            },
-        )
-        self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors['project_code'],
-            ['The project is currently awaiting approval.'],
-        )
+        pass
+        # form = ProjectUserMembershipCreationForm(
+        #     initial={
+        #         'user': self.project_applicant,
+        #     },
+        #     data={
+        #         'project_code': self.project_code,
+        #     },
+        # )
+        # self.assertFalse(form.is_valid())
+        # self.assertEqual(
+        #     form.errors['project_code'],
+        #     ['The project is currently awaiting approval.'],
+        # )
 
-    def test_form_after_the_project_has_been_approved(self):
+    def test_form(self):
         """
-        Ensure it is possible to create a project user membership after the project has been approved.
+        Ensure it is possible to create a project user membership.
         """
-        self.approve_project(self.project)
+        # self.approve_project(self.project)
 
         form = ProjectUserMembershipCreationForm(
             initial={
@@ -118,7 +154,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         """
         Ensure it is not possible to create a project user membership using an invalid project code.
         """
-        self.approve_project(self.project)
+        # self.approve_project(self.project)
 
         form = ProjectUserMembershipCreationForm(
             initial={
@@ -155,7 +191,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         )
 
         for account in accounts:
-            self.approve_project(self.project)
+            # self.approve_project(self.project)
             # A request to create a project user membership should be rejected.
             form = ProjectUserMembershipCreationForm(
                 initial={
@@ -180,7 +216,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         Ensure it is not possible to create a project user membership when a user has a
         membership request awaiting authorisation.
         """
-        self.approve_project(self.project)
+        # self.approve_project(self.project)
 
         # Create a project user membership.
         ProjectUserMembership.objects.create(
@@ -218,7 +254,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         Ensure the user is returned the correct error message when the project code is greater
         than the fields maximum length (20 chars).
         """
-        self.approve_project(self.project)
+        # self.approve_project(self.project)
 
         invalid_project_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=21))
         form = ProjectUserMembershipCreationForm(
@@ -238,38 +274,43 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
 
 class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
 
-    @classmethod
-    def approve_project(cls, project):
-        """
-        The approval process will trigger the creation of a project user membership for the
-        technical lead user see project/signals.py.
-
-        Args:
-            project (Project): Project to approve.
-        """
-        project.status = Project.APPROVED
-        project.save()
+    # Project are no longer approved, allocations are. Members can be added immediately
+    # when a project is created.
+    # @classmethod
+    # def approve_project(cls, project):
+    #     """
+    #     The approval process will trigger the creation of a project user membership for the
+    #     technical lead user see project/signals.py.
+    #     Args:
+    #         project (Project): Project to approve.
+    #     """
+    #     project.status = Project.APPROVED
+    #     project.save()
 
     def test_form_when_project_is_awaiting_approval(self):
         """
+        Project are no longer approved, allocations are. Members can be added immediately
+        when a project is created.
+
         Ensure it is not possible to create a project user membership whilst the project is
         currently awaiting approval.
         """
-        form = ProjectUserInviteForm(
-            initial={
-                'project_id': 1,
-            },
-            data={
-                'email': self.project_applicant.email,
-            },
-        )
-        self.assertFalse(form.is_valid())
+        pass
+        # form = ProjectUserInviteForm(
+        #     initial={
+        #         'project_id': 1,
+        #     },
+        #     data={
+        #         'email': self.project_applicant.email,
+        #     },
+        # )
+        # self.assertFalse(form.is_valid())
 
-    def test_form_after_the_project_has_been_approved(self):
+    def test_form(self):
         """
-        Ensure it is possible to create a project user membership after the project has been approved.
+        Ensure it is possible to create a project user membership.
         """
-        self.approve_project(self.project)
+        # self.approve_project(self.project)
 
         form = ProjectUserInviteForm(
             initial={
@@ -295,7 +336,7 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
             # Create a project.
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
             project = Project.objects.get(title="Project title")
-            self.approve_project(project)
+            # self.approve_project(project)
 
             # A request to create a project user membership should be rejected.
             form = ProjectUserInviteForm(
@@ -320,7 +361,7 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
         # Create a project.
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
         project = Project.objects.get(title="Project title")
-        self.approve_project(project)
+        # self.approve_project(project)
 
         # Create a project user membership.
         ProjectUserMembership.objects.create(
@@ -345,6 +386,33 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
             },
             data={
                 'email': self.project_applicant.email,
+            },
+        )
+        self.assertFalse(form.is_valid())
+
+
+class SystemAllocationRequestCreationFormTests(ProjectFormTests, TestCase):
+
+    def test_form_with_unauthorized_project(self):
+        """
+        Ensure it is not possible to create a project user membership whilst the project is
+        currently awaiting approval.
+        """
+        form = SystemAllocationRequestCreationForm(
+            self.project_applicant,
+            data={
+                'project': 1,
+                'information': '',
+                'start_date': datetime.datetime.now(),
+                'end_date': datetime.datetime.now(),
+                'allocation_cputime': 1,
+                'allocation_memory': 1,
+                'allocation_storage_home': 1,
+                'allocation_storage_scratch': 1,
+                'requirements_software': '',
+                'requirements_training': '',
+                'requirements_onboarding': '',
+                'document': '',
             },
         )
         self.assertFalse(form.is_valid())

@@ -9,11 +9,13 @@ from django.urls import reverse
 from institution.models import Institution
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
+from project.forms import SystemAllocationRequestCreationForm
 from project.tests.test_models import ProjectCategoryTests
 from project.tests.test_models import ProjectTests
 from project.tests.test_models import ProjectUserMembershipTests
 from project.models import Project
 from project.models import ProjectCategory
+from project.models import SystemAllocationRequest
 from funding.models import FundingBody
 from funding.models import FundingSource
 from project.models import ProjectUserMembership
@@ -23,6 +25,9 @@ from project.views import ProjectListView
 from project.views import ProjectUserMembershipFormView
 from project.views import ProjectUserMembershipListView
 from project.views import ProjectUserRequestMembershipListView
+from project.views import SystemAllocationCreateView
+from project.views import ProjectAndAllocationCreateView
+from project.views import SystemAllocationRequestDetailView
 from users.models import CustomUser
 
 from django.contrib.auth.models import Group
@@ -112,6 +117,97 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
         self._access_view_as_unauthorised_application_user(
             reverse('create-project'),
             '/en-gb/accounts/login/?next=/en-gb/projects/create/',
+        )
+
+
+class SystemAllocationCreateViewTests(ProjectViewTests, TestCase):
+
+    def test_view_as_authorised_application_user_without_project_add_permission(self):
+        """
+        Ensure the allocation create view is not accessible to an authorised application user,
+        who does not have the required permissions.
+        """
+        headers = {
+            'Shib-Identity-Provider': self.project_applicant.profile.institution.identity_provider,
+            'REMOTE_USER': self.project_applicant.email,
+        }
+        response = self.client.get(
+            reverse('create-allocation'),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('home'))
+
+    def test_view_as_authorised_application_user_with_project_add_permission(self):
+        """
+        Ensure the project create view is accessible to an authorised application user,
+        who does have the required permissions.
+        """
+        headers = {
+            'Shib-Identity-Provider': self.project_owner.profile.institution.identity_provider,
+            'REMOTE_USER': self.project_owner.email,
+        }
+        response = self.client.get(
+            reverse('create-allocation'),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response.context_data.get('form'), SystemAllocationRequestCreationForm))
+        self.assertTrue(isinstance(response.context_data.get('view'), SystemAllocationCreateView))
+
+    def test_view_as_unauthorised_application_user(self):
+        """
+        Ensure the project create view is not accessible to an unauthorised application user.
+        """
+        self._access_view_as_unauthorised_application_user(
+            reverse('create-allocation'),
+            '/en-gb/accounts/login/?next=/en-gb/projects/create-allocation/',
+        )
+
+
+class ProjectAndAllocationCreateViewTests(ProjectViewTests, TestCase):
+
+    def test_view_as_authorised_application_user_without_project_add_permission(self):
+        """
+        Ensure the project create view is not accessible to an authorised application user,
+        who does not have the required permissions.
+        """
+        headers = {
+            'Shib-Identity-Provider': self.project_applicant.profile.institution.identity_provider,
+            'REMOTE_USER': self.project_applicant.email,
+        }
+        response = self.client.get(
+            reverse('create-project-and-allocation'),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('home'))
+
+    def test_view_as_authorised_application_user_with_project_add_permission(self):
+        """
+        Ensure the project create view is accessible to an authorised application user,
+        who does have the required permissions.
+        """
+        headers = {
+            'Shib-Identity-Provider': self.project_owner.profile.institution.identity_provider,
+            'REMOTE_USER': self.project_owner.email,
+        }
+        response = self.client.get(
+            reverse('create-project-and-allocation'),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response.context_data.get('project_form'), ProjectCreationForm))
+        self.assertTrue(isinstance(response.context_data.get('allocation_form'), SystemAllocationRequestCreationForm))
+        self.assertTrue(isinstance(response.context_data.get('view'), ProjectAndAllocationCreateView))
+
+    def test_view_as_unauthorised_application_user(self):
+        """
+        Ensure the project create view is not accessible to an unauthorised application user.
+        """
+        self._access_view_as_unauthorised_application_user(
+            reverse('create-project-and-allocation'),
+            '/en-gb/accounts/login/?next=/en-gb/projects/create-project-and-allocation/',
         )
 
 

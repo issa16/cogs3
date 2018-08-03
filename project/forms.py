@@ -221,6 +221,15 @@ class SystemAllocationRequestCreationForm(forms.ModelForm):
             'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
         }
 
+    def __init__(self, user, *args, **kwargs):
+        super(SystemAllocationRequestCreationForm, self).__init__(*args, **kwargs)
+        self.fields['project'].queryset = Project.objects.filter(tech_lead=user)
+        self.user = user
+
+    def clean_project(self):
+        if self.cleaned_data['project'].tech_lead != self.user:
+            raise forms.ValidationError('Selected project not found.')
+
 
 class ProjectUserMembershipCreationForm(forms.Form):
     project_code = forms.CharField(max_length=20)
@@ -235,8 +244,6 @@ class ProjectUserMembershipCreationForm(forms.Form):
             # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:
                 raise forms.ValidationError(_("You are currently a member of the project."))
-            if project.is_awaiting_approval():
-                raise forms.ValidationError(_("The project is currently awaiting approval."))
             if ProjectUserMembership.objects.filter(project=project, user=user).exists():
                 raise forms.ValidationError(_("A membership request for this project already exists."))
         except Project.DoesNotExist:
@@ -258,8 +265,6 @@ class ProjectUserInviteForm(forms.Form):
             raise forms.ValidationError(_("No user exists with given email."))
         if project.tech_lead == user:
             raise forms.ValidationError(_("You are currently a member of the project."))
-        if project.is_awaiting_approval():
-            raise forms.ValidationError(_("The project is currently awaiting approval."))
         if ProjectUserMembership.objects.filter(project=project, user=user).exists():
             raise forms.ValidationError(_("A membership request for this project already exists."))
 

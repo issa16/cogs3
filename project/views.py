@@ -76,8 +76,16 @@ class SystemAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessage
     form_class = SystemAllocationRequestCreationForm
     success_url = reverse_lazy('project-application-list')
     success_message = _('Successfully submitted a system allocation application.')
-    template_name = 'project/create.html'
+    template_name = 'project/createallocation.html'
     permission_required = 'project.add_project'
+
+    def get_form(self, form_class=None):
+        """
+        Return an instance of the form to be used in this view.
+        """
+        if form_class is None:
+            form_class = self.get_form_class()
+        return form_class(self.request.user, **self.get_form_kwargs())
 
 
 class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.TemplateView):
@@ -90,7 +98,7 @@ class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMes
         context = super(ProjectAndAllocationCreateView, self).get_context_data(**kwargs)
 
         context['project_form'] = ProjectCreationForm(self.request.user)
-        context['allocation_form'] = SystemAllocationRequestCreationForm()
+        context['allocation_form'] = SystemAllocationRequestCreationForm(self.request.user)
 
         # These two fields are unnecessary in the combined view
         del context['allocation_form'].fields['information']

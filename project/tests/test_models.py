@@ -124,19 +124,19 @@ class ProjectTests(ProjectModelTests, TestCase):
             supervisor_email="joe.bloggs@swan.ac.uk",
             tech_lead=tech_lead,
             category=category,
-            start_date=datetime.datetime.now(),
-            end_date=datetime.datetime.now() + datetime.timedelta(days=10),
             economic_user=True,
-            requirements_software='None',
-            requirements_gateways='None',
-            requirements_training='None',
-            requirements_onboarding='None',
-            allocation_rse=True,
-            allocation_cputime='1000000',
-            allocation_memory='100',
-            allocation_storage_home='5000',
-            allocation_storage_scratch='1000',
-            notes='Project notes',
+            #start_date=datetime.datetime.now(),
+            #end_date=datetime.datetime.now() + datetime.timedelta(days=10),
+            #requirements_software='None',
+            #requirements_gateways='None',
+            #requirements_training='None',
+            #requirements_onboarding='None',
+            #allocation_rse=True,
+            #allocation_cputime='1000000',
+            #allocation_memory='100',
+            #allocation_storage_home='5000',
+            #allocation_storage_scratch='1000',
+            #notes='Project notes',
         )
         project.attributions.set([funding_source.attribution_ptr])
         return project
@@ -147,10 +147,10 @@ class ProjectTests(ProjectModelTests, TestCase):
         """
         self.assertTrue(isinstance(project, Project))
         self.assertEqual(project.__str__(), code)
-        self.assertEqual(project.status, Project.AWAITING_APPROVAL)
         self.assertEqual(project.title, title)
         self.assertEqual(project.code, code)
-        self.assertTrue(project.is_awaiting_approval())
+        #self.assertEqual(project.status, Project.AWAITING_APPROVAL)
+        #self.assertTrue(project.is_awaiting_approval())
 
     def test_project_creation(self):
         """
@@ -213,11 +213,14 @@ class ProjectTests(ProjectModelTests, TestCase):
         )
         project.save()
 
-        # Approving the project should create the membership
-        project.status = Project.APPROVED
-        project.save()
+        # The tech lead should have been added to project_owner
         group = self.project_owner.groups.filter(name='project_owner')
         if not group.exists():
+            raise AssertionError()
+
+        # And a membership should have been created
+        membership = ProjectUserMembership.objects.filter(user=self.project_owner, project=project)
+        if not membership.exists():
             raise AssertionError()
 
 
