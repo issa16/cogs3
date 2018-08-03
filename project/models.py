@@ -34,10 +34,10 @@ class ProjectCategory(models.Model):
         return self.name
 
 
-class ProjectManager(models.Manager):
-
-    def awaiting_approval(self, user):
-        return Project.objects.filter(tech_lead=user, status=Project.AWAITING_APPROVAL)
+# class ProjectManager(models.Manager):
+# 
+#     def awaiting_approval(self, user):
+#         return Project.objects.filter(tech_lead=user, status=Project.AWAITING_APPROVAL)
 
 
 class Project(models.Model):
@@ -152,7 +152,10 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
 
-    objects = ProjectManager()
+    def get_allocation_requests(self):
+        return SystemAllocationRequest.objects.filter(project=self.id).order_by('-start_date')
+
+    # objects = ProjectManager()
 
     def _assign_project_owner_project_membership(self):
         try:
@@ -402,7 +405,6 @@ class ProjectUserMembershipManager(models.Manager):
         projects = Project.objects.filter(tech_lead=user)
         project_user_memberships = ProjectUserMembership.objects.filter(
             project__in=projects,
-            status=ProjectUserMembership.AWAITING_AUTHORISATION,
         )
         return project_user_memberships
 

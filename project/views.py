@@ -19,10 +19,12 @@ from django.views.generic.edit import FormView
 
 from users.models import CustomUser
 
-from project.forms import ProjectCreationForm, SystemAllocationRequestCreationForm
+from project.forms import ProjectCreationForm
+from project.forms import SystemAllocationRequestCreationForm
 from project.forms import ProjectUserInviteForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
+from project.models import SystemAllocationRequest
 from project.models import ProjectUserMembership
 from project.openldap import update_openldap_project_membership
 from funding.models import Attribution
@@ -122,6 +124,13 @@ class ProjectDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):
     permission_required = 'project.add_project'
 
 
+class SystemAllocationRequestDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):
+    context_object_name = 'allocation'
+    model = SystemAllocationRequest
+    template_name = 'project/allocation_detail.html'
+    permission_required = 'project.add_project'
+
+
 class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
 
     def user_passes_test(self, request):
@@ -157,7 +166,7 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
         project_code = form.cleaned_data['project_code']
         project = Project.objects.get(
             code=project_code,
-            status=Project.APPROVED,
+            # status=Project.APPROVED,
         )
         ProjectUserMembership.objects.create(
             project=project,
@@ -179,7 +188,7 @@ class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, gene
         queryset = super().get_queryset()
         projects = Project.objects.filter(
             tech_lead=self.request.user,
-            status=Project.APPROVED,
+            # status=Project.APPROVED,
         )
         queryset = queryset.filter(project__in=projects)
         # Omit the user's membership request
@@ -246,8 +255,7 @@ class ProjectUserMembershipListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(user=self.request.user)
-        return queryset.filter(project__status=Project.APPROVED)
+        return queryset.filter(user=self.request.user)
 
 
 class ProjectMembesrshipInviteView(PermissionRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, FormView):

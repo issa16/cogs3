@@ -29,6 +29,11 @@ urlpatterns = [
         name='project-application-detail',
     ),
     path(
+        'allocations/<int:pk>/',
+        views.SystemAllocationRequestDetailView.as_view(),
+        name='allocation-request-detail',
+    ),
+    path(
         'applications/<int:pk>/invite-user',
         views.ProjectMembesrshipInviteView.as_view(),
         name='project-membership-invite',

@@ -1,0 +1,68 @@
+<!-- templates/project/application_detail.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}{% trans "Allocation request details" %}{% endblock %}
+{% block content %}
+	<div class="my-3 px-3 pt-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4>{% trans "Allocation Request" %}</h4>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+	  	  <div class="col">
+	  	  	{% include 'includes/messages.html'%}
+	  	  </div>
+	    </div>
+		<div class="row">
+			<div class="col">
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<tbody>
+							<tr>
+								<th scope="row">{% trans "Start date" %}</th>
+								<td>{{allocation.start_date}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "End date" %}</th>
+								<td>{{allocation.end_date}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Requirements software" %}</th>
+								<td>{{allocation.requirements_software}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Requirements training" %}</th>
+								<td>{{allocation.requirements_training}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Requirements onboarding" %}</th>
+								<td>{{allocation.requirements_onboarding}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "CPU time allocation in hours" %}</th>
+								<td>{{allocation.allocation_cputime}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "RAM allocation in GB" %}</th>
+								<td>{{allocation.allocation_memory}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Home storage in GB" %}</th>
+								<td>{{allocation.allocation_storage_home}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Scratch storage in GB" %}</th>
+								<td>{{project.allocation_storage_scratch}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

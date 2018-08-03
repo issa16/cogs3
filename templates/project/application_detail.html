@@ -89,46 +89,26 @@
 										{% endif %}
 									{% endfor %}</td>
 							</tr>
+						</tbody>
+					</table>
+
+					<h5> {% trans "System allocation requests" %}: </h5>
+					<table class="table table-bordered">
+						<tbody>
 							<tr>
-								<th scope="row">{% trans "Start date" %}</th>
-								<td>{{project.start_date}}</td>
+								<th>Start Date</th>
+								<th>Request Status</th>
+								<th></th>
 							</tr>
+							{% for allocation in project.get_allocation_requests %}
 							<tr>
-								<th scope="row">{% trans "End date" %}</th>
-								<td>{{project.end_date}}</td>
+								<td> {{allocation.start_date}} </td>
+								<td> {{allocation.get_status_display}} </td>
+								<td>
+									<a href="/en/projects/allocations/{{allocation.id}}"> {% trans "Show details" %} </a>
+								</td>
 							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements software" %}</th>
-								<td>{{project.requirements_software}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements gateways" %}</th>
-								<td>{{project.requirements_gateways}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements training" %}</th>
-								<td>{{project.requirements_training}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements onboarding" %}</th>
-								<td>{{project.requirements_onboarding}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "CPU time allocation in hours" %}</th>
-								<td>{{project.allocation_cputime}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "RAM allocation in GB" %}</th>
-								<td>{{project.allocation_memory}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Home storage in GB" %}</th>
-								<td>{{project.allocation_storage_home}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Scratch storage in GB" %}</th>
-								<td>{{project.allocation_storage_scratch}}</td>
-							</tr>
+							{% endfor %}
 						</tbody>
 					</table>
 				</div>
