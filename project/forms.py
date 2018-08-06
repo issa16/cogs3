@@ -225,7 +225,7 @@ class SystemAllocationRequestCreationForm(forms.ModelForm):
         self.user = user
         if include_project:
             self.fields['project'] = forms.ModelChoiceField(queryset=Project.objects.filter(tech_lead=user))
-        else :
+        else:
             del self.fields['project']
 
     def clean_project(self):

@@ -55,6 +55,10 @@ class ProjectViewTests(TestCase):
         self.projectmembership = ProjectUserMembership.objects.get(id=2)
         self.project_member = self.projectmembership.user
 
+        permission = Permission.objects.get(name='Can change project user membership')
+        self.project_owner.user_permissions.add(permission)
+        self.project_member.user_permissions.add(permission)
+
     def _access_view_as_unauthorised_application_user(self, url, expected_redirect_url):
         """
         Ensure an unauthorised application user can not access a url.
@@ -471,9 +475,9 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
         self.client.get(reverse('login'), **headers)
 
         # Set up request data
-        url = reverse('project-user-membership-update',kwargs={'pk': self.project.id})
+        url = reverse('project-user-membership-update',kwargs={'pk': self.projectmembership.id})
         data = {
-            'project_id': self.project.id,
+            'project_id': self.projectmembership.project.id,
             'request_id': self.projectmembership.id,
             'status': status_set
         }
@@ -496,7 +500,7 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
             [ProjectUserMembership.AUTHORISED, ProjectUserMembership.SUSPENDED, False],
         ]
         for status_in, status_set, result in cases:
-            self.post_status_change(self.project_member, status_in, status_set)
+            self.post_status_change(self.projectmembership.user, status_in, status_set)
             self.projectmembership.refresh_from_db()
             assert (self.projectmembership.status == status_set) == result
 
