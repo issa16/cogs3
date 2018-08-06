@@ -213,6 +213,7 @@ class SystemAllocationRequestCreationForm(forms.ModelForm):
             'requirements_training',
             'requirements_onboarding',
             'document',
+            'project'
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
@@ -224,10 +225,13 @@ class SystemAllocationRequestCreationForm(forms.ModelForm):
         self.user = user
         if include_project:
             self.fields['project'] = forms.ModelChoiceField(queryset=Project.objects.filter(tech_lead=user))
+        else :
+            del self.fields['project']
 
     def clean_project(self):
         if self.cleaned_data['project'].tech_lead != self.user:
             raise forms.ValidationError('Selected project not found.')
+        return self.cleaned_data['project']
 
 
 class ProjectUserMembershipCreationForm(forms.Form):
