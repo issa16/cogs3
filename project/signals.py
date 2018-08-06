@@ -11,11 +11,9 @@ def remove_tech_lead_from_project_owner(**kwargs):
     # from the project_owner group
     project = kwargs["instance"]
     tech_lead = project.tech_lead
-    status = project.status
     techlead_projects = Project.objects.filter(
         tech_lead=tech_lead,
-        status=Project.APPROVED,
     )
-    if status == Project.APPROVED and techlead_projects.count() == 1:
+    if techlead_projects.count() == 1:
         group = Group.objects.get(name='project_owner')
         tech_lead.groups.remove(group)

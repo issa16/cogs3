@@ -29,7 +29,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         "id_start_date": "2018-09-17",
         "id_end_date": "2019-09-17",
         "id_requirements_software": "none",
-        "id_requirements_gateways": "none",
         "id_requirements_training": "none",
         "id_requirements_onboarding": "none",
         "id_allocation_cputime": "200",
@@ -49,16 +48,15 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         missing_fields = [
             'id_title',
             'id_description',
-            'id_start_date',
-            'id_end_date',
         ]
         for missing_field in missing_fields:
             self.get_url('')
-            self.click_link_by_url(reverse('create-project'))
+            self.click_link_by_url(reverse('create-project-and-allocation'))
             form_field = dict(self.default_project_form_fields)
             form_field.pop(missing_field)
             self.fill_form_by_id(form_field)
             self.submit_form(self.default_project_form_fields)
+            input('wait')
             if "This field is required." not in self.selenium.page_source:
                 raise AssertionError()
 
@@ -67,7 +65,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.sign_in(self.user)
 
         self.get_url('')
-        self.click_link_by_url(reverse('create-project'))
+        self.click_link_by_url(reverse('create-project-and-allocation'))
 
         # Correctly fill the form
         self.fill_form_by_id(self.default_project_form_fields)
@@ -76,6 +74,9 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         # Check that the project does not exist yet
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
         assert matching_projects.count() == 0
+
+        self.submit_form(self.default_project_form_fields)
+        input('wait')
 
         # Add a funding source and include it
         self.click_by_id('fundingsources_dropdown')
@@ -279,7 +280,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         Try to create a project without signing in
         """
         # Navigate to the new project form
-        self.get_url(reverse('create-project'))
+        self.get_url(reverse('create-project-and-allocation'))
 
         # This should throw us to the login page
         if "accounts/login" not in self.selenium.current_url:

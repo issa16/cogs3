@@ -89,6 +89,7 @@ class SystemAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessage
 
 
 class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.TemplateView):
+    http_method_names = ['get','post']
     template_name = 'project/createprojectandallocation.html'
 
     permission_required = 'project.add_project'
@@ -97,8 +98,14 @@ class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMes
     def get_context_data(self, **kwargs):
         context = super(ProjectAndAllocationCreateView, self).get_context_data(**kwargs)
 
-        context['project_form'] = ProjectCreationForm(self.request.user)
-        context['allocation_form'] = SystemAllocationRequestCreationForm(self.request.user)
+        if 'project_form' in kwargs:
+            context['project_form'] = kwargs['project_form']
+        else:
+            context['project_form'] = ProjectCreationForm(self.request.user)
+        if 'allocation_form' in kwargs:
+            context['allocation_form'] = kwargs['allocation_form']
+        else:
+            context['allocation_form'] = SystemAllocationRequestCreationForm(self.request.user)
 
         # These two fields are unnecessary in the combined view
         del context['allocation_form'].fields['information']
@@ -107,8 +114,21 @@ class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMes
         return context
 
     def post(self, request):
-        print(request)
-        return HttpResponse('project-application-list')
+        project_form = ProjectCreationForm(request.user, data=request.POST)
+        allocation_form = SystemAllocationRequestCreationForm(request.user, data=request.POST)
+        if project_form.is_valid():
+            project = project_form.save()
+
+            # This checks that the project exists, so we need to save it first. If the check fails,
+            # we remove the project.
+            allocation_form = SystemAllocationRequestCreationForm(request.user, data=request.POST)
+            if allocation_form.is_valid():
+                allocation_form.save()
+                return HttpResponseRedirect(reverse('project-application-list'))
+            else:
+                project.delete()
+        
+        return self.render_to_response(self.get_context_data(project_form=project_form, allocation_form=allocation_form))
 
 
 class ProjectListView(PermissionAndLoginRequiredMixin, generic.ListView):

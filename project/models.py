@@ -165,8 +165,8 @@ class Project(models.Model):
             self.tech_lead.groups.add(group)
 
             # Propagate the changes to LDAP
-            if created:
-                project_membership_api.create_project_membership(project_membership=project_membership)
+            #if created:
+            #    project_membership_api.create_project_membership(project_membership=project_membership)
         except Exception:
             logger.exception('Failed assign project owner membership to the project\'s technical lead.')
 
@@ -199,6 +199,8 @@ class Project(models.Model):
         if self.code is '':
             self.code = self._generate_project_code()
 
+        super(Project, self).save(*args, **kwargs)
+
         self._assign_project_owner_project_membership()
 
         # If the project already exists check for changes
@@ -206,8 +208,6 @@ class Project(models.Model):
             current = Project.objects.get(pk=self.id)
             if self.tech_lead != current.tech_lead:
                 self._remove_from_project_owner(current.tech_lead)
-
-        super(Project, self).save(*args, **kwargs)
 
     history = HistoricalRecords()
 
