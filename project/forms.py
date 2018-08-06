@@ -194,8 +194,8 @@ class ProjectCreationForm(forms.ModelForm):
 
     def clean(self):
         self.instance.tech_lead = self.user
-        if self.instance.tech_lead.profile.institution is None:
-            raise forms.ValidationError('Only users which belong to an institution can create projects.')
+        #if self.instance.tech_lead.profile.institution is None:
+        #    raise forms.ValidationError('Only users which belong to an institution can create projects.')
 
 
 class SystemAllocationRequestCreationForm(forms.ModelForm):
@@ -203,7 +203,6 @@ class SystemAllocationRequestCreationForm(forms.ModelForm):
     class Meta:
         model = SystemAllocationRequest
         fields = [
-            'project',
             'information',
             'start_date',
             'end_date',
@@ -221,10 +220,11 @@ class SystemAllocationRequestCreationForm(forms.ModelForm):
             'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
         }
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, user, include_project=True, *args, **kwargs):
         super(SystemAllocationRequestCreationForm, self).__init__(*args, **kwargs)
-        self.fields['project'].queryset = Project.objects.filter(tech_lead=user)
         self.user = user
+        if include_project:
+            self.fields['project'] = forms.ModelChoiceField(queryset=Project.objects.filter(tech_lead=user))
 
     def clean_project(self):
         if self.cleaned_data['project'].tech_lead != self.user:

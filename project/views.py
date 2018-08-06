@@ -115,18 +115,15 @@ class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMes
 
     def post(self, request):
         project_form = ProjectCreationForm(request.user, data=request.POST)
-        allocation_form = SystemAllocationRequestCreationForm(request.user, data=request.POST)
-        if project_form.is_valid():
+        allocation_form = SystemAllocationRequestCreationForm(request.user, include_project=False, data=request.POST)
+        if project_form.is_valid() and allocation_form.is_valid():
             project = project_form.save()
-
-            # This checks that the project exists, so we need to save it first. If the check fails,
-            # we remove the project.
-            allocation_form = SystemAllocationRequestCreationForm(request.user, data=request.POST)
-            if allocation_form.is_valid():
-                allocation_form.save()
-                return HttpResponseRedirect(reverse('project-application-list'))
-            else:
-                project.delete()
+            allocation = allocation_form.save(commit=False)
+            allocation.project = project
+            allocation.save()
+            return HttpResponseRedirect(reverse('project-application-list'))
+        else:
+            print(allocation_form.errors.as_data())
         
         return self.render_to_response(self.get_context_data(project_form=project_form, allocation_form=allocation_form))
 
