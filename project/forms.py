@@ -86,7 +86,6 @@ class ProjectAdminForm(forms.ModelForm):
 
     def save(self, commit=True):
         project = super(ProjectAdminForm, self).save(commit=False)
-        project.previous_status = self.initial_status
         if commit:
             project.save()
         return project
@@ -148,7 +147,7 @@ class SystemAllocationRequestAdminForm(forms.ModelForm):
         allocation.previous_status = self.initial_status
         if self.initial_status != allocation.status:
             # TODO: Check if there is another open allocation
-            update_openldap_project(allocation.project)
+            update_openldap_project(allocation)
         if commit:
             allocation.save()
         return allocation

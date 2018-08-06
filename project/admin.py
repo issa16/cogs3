@@ -115,7 +115,7 @@ class SystemAllocationRequestAdmin(SimpleHistoryAdmin):
         for allocation in queryset:
             allocation.status = SystemAllocationRequest.APPROVED
             allocation.save()
-            update_openldap_project(allocation.project)
+            update_openldap_project(allocation)
             rows_updated += 1
         message = self._allocation_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
@@ -127,7 +127,7 @@ class SystemAllocationRequestAdmin(SimpleHistoryAdmin):
         for allocation in queryset:
             allocation.status = SystemAllocationRequest.APPROVED
             allocation.save()
-            update_openldap_project(allocation.project)
+            update_openldap_project(allocation)
             rows_updated += 1
         message = self._allocation_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))

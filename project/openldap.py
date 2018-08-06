@@ -1,19 +1,22 @@
 from openldap.api import project_api
 from openldap.api import project_membership_api
-from project.models import Project
+from project.models import SystemAllocationRequest
 from project.models import ProjectUserMembership
 
 
-def update_openldap_project(project):
+def update_openldap_project(allocation):
     """
     Ensure project status updates are propagated to OpenLDAP.
     """
     deactivate_project_states = [
-        Project.REVOKED,
-        Project.SUSPENDED,
-        Project.CLOSED,
+        SystemAllocationRequest.REVOKED,
+        SystemAllocationRequest.SUSPENDED,
+        SystemAllocationRequest.CLOSED,
     ]
-    if project.status == Project.APPROVED:
+
+    project = allocation.project
+
+    if allocation.status == SystemAllocationRequest.APPROVED:
         if project.gid_number:
             project_api.activate_project.delay(project=project)
         else:
