@@ -194,8 +194,8 @@ class ProjectCreationForm(forms.ModelForm):
 
     def clean(self):
         self.instance.tech_lead = self.user
-        #if self.instance.tech_lead.profile.institution is None:
-        #    raise forms.ValidationError('Only users which belong to an institution can create projects.')
+        if self.instance.tech_lead.profile.institution is None:
+            raise forms.ValidationError('Only users which belong to an institution can create projects.')
 
 
 class SystemAllocationRequestCreationForm(forms.ModelForm):

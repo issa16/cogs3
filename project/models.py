@@ -165,8 +165,8 @@ class Project(models.Model):
             self.tech_lead.groups.add(group)
 
             # Propagate the changes to LDAP
-            #if created:
-            #    project_membership_api.create_project_membership(project_membership=project_membership)
+            if created:
+                project_membership_api.create_project_membership(project_membership=project_membership)
         except Exception:
             logger.exception('Failed assign project owner membership to the project\'s technical lead.')
 
