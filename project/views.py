@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -88,10 +89,9 @@ class SystemAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessage
         return form_class(self.request.user, **self.get_form_kwargs())
 
 
-class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.TemplateView):
+class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, generic.TemplateView):
     http_method_names = ['get','post']
     template_name = 'project/createprojectandallocation.html'
-
     permission_required = 'project.add_project'
     success_message = _('Successfully submitted a project application.')
 
@@ -106,24 +106,25 @@ class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMes
             context['allocation_form'] = kwargs['allocation_form']
         else:
             context['allocation_form'] = SystemAllocationRequestCreationForm(self.request.user)
-
-        # These two fields are unnecessary in the combined view
-        del context['allocation_form'].fields['information']
-        del context['allocation_form'].fields['project']
+            # These two fields are unnecessary in the combined view
+            del context['allocation_form'].fields['information']
+            del context['allocation_form'].fields['project']
 
         return context
 
     def post(self, request):
         project_form = ProjectCreationForm(request.user, data=request.POST)
-        allocation_form = SystemAllocationRequestCreationForm(request.user, include_project=False, data=request.POST)
+        allocation_form = SystemAllocationRequestCreationForm(request.user, include_project=False, data=request.POST, files=request.FILES)
+
         if project_form.is_valid() and allocation_form.is_valid():
             project = project_form.save()
             allocation = allocation_form.save(commit=False)
             allocation.project = project
             allocation.save()
+
+            messages.success(self.request, self.success_message)
+
             return HttpResponseRedirect(reverse('project-application-list'))
-        else:
-            print(allocation_form.errors.as_data())
         
         return self.render_to_response(self.get_context_data(project_form=project_form, allocation_form=allocation_form))
 
@@ -159,7 +160,7 @@ class SystemAllocationRequestDetailView(PermissionAndLoginRequiredMixin, generic
 class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
 
     def user_passes_test(self, request):
-        if Project.objects.filter(id=self.kwargs['pk'], tech_lead=self.request.user).exists():
+        if SystemAllocationRequest.objects.filter(id=self.kwargs['pk'], project__tech_lead=self.request.user).exists():
             return True
         else:
             return self.request.user.is_superuser
@@ -167,8 +168,8 @@ class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
             return HttpResponseRedirect(reverse('project-application-list'))
-        project = Project.objects.get(id=self.kwargs['pk'])
-        filename = os.path.join(settings.MEDIA_ROOT, project.document.name)
+        allocation = SystemAllocationRequest.objects.get(id=self.kwargs['pk'])
+        filename = os.path.join(settings.MEDIA_ROOT, allocation.document.name)
         with open(filename, 'rb') as f:
             data = f.read()
         response = HttpResponse(data, content_type=mimetypes.guess_type(filename)[0])
@@ -295,21 +296,20 @@ class ProjectMembesrshipInviteView(PermissionRequiredMixin, SuccessMessageMixin,
         return data
 
     def get_success_url(self):
-        return reverse_lazy('project-application-detail', args = [self.kwargs['pk']])
+        return reverse_lazy('project-application-detail', args=[self.kwargs['pk']])
 
     def project_passes_test(self, request):
         try:
-            project = Project.objects.filter(
+            return Project.objects.filter(
                 id=self.kwargs['pk'],
                 tech_lead=self.request.user
-            ).first()
-            return project.is_approved()
+            ).exists()
         except Exception:
             return False
 
     def dispatch(self, request, *args, **kwargs):
         if not self.project_passes_test(request):
-            return HttpResponseRedirect(reverse_lazy('project-application-detail', args = [self.kwargs['pk']]))
+            return HttpResponseRedirect(reverse_lazy('project-application-detail', args=[self.kwargs['pk']]))
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):

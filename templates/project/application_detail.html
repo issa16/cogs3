@@ -105,7 +105,7 @@
 								<td> {{allocation.start_date}} </td>
 								<td> {{allocation.get_status_display}} </td>
 								<td>
-									<a href="/en/projects/allocations/{{allocation.id}}"> {% trans "Show details" %} </a>
+									<a href="{% url 'allocation-request-detail' allocation.pk %}"> {% trans "Show details" %} </a>
 								</td>
 							</tr>
 							{% endfor %}

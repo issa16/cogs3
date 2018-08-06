@@ -8,6 +8,7 @@ from django.conf import settings
 from django.urls import reverse
 
 from project.models import Project
+from project.models import SystemAllocationRequest
 from project.models import ProjectUserMembership
 
 
@@ -31,7 +32,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         "id_requirements_software": "none",
         "id_requirements_training": "none",
         "id_requirements_onboarding": "none",
-        "id_allocation_cputime": "200",
+        "id_allocation_cputime": "87695464",
         "id_allocation_memory": "1",
         "id_allocation_storage_home": "200",
         "id_allocation_storage_scratch": "1",
@@ -56,7 +57,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             form_field.pop(missing_field)
             self.fill_form_by_id(form_field)
             self.submit_form(self.default_project_form_fields)
-            input('wait')
             if "This field is required." not in self.selenium.page_source:
                 raise AssertionError()
 
@@ -74,9 +74,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         # Check that the project does not exist yet
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
         assert matching_projects.count() == 0
-
-        self.submit_form(self.default_project_form_fields)
-        input('wait')
 
         # Add a funding source and include it
         self.click_by_id('fundingsources_dropdown')
@@ -128,20 +125,26 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if "Successfully submitted a project application." not in self.selenium.page_source:
             raise AssertionError()
 
-        # Check the project status
-        self.get_url(reverse('project-application-list'))
-        if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
-            raise AssertionError()
-        if 'Awaiting Approval' not in self.selenium.page_source:
-            raise AssertionError()
-
-        # Check that the project was created
+        # Check that a project and an allocation was created
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
         if matching_projects.count() != 1:
             raise AssertionError()
 
-        # Get the project
+        matching_allocations = SystemAllocationRequest.objects.filter(allocation_cputime=87695464)
+        if matching_allocations.count() != 1:
+            raise AssertionError()
+
+        # Get the objects
         project = matching_projects.first()
+        allocation = matching_allocations.first()
+
+        # Check the project status
+        self.get_url(reverse('project-application-list'))
+        self.click_link_by_url(reverse('project-application-detail', kwargs={'pk': project.id}))
+        if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
+            raise AssertionError()
+        if 'Awaiting Approval' not in self.selenium.page_source:
+            raise AssertionError()
 
         # Check that the technical lead is the user
         tech_lead_id = project.tech_lead.id
@@ -149,32 +152,30 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if tech_lead_id != user_id:
             raise AssertionError()
 
-        # Check that the project is not active
-        if project.status != Project.AWAITING_APPROVAL:
+        # Check that the user was added to project_owners
+        if not self.user.groups.filter(name='project_owner').exists():
+            raise AssertionError()
+
+        # Check that the allocation is not active
+        if allocation.status != allocation.AWAITING_APPROVAL:
             raise AssertionError()
 
         # Check that the file was uploaded
         rootpath = os.path.join(os.path.dirname(self.test_file), os.pardir, os.pardir, 'tmp')
-        uploadpath = os.path.join(rootpath, project.document.name)
+        uploadpath = os.path.join(rootpath, allocation.document.name)
         uploadpath = os.path.normpath(uploadpath)
         if not os.path.isfile(uploadpath):
             raise AssertionError()
         if not filecmp.cmp(uploadpath, self.test_file):
             raise AssertionError()
 
-        # Approve the project and set a code
-        project.status = Project.APPROVED
-        project.code = 'code1'
-        project.save()
-
-        # Check that the user was added to project_owners
-        if not self.user.groups.filter(name='project_owner').exists():
-            raise AssertionError()
+        # Approve the allocation
+        allocation.status = allocation.APPROVED
+        allocation.save()
+        # Nothing to check here really
 
         # Try the Project Applications and Project Memberships pages
         self.get_url(reverse('project-application-list'))
-        if 'code1' not in self.selenium.page_source:
-            raise AssertionError()
         if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
             raise AssertionError()
 
@@ -183,8 +184,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         self.get_url(reverse('project-membership-list'))
-        if 'code1' not in self.selenium.page_source:
-            raise AssertionError()
         if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
             raise AssertionError()
         if 'Project Owner' not in self.selenium.page_source:
