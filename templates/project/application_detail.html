@@ -92,7 +92,9 @@
 						</tbody>
 					</table>
 
+					{% if request.user.profile.institution.is_swan %}
 					<h5> {% trans "System allocation requests" %}: </h5>
+					{% endif %}
 					<table class="table table-bordered">
 						<tbody>
 							<tr>
@@ -112,7 +114,9 @@
 						</tbody>
 					</table>
 				</div>
+				{% if request.user.profile.institution.is_swan %}
 				<a class='btn btn-primary' href="{% url 'create-allocation' %}">New Allocation Request</a>
+				{% endif %}
 			</div>
 		</div>
 	</div>
