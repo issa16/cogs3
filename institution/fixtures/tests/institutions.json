@@ -8,6 +8,8 @@
       "created_time": "2018-04-16T12:00:28Z",
       "modified_time": "2018-05-02T10:41:45.591Z",
       "identity_provider": "https://idp.example.ac.uk/shibboleth",
+      "needs_legacy_inst_id": false,
+      "separate_allocation_requests": false,
       "logo_path": "/static/img/example-logo.png"
     }
   }

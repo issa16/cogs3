@@ -179,7 +179,7 @@ class ProjectCreationForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super(ProjectCreationForm, self).__init__(*args, **kwargs)
         self.user = user
-        if self.user.profile.institution is not None and not self.user.profile.institution.is_cardiff:
+        if self.user.profile.institution is not None and not self.user.profile.institution.needs_legacy_inst_id:
             del self.fields['legacy_arcca_id']
 
         self.fields['attributions'] = forms.ModelMultipleChoiceField(

@@ -13,31 +13,19 @@ class InstitutionTests(TestCase):
 
     def _check_institution_system(self, institution):
         inst_name = institution.base_domain.split('.')[0]
-        iss = institution.is_sunbird
-        ics = institution.is_hawk
-        if inst_name in ['swan', 'aber']:
-            self.assertTrue(iss)
-            self.assertFalse(ics)
-        elif inst_name in ['cardiff', 'bangor']:
-            self.assertTrue(ics)
-            self.assertFalse(iss)
+        legacy_id = institution.needs_legacy_inst_id
+        separate_alloc = institution.separate_allocation_requests
+        if inst_name in ['bangor', 'aber']:
+            self.assertFalse(legacy_id)
+            self.assertFalse(separate_alloc)
+        elif inst_name == 'swan':
+            self.assertTrue(separate_alloc)
+            self.assertFalse(legacy_id)
+        elif inst_name == 'cardiff':
+            self.assertTrue(legacy_id)
+            self.assertFalse(separate_alloc)
         else:
             raise ValueError(f'Institution {inst_name} not recognised')
-
-    def test_institutional_predicates(self):
-        """
-        Ensure institutional methods (e.g. is_swan, is_swan_system etc) return correct values
-        """
-        institutions = Institution.objects.all()
-        for institution in institutions:
-            for institution_predicate in institutions:
-                cond = institution.id == institution_predicate.id
-                inst_name = institution_predicate.base_domain.split('.')[0]
-                property_name = f'is_{inst_name}'
-                property_val = getattr(institution, property_name)
-                self.assertEqual(cond, property_val)
-
-            self._check_institution_system(institution)
 
     def test_invalid_institutional_system(self):
         with self.assertRaises(ValueError) as e:

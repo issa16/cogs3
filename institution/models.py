@@ -19,6 +19,8 @@ class Institution(models.Model):
         blank=True,
         verbose_name='Shibboleth Identity Provider',
     )
+    needs_legacy_inst_id = models.BooleanField(default=False)
+    separate_allocation_requests = models.BooleanField(default=False)
     logo_path = models.CharField(max_length=255, blank=True)
 
     @classmethod
@@ -54,30 +56,6 @@ class Institution(models.Model):
 
     def id_str(self):
         return self.name.lower().replace(" ", "-")
-
-    @property
-    def is_cardiff(self):
-        return self.base_domain == 'cardiff.ac.uk'
-
-    @property
-    def is_swan(self):
-        return self.base_domain == 'swan.ac.uk'
-
-    @property
-    def is_bangor(self):
-        return self.base_domain == 'bangor.ac.uk'
-
-    @property
-    def is_aber(self):
-        return self.base_domain == 'aber.ac.uk'
-
-    @property
-    def is_sunbird(self):
-        return self.is_swan or self.is_aber
-
-    @property
-    def is_hawk(self):
-        return self.is_cardiff or self.is_bangor
 
     def __str__(self):
         return _(self.name)
