@@ -32,4 +32,4 @@ class FundingSourceForm(forms.ModelForm):
 class PublicationForm(forms.ModelForm):
     class Meta:
         model = Publication
-        fields = ['title','identifier']
+        fields = ['title', 'url']

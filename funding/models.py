@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.core.validators import URLValidator
 from django.utils.translation import gettext_lazy as _
 from simple_history.models import HistoricalRecords
 
@@ -137,11 +138,13 @@ class FundingSource(Attribution):
 
 class Publication(Attribution):
     '''An individual funding source, such as a grant'''
-    # Cronfa ID
-    identifier = models.CharField(
+    # Cronfa URL for Swansea
+    url_validator = URLValidator(schemes=['http', 'https'])
+    url = models.CharField(
         max_length=128,
         null=True,
-        verbose_name=_('Local Institutional Identifier or DOI'),
+        validators=[url_validator],
+        verbose_name=_('URL of the publication'),
     )
 
     history = HistoricalRecords()
