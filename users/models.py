@@ -142,7 +142,7 @@ class Profile(models.Model):
 
 class ShibbolethProfile(Profile):
     shibboleth_id = models.CharField(
-        max_length=50,
+        max_length=254,
         blank=True,
         help_text='Institutional address',
     )
@@ -214,15 +214,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         'username',
-        max_length=150,
+        max_length=254,
         unique=True,
-        help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.',
+        help_text='Required. 254 characters or fewer. Letters, digits and @/./+/-/_ only.',
         validators=[username_validator],
         error_messages={
             'unique': "A user with that username already exists.",
         },
     )
-    email = models.EmailField(unique=True, null=True)
+    email = models.EmailField(unique=True, null=True, max_length=254)
     is_shibboleth_login_required = models.BooleanField(
         default=True,
         help_text='Designates whether this user is required to login via a shibboleth identity provider.',
