@@ -12,6 +12,7 @@
       "separate_allocation_requests": false,
       "local_repository_name": "arXiv",
       "local_repository_domain": "arxiv.org",
+      "funding_database_name": "",
       "logo_path": "/static/img/example-logo.png"
     }
   }

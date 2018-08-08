@@ -23,6 +23,12 @@ class FundingSourceForm(forms.ModelForm):
                     user.profile.institution.name
                 )
             )
+            if user.profile.institution.funding_database_name != '':
+                self.fields['identifier'].label = _(
+                    '{} identifier'.format(
+                        user.profile.institution.funding_database_name
+                    )
+                )
         # Set the initial email if pi is a user
         self.user_email = user.email
 
