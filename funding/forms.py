@@ -17,6 +17,12 @@ class FundingSourceForm(forms.ModelForm):
             initial['pi_email'] = instance.pi.email
             kwargs['initial'] = initial
         super(FundingSourceForm, self).__init__(*args, **kwargs)
+        if user.profile.institution is not None:
+            self.fields['pi_email'].label = _(
+                '{} Principal Investigator Email address'.format(
+                    user.profile.institution.name
+                )
+            )
         # Set the initial email if pi is a user
         self.user_email = user.email
 
