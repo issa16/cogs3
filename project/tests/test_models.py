@@ -121,7 +121,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             department='School of Chemistry',
             supervisor_name="Joe Bloggs",
             supervisor_position="RSE",
-            supervisor_email="joe.bloggs@swan.ac.uk",
+            supervisor_email="joe.bloggs@swansea.ac.uk",
             tech_lead=tech_lead,
             category=category,
             economic_user=True,

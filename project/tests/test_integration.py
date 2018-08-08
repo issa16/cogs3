@@ -26,7 +26,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         "id_department": "SA2C",
         "id_supervisor_name": "Joe Bloggs",
         "id_supervisor_position": "RSE",
-        "id_supervisor_email": "joe.bloggs@swan.ac.uk",
+        "id_supervisor_email": "joe.bloggs@swansea.ac.uk",
         "id_start_date": "2018-09-17",
         "id_end_date": "2019-09-17",
         "id_requirements_software": "none",
