@@ -21,6 +21,8 @@ class Institution(models.Model):
     )
     needs_legacy_inst_id = models.BooleanField(default=False)
     separate_allocation_requests = models.BooleanField(default=False)
+    local_repository_name = models.CharField(max_length=100, blank=True)
+    local_repository_domain = models.CharField(max_length=100, blank=True)
     logo_path = models.CharField(max_length=255, blank=True)
 
     @classmethod

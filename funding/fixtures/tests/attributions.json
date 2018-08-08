@@ -33,7 +33,8 @@
     "pk": 1,
     "fields": {
       "attribution_ptr": 2,
-      "identifier": "Cronfa ID"
+      "title": "Test Publication 2",
+      "url": "https://cronfa.swansea.ac.uk/publication2"
     }
   }
 ]

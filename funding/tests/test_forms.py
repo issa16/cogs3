@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from funding.forms import FundingSourceForm
+from funding.forms import FundingSourceForm, PublicationForm
 from users.models import CustomUser
 from funding.models import FundingBody
 from institution.models import Institution
@@ -79,3 +79,25 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
             },
         )
         self.assertTrue(form.is_valid())
+
+
+class PublicationFormTests(FundingFormTests, TestCase):
+
+    def test_form_with_invalid_url(self):
+        """
+        The form should raise ValidationError when given a URL not from an institutional repository
+        """
+
+        user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
+        form = PublicationForm(
+            user=user,
+            data={
+                'title': 'Title',
+                'url': 'https://example.net/my-awexome-publication'
+            },
+        )
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['url'],
+            ['URL must contain arxiv.org'],
+        )

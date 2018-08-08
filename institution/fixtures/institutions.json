@@ -9,7 +9,9 @@
       "modified_time": "2018-05-02T10:41:45.591Z",
       "identity_provider": "https://iss-openathensla-runtime.swan.ac.uk/oala/metadata",
       "needs_legacy_inst_id": false,	
-      "separate_allocation_requests": true,	
+      "separate_allocation_requests": true,
+      "local_repository_name": "Cronfa",
+      "local_repository_domain": "cronfa.swansea.ac.uk",
       "logo_path": "/static/img/swansea_logo.png"
     }
   },
@@ -24,6 +26,8 @@
       "identity_provider": "https://idp.bangor.ac.uk/shibboleth",
       "needs_legacy_inst_id": false,	
       "separate_allocation_requests": false,	
+      "local_repository_name": "",
+      "local_repository_domain": "",
       "logo_path": "/static/img/bangor_logo.svg"
     }
   },
@@ -38,6 +42,8 @@
       "identity_provider": "https://idp.cardiff.ac.uk/shibboleth",
       "needs_legacy_inst_id": true,	
       "separate_allocation_requests": false,	
+      "local_repository_name": "",
+      "local_repository_domain": "",
       "logo_path": "/static/img/cardiff_logo.svg"
     }
   },
@@ -52,6 +58,8 @@
       "identity_provider": "https://shibboleth.aber.ac.uk/shibboleth",
       "needs_legacy_inst_id": false,	
       "separate_allocation_requests": false,	
+      "local_repository_name": "",
+      "local_repository_domain": "",
       "logo_path": "/static/img/aberystwyth_logo.png"
     }
   }

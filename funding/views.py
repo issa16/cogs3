@@ -45,9 +45,14 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
 
 class PublicationCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     model = Publication
-    form_class = PublicationForm
     success_url = reverse_lazy('list-attributions')
-    success_message = _("Successfully added funding source.")
+    success_message = _("Successfully added publication.")
+
+    def get_form(self):
+        return PublicationForm(
+            self.request.user,
+            **self.get_form_kwargs()
+        )
 
     def form_valid(self, form):
         publication = form.save(commit=False)
@@ -97,7 +102,6 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
         return obj.child
 
     def get_form(self):
-        ''' Get a form based on the type of the child object '''
         if self.type == 'fundingsource':
             return FundingSourceForm(
                 self.request.user,
@@ -105,6 +109,7 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
             )
         if self.type == 'publication':
             return PublicationForm(
+                self.request.user,
                 **self.get_form_kwargs()
             )
 
