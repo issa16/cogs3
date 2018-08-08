@@ -222,7 +222,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             'unique': "A user with that username already exists.",
         },
     )
-    email = models.EmailField(unique=True, null=True, max_length=254)
+    email = models.EmailField(
+        unique=True,
+        null=True,
+        max_length=254,
+    )
     is_shibboleth_login_required = models.BooleanField(
         default=True,
         help_text='Designates whether this user is required to login via a shibboleth identity provider.',
