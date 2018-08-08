@@ -100,13 +100,15 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
                 'REMOTE_USER': account.get('email'),
             }
             response = self.client.get(
-                reverse('create-publication'),
+                reverse('create-funding-source'),
                 **headers
             )
-            self.assertEqual(response.status_code, account.get('expected_status_code'))
-            # Why is this false?
-            self.assertTrue(isinstance(response.context_data.get('form'), PublicationForm))
-            self.assertTrue(isinstance(response.context_data.get('view'), PublicationCreateView))
+            self.assertEqual(response.status_code,
+                             account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('form'),
+                                       FundingSourceForm))
+            self.assertTrue(isinstance(response.context_data.get('view'),
+                                       FundingSourceCreateView))
 
     def test_view_as_an_unauthorised_user(self):
         """
@@ -144,8 +146,10 @@ class AttributionListViewTests(FundingViewTests, TestCase):
                 reverse('list-attributions'),
                 **headers
             )
-            self.assertEqual(response.status_code, account.get('expected_status_code'))
-            self.assertTrue(isinstance(response.context_data.get('view'), AttributionListView))
+            self.assertEqual(response.status_code,
+                             account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('view'),
+                                       AttributionListView))
 
     def test_view_as_an_unauthorised_user(self):
         """
@@ -182,9 +186,12 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
                 ),
                 **headers
             )
-            self.assertEqual(response.status_code, account.get('expected_status_code'))
-            self.assertTrue(isinstance(response.context_data.get('form'), FundingSourceForm))
-            self.assertTrue(isinstance(response.context_data.get('view'), AttributionUpdateView))
+            self.assertEqual(response.status_code,
+                             account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('form'),
+                                       FundingSourceForm))
+            self.assertTrue(isinstance(response.context_data.get('view'),
+                                       AttributionUpdateView))
 
     def test_publication_view_as_an_authorised_user(self):
         """
@@ -212,9 +219,12 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
                 ),
                 **headers
             )
-            self.assertEqual(response.status_code, account.get('expected_status_code'))
-            self.assertTrue(isinstance(response.context_data.get('form'), PublicationForm))
-            self.assertTrue(isinstance(response.context_data.get('view'), AttributionUpdateView))
+            self.assertEqual(response.status_code,
+                             account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('form'),
+                                       PublicationForm))
+            self.assertTrue(isinstance(response.context_data.get('view'),
+                                       AttributionUpdateView))
 
     def test_view_as_an_unauthorised_user(self):
         """
