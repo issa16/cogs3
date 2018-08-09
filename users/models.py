@@ -187,6 +187,26 @@ class CustomUserManager(BaseUserManager):
         user.save()
         return user
 
+    def create_pending_shibbolethuser(self, email, password, **extra_fields):
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('is_shibboleth_login_required', True)
+        extra_fields.setdefault('username', email)
+        if extra_fields.get('is_staff') is not False:
+            raise ValueError('Pending ShibbolethUser must have is_staff=False.')
+        if extra_fields.get('is_superuser') is not False:
+            raise ValueError(
+                'Pending ShibbolethUser must have is_superuser=False.'
+            )
+        if extra_fields.get('is_shibboleth_login_required') is not True:
+            raise ValueError(
+                'Pending ShibbolethUser must have '
+                'is_shibboleth_login_required=True.'
+            )
+        return self._create_user(email, password, **extra_fields)
+
+
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)

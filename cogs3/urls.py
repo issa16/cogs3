@@ -10,7 +10,7 @@ from django.views.generic.base import TemplateView
 from institution.models import Institution
 from users.openldap import reset_openldap_password
 from users.views import LogoutView
-from users.views import RegisterView
+from users.views import RegisterView, CompleteRegistrationView
 from users.views import TermsOfService
 
 # Admin config
@@ -65,6 +65,11 @@ urlpatterns = i18n_patterns(
         'accounts/register/',
         RegisterView.as_view(),
         name='register',
+    ),
+    path(
+        'accounts/complete-registration/',
+        CompleteRegistrationView.as_view(),
+        name='complete-registration',
     ),
     path(
         'funding/',

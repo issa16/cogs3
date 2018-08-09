@@ -22,9 +22,13 @@ class TermsOfServiceMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        if not request.path.startswith(reverse('terms-of-service')):
-            if request.user.is_authenticated:
-                if not request.user.accepted_terms_and_conditions:
+        if request.user.is_authenticated:
+            if (request.user.first_name == '' and request.user.last_name == ''
+                and request.session.get('shib', None)):
+                if not request.path.startswith(reverse('complete-registration')):
+                    return HttpResponseRedirect(reverse('complete-registration'))
+            elif not request.user.accepted_terms_and_conditions:
+                if not request.path.startswith(reverse('terms-of-service')):
                     return HttpResponseRedirect(reverse('terms-of-service'))
         return response
 

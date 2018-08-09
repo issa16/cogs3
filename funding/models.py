@@ -130,8 +130,12 @@ class FundingSource(Attribution):
             if matching_users.exists():
                 self.pi = matching_users.get()
                 self.pi_email = None
-            elif self.pi:
-                self.pi = None
+            else:
+                self.pi = CustomUser.objects.create_pending_shibbolethuser(
+                    email=self.pi_email,
+                    password=CustomUser.objects.make_random_password(length=30)
+                )
+                self.pi_email = None
 
         super().save(*args, **kwargs)
 
