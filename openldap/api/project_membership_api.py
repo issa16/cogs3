@@ -5,11 +5,11 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django_rq import job
 
+from common.util import email_user
 from openldap.schemas.project_membership.create_project_membership import create_project_membership_json
 from openldap.schemas.project_membership.delete_project_membership import delete_project_membership_json
 from openldap.schemas.project_membership.list_project_memberships import list_project_memberships_json
 from openldap.util import decode_response
-from openldap.util import email_user
 from openldap.util import raise_for_data_error
 
 

@@ -22,6 +22,7 @@ class Institution(models.Model):
     needs_legacy_inst_id = models.BooleanField(default=False)
     separate_allocation_requests = models.BooleanField(default=False)
     allows_rse_requests = models.BooleanField(default=False)
+    rse_notify_email = models.EmailField(null=True)
     local_repository_name = models.CharField(max_length=100, blank=True)
     local_repository_domain = models.CharField(max_length=100, blank=True)
     funding_database_name = models.CharField(max_length=100, blank=True)

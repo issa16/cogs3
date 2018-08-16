@@ -2,6 +2,7 @@ from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
+from common.util import email_user
 from project.models import Project, SystemAllocationRequest, RSEAllocation
 from project.models import ProjectUserMembership
 from funding.models import Attribution
@@ -255,6 +256,28 @@ class RSEAllocationRequestCreationForm(ProjectAssociatedForm):
             'confidentiality',
             'project'
         ]
+
+    def save(self, *args, **kwargs):
+        result = super().save(*args, **kwargs)
+        if self.user.profile.institution.rse_notify_email:
+            user_name = ' '.join((self.user.first_name, self.user.last_name))
+            subject = _(
+                'New RSE time request from {}'.format(user_name)
+            )
+            context = {
+                'user': user_name,
+                'to': self.user.profile.institution.rse_notify_email,
+                'title': self.cleaned_data['title'],
+                'duration': self.cleaned_data['duration'],
+                'goals': self.cleaned_data['goals'],
+                'software': self.cleaned_data['software'],
+                'outcomes': self.cleaned_data['outcomes'],
+                'confidentiality': self.cleaned_data['confidentiality'],
+            }
+            text_template_path = 'notifications/project/rse_request.txt'
+            html_template_path = 'notifications/project/rse_request.html'
+            email_user(subject, context, text_template_path, html_template_path)
+        return result
 
 
 class ProjectUserMembershipCreationForm(forms.Form):

@@ -11,6 +11,7 @@
       "needs_legacy_inst_id": false,
       "separate_allocation_requests": false,
       "allows_rse_requests": true,
+      "rse_notify_email": "rse_team@example.ac.uk",
       "local_repository_name": "arXiv",
       "local_repository_domain": "arxiv.org",
       "funding_database_name": "",
