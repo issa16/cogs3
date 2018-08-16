@@ -46,7 +46,6 @@ urlpatterns = [
     path(
         'applications/<int:project>/rse-time-application/',
         views.RSEAllocationCreateView.as_view(),
-        {'include_project': False},
         name='request-project-rse-time',
     ),
     path(
