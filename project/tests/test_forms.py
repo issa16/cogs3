@@ -8,6 +8,7 @@ from institution.models import Institution
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.forms import ProjectUserInviteForm
+from project.forms import RSEAllocationRequestCreationForm
 from project.forms import SystemAllocationRequestCreationForm
 from project.models import Project
 from project.models import ProjectUserMembership
@@ -416,3 +417,39 @@ class SystemAllocationRequestCreationFormTests(ProjectFormTests, TestCase):
             },
         )
         self.assertFalse(form.is_valid())
+
+
+class RSEAllocationRequestCreationFormTests(ProjectFormTests, TestCase):
+    default_data = {
+        'title': 'Project to implement a management system',
+        'duration': 1,
+        'information': 'Supercomputing Wales is a programme',
+        'goals': 'Allow users to sign up for the service.',
+        'software': 'A Django-based website.',
+        'outcomes': 'We get more users.',
+        'confidentiality': 'Secret keys must be kept private.',
+        'project': 1
+    }
+    
+    def test_valid_form(self):
+        form = RSEAllocationRequestCreationForm(
+            CustomUser.objects.get(email='shibboleth.user@example.ac.uk'),
+            data=self.default_data
+        )
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_durations(self):
+        for duration in (0, -0.5, 0.00001, float('NaN')):
+            form = RSEAllocationRequestCreationForm(
+                CustomUser.objects.get(email='shibboleth.user@example.ac.uk'),
+                data={**self.default_data, 'duration': duration}
+            )
+            self.assertFalse(form.is_valid())
+
+    def test_unauthorised(self):
+        form = RSEAllocationRequestCreationForm(
+            self.project_applicant,
+            data=self.default_data
+        )
+        self.assertFalse(form.is_valid())
+        
