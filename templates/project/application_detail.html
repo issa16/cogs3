@@ -113,9 +113,35 @@
 							{% endfor %}
 						</tbody>
 					</table>
+					{% if request.user.profile.institution.allows_rse_requests %}
+					<h5> {% trans "RSE time allocation requests" %}: </h5>
+					<table class="table table-bordered">
+						<tbody>
+							<tr>
+								<th>{% trans "Date requested" %}</th>
+								<th>{% trans "Title" %}</th>
+								<th>{% trans "Request Status" %}</th>
+								<th></th>
+							</tr>
+							{% for allocation in project.get_rse_requests %}
+							<tr>
+								<td> {{allocation.created_time|date}} </td>
+								<td> {{allocation.title}} </td>
+								<td> {{allocation.get_status_display}} </td>
+								<td>
+									<a href="{% url 'rse-allocation-detail' allocation.pk %}"> {% trans "Show details" %} </a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					{% endif %}
 				</div>
 				{% if request.user.profile.institution.separate_allocation_requests %}
-				<a class='btn btn-primary' href="{% url 'create-allocation' %}">New Allocation Request</a>
+				<a class='btn btn-primary' href="{% url 'create-allocation' %}">{% trans "New Allocation Request" %}</a>
+				{% endif %}
+				{% if request.user.profile.institution.allows_rse_requests %}
+				<a class='btn btn-primary' href="{% url 'request-project-rse-time' project.pk %}">{% trans "New RSE time Request" %}</a>
 				{% endif %}
 			</div>
 		</div>

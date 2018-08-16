@@ -19,6 +19,11 @@ urlpatterns = [
         name='create-project-and-allocation',
     ),
     path(
+        'rse-time/request/',
+        views.RSEAllocationCreateView.as_view(),
+        name='request-rse-time'
+    ),
+    path(
         'join/',
         views.ProjectUserMembershipFormView.as_view(),
         name='project-membership-create',
@@ -29,14 +34,30 @@ urlpatterns = [
         name='project-application-list',
     ),
     path(
+        'rse-time/',
+        views.ProjectListView.as_view(),
+        name='rse-allocation-list',
+    ),
+    path(
         'applications/<int:pk>/',
         views.ProjectDetailView.as_view(),
         name='project-application-detail',
     ),
     path(
+        'applications/<int:project>/rse-time-application/',
+        views.RSEAllocationCreateView.as_view(),
+        {'include_project': False},
+        name='request-project-rse-time',
+    ),
+    path(
         'allocations/<int:pk>/',
         views.SystemAllocationRequestDetailView.as_view(),
         name='allocation-request-detail',
+    ),
+    path(
+        'rse-time/<int:pk>/',
+        views.RSEAllocationRequestDetailView.as_view(),
+        name='rse-allocation-detail',
     ),
     path(
         'applications/<int:pk>/invite-user',

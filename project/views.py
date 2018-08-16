@@ -22,10 +22,12 @@ from users.models import CustomUser
 
 from project.forms import ProjectCreationForm
 from project.forms import SystemAllocationRequestCreationForm
+from project.forms import RSEAllocationRequestCreationForm
 from project.forms import ProjectUserInviteForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
 from project.models import SystemAllocationRequest
+from project.models import RSEAllocation
 from project.models import ProjectUserMembership
 from project.openldap import update_openldap_project_membership
 from funding.models import Attribution
@@ -57,36 +59,43 @@ class PermissionAndLoginRequiredMixin(PermissionRequiredMixin):
         return super(PermissionAndLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
-class ProjectCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
+class AllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
+    def get_form(self, form_class=None):
+        """
+        Return an instance of the form to be used in this view.
+        """
+        if form_class is None:
+            form_class = self.get_form_class()
+        return form_class(self.request.user, **self.get_form_kwargs())
+
+    
+class ProjectCreateView(AllocationCreateView):
     form_class = ProjectCreationForm
     success_url = reverse_lazy('project-application-list')
     success_message = _('Successfully submitted a project application.')
     template_name = 'project/create.html'
     permission_required = 'project.add_project'
 
-    def get_form(self, form_class=None):
-        """
-        Return an instance of the form to be used in this view.
-        """
-        if form_class is None:
-            form_class = self.get_form_class()
-        return form_class(self.request.user, **self.get_form_kwargs())
 
-
-class SystemAllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
+class SystemAllocationCreateView(AllocationCreateView):
     form_class = SystemAllocationRequestCreationForm
     success_url = reverse_lazy('project-application-list')
     success_message = _('Successfully submitted a system allocation application.')
     template_name = 'project/createallocation.html'
     permission_required = 'project.add_project'
 
-    def get_form(self, form_class=None):
-        """
-        Return an instance of the form to be used in this view.
-        """
-        if form_class is None:
-            form_class = self.get_form_class()
-        return form_class(self.request.user, **self.get_form_kwargs())
+
+class RSEAllocationCreateView(AllocationCreateView):
+    form_class = RSEAllocationRequestCreationForm
+    success_url = reverse_lazy('rse-allocation-list')
+    success_message = _('Successfully submitted an RSE time allocation application.')
+    template_name = 'project/rse_time.html'
+    permission_required = 'project.add_project'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['project'] = self.kwargs.get('project', None)
+        return kwargs
 
 
 class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, generic.TemplateView):
@@ -157,6 +166,13 @@ class SystemAllocationRequestDetailView(PermissionAndLoginRequiredMixin, generic
     permission_required = 'project.add_project'
 
 
+class RSEAllocationRequestDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):
+    context_object_name = 'allocation'
+    model = RSEAllocation
+    template_name = 'project/rse_detail.html'
+    permission_required = 'project.add_project'
+
+    
 class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
 
     def user_passes_test(self, request):

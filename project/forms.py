@@ -2,7 +2,7 @@ from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from project.models import Project, SystemAllocationRequest
+from project.models import Project, SystemAllocationRequest, RSEAllocation
 from project.models import ProjectUserMembership
 from funding.models import Attribution
 from project.openldap import update_openldap_project
@@ -197,7 +197,27 @@ class ProjectCreationForm(forms.ModelForm):
             raise forms.ValidationError('Only users which belong to an institution can create projects.')
 
 
-class SystemAllocationRequestCreationForm(forms.ModelForm):
+class ProjectAssociatedForm(forms.ModelForm):
+
+    def __init__(self, user, include_project=True, project=None,
+                 *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        if project:
+            self.fields['project'].initial = project
+            self.fields['project'].widget = forms.HiddenInput()
+        elif include_project:
+            self.fields['project'] = forms.ModelChoiceField(queryset=Project.objects.filter(tech_lead=user))
+        else:
+            del self.fields['project']
+
+    def clean_project(self):
+        if self.cleaned_data['project'].tech_lead != self.user:
+            raise forms.ValidationError('Selected project not found.')
+        return self.cleaned_data['project']
+
+    
+class SystemAllocationRequestCreationForm(ProjectAssociatedForm):
 
     class Meta:
         model = SystemAllocationRequest
@@ -220,18 +240,21 @@ class SystemAllocationRequestCreationForm(forms.ModelForm):
             'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
         }
 
-    def __init__(self, user, include_project=True, *args, **kwargs):
-        super(SystemAllocationRequestCreationForm, self).__init__(*args, **kwargs)
-        self.user = user
-        if include_project:
-            self.fields['project'] = forms.ModelChoiceField(queryset=Project.objects.filter(tech_lead=user))
-        else:
-            del self.fields['project']
 
-    def clean_project(self):
-        if self.cleaned_data['project'].tech_lead != self.user:
-            raise forms.ValidationError('Selected project not found.')
-        return self.cleaned_data['project']
+
+class RSEAllocationRequestCreationForm(ProjectAssociatedForm):
+
+    class Meta:
+        model = RSEAllocation
+        fields = [
+            'title',
+            'duration',
+            'goals',
+            'software',
+            'outcomes',
+            'confidentiality',
+            'project'
+        ]
 
 
 class ProjectUserMembershipCreationForm(forms.Form):

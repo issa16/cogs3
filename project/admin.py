@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from project.forms import ProjectAdminForm, SystemAllocationRequestAdminForm
 from project.forms import ProjectUserMembershipAdminForm
-from project.models import Project, SystemAllocationRequest
+from project.models import Project, SystemAllocationRequest, RSEAllocation
 from project.models import ProjectCategory
 from project.models import ProjectSystemAllocation
 from project.models import ProjectUserMembership
@@ -23,6 +23,12 @@ class ProjectSystemAllocationAdmin(SimpleHistoryAdmin):
         'system',
     )
 
+@admin.register(RSEAllocation)
+class RSEAllocationAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'project',
+        'title',
+    )
 
 @admin.register(ProjectUserMembership)
 class ProjectUserMembershipAdmin(SimpleHistoryAdmin):

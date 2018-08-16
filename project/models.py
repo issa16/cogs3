@@ -4,7 +4,7 @@ import logging
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext_lazy
 from simple_history.models import HistoricalRecords
 
 from openldap.api import project_membership_api
@@ -123,6 +123,7 @@ class Project(models.Model):
         through='ProjectSystemAllocation',
         verbose_name=_('Allocation systems'),
     )
+    
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='ProjectUserMembership',
@@ -148,6 +149,9 @@ class Project(models.Model):
 
     def get_allocation_requests(self):
         return SystemAllocationRequest.objects.filter(project=self.id).order_by('-start_date')
+
+    def get_rse_requests(self):
+        return RSEAllocation.objects.filter(project=self.id).order_by('-created_time')
 
     # objects = ProjectManager()
 
@@ -392,6 +396,115 @@ class ProjectSystemAllocation(models.Model):
         }
         return _('{project} on {system} from {date_allocated} to {date_unallocated}').format(**data)
 
+
+class RSEAllocation(models.Model):
+    class meta:
+        verbose_name_plural = _('Project RSE Allocations')
+
+    title = models.CharField(
+        max_length=256,
+        verbose_name=_('Subproject title'),
+        help_text=_(
+            "A one-sentence summary of the work to be done by the RSE team."
+        )
+    )
+    software = models.TextField(
+        max_length=2000,
+        verbose_name=_('Software description'),
+        help_text=_(
+            "The software currently in use to deliver the research outcomes. "
+            "Questions to consider: Is it commercial, open-source, or in-house "
+            "code? What language is it written in? What libraries does it "
+            "depend on? Is it parallelised?"
+        )
+    )
+    duration = models.DecimalField(
+        decimal_places=1,
+        max_digits=5,
+        verbose_name=_('Estimated duration (in weeks)')
+    )
+    goals = models.TextField(
+        max_length=5000,
+        verbose_name='Project goals',
+        help_text=_(
+            "Describe in as much detail as possible what you would like the "
+            "RSE team to achieve. What steps are necessary to achieve this?"
+        )
+    )
+    outcomes = models.TextField(
+        max_length=2000,
+        verbose_name='Project outcomes',
+        help_text=_(
+            "What effect will the completion of this work have on your "
+            "research, e.g. in terms of publications or grants enabled? "
+        )
+    )
+    confidentiality = models.TextField(
+        max_length=1000,
+        blank=True,
+        verbose_name=_('Confidentiality constraints'),
+        help_text=_(
+            "Is the research or code restricted from being published openly "
+            "and presented at conferences and other events related to "
+            "research software? If so, please describe the restrictions."
+        )
+    )
+
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+    )
+
+    AWAITING_APPROVAL = 0
+    APPROVED = 1
+    DECLINED = 2
+    IN_PROGRESS = 3
+    COMPLETED = 4
+    CLOSED = 5
+    STATUS_CHOICES = (
+        (AWAITING_APPROVAL, _('Awaiting Approval')),
+        (APPROVED, _('Approved; awaiting RSE time')),
+        (DECLINED, _('Declined')),
+        (IN_PROGRESS, _('In progress')),
+        (COMPLETED, _('Completed')),
+        (CLOSED, _('Closed')),
+    )
+    status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_APPROVAL,
+        verbose_name=_('Current Status'),
+    )
+    previous_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_APPROVAL,
+        verbose_name=_('Previous Status'),
+    )
+    reason_decision = models.TextField(
+        max_length=256,
+        blank=True,
+        verbose_name=_('Reason for the RSE allocation status decision:'),
+    )
+    notes = models.TextField(
+        max_length=512,
+        blank=True,
+        help_text=_('Internal notes'),
+        verbose_name=_('Notes'),
+    )
+    
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+    start_date = models.DateField(null=True)
+    completed_date = models.DateField(null=True)
+
+    history = HistoricalRecords()
+
+    def __str__(self):
+        #import pdb; pdb.set_trace()
+        data = {
+            'title': self.title,
+            'duration': self.duration
+        }
+        return _("Project to '{title}' in {duration} weeks").format(**data)
 
 class ProjectUserMembershipManager(models.Manager):
 
