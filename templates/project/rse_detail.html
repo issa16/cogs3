@@ -29,7 +29,7 @@
 							</tr>
 							<tr>
 								<th scope="row">{% trans "Estimated duration" %}</th>
-								<td>{% blocktrans with duration=allocation.duration %}{{duration}} weeks{% endblocktrans %}</td>
+								<td>{% blocktrans count duration=allocation.duration %}1 week{% plural %}{{duration}} weeks{% endblocktrans %}</td>
 							</tr>
 							<tr>
 								<th scope="row">{% trans "Status" %}</th>
