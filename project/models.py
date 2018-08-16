@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _, ngettext_lazy
+from django.core.validators import MinValueValidator
 from simple_history.models import HistoricalRecords
 
 from openldap.api import project_membership_api
@@ -421,7 +422,11 @@ class RSEAllocation(models.Model):
     duration = models.DecimalField(
         decimal_places=1,
         max_digits=5,
-        verbose_name=_('Estimated duration (in weeks)')
+        verbose_name=_('Estimated duration (in weeks)'),
+        validators=[MinValueValidator(
+            0.01,
+            "Estimated duration must be a positive number of weeks."
+        )]
     )
     goals = models.TextField(
         max_length=5000,
