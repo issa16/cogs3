@@ -27,7 +27,7 @@
 			<div class="col">
 				<div class="mb-2">
 					<div class="dropdown">
-						<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">Show
+						<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">{% trans "Show" %}
 			  		<span class="caret"></span></button>
 			  		<div class="dropdown-menu">
 			    		<a href="{% url 'list-attributions' %}" class="list-group-item">{% trans "All" %}	</a>
@@ -62,7 +62,7 @@
 			<div class="col">
 				<div class="mb-2">
 					<div class="dropdown">
-						<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" id="add_attribution_dropdown">Add
+						<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" id="add_attribution_dropdown">{% trans "Add" %}
 			  		<span class="caret"></span></button>
 			  		<div class="dropdown-menu">
 			    		<a href="{% url 'create-funding-source' %}" class="list-group-item">{% trans "Funding Source" %}	</a>

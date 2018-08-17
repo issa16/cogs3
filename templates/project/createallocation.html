@@ -3,18 +3,18 @@
 {% load i18n %}
 {% load static %}
 {% load widget_tweaks %}
-{% block title %}Create new project{% endblock %}
+{% block title %}{% trans "Create new project" %}{% endblock %}
 {% block content %}
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>Allocation Request</h4>
+					<h4>{% trans "Allocation Request" %}</h4>
 				</div>
 				<form method="post" enctype="multipart/form-data" novalidate>
 					{% csrf_token %}
 					{% include 'includes/generic_form.html' with form=form %}
-					<button type="submit" class="btn btn-primary">Submit</button>
+					<button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
 				</form>
 			</div>
 		</div>

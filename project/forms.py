@@ -94,7 +94,10 @@ class ProjectAdminForm(forms.ModelForm):
 
 class SystemAllocationRequestAdminForm(forms.ModelForm):
 
-    document_download = forms.CharField(label='Download Supporting Document', required=False)
+    document_download = forms.CharField(
+        label=_('Download Supporting Document'),
+        required=False
+    )
 
     class Meta:
         model = SystemAllocationRequest
@@ -195,7 +198,9 @@ class ProjectCreationForm(forms.ModelForm):
     def clean(self):
         self.instance.tech_lead = self.user
         if self.instance.tech_lead.profile.institution is None:
-            raise forms.ValidationError('Only users which belong to an institution can create projects.')
+            raise forms.ValidationError(_(
+                'Only users which belong to an institution can create projects.'
+            ))
 
 
 class ProjectAssociatedForm(forms.ModelForm):
@@ -214,7 +219,7 @@ class ProjectAssociatedForm(forms.ModelForm):
 
     def clean_project(self):
         if self.cleaned_data['project'].tech_lead != self.user:
-            raise forms.ValidationError('Selected project not found.')
+            raise forms.ValidationError(_('Selected project not found.'))
         return self.cleaned_data['project']
 
 

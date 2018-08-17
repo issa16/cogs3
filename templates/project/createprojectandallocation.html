@@ -3,22 +3,22 @@
 {% load i18n %}
 {% load static %}
 {% load widget_tweaks %}
-{% block title %}Create new project{% endblock %}
+{% block title %}{% trans "Create new project" %}{% endblock %}
 {% block content %}
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>Project Application</h4>
+					<h4>{% trans "Project Application" %}</h4>
 				</div>
 				<form method="post" enctype="multipart/form-data" novalidate>
 					{% csrf_token %}
-					<h4> Project Details </h4>
+					<h4>{% trans "Project Details" %}</h4>
 					{% include 'includes/generic_form.html' with form=project_form %}
 					<hr>
-					<h4> Allocation Details </h4>
+					<h4>{% trans "Allocation Details" %}</h4>
 					{% include 'includes/generic_form.html' with form=allocation_form %}
-					<button type="submit" class="btn btn-primary">Submit</button>
+					<button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
 				</form>
 			</div>
 		</div>

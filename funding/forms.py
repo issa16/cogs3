@@ -38,7 +38,9 @@ class FundingSourceForm(forms.ModelForm):
         domain = email.split('@')[1]
         domains = list(Institution.objects.values_list('base_domain',flat=True))
         if domain not in domains:
-            raise forms.ValidationError('Needs to be a valid institutional email address.')
+            raise forms.ValidationError(_(
+                'Needs to be a valid institutional email address.'
+            ))
         return email
 
 
@@ -63,7 +65,7 @@ class PublicationForm(forms.ModelForm):
     def clean_url(self):
         url = self.cleaned_data['url']
         if self.local_repository_domain not in url:
-            raise forms.ValidationError('URL must contain {}'.format(
-                self.local_repository_domain)
+            raise forms.ValidationError(_('URL must contain {domain}').format(
+                domain=self.local_repository_domain)
             )
         return url
