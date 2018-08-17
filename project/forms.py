@@ -217,6 +217,25 @@ class ProjectAssociatedForm(forms.ModelForm):
             raise forms.ValidationError('Selected project not found.')
         return self.cleaned_data['project']
 
+
+class ProjectAddAttributionForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = ['attributions']
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        self.fields['attributions'] = forms.ModelMultipleChoiceField(
+            label="Add Attributions",
+            widget=SelectMultipleTickbox(),
+            queryset=Attribution.objects.filter(
+                created_by=self.user
+            ),
+            required=False,
+        )
+
     
 class SystemAllocationRequestCreationForm(ProjectAssociatedForm):
 

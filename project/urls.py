@@ -44,6 +44,11 @@ urlpatterns = [
         name='project-application-detail',
     ),
     path(
+        'applications/<int:pk>/attributions/',
+        views.ProjectAddAttributionView.as_view(),
+        name='project-add-attributions',
+    ),
+    path(
         'applications/<int:project>/rse-time-application/',
         views.RSEAllocationCreateView.as_view(),
         name='request-project-rse-time',

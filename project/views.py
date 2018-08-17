@@ -21,6 +21,7 @@ from django.views.generic.edit import FormView
 from users.models import CustomUser
 
 from project.forms import ProjectCreationForm
+from project.forms import ProjectAddAttributionForm
 from project.forms import SystemAllocationRequestCreationForm
 from project.forms import RSEAllocationRequestCreationForm
 from project.forms import ProjectUserInviteForm
@@ -75,6 +76,25 @@ class ProjectCreateView(AllocationCreateView):
     success_message = _('Successfully submitted a project application.')
     template_name = 'project/create.html'
     permission_required = 'project.add_project'
+
+
+class ProjectAddAttributionView(PermissionAndLoginRequiredMixin, generic.UpdateView):
+    form_class = ProjectAddAttributionForm
+    context_object_name = 'project'
+    model = Project
+    template_name = 'project/add_attributions.html'
+    permission_required = 'project.add_project'
+
+    def get_form(self, form_class=None):
+        """
+        Return an instance of the form to be used in this view.
+        """
+        if form_class is None:
+            form_class = self.get_form_class()
+        return form_class(self.request.user, **self.get_form_kwargs())
+
+    def get_success_url(self):
+        return reverse_lazy('project-application-detail', args=[self.kwargs['pk']])
 
 
 class SystemAllocationCreateView(AllocationCreateView):

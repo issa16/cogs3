@@ -9,10 +9,11 @@
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>{% trans "Project Application" %}</h4>
 					{% if not project.is_awaiting_approval %}
+					<h4>{% trans "Project" %}</h4>
 						<a class="btn btn-primary" href="{% url 'project-membership-invite' project.pk %}" role="button">{% trans "Invite User" %}</a>
 					{% else %}
+					<h4>{% trans "Project Application" %}</h4>
 						<button class="btn btn-gray" data-toggle="tooltip" title="Available after project is approved">{% trans "Invite User" %}</button>
 					{% endif %}
 				</div>
@@ -75,19 +76,26 @@
 							<tr>
 								<th scope="row">{% trans "Attributions" %}</th>
 								<td>
-									{% trans "Funding Sources" %}
-									{% for source in project.attributions.all %}
-									  {% if source.is_fundingsource %}
-										<li>{{source.title}}</li>
-										{% endif %}
-									{% endfor %}
-								  </br>
-									{% trans "Publications" %}
-									{% for source in project.attributions.all %}
-									  {% if source.is_publication %}
-										<li>{{source.title}}</li>
-										{% endif %}
-									{% endfor %}</td>
+									{% if project.attributions.all %}
+										{% trans "Funding Sources" %}
+										{% for source in project.attributions.get_fundingsources %}
+											<li>{{source.title}}</li>
+										{% empty %}
+											<li>{% trans "None yet" %}</li>
+										{% endfor %}
+										<br />
+										{% trans "Publications" %}
+										{% for source in project.attributions.get_publications %}
+											<li>{{source.title}}</li>
+										{% empty %}
+											<li>{% trans "None yet" %}</li>
+										{% endfor %}
+									{% else %}
+										{% trans "None yet" %}
+									{% endif %}
+									<br />
+									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Add attributions" %}</a>
+								</td>
 							</tr>
 						</tbody>
 					</table>

@@ -30,8 +30,22 @@ class FundingBody(models.Model):
         ordering = ('name', )
 
 
+class AttributionManager(models.Manager):
+    def get_fundingsources(self):
+        return [attribution
+                for attribution in self.all()
+                if attribution.is_fundingsource]
+
+    def get_publications(self):
+        return [attribution
+                for attribution in self.all()
+                if attribution.is_publication]
+
+
 class Attribution(models.Model):
     ''' An attribution that can be added to a project '''
+    objects = AttributionManager()
+
     title = models.CharField(max_length=128)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
