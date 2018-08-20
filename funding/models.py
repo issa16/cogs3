@@ -131,6 +131,9 @@ class FundingSource(Attribution):
         null=True,
         verbose_name=_('PI'),
     )
+    amount = models.PositiveIntegerField(
+        verbose_name=_('Grant attributable to Supercomputing Wales (in £)'),
+    )
 
     history = HistoricalRecords()
 

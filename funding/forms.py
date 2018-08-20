@@ -8,7 +8,7 @@ from institution.models import Institution
 class FundingSourceForm(forms.ModelForm):
     class Meta:
         model = FundingSource
-        fields = ['title', 'identifier', 'funding_body', 'pi_email']
+        fields = ['title', 'identifier', 'amount', 'funding_body', 'pi_email']
 
     def __init__(self, user, *args, **kwargs):
         instance = kwargs.get('instance', {})
