@@ -77,7 +77,7 @@
 								<th scope="row">{% trans "Attributions" %}</th>
 								<td>
 									{% if project.attributions.all %}
-										{% trans "Funding Sources" %}
+										{% trans "Funding Sources and Grants" %}
 										{% for source in project.attributions.get_fundingsources %}
 											<li>{{source.title}}</li>
 										{% empty %}
