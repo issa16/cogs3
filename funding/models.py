@@ -69,7 +69,7 @@ class Attribution(models.Model):
         try:
             self.publication
             return True
-        except self._meta.model.fundingsource.RelatedObjectDoesNotExist:
+        except self._meta.model.publication.RelatedObjectDoesNotExist:
             return False
 
     @property
