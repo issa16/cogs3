@@ -43,10 +43,6 @@
 								<th scope="row">{% trans "Description" %}</th>
 								<td>{{project.description}}</td>
 							</tr>
-							<tr>
-								<th scope="row">{% trans "Status" %}</th>
-								<td>{{project.get_status_display}}</td>
-							</tr>
 							{% if project.legacy_hpcw_id %}
 								<tr>
 									<th scope="row">{% trans "Legacy HPC Wales ID" %}</th>
