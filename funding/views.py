@@ -36,10 +36,10 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
             return HttpResponse('''
                 Closing popup
                 <script>
-                opener.updateField(window);
+                opener.updateField({new_id});
                 window.close();
                 </script>
-            ''')
+            '''.format(new_id=fundingsource.id))
         return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
 
@@ -62,10 +62,10 @@ class PublicationCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.Cre
             return HttpResponse('''
                 Closing popup
                 <script>
-                opener.updateField(window);
+                opener.updateField({new_id});
                 window.close();
                 </script>
-            ''')
+            '''.format(new_id=publication.id))
         return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
 

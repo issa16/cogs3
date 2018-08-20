@@ -187,7 +187,7 @@ class ProjectCreationForm(forms.ModelForm):
             del self.fields['legacy_arcca_id']
 
         self.fields['attributions'] = forms.ModelMultipleChoiceField(
-            label="Add Attributions",
+            label='',
             widget=SelectMultipleTickbox(),
             queryset=Attribution.objects.filter(
                 created_by=self.user
@@ -233,7 +233,7 @@ class ProjectAddAttributionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.user = user
         self.fields['attributions'] = forms.ModelMultipleChoiceField(
-            label="Add Attributions",
+            label='',
             widget=SelectMultipleTickbox(),
             queryset=Attribution.objects.filter(
                 created_by=self.user

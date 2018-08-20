@@ -5,37 +5,38 @@
   {% for option in options %}
   <div class="checkbox">
     <label for="{{ option.attrs.id }}" >
-      <input type="{{ option.type }}" name="{{ option.name }}" value="{{ option.value|stringformat:'s' }}">
+      <input type="{{ option.type }}" name="{{ option.name }}" value="{{ option.value|stringformat:'s' }}" {% if option.attrs.checked %}checked{% endif %}>
       {{ option.label }}
     </label>
   </div>
   {% endfor %}
 {% endfor %}
 </div>
-<span class="dropdown">
-  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" id='fundingsources_dropdown'>Funding Sources
-  <span class="caret"></span></button>
-  <div class="dropdown-menu">
-    <div id='fundingsources'> </div>
-    <div class="dropdown-divider"></div>
-    <a href="{% url 'create-funding-source' %}?_popup=1" onclick='return showPopup(this);' class="dropdown-item" >{% trans "Add New" %}	</a>
-  </div>
-</span>
-<span class="dropdown">
-  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" id='publication_dropdown'>Publications
-  <span class="caret"></span></button>
-  <div class="dropdown-menu">
-    <div id='publications' class='list-group'></div>
-    <div class="dropdown-divider"></div>
-    <a href="{% url 'create-publication' %}?_popup=1" onclick='return showPopup(this);' class="dropdown-item" >{% trans "Add New" %}	</a>
-  </div>
+<p class="attributions">{% trans "Funding Sources and Grants" %}<br />
+  <div id='fundingsources'> </div>
+  <div class="dropdown-divider"></div>
+  <a href="{% url 'create-funding-source' %}?_popup=1" onclick='return showPopup(this);' class="dropdown-item" >{% trans "Add New" %}	</a>
+</p>
+<p class="attributions">{% trans "Publications" %}<br />
+  <div id='publications' class='list-group'></div>
+  <div class="dropdown-divider"></div>
+  <a href="{% url 'create-publication' %}?_popup=1" onclick='return showPopup(this);' class="dropdown-item" >{% trans "Add New" %}	</a>
 </span>
 
 <script  type='text/javascript' >
-function updateField(){
+function updateField(new_id){
+console.log(new_id);
   var std_container = document.getElementById('std_container');
-  while (std_container.firstChild)
+  preselected = [];
+
+  while (std_container.firstChild) {
+    if(std_container.firstChild.nodeType === Node.ELEMENT_NODE) {
+      if(std_container.firstChild.childNodes[1].childNodes[1].checked) {
+        preselected.push(std_container.firstChild.childNodes[1].childNodes[1].value);
+      }
+    }
     std_container.removeChild(std_container.firstChild);
+  }
 
   var fundingsources = document.getElementById('fundingsources');
   var publications = document.getElementById('publications');
@@ -44,18 +45,29 @@ function updateField(){
 
   selected = [];
   while (fundingsources.firstChild){
-    if(fundingsources.firstChild.nodeType === Node.ELEMENT_NODE)
-      if(fundingsources.firstChild.firstChild.checked)
-        selected.push(fundingsources.firstChild.firstChild.value);
+    if(fundingsources.firstChild.nodeType === Node.ELEMENT_NODE) {
+      if(fundingsources.firstChild.firstChild.checked) {
+//        if(fundingsources.firstChild.firstChild.disabled) {
+//          preselected.push(fundingsources.firstChild.firstChild.value);
+//        } else {
+          selected.push(fundingsources.firstChild.firstChild.value);
+//        }
+      }
+    }
     fundingsources.removeChild(fundingsources.firstChild);
   }
   while (publications.firstChild){
-    if(publications.firstChild.nodeType === Node.ELEMENT_NODE)
-      if(publications.firstChild.firstChild.checked)
-        selected.push(publications.firstChild.firstChild.value);
+    if(publications.firstChild.nodeType === Node.ELEMENT_NODE) {
+      if(publications.firstChild.firstChild.checked) {
+//        if(publications.firstChild.firstChild.disabled) {
+//          preselected.push(publications.firstChild.firstChild.value);
+//        } else {
+          selected.push(publications.firstChild.firstChild.value);
+//        }
+      }
+    }
     publications.removeChild(publications.firstChild);
   }
-
   $.getJSON("/projects/list_attributions/", {},
     function(attributions) {
       var results = attributions.results;
@@ -70,33 +82,56 @@ function updateField(){
         label.htmlFor = 'id_attributions_'+index;
         label.id = 'id_attributions_'+index;
         label.className = 'dropdown-item';
-        label.onclick = function(e){label_click(e);};
         var checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.name = 'attributions';
         checkbox.value = results[key].id;
-        checkbox.style.display = 'None';
+        checkbox.style.marginRight = '6px';
         label.appendChild(checkbox);
         var text = document.createTextNode( " "+results[key].title );
         label.appendChild(text);
-        if( selected.indexOf(results[key].id.toString()) != -1 )
+//        if( preselected.indexOf(results[key].id.toString()) != -1 ) {
+//          checkbox.checked = true;
+//          checkbox.disabled = true;
+//          label.className = 'dropdown-item active';
+//        } else {
+          checkbox.onclick = function(e){checkbox_click(e);};
+          label.onclick = function(e){label_click(e);};
+//        }
+        if( preselected.indexOf(results[key].id.toString()) != -1 ) {
           label.click();
+        }
+        if( selected.indexOf(results[key].id.toString()) != -1 ) {
+          label.click();
+        }
+        if(results[key].id==new_id) {
+          label.click();
+        }
         index+=1;
       }
     }
   );
 }
+function checkbox_click( event ){
+  var checkbox = event.target;
+  var label = checkbox.parentElement;
+  if( checkbox.checked ){
+    label.className = 'dropdown-item active';
+  } else {
+    label.className = 'dropdown-item';
+  }
+}
 function label_click( event ){
   var label = event.target;
   var checkbox = label.firstChild;
-  console.log('c',checkbox);
-  //checkbox.click();
-  if( checkbox.checked ){
-    label.className = 'dropdown-item';
-    checkbox.checked = false;
-  } else {
-    label.className = 'dropdown-item active';
-    checkbox.checked = true;
+  if(checkbox) {
+    if( checkbox.checked ){
+      label.className = 'dropdown-item';
+      checkbox.checked = false;
+    } else {
+      label.className = 'dropdown-item active';
+      checkbox.checked = true;
+    }
   }
 }
 function showPopup(triggeringLink) {
@@ -107,5 +142,5 @@ function showPopup(triggeringLink) {
 
   return false;
 }
-window.onload = function(){ updateField(); };
+window.onload = function(){ updateField(null); };
 </script>
