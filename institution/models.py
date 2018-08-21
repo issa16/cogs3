@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from institution.exceptions import InvalidInstitutionalEmailAddress
 from institution.exceptions import InvalidInstitutionalIndentityProvider
@@ -26,6 +26,8 @@ class Institution(models.Model):
     local_repository_name = models.CharField(max_length=100, blank=True)
     local_repository_domain = models.CharField(max_length=100, blank=True)
     funding_database_name = models.CharField(max_length=100, blank=True)
+    local_mailing_list_name = models.CharField(max_length=100, null=True)
+    local_mailing_list_link = models.CharField(max_length=255, null=True)
     logo_path = models.CharField(max_length=255, blank=True)
 
     @classmethod
