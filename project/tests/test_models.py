@@ -93,6 +93,7 @@ class ProjectModelTests(TestCase):
             funding_body=self.funding_body,
             owner=self.project_owner,
             pi_email=pi_email,
+            amount=1000,
         )
 
 
