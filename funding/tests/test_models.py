@@ -62,7 +62,7 @@ class FundingSourceTests(TestCase):
     ]
 
     @classmethod
-    def create_funding_source(cls, title, identifier, funding_body, owner, pi_email):
+    def create_funding_source(cls, title, identifier, funding_body, owner, pi_email, amount):
         """
         Create a FundingSource instance.
 
@@ -77,6 +77,7 @@ class FundingSourceTests(TestCase):
             funding_body=funding_body,
             created_by=owner,
             pi_email=pi_email,
+            amount=amount,
         )
         return funding_source
 
@@ -98,6 +99,7 @@ class FundingSourceTests(TestCase):
             funding_body=fundingbody,
             owner=user,
             pi_email=pi_email,
+            amount=1000,
         )
         self.assertTrue(isinstance(funding_source, FundingSource))
         self.assertEqual(funding_source.__str__(), funding_source.title)

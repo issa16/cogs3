@@ -34,6 +34,7 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
                 'identifier': 'Id',
                 'funding_body': funding_body.id,
                 'pi_email': 'myemail@gmail.com',
+                'amount': 1000,
             },
         )
         self.assertFalse(form.is_valid())
@@ -56,7 +57,8 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
                 'title': 'Title',
                 'identifier': 'Id',
                 'funding_body': funding_body.id,
-                'pi_email': email
+                'pi_email': email,
+                'amount': 1000,
             },
         )
         self.assertTrue(form.is_valid())
@@ -75,7 +77,8 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
                 'title': 'Title',
                 'identifier': 'Id',
                 'funding_body': funding_body.id,
-                'pi_email': email
+                'pi_email': email,
+                'amount': 1000,
             },
         )
         self.assertTrue(form.is_valid())
