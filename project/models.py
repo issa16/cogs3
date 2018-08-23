@@ -161,13 +161,13 @@ class Project(models.Model):
             project_membership, created = ProjectUserMembership.objects.get_or_create(
                 project=self,
                 user=self.tech_lead,
-                date_joined=datetime.date.today(),
-                status=ProjectUserMembership.AUTHORISED,
-                previous_status=ProjectUserMembership.AUTHORISED,
+                defaults=dict(
+                    date_joined=datetime.date.today(),
+                    status=ProjectUserMembership.AUTHORISED,
+                    previous_status=ProjectUserMembership.AUTHORISED,
+                    initiated_by_user=False,
+                )
             )
-            # Assign the 'project_owner' group to the project's technical lead.
-            group = Group.objects.get(name='project_owner')
-            self.tech_lead.groups.add(group)
 
             # Propagate the changes to LDAP
             if created:
@@ -207,6 +207,11 @@ class Project(models.Model):
         super(Project, self).save(*args, **kwargs)
 
         self._assign_project_owner_project_membership()
+
+        # Assign the 'project_owner' group to the project's technical lead.
+        if self.tech_lead.groups.filter(name='project_owner').count():
+            group = Group.objects.get(name='project_owner')
+            self.tech_lead.groups.add(group)
 
         # If the project already exists check for changes
         if(Project.objects.filter(pk=self.id).exists()):
