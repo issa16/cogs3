@@ -16,13 +16,13 @@ def update_openldap_project(allocation):
 
     project = allocation.project
 
-    if allocation.status == SystemAllocationRequest.APPROVED:
-        if project.gid_number:
-            project_api.activate_project.delay(project=project)
-        else:
-            project_api.create_project.delay(project=project)
-    elif project.status in deactivate_project_states:
-        project_api.deactivate_project.delay(project=project)
+    #if allocation.status == SystemAllocationRequest.APPROVED:
+    #    if project.gid_number:
+    #        project_api.activate_project.delay(project=project)
+    #    else:
+    #        project_api.create_project.delay(project=project)
+    #elif project.status in deactivate_project_states:
+    #    project_api.deactivate_project.delay(project=project)
 
 
 def update_openldap_project_membership(project_membership):
@@ -33,7 +33,7 @@ def update_openldap_project_membership(project_membership):
         ProjectUserMembership.REVOKED,
         ProjectUserMembership.SUSPENDED,
     ]
-    if project_membership.status == ProjectUserMembership.AUTHORISED:
-        project_membership_api.create_project_membership.delay(project_membership=project_membership)
-    elif project_membership.status in delete_project_membership_states:
-        project_membership_api.delete_project_membership.delay(project_membership=project_membership)
+    #if project_membership.status == ProjectUserMembership.AUTHORISED:
+    #    project_membership_api.create_project_membership.delay(project_membership=project_membership)
+    #elif project_membership.status in delete_project_membership_states:
+    #    project_membership_api.delete_project_membership.delay(project_membership=project_membership)

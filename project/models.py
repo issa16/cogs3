@@ -516,12 +516,14 @@ class RSEAllocation(models.Model):
         }
         return _("Project to '{title}' in {duration} weeks").format(**data)
 
+
 class ProjectUserMembershipManager(models.Manager):
 
     def awaiting_authorisation(self, user):
         projects = Project.objects.filter(tech_lead=user)
         project_user_memberships = ProjectUserMembership.objects.filter(
             project__in=projects,
+            status=ProjectUserMembership.AWAITING_AUTHORISATION,
         )
         return project_user_memberships
 
