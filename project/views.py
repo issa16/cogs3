@@ -69,13 +69,16 @@ class AllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin,
             form_class = self.get_form_class()
         return form_class(self.request.user, **self.get_form_kwargs())
 
-    
+
 class ProjectCreateView(AllocationCreateView):
     form_class = ProjectCreationForm
-    success_url = reverse_lazy('project-application-list')
-    success_message = _('Successfully submitted a project application.')
+    success_message = _('Successfully submitted a project application. ' +
+                        'You may now want to create a system allocation request or RSE time request below, or add members to your project using the invite button.')
     template_name = 'project/create.html'
     permission_required = 'project.add_project'
+
+    def get_success_url(self):
+        return reverse_lazy('project-application-detail', args=[self.object.id])
 
 
 class ProjectAddAttributionView(PermissionAndLoginRequiredMixin, generic.UpdateView):
@@ -154,7 +157,7 @@ class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, generic.Te
             messages.success(self.request, self.success_message)
 
             return HttpResponseRedirect(reverse('project-application-list'))
-        
+
         return self.render_to_response(self.get_context_data(project_form=project_form, allocation_form=allocation_form))
 
 
@@ -192,7 +195,7 @@ class RSEAllocationRequestDetailView(PermissionAndLoginRequiredMixin, generic.De
     template_name = 'project/rse_detail.html'
     permission_required = 'project.add_project'
 
-    
+
 class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
 
     def user_passes_test(self, request):

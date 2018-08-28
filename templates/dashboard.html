@@ -86,7 +86,11 @@
 									</li>
 									{% if perms.project.add_project %}
 										<li class="list-group-item d-flex justify-content-between align-items-center">
-											<a href="{% url 'create-project-and-allocation' %}">{% trans "Create Project Application" %}</a>
+											{% if request.user.profile.institution.separate_allocation_requests %}
+												<a href="{% url 'create-project' %}">{% trans "Create a Project" %}</a>
+											{% else %}
+												<a href="{% url 'create-project-and-allocation' %}">{% trans "Create Project Application" %}</a>
+											{%endif%}
 										</li>
 									{% endif %}
 								{% endif %}
