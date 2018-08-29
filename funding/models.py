@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.core.validators import URLValidator
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import Group
 from simple_history.models import HistoricalRecords
 
 from users.models import CustomUser
@@ -156,7 +157,9 @@ class FundingSource(Attribution):
             matching_users = CustomUser.objects.filter(email=self.pi_email)
             if matching_users.exists():
                 self.pi = matching_users.get()
-                self.pi_email = None
+                
+                pi_group = Group.objects.get(name='funding_source_pi')
+                pi_group.user_set.add(self.pi)
             else:
                 self.pi = CustomUser.objects.create_pending_shibbolethuser(
                     email=self.pi_email,
@@ -175,6 +178,9 @@ class FundingSourceMembership(models.Model):
         default=False,
         verbose_name=_('Approved by PI'),
     )
+
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
 
 
 class Publication(Attribution):

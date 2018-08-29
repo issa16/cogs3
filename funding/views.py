@@ -148,6 +148,7 @@ class ListFundingSourceMembership(LoginRequiredMixin, generic.ListView):
     template_name = 'funding/memberships.html'
     model = FundingSourceMembership
     paginate_by = 10
+    ordering = ['-created_time']
 
     def get_queryset(self):
         user = self.request.user
