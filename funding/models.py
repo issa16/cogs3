@@ -135,6 +135,12 @@ class FundingSource(Attribution):
         verbose_name=_('Grant attributable to Supercomputing Wales (in £)'),
     )
 
+    users = models.ManyToManyField(
+        CustomUser,
+        blank=True,
+        through='FundingSourceMembership',
+    )
+
     history = HistoricalRecords()
 
     class Meta:
@@ -155,6 +161,16 @@ class FundingSource(Attribution):
                 self.pi_email = None
 
         super().save(*args, **kwargs)
+
+
+class FundingSourceMembership(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    fundingsource = models.ForeignKey(FundingSource, on_delete=models.CASCADE)
+
+    approved = models.BooleanField(
+        default=False,
+        verbose_name=_('Approved by PI'),
+    )
 
 
 class Publication(Attribution):

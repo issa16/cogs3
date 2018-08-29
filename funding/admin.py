@@ -1,9 +1,11 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
+
 from funding.models import FundingBody
 from funding.models import Attribution
 from funding.models import FundingSource
 from funding.models import Publication
-from simple_history.admin import SimpleHistoryAdmin
+from funding.models import FundingSourceMembership
 
 # Register your models here.
 
@@ -18,9 +20,15 @@ class AttributionAdmin(SimpleHistoryAdmin):
     list_display = ('title', )
 
 
+class FundingSourceMembershipInline(admin.TabularInline):
+    model = FundingSourceMembership
+    extra = 2
+
+
 @admin.register(FundingSource)
 class FundingSourceAdmin(SimpleHistoryAdmin):
     list_display = ('title', )
+    inlines = (FundingSourceMembershipInline,)
 
 
 @admin.register(Publication)
