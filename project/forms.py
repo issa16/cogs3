@@ -242,6 +242,7 @@ class ProjectManageAttributionForm(forms.ModelForm):
         fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
             fundingsourcemembership__user=self.user,
             fundingsourcemembership__approved=True,
+            approved=True,
         ))
         self.fields['attributions'] = forms.ModelMultipleChoiceField(
             label='',

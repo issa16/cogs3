@@ -134,6 +134,10 @@ class FundingSource(Attribution):
     amount = models.PositiveIntegerField(
         verbose_name=_('Grant attributable to Supercomputing Wales (in £)'),
     )
+    approved = models.BooleanField(
+        default=False,
+        verbose_name=_('Atributed to HPCW by the PI'),
+    )
 
     users = models.ManyToManyField(
         CustomUser,

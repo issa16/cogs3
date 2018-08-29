@@ -45,6 +45,7 @@ def list_attributions(request):
     fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
         fundingsourcemembership__user=request.user,
         fundingsourcemembership__approved=True,
+        approved=True,
     ))
     attributions = publications | fundingsources
     values = [{'title': a.title, 'id': a.id, 'type': a.type} for a in attributions]
