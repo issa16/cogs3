@@ -2,6 +2,8 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from .models import FundingSource
 from .models import Publication
+from .models import FundingSourceMembership
+
 from institution.models import Institution
 
 
@@ -69,3 +71,4 @@ class PublicationForm(forms.ModelForm):
                 domain=self.local_repository_domain)
             )
         return url
+

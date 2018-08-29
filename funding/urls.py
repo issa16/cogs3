@@ -29,6 +29,11 @@ urlpatterns = [
         name='list-funding_sources',
     ),
     path(
+        'list/memberships/',
+        views.ListFundingSourceMembership.as_view(),
+        name='list-funding_source_memberships',
+    ),
+    path(
         '<int:pk>/update/',
         views.AttributionUpdateView.as_view(),
         name='update-attribution',
@@ -37,5 +42,10 @@ urlpatterns = [
         '<int:pk>/delete/',
         views.AttributioneDeleteView.as_view(),
         name='delete-attribution',
+    ),
+    path(
+        'togglefundingsourcemembershipapproved/<int:pk>/',
+        views.ToggleFundingSourceMembershipApproved.as_view(),
+        name='toggle-funding_source_membership-approved',
     ),
 ]

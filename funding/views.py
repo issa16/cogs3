@@ -12,6 +12,7 @@ from .forms import PublicationForm
 from .models import FundingSource
 from .models import Publication
 from .models import Attribution
+from .models import FundingSourceMembership
 
 # Create your views here.
 
@@ -114,7 +115,11 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
             )
 
     def user_passes_test(self, request):
-        return Attribution.objects.filter(id=self.kwargs['pk'], created_by=self.request.user).exists()
+        attribution = Attribution.objects.get(id=self.kwargs['pk'])
+        if attribution.is_fundingsource:
+            return (attribution.fundingsource.pi == request.user)
+        else:
+            return (attribution.created_by == request.user)
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
@@ -136,3 +141,57 @@ class AttributioneDeleteView(LoginRequiredMixin, generic.DeleteView):
         if not self.user_passes_test(request):
             return HttpResponseRedirect(reverse('list-attributions'))
         return super().dispatch(request, *args, **kwargs)
+
+
+class ListFundingSourceMembership(LoginRequiredMixin, generic.ListView):
+    context_object_name = 'memberships'
+    template_name = 'funding/memberships.html'
+    model = FundingSourceMembership
+    paginate_by = 10
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = super().get_queryset()
+        queryset = queryset.filter(fundingsource__pi=user)
+        return queryset
+
+
+class ToggleFundingSourceMembershipApproved(LoginRequiredMixin, generic.UpdateView):
+    context_object_name = 'memberships'
+    model = FundingSourceMembership
+    fields = ['approved']
+
+    def request_allowed(self, request):
+        try:
+            membership_id = self.kwargs['pk']
+            membership = FundingSourceMembership.objects.get(id=membership_id)
+            condition = membership.fundingsource.pi == request.user
+            return condition
+        except Exception:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request_allowed(request):
+            return HttpResponseRedirect(reverse('list-funding_source_memberships'))
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        response = HttpResponseRedirect(reverse('list-funding_source_memberships'))
+        membership = FundingSourceMembership.objects.get(id=self.kwargs['pk'])
+        if membership.approved:
+            membership.approved = False
+        else:
+            membership.approved = True
+        membership.save()
+
+        if self.request.is_ajax():
+            return JsonResponse({'message': 'Successfully updated.'})
+        else:
+            return response
+
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        if self.request.is_ajax():
+            return JsonResponse(form.errors, status=400)
+        else:
+            return response
