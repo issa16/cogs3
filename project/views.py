@@ -21,7 +21,7 @@ from django.views.generic.edit import FormView
 from users.models import CustomUser
 
 from project.forms import ProjectCreationForm
-from project.forms import ProjectAddAttributionForm
+from project.forms import ProjectManageAttributionForm
 from project.forms import SystemAllocationRequestCreationForm
 from project.forms import RSEAllocationRequestCreationForm
 from project.forms import ProjectUserInviteForm
@@ -32,12 +32,21 @@ from project.models import RSEAllocation
 from project.models import ProjectUserMembership
 from project.openldap import update_openldap_project_membership
 from funding.models import Attribution
+from funding.models import Publication
+from funding.models import FundingSource
 
 
 def list_attributions(request):
-    attributions = Attribution.objects.filter(
-        created_by=request.user
-    ).all()
+    publications = Attribution.objects.filter(publication__in=Publication.objects.filter(
+        created_by=request.user,
+    ))
+
+    # This will filter funding sources according to the two keys in the memberships
+    fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
+        fundingsourcemembership__user=request.user,
+        fundingsourcemembership__approved=True,
+    ))
+    attributions = publications | fundingsources
     values = [{'title': a.title, 'id': a.id, 'type': a.type} for a in attributions]
     return JsonResponse({'results': list(values)})
 
@@ -82,7 +91,7 @@ class ProjectCreateView(AllocationCreateView):
 
 
 class ProjectAddAttributionView(PermissionAndLoginRequiredMixin, generic.UpdateView):
-    form_class = ProjectAddAttributionForm
+    form_class = ProjectManageAttributionForm
     context_object_name = 'project'
     model = Project
     template_name = 'project/add_attributions.html'
