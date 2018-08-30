@@ -169,6 +169,27 @@ class FundingSource(Attribution):
 
         super().save(*args, **kwargs)
 
+        # When a funding source is approved, the PI and the techlead are automatically approved as members
+        if self.approved:
+            FundingSourceMembership.objects.get_or_create(
+                user=self.created_by,
+                fundingsource=self,
+                defaults=dict(
+                    approved=True,
+                )
+            )
+            if self.pi.profile.institution.needs_funding_approval:
+                # Makes sense to add the pi if they have approved the grant
+                FundingSourceMembership.objects.get_or_create(
+                    user=self.pi,
+                    fundingsource=self,
+                    defaults=dict(
+                        approved=True,
+                    )
+                )
+
+        super().save(*args, **kwargs)
+
 
 class FundingSourceMembership(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

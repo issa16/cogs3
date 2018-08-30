@@ -149,12 +149,13 @@
 						</div>
 					</div>
 				</div>
+				{% if request.user.profile.institution.needs_funding_approval %}
 				<div class="row mb-3">
 					<div class="col">
 						{% if user|has_group:"funding_source_pi" or perms.funding.approve_funding_sources  %}
 						<div class="card">
 							<div class="card-header">
-								<b>{% trans "Administration" %}</b>
+								<b>{% trans "Funding" %}</b>
 							</div>
 							<ul class="list-group list-group-flush">
 								{% if user|has_group:"funding_source_pi" %}
@@ -170,9 +171,9 @@
 							</ul>
 						</div>
 						{% endif %}
-
 					</div>
 				</div>
+				{%endif%}
 			</div>
 		</div>
 	</div>

@@ -117,10 +117,9 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
 
     def user_passes_test(self, request):
         attribution = Attribution.objects.get(id=self.kwargs['pk'])
-        if attribution.is_fundingsource:
+        if attribution.is_fundingsource and attribution.fundingsource.pi.profile.institution.needs_funding_approval:
             return (attribution.fundingsource.pi == request.user)
-        else:
-            return (attribution.created_by == request.user)
+        return (attribution.created_by == request.user)
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
@@ -202,7 +201,7 @@ class ToggleFundingSourceMembershipApproved(LoginRequiredMixin, generic.UpdateVi
 class ListUnapprovedFundingSources(PermissionRequiredMixin, generic.ListView):
     context_object_name = 'fundingsources'
     template_name = 'funding/approvefundingsources.html'
-    permission_required = 'project.approve_funding_sources'
+    permission_required = 'funding.approve_funding_sources'
     raise_exception = True
     model = FundingSource
     paginate_by = 10
@@ -220,7 +219,7 @@ class ApproveFundingSource(SuccessMessageMixin, PermissionRequiredMixin, generic
     success_message = _("Successfully approved funding source.")
     success_url = reverse_lazy('list-unapproved-funding_sources')
     template_name = 'funding/fundingsource_approval_form.html'
-    permission_required = 'project.approve_funding_sources'
+    permission_required = 'funding.approve_funding_sources'
     raise_exception = True
 
 

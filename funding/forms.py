@@ -2,7 +2,6 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from .models import FundingSource
 from .models import Publication
-from .models import FundingSourceMembership
 
 from institution.models import Institution
 
@@ -32,6 +31,7 @@ class FundingSourceForm(forms.ModelForm):
                     )
                 )
         # Set the initial email if pi is a user
+        self.user = user
         self.user_email = user.email
 
     def clean_pi_email(self):
@@ -43,7 +43,16 @@ class FundingSourceForm(forms.ModelForm):
             raise forms.ValidationError(_(
                 'Needs to be a valid institutional email address.'
             ))
+        self.institution = Institution.objects.get(base_domain=domain)
         return email
+
+    def save(self,commit=True):
+        instance = super().save(commit=False)
+        if not self.institution.needs_funding_approval:
+            instance.approved = True
+        if commit:
+            instance.save()
+        return instance
 
 
 class PublicationForm(forms.ModelForm):
@@ -90,7 +99,7 @@ class FundingSourceApprovalForm(forms.ModelForm):
         cleaned_data = super().clean()
         email = cleaned_data['pi_email']
         domain = email.split('@')[1]
-        domains = list(Institution.objects.values_list('base_domain',flat=True))
+        domains = list(Institution.objects.values_list('base_domain', flat=True))
         if domain not in domains:
             raise forms.ValidationError(_(
                 'Needs to be a valid institutional email address.'
