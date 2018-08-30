@@ -151,17 +151,22 @@
 				</div>
 				<div class="row mb-3">
 					<div class="col">
-						{% if user.profile.is_approved and user|has_group:"funding_source_pi" %}
+						{% if user|has_group:"funding_source_pi" or perms.funding.approve_funding_sources  %}
 						<div class="card">
 							<div class="card-header">
 								<b>{% trans "Administration" %}</b>
 							</div>
 							<ul class="list-group list-group-flush">
-								{% if user.profile.is_approved and user|has_group:"funding_source_pi" %}
+								{% if user|has_group:"funding_source_pi" %}
 									<li class="list-group-item d-flex justify-content-between align-items-center">
 										<a href="{% url 'list-funding_source_memberships' %}">{% trans "Funding Source Authorisation" %}</a>
 									</li>
 								{% endif %}
+								{% if user.profile.is_approved and perms.funding.approve_funding_sources %}
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									<a href="{% url 'list-unapproved-funding_sources' %}">{% trans "Approve Funding Sources for SCW" %}</a>
+								</li>
+								{%endif%}
 							</ul>
 						</div>
 						{% endif %}

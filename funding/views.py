@@ -1,5 +1,5 @@
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse
 from django.urls import reverse_lazy
@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 
 from .forms import FundingSourceForm
 from .forms import PublicationForm
+from .forms import FundingSourceApprovalForm
 from .models import FundingSource
 from .models import Publication
 from .models import Attribution
@@ -196,3 +197,30 @@ class ToggleFundingSourceMembershipApproved(LoginRequiredMixin, generic.UpdateVi
             return JsonResponse(form.errors, status=400)
         else:
             return response
+
+
+class ListUnapprovedFundingSources(PermissionRequiredMixin, generic.ListView):
+    context_object_name = 'fundingsources'
+    template_name = 'funding/approvefundingsources.html'
+    permission_required = 'project.approve_funding_sources'
+    raise_exception = True
+    model = FundingSource
+    paginate_by = 10
+    ordering = ['-created_time']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(approved=False)
+        return queryset
+
+
+class ApproveFundingSource(SuccessMessageMixin, PermissionRequiredMixin, generic.UpdateView):
+    model = FundingSource
+    form_class = FundingSourceApprovalForm
+    success_message = _("Successfully approved funding source.")
+    success_url = reverse_lazy('list-unapproved-funding_sources')
+    template_name = 'funding/fundingsource_approval_form.html'
+    permission_required = 'project.approve_funding_sources'
+    raise_exception = True
+
+
