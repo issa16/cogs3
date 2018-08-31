@@ -4,6 +4,11 @@ from django.urls import path
 
 urlpatterns = [
     path(
+        'add-funding-source/',
+        views.FundingSourceAddView.as_view(),
+        name='add-funding-source',
+    ),
+    path(
         'create-funding-source/',
         views.FundingSourceCreateView.as_view(),
         name='create-funding-source',

@@ -47,6 +47,12 @@ class FundingSourceForm(forms.ModelForm):
         return email
 
 
+class AddFundingSourceForm(forms.ModelForm):
+    class Meta:
+        model = FundingSource
+        fields = ['identifier']
+
+
 class PublicationForm(forms.ModelForm):
     class Meta:
         model = Publication

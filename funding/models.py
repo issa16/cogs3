@@ -148,7 +148,7 @@ class FundingSource(Attribution):
     )
     approved = models.BooleanField(
         default=False,
-        verbose_name=_('Atributed to HPCW by the PI'),
+        verbose_name=_('Atributed to SCW by the PI'),
     )
 
     users = models.ManyToManyField(
@@ -164,24 +164,27 @@ class FundingSource(Attribution):
         ordering = ('created_time', )
 
     def save(self, *args, **kwargs):
+        new_pi = False
         matching = self.__class__._default_manager.filter(id=self.id)
         if matching.exists():
             old = self.__class__._default_manager.get(id=self.id)
+            new_pi = self.pi_email != old.pi_email
+        else:
+            new_pi = True
 
-            if self.pi_email != old.pi_email:
-                # Get the PI or create if not found
-                matching_users = CustomUser.objects.filter(email=self.pi_email)
-                if matching_users.exists():
-                    self.pi = matching_users.get()
-                else:
-                    self.pi = CustomUser.objects.create_pending_shibbolethuser(
-                        email=self.pi_email,
-                        password=CustomUser.objects.make_random_password(length=30)
-                    )
-
-                # Make sure the PI is in the pi group
-                pi_group = Group.objects.get(name='funding_source_pi')
-                pi_group.user_set.add(self.pi)
+        if new_pi:
+            # Get the PI or create if not found
+            matching_users = CustomUser.objects.filter(email=self.pi_email)
+            if matching_users.exists():
+                self.pi = matching_users.get()
+            else:
+                self.pi = CustomUser.objects.create_pending_shibbolethuser(
+                    email=self.pi_email,
+                    password=CustomUser.objects.make_random_password(length=30)
+                )
+            # Make sure the PI is in the pi group
+            pi_group = Group.objects.get(name='funding_source_pi')
+            pi_group.user_set.add(self.pi)
 
         if self.pi.profile.institution.needs_funding_approval:
             self.owner = self.pi
@@ -192,12 +195,12 @@ class FundingSource(Attribution):
 
         # Automatically add the user who created the funding source to users
         FundingSourceMembership.objects.get_or_create(
-                user=self.created_by,
-                fundingsource=self,
-                defaults=dict(
-                    approved=False,
-                )
+            user=self.created_by,
+            fundingsource=self,
+            defaults=dict(
+                approved=False,
             )
+        )
 
         # When a funding source is approved, the PI and the creator are automatically approved as members
         if matching.exists():
@@ -209,7 +212,7 @@ class FundingSource(Attribution):
                     )
                     creatormembership.approved = True
                     creatormembership.save()
-    
+
                 if self.pi.profile.institution.needs_funding_approval:
                     FundingSourceMembership.objects.get_or_create(
                         user=self.pi,

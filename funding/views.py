@@ -8,12 +8,14 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
 from .forms import FundingSourceForm
+from .forms import AddFundingSourceForm
 from .forms import PublicationForm
 from .forms import FundingSourceApprovalForm
 from .models import FundingSource
 from .models import Publication
 from .models import Attribution
 from .models import FundingSourceMembership
+
 
 # Create your views here.
 
@@ -25,10 +27,24 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
     template_name = 'funding/fundingsource_form.html'
 
     def get_form(self):
-        return FundingSourceForm(
-            self.request.user,
-            **self.get_form_kwargs()
-        )
+        # If a identifier is given in the request and there is no
+        # post data, use it as an intial value
+        identifier = self.request.GET.get('identifier', '')
+        kwargs = self.get_form_kwargs()
+        print(kwargs)
+        if 'data' not in kwargs:
+            print('no data')
+            form = FundingSourceForm(
+                self.request.user,
+                initial={'identifier': identifier},
+            )
+        else:
+            print('data')
+            form = FundingSourceForm(
+                self.request.user,
+                **kwargs,
+            )
+        return form
 
     def form_valid(self, form):
         fundingsource = form.save(commit=False)
@@ -43,6 +59,34 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
                 </script>
             '''.format(new_id=fundingsource.id))
         return HttpResponseRedirect(reverse_lazy('list-attributions'))
+
+
+class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.FormView):
+    ''' A customuser adds new fundingsources using this view. If a matching
+        funding source is not found, the user is forwarded to the createview.
+        If it is found, the user is added to its users list
+    '''
+    form_class = AddFundingSourceForm
+    success_url = reverse_lazy('list-attributions')
+    success_message = _("Successfully added funding source.")
+    template_name = 'funding/fundingsource_form.html'
+
+    def form_valid(self, form):
+        # First time around we only ask for the identifier and check for matching funding sources
+        identifier = form.cleaned_data['identifier']
+        matching = FundingSource.objects.filter(identifier=identifier)
+        if matching.exists():
+            print('found')
+            fundingsource = matching.first()
+            FundingSourceMembership.objects.get_or_create(
+                user=self.request.user,
+                fundingsource=fundingsource,
+                defaults=dict(
+                    approved=False,
+                )
+            )
+            return HttpResponseRedirect(reverse_lazy('list-attributions'))
+        return HttpResponseRedirect(reverse_lazy('create-funding-source')+'?identifier='+identifier)
 
 
 class PublicationCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):

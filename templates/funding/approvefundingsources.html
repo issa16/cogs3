@@ -3,13 +3,13 @@
 {% load i18n %}
 {% load static %}
 {% load widget_tweaks %}
-{% block title %}{% trans "Funding Source Authorisations" %}{% endblock %}
+{% block title %}{% trans "Funding Sources Awaiting Approval" %}{% endblock %}
 {% block content %}
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>{% trans "Funding Source Authorisations" %}</h4>
+					<h4>{% trans "Funding Sources Awaiting Approval" %}</h4>
 				</div>
 			</div>
 		</div>
@@ -28,18 +28,16 @@
 				<thead class="thead-light">
 					<tr>
 						<th scope="col">{% trans "Funding Source" %}</th>
-						<th scope="col">{% trans "User" %}</th>
-						<th scope="col">{% trans "Approved" %}</th>
-						<th scope="col"></th>
+						<th scope="col">{% trans "Identifier" %}</th>
+						<th scope="col">{% trans "PI" %}</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for fundingsource in fundingsources %}
 						<tr>
 							<td><a href="{% url 'approve-funding_source' fundingsource.pk %}">{{fundingsource}}</a></td>
+							<td>{{fundingsource.identifier}}</td>
 							<td>{{fundingsource.pi}}</td>
-							<td>{% if fundingsource.approved %} Approved {% else %} Awaiting Approval {% endif %} </td>
-							<td> fundingsource </td>
 						</tr>
 					{% endfor %}
 				</tbody>
