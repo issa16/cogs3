@@ -54,6 +54,12 @@ class Attribution(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_('Created By'),
     )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='owner',
+        on_delete=models.CASCADE,
+        verbose_name=_('Owner'),
+    )
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
@@ -103,6 +109,11 @@ class Attribution(models.Model):
     class Meta:
         verbose_name_plural = _('Attributions')
         ordering = ('created_time', )
+    
+    def save(self, *args, **kwargs):
+        if not self.owner:
+            self.owner = self.created_by
+        super().save(*args, **kwargs)
 
 
 class FundingSource(Attribution):
@@ -153,42 +164,60 @@ class FundingSource(Attribution):
         ordering = ('created_time', )
 
     def save(self, *args, **kwargs):
-        if getattr(self, 'pi_email_changed', True):
-            matching_users = CustomUser.objects.filter(email=self.pi_email)
-            if matching_users.exists():
-                self.pi = matching_users.get()
-                
+        matching = self.__class__._default_manager.filter(id=self.id)
+        if matching.exists():
+            old = self.__class__._default_manager.get(id=self.id)
+
+            if self.pi_email != old.pi_email:
+                # Get the PI or create if not found
+                matching_users = CustomUser.objects.filter(email=self.pi_email)
+                if matching_users.exists():
+                    self.pi = matching_users.get()
+                else:
+                    self.pi = CustomUser.objects.create_pending_shibbolethuser(
+                        email=self.pi_email,
+                        password=CustomUser.objects.make_random_password(length=30)
+                    )
+
+                # Make sure the PI is in the pi group
                 pi_group = Group.objects.get(name='funding_source_pi')
                 pi_group.user_set.add(self.pi)
-            else:
-                self.pi = CustomUser.objects.create_pending_shibbolethuser(
-                    email=self.pi_email,
-                    password=CustomUser.objects.make_random_password(length=30)
-                )
-                self.pi_email = None
+
+        if self.pi.profile.institution.needs_funding_approval:
+            self.owner = self.pi
+        else:
+            self.owner = self.created_by
 
         super().save(*args, **kwargs)
 
-        # When a funding source is approved, the PI and the techlead are automatically approved as members
-        if self.approved:
-            FundingSourceMembership.objects.get_or_create(
+        # Automatically add the user who created the funding source to users
+        FundingSourceMembership.objects.get_or_create(
                 user=self.created_by,
                 fundingsource=self,
                 defaults=dict(
-                    approved=True,
+                    approved=False,
                 )
             )
-            if self.pi.profile.institution.needs_funding_approval:
-                # Makes sense to add the pi if they have approved the grant
-                FundingSourceMembership.objects.get_or_create(
-                    user=self.pi,
-                    fundingsource=self,
-                    defaults=dict(
-                        approved=True,
-                    )
-                )
 
-        super().save(*args, **kwargs)
+        # When a funding source is approved, the PI and the creator are automatically approved as members
+        if matching.exists():
+            if self.approved:
+                if self.approved != old.approved:
+                    creatormembership = FundingSourceMembership.objects.get(
+                        user=self.created_by,
+                        fundingsource=self,
+                    )
+                    creatormembership.approved = True
+                    creatormembership.save()
+    
+                if self.pi.profile.institution.needs_funding_approval:
+                    FundingSourceMembership.objects.get_or_create(
+                        user=self.pi,
+                        fundingsource=self,
+                        defaults=dict(
+                            approved=True,
+                        )
+                    )
 
 
 class FundingSourceMembership(models.Model):
@@ -202,6 +231,19 @@ class FundingSourceMembership(models.Model):
 
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ["user", "fundingsource"]
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Prevent the admin interface from creating a duplicate
+        extras = self.__class__._default_manager.filter(
+            user=self.user,
+            fundingsource=self.fundingsource,
+        )[1:]
+        self.__class__._default_manager.filter(pk__in=extras).delete()
 
 
 class Publication(Attribution):

@@ -80,7 +80,7 @@ class AttributionListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset()
-        queryset = queryset.filter(created_by=user)
+        queryset = queryset.filter(owner=user)
         return queryset.order_by('-created_time')
 
 
@@ -116,10 +116,7 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
             )
 
     def user_passes_test(self, request):
-        attribution = Attribution.objects.get(id=self.kwargs['pk'])
-        if attribution.is_fundingsource and attribution.fundingsource.pi.profile.institution.needs_funding_approval:
-            return (attribution.fundingsource.pi == request.user)
-        return (attribution.created_by == request.user)
+        return Attribution.objects.filter(id=self.kwargs['pk'], owner=self.request.user).exists()
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
@@ -135,7 +132,7 @@ class AttributioneDeleteView(LoginRequiredMixin, generic.DeleteView):
     template_name = 'funding/delete.html'
 
     def user_passes_test(self, request):
-        return FundingSource.objects.filter(id=self.kwargs['pk'], created_by=self.request.user).exists()
+        return Attribution.objects.filter(id=self.kwargs['pk'], owner=self.request.user).exists()
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
@@ -144,6 +141,7 @@ class AttributioneDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 
 class ListFundingSourceMembership(LoginRequiredMixin, generic.ListView):
+    # List funding source memberships the user is the PI in and can approve users
     context_object_name = 'memberships'
     template_name = 'funding/memberships.html'
     model = FundingSourceMembership
@@ -199,6 +197,8 @@ class ToggleFundingSourceMembershipApproved(LoginRequiredMixin, generic.UpdateVi
 
 
 class ListUnapprovedFundingSources(PermissionRequiredMixin, generic.ListView):
+    # List unnapproved fundingsources for approval by a user with permissions
+
     context_object_name = 'fundingsources'
     template_name = 'funding/approvefundingsources.html'
     permission_required = 'funding.approve_funding_sources'
@@ -221,5 +221,3 @@ class ApproveFundingSource(SuccessMessageMixin, PermissionRequiredMixin, generic
     template_name = 'funding/fundingsource_approval_form.html'
     permission_required = 'funding.approve_funding_sources'
     raise_exception = True
-
-

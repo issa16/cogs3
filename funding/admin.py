@@ -20,6 +20,11 @@ class AttributionAdmin(SimpleHistoryAdmin):
     list_display = ('title', )
 
 
+@admin.register(FundingSourceMembership)
+class FundingSourceMembershipnAdmin(SimpleHistoryAdmin):
+    list_display = ('user', 'fundingsource', 'approved', )
+
+
 class FundingSourceMembershipInline(admin.TabularInline):
     model = FundingSourceMembership
     extra = 2

@@ -142,22 +142,25 @@
 								<li class="list-group-item d-flex justify-content-between align-items-center">
 									<a href="{% url 'project-membership-list' %}">{% trans "Project Memberships" %}</a>
 								</li>
-								<li class="list-group-item d-flex justify-content-between align-items-center">
-									<a href="{% url 'list-attributions' %}">{% trans "Attributions" %}</a>
-								</li>
+
+								{% if request.user.profile.institution.needs_funding_approval %}
 							</ul>
 						</div>
 					</div>
 				</div>
-				{% if request.user.profile.institution.needs_funding_approval %}
 				<div class="row mb-3">
 					<div class="col">
-						{% if user|has_group:"funding_source_pi" or perms.funding.approve_funding_sources  %}
 						<div class="card">
 							<div class="card-header">
 								<b>{% trans "Funding" %}</b>
 							</div>
 							<ul class="list-group list-group-flush">
+								{% endif %}
+
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									<a href="{% url 'list-attributions' %}">{% trans "Attributions" %}</a>
+								</li>
+
 								{% if user|has_group:"funding_source_pi" %}
 									<li class="list-group-item d-flex justify-content-between align-items-center">
 										<a href="{% url 'list-funding_source_memberships' %}">{% trans "Funding Source Authorisation" %}</a>
@@ -170,10 +173,8 @@
 								{%endif%}
 							</ul>
 						</div>
-						{% endif %}
 					</div>
 				</div>
-				{%endif%}
 			</div>
 		</div>
 	</div>

@@ -8,7 +8,6 @@ from project.models import ProjectUserMembership
 from funding.models import Attribution
 from funding.models import Publication
 from funding.models import FundingSource
-from funding.models import FundingSourceMembership
 from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
 from users.models import CustomUser

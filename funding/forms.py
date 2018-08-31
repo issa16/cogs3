@@ -46,14 +46,6 @@ class FundingSourceForm(forms.ModelForm):
         self.institution = Institution.objects.get(base_domain=domain)
         return email
 
-    def save(self,commit=True):
-        instance = super().save(commit=False)
-        if not self.institution.needs_funding_approval:
-            instance.approved = True
-        if commit:
-            instance.save()
-        return instance
-
 
 class PublicationForm(forms.ModelForm):
     class Meta:
