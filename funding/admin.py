@@ -32,7 +32,7 @@ class FundingSourceMembershipInline(admin.TabularInline):
 
 @admin.register(FundingSource)
 class FundingSourceAdmin(SimpleHistoryAdmin):
-    list_display = ('title', )
+    list_display = ('title', 'pi', 'identifier' )
     inlines = (FundingSourceMembershipInline,)
 
 

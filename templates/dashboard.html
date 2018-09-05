@@ -161,11 +161,6 @@
 									<a href="{% url 'list-attributions' %}">{% trans "Attributions" %}</a>
 								</li>
 
-								{% if user|has_group:"funding_source_pi" %}
-									<li class="list-group-item d-flex justify-content-between align-items-center">
-										<a href="{% url 'list-funding_source_memberships' %}">{% trans "Funding Source Authorisation" %}</a>
-									</li>
-								{% endif %}
 								{% if user.profile.is_approved and perms.funding.approve_funding_sources %}
 								<li class="list-group-item d-flex justify-content-between align-items-center">
 									<a href="{% url 'list-unapproved-funding_sources' %}">{% trans "Approve Funding Sources for SCW" %}</a>

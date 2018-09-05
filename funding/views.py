@@ -1,6 +1,7 @@
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -22,29 +23,23 @@ from .models import FundingSourceMembership
 
 class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     model = FundingSource
+    form_class = FundingSourceForm
     success_url = reverse_lazy('list-attributions')
     success_message = _("Successfully added funding source.")
     template_name = 'funding/fundingsource_form.html'
 
+    def get_initial(self):
+        print(self.request.session.keys())
+        if 'FundingSourceAddIdentifier' in self.request.session.keys():
+            self.initial['identifier'] = self.request.session['FundingSourceAddIdentifier']
+            del self.request.session['FundingSourceAddIdentifier']
+        return self.initial
+
     def get_form(self):
-        # If a identifier is given in the request and there is no
-        # post data, use it as an intial value
-        identifier = self.request.GET.get('identifier', '')
-        kwargs = self.get_form_kwargs()
-        print(kwargs)
-        if 'data' not in kwargs:
-            print('no data')
-            form = FundingSourceForm(
-                self.request.user,
-                initial={'identifier': identifier},
-            )
-        else:
-            print('data')
-            form = FundingSourceForm(
-                self.request.user,
-                **kwargs,
-            )
-        return form
+        return FundingSourceForm(
+            self.request.user,
+            **self.get_form_kwargs()
+        )
 
     def form_valid(self, form):
         fundingsource = form.save(commit=False)
@@ -71,22 +66,45 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
     success_message = _("Successfully added funding source.")
     template_name = 'funding/fundingsource_form.html'
 
+    def get_initial(self):
+        if 'FundingSourceAddIdentifier' in self.request.session.keys():
+            self.initial['identifier'] = self.request.session['FundingSourceAddIdentifier']
+            self.confirmation_asked = True
+        else:
+            self.confirmation_asked = False
+        return self.initial
+
     def form_valid(self, form):
         # First time around we only ask for the identifier and check for matching funding sources
         identifier = form.cleaned_data['identifier']
         matching = FundingSource.objects.filter(identifier=identifier)
+        self.request.session['FundingSourceAddIdentifier'] = identifier
+        
         if matching.exists():
-            print('found')
-            fundingsource = matching.first()
-            FundingSourceMembership.objects.get_or_create(
-                user=self.request.user,
-                fundingsource=fundingsource,
-                defaults=dict(
-                    approved=False,
+            if not self.confirmation_asked:
+                messages.add_message(self.request, messages.INFO, "A funding source with this identifier has been found on the system. "
+                                                                  "An email will be sent to the PI to verify your ability to attibute the funding. "
+                                                                  "Are you sure you wish to submit your request? Click save again to confirm.")
+                return HttpResponseRedirect(reverse_lazy('add-funding-source'))
+
+            else:
+                fundingsource = matching.first()
+                FundingSourceMembership.objects.get_or_create(
+                    user=self.request.user,
+                    fundingsource=fundingsource,
+                    defaults=dict(
+                        approved=False,
+                    )
                 )
-            )
-            return HttpResponseRedirect(reverse_lazy('list-attributions'))
-        return HttpResponseRedirect(reverse_lazy('create-funding-source')+'?identifier='+identifier)
+                del self.request.session['FundingSourceAddIdentifier']
+                return HttpResponseRedirect(reverse_lazy('list-attributions'))
+        
+        # No match, ask to create
+        messages.add_message(self.request, messages.INFO, "You have requested access to a fundign source that does not yet exist in the system. "
+                                                          "Please include additional detail for our records.")
+        messages.add_message(self.request, messages.INFO, "The PI will be notified and asked to attribute the funds to SCW. "
+                                                          "Once this process is complete, you will be able to add the attribution to your project.")
+        return HttpResponseRedirect(reverse_lazy('create-funding-source'))
 
 
 class PublicationCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
@@ -161,6 +179,25 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
 
     def user_passes_test(self, request):
         return Attribution.objects.filter(id=self.kwargs['pk'], owner=self.request.user).exists()
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        # User cannot update a funding source if the funding approval workflow is required
+        if obj.type == 'fundingsource' and obj.pi.profile.institution.needs_funding_approval:
+            if not self.request.user.has_perm('funding.approve_funding_sources'):
+                return HttpResponseRedirect(reverse('funding_source-detail-view',kwargs={'pk':obj.id}))
+
+        if not self.user_passes_test(request):
+            return HttpResponseRedirect(reverse('list-attributions'))
+        return super().dispatch(request, *args, **kwargs)
+
+
+class FundingsourceDetailView(LoginRequiredMixin, generic.DetailView):
+    context_object_name = 'grant'
+    model = FundingSource
+
+    def user_passes_test(self, request):
+        return FundingSource.objects.filter(id=self.kwargs['pk'], users=self.request.user).exists()
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):

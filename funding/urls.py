@@ -39,6 +39,11 @@ urlpatterns = [
         name='update-attribution',
     ),
     path(
+        '<int:pk>/view/',
+        views.FundingsourceDetailView.as_view(),
+        name='funding_source-detail-view',
+    ),
+    path(
         '<int:pk>/delete/',
         views.AttributioneDeleteView.as_view(),
         name='delete-attribution',
