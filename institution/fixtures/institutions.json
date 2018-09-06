@@ -14,6 +14,8 @@
       "allows_rse_requests": true,
       "rse_notify_email": "sa2c-support@swansea.ac.uk",
       "funding_document_email": "E.A.Carpenter@Swansea.ac.uk",
+      "funding_document_receiver": "Sherryl",
+      "funding_document_template": "Swansea.docx",
       "local_repository_name": "Cronfa",
       "local_repository_domain": "cronfa.swansea.ac.uk",
       "funding_database_name": "AMS",

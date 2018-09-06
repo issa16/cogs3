@@ -6,5 +6,3 @@ A new funding source with the title "{{title}}" and identifier "{{identifier}}" 
 
 Please fill in the included template document, including a paragraph explaining how Supercomputing Wales has enabled the research funded by the grant. Send the signed letter to {{scw_email}}.
 
-Once the attribution letter is approved, the funding source can be added to the project.
-

@@ -44,9 +44,13 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
             'user': user_name,
         }
         docx_file = create_funding_document(
+            fundingsource.funding_body.name,
             fundingsource.title,
             fundingsource.pi.first_name,
             fundingsource.pi.last_name,
+            fundingsource.pi.profile.shibbolethprofile.department,
+            fundingsource.pi.profile.institution.funding_document_receiver,
+            fundingsource.pi.profile.institution.funding_document_template,
         )
         email_user(
             subject,
@@ -60,7 +64,8 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         if 'FundingSourceAddIdentifier' in self.request.session.keys():
             self.initial['identifier'] = self.request.session['FundingSourceAddIdentifier']
             del self.request.session['FundingSourceAddIdentifier']
-        if 'FundingSourceCreateConfirm' in self.request.session.keys():
+        if 'FundingSourceCreateInit' in self.request.session.keys():
+            self.initial = self.request.session['FundingSourceCreateInit']
             self.confirmation_asked = True
         else:
             self.confirmation_asked = False
@@ -84,23 +89,36 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         institution = Institution.objects.get(base_domain=domain)
         if institution.needs_funding_approval and not self.confirmation_asked:
             messages.add_message(self.request, messages.INFO,
-                "You are requesting for a new funding source to be attributed to SCW.",
+                "You are requesting for a new funding source to be attributed to SCW. "
                 "The PI will be notified and asked to attribute the funds to SCW. "
-                "Once this process is complete, you will be able to add the attribution to your project.")
+                "Once this process is complete, you will be able to add the attribution to your project. "
+                "To proceed click Save again.")
+            self.request.session['FundingSourceCreateInit'] = self.request.POST
             return HttpResponseRedirect(reverse_lazy('create-funding-source')+popup)
 
+        if institution.needs_funding_approval:
+            del self.request.session['FundingSourceCreateInit']
         fundingsource.created_by = self.request.user
         fundingsource.save()
+
         if institution.needs_funding_approval:
             self.notify_pi(fundingsource)
-        
-        if self.request.GET.get('_popup'):
-            return HttpResponse('''
-                Closing popup
-                <script>
-                window.close();
-                </script>
-            '''.format(new_id=fundingsource.id))
+            if self.request.GET.get('_popup'):
+                return HttpResponse('''
+                    Closing popup
+                    <script>
+                    window.close();
+                    </script>
+                '''.format())
+        else:
+            if self.request.GET.get('_popup'):
+                return HttpResponse('''
+                    Closing popup
+                    <script>
+                    opener.updateField({new_id});
+                    window.close();
+                    </script>
+                '''.format(new_id=fundingsource.id))
         return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
 
@@ -158,8 +176,7 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                     fundingsource=fundingsource,
                 ).exists():
                     messages.add_message(self.request, messages.INFO,
-                        "You already are a member of this funding source."
-                        "Please wait for the PI to approve your membership.")
+                        "You already are a member of this funding source. It will become visible in attributions once the PI approves your membership")
                     return HttpResponseRedirect(reverse_lazy('add-funding-source')+popup)
                 else:
                     self.request.session['FundingSourceAddIdentifier'] = identifier
@@ -190,12 +207,22 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
             return HttpResponseRedirect(reverse_lazy('create-funding-source')+popup)
         
         if self.request.GET.get('_popup'):
-            return HttpResponse('''
-                Closing popup
-                <script>
-                window.close();
-                </script>
-            ''')
+            if fundingsource.pi.profile.institution.needs_funding_approval:
+                return HttpResponse('''
+                    Closing popup
+                    <script>
+                    window.close();
+                    </script>
+                ''')
+            else:
+                if self.request.GET.get('_popup'):
+                    return HttpResponse('''
+                        Closing popup
+                        <script>
+                        opener.updateField({new_id});
+                        window.close();
+                        </script>
+                    '''.format(new_id=fundingsource.id))
         return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
 
