@@ -2,6 +2,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from .models import FundingSource
 from .models import Publication
+
 from institution.models import Institution
 
 
@@ -30,6 +31,7 @@ class FundingSourceForm(forms.ModelForm):
                     )
                 )
         # Set the initial email if pi is a user
+        self.user = user
         self.user_email = user.email
 
     def clean_pi_email(self):
@@ -41,7 +43,14 @@ class FundingSourceForm(forms.ModelForm):
             raise forms.ValidationError(_(
                 'Needs to be a valid institutional email address.'
             ))
+        self.institution = Institution.objects.get(base_domain=domain)
         return email
+
+
+class AddFundingSourceForm(forms.ModelForm):
+    class Meta:
+        model = FundingSource
+        fields = ['identifier']
 
 
 class PublicationForm(forms.ModelForm):
@@ -69,3 +78,38 @@ class PublicationForm(forms.ModelForm):
                 domain=self.local_repository_domain)
             )
         return url
+
+
+class FundingSourceApprovalForm(forms.ModelForm):
+    class Meta:
+        model = FundingSource
+        fields = ['title', 'identifier', 'amount', 'funding_body', 'pi_email', 'approved']
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance', {})
+        if hasattr(instance, 'pi') and instance.pi is not None:
+            initial = kwargs.get('initial', {})
+            initial['pi_email'] = instance.pi.email
+            kwargs['initial'] = initial
+        super().__init__(*args, **kwargs)
+
+    def clean_pi_email(self):
+        cleaned_data = super().clean()
+        email = cleaned_data['pi_email']
+        domain = email.split('@')[1]
+        domains = list(Institution.objects.values_list('base_domain', flat=True))
+        if domain not in domains:
+            raise forms.ValidationError(_(
+                'Needs to be a valid institutional email address.'
+            ))
+        return email
+
+    def clean_approved(self):
+        cleaned_data = super().clean()
+        approved = cleaned_data['approved']
+        if not approved:
+            raise forms.ValidationError(_(
+                'You did not approve the funding source.'
+            ))
+        return approved
+
