@@ -19,6 +19,7 @@ from .models import FundingSource
 from .models import Publication
 from .models import Attribution
 from .models import FundingSourceMembership
+from institution.models import Institution
 
 
 # Create your views here.
@@ -59,6 +60,10 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         if 'FundingSourceAddIdentifier' in self.request.session.keys():
             self.initial['identifier'] = self.request.session['FundingSourceAddIdentifier']
             del self.request.session['FundingSourceAddIdentifier']
+        if 'FundingSourceCreateConfirm' in self.request.session.keys():
+            self.confirmation_asked = True
+        else:
+            self.confirmation_asked = False
         return self.initial
 
     def get_form(self):
@@ -68,10 +73,27 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         )
 
     def form_valid(self, form):
+        # If this is a popup, add the label to redirects
+        if self.request.GET.get('_popup'):
+            popup = "?_popup=1"
+        else:
+            popup = ""
+
         fundingsource = form.save(commit=False)
+        domain = fundingsource.pi_email.split('@')[1]
+        institution = Institution.objects.get(base_domain=domain)
+        if institution.needs_funding_approval and not self.confirmation_asked:
+            messages.add_message(self.request, messages.INFO,
+                "You are requesting for a new funding source to be attributed to SCW.",
+                "The PI will be notified and asked to attribute the funds to SCW. "
+                "Once this process is complete, you will be able to add the attribution to your project.")
+            return HttpResponseRedirect(reverse_lazy('create-funding-source')+popup)
+
         fundingsource.created_by = self.request.user
         fundingsource.save()
-        self.notify_pi(fundingsource)
+        if institution.needs_funding_approval:
+            self.notify_pi(fundingsource)
+        
         if self.request.GET.get('_popup'):
             return HttpResponse('''
                 Closing popup
@@ -129,8 +151,8 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
             popup = ""
     
         if matching.exists():
-            if not self.confirmation_asked:
-                fundingsource = matching.first()
+            fundingsource = matching.first()
+            if fundingsource.pi.profile.institution.needs_funding_approval and not self.confirmation_asked:
                 if FundingSourceMembership.objects.filter(
                     user=self.request.user,
                     fundingsource=fundingsource,
@@ -156,17 +178,15 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                         approved=False,
                     )
                 )
-                del self.request.session['FundingSourceAddIdentifier']
-                self.notify_pi(membership)
+                if fundingsource.pi.profile.institution.needs_funding_approval:
+                    del self.request.session['FundingSourceAddIdentifier']
+                    self.notify_pi(membership)
         else:
             # No match, ask to create
             self.request.session['FundingSourceAddIdentifier'] = identifier
             messages.add_message(self.request, messages.INFO,
                     "You have requested to attribute a funding source that does not yet exist in the system. "
                     "Please include additional detail for our records.")
-            messages.add_message(self.request, messages.INFO,
-                "The PI will be notified and asked to attribute the funds to SCW. "
-                "Once this process is complete, you will be able to add the attribution to your project.")
             return HttpResponseRedirect(reverse_lazy('create-funding-source')+popup)
         
         if self.request.GET.get('_popup'):
