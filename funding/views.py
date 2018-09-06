@@ -39,7 +39,7 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
             'to': fundingsource.pi.email,
             'identifier': fundingsource.identifier,
             'title': fundingsource.title,
-            'scw_email': 'E.A.Carpenter@Swansea.ac.uk',
+            'scw_email': fundingsource.pi.profile.institution.funding_document_email,
             'user': user_name,
         }
         docx_file = create_funding_document(
@@ -56,7 +56,6 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         )
 
     def get_initial(self):
-        print(self.request.session.keys())
         if 'FundingSourceAddIdentifier' in self.request.session.keys():
             self.initial['identifier'] = self.request.session['FundingSourceAddIdentifier']
             del self.request.session['FundingSourceAddIdentifier']

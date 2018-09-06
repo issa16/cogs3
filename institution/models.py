@@ -24,6 +24,7 @@ class Institution(models.Model):
     allows_rse_requests = models.BooleanField(default=False)
     needs_funding_approval = models.BooleanField(default=False)
     rse_notify_email = models.EmailField(null=True)
+    funding_document_email = models.EmailField(null=True)
     local_repository_name = models.CharField(max_length=100, blank=True)
     local_repository_domain = models.CharField(max_length=100, blank=True)
     funding_database_name = models.CharField(max_length=100, blank=True)
