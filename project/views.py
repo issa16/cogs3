@@ -37,9 +37,9 @@ from funding.models import FundingSource
 
 
 def list_attributions(request):
-    attributions = Attribution.objects.filter(publication__in=Publication.objects.filter(
+    attributions = Attribution.objects.filter(
         owner=request.user
-    ))
+    )
 
     # Add any fundingsources with an approved user membership
     fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(

@@ -52,7 +52,11 @@
 						<tr>
 							<td>{{attribution.verbose_type}}</td>
 							<td><a href="{% url 'update-attribution' attribution.pk %}">{{attribution.title}}</a></td>
-							<td><a class="btn btn-danger" href="{% url 'delete-attribution' attribution.pk %}">{% trans "Delete" %}</a></td>
+							<td>
+								{% if attribution.owner == request.user %}
+								<a class="btn btn-danger" href="{% url 'delete-attribution' attribution.pk %}">{% trans "Delete" %}</a>
+								{% endif %}
+							</td>
 						</tr>
 					{% endfor %}
 				</tbody>

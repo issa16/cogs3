@@ -234,8 +234,12 @@ class AttributionListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset()
-        queryset = queryset.filter(owner=user)
-        return queryset.order_by('-created_time')
+        owned_set = queryset.filter(owner=user)
+        user_set = queryset.filter(fundingsource__in=FundingSource.objects.filter(
+            fundingsourcemembership__user=user,
+            fundingsourcemembership__approved=True,
+        ))
+        return (owned_set | user_set).order_by('-created_time')
 
 
 class PublicationListView(AttributionListView):
