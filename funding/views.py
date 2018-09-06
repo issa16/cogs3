@@ -7,7 +7,10 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.conf import settings
+from common.util import email_user
 
+from .generate_docx import create_funding_document
 from .forms import FundingSourceForm
 from .forms import AddFundingSourceForm
 from .forms import PublicationForm
@@ -28,6 +31,30 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
     success_message = _("Successfully added funding source.")
     template_name = 'funding/fundingsource_form.html'
 
+    def notify_pi(self, fundingsource):
+        user_name = fundingsource.created_by.first_name + ' ' + fundingsource.created_by.last_name
+        subject = _('{company_name} Attribution Request by {user}'.format(company_name=settings.COMPANY_NAME, user=user_name))
+        context = {
+            'first_name': fundingsource.pi.first_name,
+            'to': fundingsource.pi.email,
+            'identifier': fundingsource.identifier,
+            'title': fundingsource.title,
+            'scw_email': 'E.A.Carpenter@Swansea.ac.uk',
+            'user': user_name,
+        }
+        docx_file = create_funding_document(
+            fundingsource.title,
+            fundingsource.pi.first_name,
+            fundingsource.pi.last_name,
+        )
+        email_user(
+            subject,
+            context,
+            'notifications/funding/new_attribution.txt',
+            'notifications/funding/new_attribution.html',
+            attachments=[('letter_template.docx', docx_file)]
+        )
+
     def get_initial(self):
         print(self.request.session.keys())
         if 'FundingSourceAddIdentifier' in self.request.session.keys():
@@ -45,11 +72,11 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         fundingsource = form.save(commit=False)
         fundingsource.created_by = self.request.user
         fundingsource.save()
+        self.notify_pi(fundingsource)
         if self.request.GET.get('_popup'):
             return HttpResponse('''
                 Closing popup
                 <script>
-                opener.updateField({new_id});
                 window.close();
                 </script>
             '''.format(new_id=fundingsource.id))
@@ -66,6 +93,23 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
     success_message = _("Successfully added funding source.")
     template_name = 'funding/fundingsource_form.html'
 
+    def notify_pi(self, membership):
+        user_name = membership.user.first_name + ' ' + membership.user.last_name
+        subject = _('{company_name} Attribution Request by {user}'.format(company_name=settings.COMPANY_NAME, user=user_name))
+        context = {
+            'first_name': membership.fundingsource.pi.first_name,
+            'to': membership.fundingsource.pi.email,
+            'identifier': membership.fundingsource.identifier,
+            'title': membership.fundingsource.title,
+            'user': user_name,
+        }
+        email_user(
+            subject,
+            context,
+            'notifications/funding/attribution_request.txt',
+            'notifications/funding/attribution_request.html',
+        )
+
     def get_initial(self):
         if 'FundingSourceAddIdentifier' in self.request.session.keys():
             self.initial['identifier'] = self.request.session['FundingSourceAddIdentifier']
@@ -78,18 +122,35 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
         # First time around we only ask for the identifier and check for matching funding sources
         identifier = form.cleaned_data['identifier']
         matching = FundingSource.objects.filter(identifier=identifier)
-        self.request.session['FundingSourceAddIdentifier'] = identifier
-        
+
+        # If this is a popup, add the label to redirects
+        if self.request.GET.get('_popup'):
+            popup = "?_popup=1"
+        else:
+            popup = ""
+    
         if matching.exists():
             if not self.confirmation_asked:
-                messages.add_message(self.request, messages.INFO, "A funding source with this identifier has been found on the system. "
-                                                                  "An email will be sent to the PI to verify your ability to attibute the funding. "
-                                                                  "Are you sure you wish to submit your request? Click save again to confirm.")
-                return HttpResponseRedirect(reverse_lazy('add-funding-source'))
+                fundingsource = matching.first()
+                if FundingSourceMembership.objects.filter(
+                    user=self.request.user,
+                    fundingsource=fundingsource,
+                ).exists():
+                    messages.add_message(self.request, messages.INFO,
+                        "You already are a member of this funding source."
+                        "Please wait for the PI to approve your membership.")
+                    return HttpResponseRedirect(reverse_lazy('add-funding-source')+popup)
+                else:
+                    self.request.session['FundingSourceAddIdentifier'] = identifier
+                    messages.add_message(self.request, messages.INFO,
+                        "A funding source with this identifier has been found on the system. "
+                        "An email will be sent to the PI to verify your ability to attibute the funding. "
+                        "Are you sure you wish to submit your request? Click save again to confirm.")
+                    return HttpResponseRedirect(reverse_lazy('add-funding-source')+popup)
 
             else:
                 fundingsource = matching.first()
-                FundingSourceMembership.objects.get_or_create(
+                membership, created = FundingSourceMembership.objects.get_or_create(
                     user=self.request.user,
                     fundingsource=fundingsource,
                     defaults=dict(
@@ -97,14 +158,26 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                     )
                 )
                 del self.request.session['FundingSourceAddIdentifier']
-                return HttpResponseRedirect(reverse_lazy('list-attributions'))
+                self.notify_pi(membership)
+        else:
+            # No match, ask to create
+            self.request.session['FundingSourceAddIdentifier'] = identifier
+            messages.add_message(self.request, messages.INFO,
+                    "You have requested to attribute a funding source that does not yet exist in the system. "
+                    "Please include additional detail for our records.")
+            messages.add_message(self.request, messages.INFO,
+                "The PI will be notified and asked to attribute the funds to SCW. "
+                "Once this process is complete, you will be able to add the attribution to your project.")
+            return HttpResponseRedirect(reverse_lazy('create-funding-source')+popup)
         
-        # No match, ask to create
-        messages.add_message(self.request, messages.INFO, "You have requested access to a fundign source that does not yet exist in the system. "
-                                                          "Please include additional detail for our records.")
-        messages.add_message(self.request, messages.INFO, "The PI will be notified and asked to attribute the funds to SCW. "
-                                                          "Once this process is complete, you will be able to add the attribution to your project.")
-        return HttpResponseRedirect(reverse_lazy('create-funding-source'))
+        if self.request.GET.get('_popup'):
+            return HttpResponse('''
+                Closing popup
+                <script>
+                window.close();
+                </script>
+            ''')
+        return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
 
 class PublicationCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
