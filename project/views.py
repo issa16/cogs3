@@ -32,13 +32,14 @@ from project.models import RSEAllocation
 from project.models import ProjectUserMembership
 from project.openldap import update_openldap_project_membership
 from funding.models import Attribution
+from funding.models import Publication
 from funding.models import FundingSource
 
 
 def list_attributions(request):
-    attributions = Attribution.objects.filter(
+    attributions = Attribution.objects.filter(publication__in=Publication.objects.filter(
         owner=request.user
-    )
+    ))
 
     # Add any fundingsources with an approved user membership
     fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
