@@ -48,10 +48,10 @@ def update_openldap_user(profile):
         Profile.SUSPENDED,
         Profile.CLOSED,
     ]
-    #if profile.account_status == Profile.APPROVED:
-    #    if profile.scw_username:
-    #        user_api.activate_user_account.delay(user=profile.user)
-    #    else:
-    #        user_api.create_user.delay(user=profile.user)
-    #elif profile.account_status in deactivate_user_states:
-    #    user_api.deactivate_user_account.delay(user=profile.user)
+    if profile.account_status == Profile.APPROVED:
+        if profile.scw_username:
+            user_api.activate_user_account.delay(user=profile.user)
+        else:
+            user_api.create_user.delay(user=profile.user)
+    elif profile.account_status in deactivate_user_states:
+        user_api.deactivate_user_account.delay(user=profile.user)
