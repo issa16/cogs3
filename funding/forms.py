@@ -38,8 +38,7 @@ class FundingSourceForm(forms.ModelForm):
         cleaned_data = super().clean()
         email = cleaned_data['pi_email']
         domain = email.split('@')[1]
-        domains = list(Institution.objects.values_list('base_domain',flat=True))
-        if domain not in domains:
+        if not Institution.objects.filter(base_domain=domain).exists():
             raise forms.ValidationError(_(
                 'Needs to be a valid institutional email address.'
             ))
@@ -97,8 +96,7 @@ class FundingSourceApprovalForm(forms.ModelForm):
         cleaned_data = super().clean()
         email = cleaned_data['pi_email']
         domain = email.split('@')[1]
-        domains = list(Institution.objects.values_list('base_domain', flat=True))
-        if domain not in domains:
+        if not Institution.objects.filter(base_domain=domain).exists():
             raise forms.ValidationError(_(
                 'Needs to be a valid institutional email address.'
             ))
