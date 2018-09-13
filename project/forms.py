@@ -6,6 +6,8 @@ from common.util import email_user
 from project.models import Project, SystemAllocationRequest, RSEAllocation
 from project.models import ProjectUserMembership
 from funding.models import Attribution
+from funding.models import Publication
+from funding.models import FundingSource
 from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
 from users.models import CustomUser
@@ -223,7 +225,7 @@ class ProjectAssociatedForm(forms.ModelForm):
         return self.cleaned_data['project']
 
 
-class ProjectAddAttributionForm(forms.ModelForm):
+class ProjectManageAttributionForm(forms.ModelForm):
 
     class Meta:
         model = Project
@@ -232,12 +234,18 @@ class ProjectAddAttributionForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
+        owned_attributions = Attribution.objects.filter(
+            owner=self.user,
+        )
+        # This will filter funding sources according to the two keys in the memberships
+        fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
+            fundingsourcemembership__user=self.user,
+            fundingsourcemembership__approved=True,
+        ))
         self.fields['attributions'] = forms.ModelMultipleChoiceField(
             label='',
             widget=SelectMultipleTickbox(),
-            queryset=Attribution.objects.filter(
-                created_by=self.user
-            ),
+            queryset=(owned_attributions | fundingsources),
             required=False,
         )
 

@@ -90,7 +90,7 @@
 										{% trans "None yet" %}
 									{% endif %}
 									<br />
-									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Add attributions" %}</a>
+									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Manage attributions" %}</a>
 								</td>
 							</tr>
 						</tbody>
@@ -142,7 +142,7 @@
 					{% endif %}
 				</div>
 				{% if request.user.profile.institution.separate_allocation_requests %}
-				<a class='btn btn-primary' href="{% url 'create-allocation' %}">{% trans "New Allocation Request" %}</a>
+				<a class='btn btn-primary' href="{% url 'create-allocation' project.pk %}">{% trans "New Allocation Request" %}</a>
 				{% endif %}
 				{% if request.user.profile.institution.allows_rse_requests %}
 				<a class='btn btn-primary' href="{% url 'request-project-rse-time' project.pk %}">{% trans "New RSE time Request" %}</a>

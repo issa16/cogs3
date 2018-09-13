@@ -6,17 +6,16 @@
 {% block title %}{% trans "Funding Source" %}{% endblock %}
 {% block content %}
 	<div class="my-3 p-3 bg-white rounded box-shadow">
-		<div class="row">
-			<div class="col">
-				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>{% trans "Funding Source" %}</h4>
-				</div>
-				<form method="post" enctype="multipart/form-data" novalidate>
-					{% csrf_token %}
-					{% include 'includes/generic_form.html' with form=form %}
-					<button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
-				</form>
+		<div class="col">
+			<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+				<h4>{% trans "Funding Source" %}</h4>
 			</div>
+			{% include 'includes/messages.html'%}
+			<form method="post" enctype="multipart/form-data" novalidate>
+				{% csrf_token %}
+				{% include 'includes/generic_form.html' with form=form %}
+				<button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+			</form>
 		</div>
 	</div>
 	<script src="{% static "js/pi_email_checkbox.js" %}" ></script>

@@ -21,7 +21,7 @@ from django.views.generic.edit import FormView
 from users.models import CustomUser
 
 from project.forms import ProjectCreationForm
-from project.forms import ProjectAddAttributionForm
+from project.forms import ProjectManageAttributionForm
 from project.forms import SystemAllocationRequestCreationForm
 from project.forms import RSEAllocationRequestCreationForm
 from project.forms import ProjectUserInviteForm
@@ -32,12 +32,22 @@ from project.models import RSEAllocation
 from project.models import ProjectUserMembership
 from project.openldap import update_openldap_project_membership
 from funding.models import Attribution
+from funding.models import Publication
+from funding.models import FundingSource
 
 
 def list_attributions(request):
     attributions = Attribution.objects.filter(
-        created_by=request.user
-    ).all()
+        owner=request.user
+    )
+
+    # Add any fundingsources with an approved user membership
+    fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
+        fundingsourcemembership__user=request.user,
+        fundingsourcemembership__approved=True,
+    ))
+
+    attributions = attributions | fundingsources
     values = [{'title': a.title, 'id': a.id, 'type': a.type} for a in attributions]
     return JsonResponse({'results': list(values)})
 
@@ -82,7 +92,7 @@ class ProjectCreateView(AllocationCreateView):
 
 
 class ProjectAddAttributionView(PermissionAndLoginRequiredMixin, generic.UpdateView):
-    form_class = ProjectAddAttributionForm
+    form_class = ProjectManageAttributionForm
     context_object_name = 'project'
     model = Project
     template_name = 'project/add_attributions.html'
@@ -99,6 +109,11 @@ class ProjectAddAttributionView(PermissionAndLoginRequiredMixin, generic.UpdateV
     def get_success_url(self):
         return reverse_lazy('project-application-detail', args=[self.kwargs['pk']])
 
+    def form_invalid(self, form):
+        print('invalid form')
+        print(form.errors)
+        return self.render_to_response(self.get_context_data(form=form))
+
 
 class SystemAllocationCreateView(AllocationCreateView):
     form_class = SystemAllocationRequestCreationForm
@@ -106,6 +121,11 @@ class SystemAllocationCreateView(AllocationCreateView):
     success_message = _('Successfully submitted a system allocation application.')
     template_name = 'project/createallocation.html'
     permission_required = 'project.add_project'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['project'] = self.kwargs.get('project', None)
+        return kwargs
 
 
 class RSEAllocationCreateView(AllocationCreateView):

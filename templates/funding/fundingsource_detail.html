@@ -1,0 +1,83 @@
+<!-- templates/project/allocation_detail.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}{% trans "Funding Source details" %}{% endblock %}
+{% block content %}
+	<div class="my-3 px-3 pt-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4>{% trans "Funding Source" %}</h4>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+	  	  <div class="col">
+	  	  	{% include 'includes/messages.html'%}
+	  	  </div>
+	    </div>
+		<div class="row">
+			<div class="col">
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<tbody>
+							<tr>
+								<th scope="row">{% trans "Title" %}</th>
+								<td>{{grant.title}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Local Institutional Identifier" %}</th>
+								<td>{{grant.identifier}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Grant attributable to Supercomputing Wales (in £):" %}</th>
+								<td>{{grant.requirements_software}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Funding Body" %}</th>
+								<td>{{grant.funding_body}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Pi Email" %}</th>
+								<td>{{grant.pi_email}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Attribution Approved" %}</th>
+								<td>{{grant.approved}}</td>
+							</tr>
+						</tbody>
+					</table>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">{% trans "User" %}</th>
+                                <th scope="col">{% trans "Approved" %}</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for membership in grant.fundingsourcemembership_set.all %}
+                                <tr>
+                                    <td>{{membership.user}}</td>
+                                    <td>{% if membership.approved %} Approved {% else %} Awaiting Approval {% endif %} </td>
+                                    <td>
+                                        <form method="post" action="{% url 'toggle-funding_source_membership-approved' membership.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary">
+                                            {% if membership.approved %} Retract {% else %} Approve {% endif %}
+                                        </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
