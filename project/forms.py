@@ -234,19 +234,18 @@ class ProjectManageAttributionForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
-        publications = Attribution.objects.filter(publication__in=Publication.objects.filter(
-            created_by=self.user,
-        ))
+        owned_attributions = Attribution.objects.filter(
+            owner=self.user,
+        )
         # This will filter funding sources according to the two keys in the memberships
         fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
             fundingsourcemembership__user=self.user,
             fundingsourcemembership__approved=True,
-            approved=True,
         ))
         self.fields['attributions'] = forms.ModelMultipleChoiceField(
             label='',
             widget=SelectMultipleTickbox(),
-            queryset=(publications | fundingsources),
+            queryset=(owned_attributions | fundingsources),
             required=False,
         )
 

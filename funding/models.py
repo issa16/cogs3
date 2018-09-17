@@ -110,11 +110,6 @@ class Attribution(models.Model):
         verbose_name_plural = _('Attributions')
         ordering = ('created_time', )
     
-    def save(self, *args, **kwargs):
-        if not self.owner:
-            self.owner = self.created_by
-        super().save(*args, **kwargs)
-
 
 class FundingSource(Attribution):
     '''An individual funding source, such as a grant'''
@@ -268,3 +263,9 @@ class Publication(Attribution):
     class Meta:
         verbose_name_plural = _('Publications')
         ordering = ('created_time', )
+
+    def save(self, *args, **kwargs):
+        self.owner = self.created_by
+        super().save( *args, **kwargs )
+
+

@@ -17,7 +17,7 @@ class FundingBodyAdmin(SimpleHistoryAdmin):
 
 @admin.register(Attribution)
 class AttributionAdmin(SimpleHistoryAdmin):
-    list_display = ('title', )
+    list_display = ('title', 'created_by', 'owner' )
 
 
 @admin.register(FundingSourceMembership)

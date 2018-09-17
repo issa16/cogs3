@@ -109,6 +109,11 @@ class ProjectAddAttributionView(PermissionAndLoginRequiredMixin, generic.UpdateV
     def get_success_url(self):
         return reverse_lazy('project-application-detail', args=[self.kwargs['pk']])
 
+    def form_invalid(self, form):
+        print('invalid form')
+        print(form.errors)
+        return self.render_to_response(self.get_context_data(form=form))
+
 
 class SystemAllocationCreateView(AllocationCreateView):
     form_class = SystemAllocationRequestCreationForm
@@ -116,6 +121,11 @@ class SystemAllocationCreateView(AllocationCreateView):
     success_message = _('Successfully submitted a system allocation application.')
     template_name = 'project/createallocation.html'
     permission_required = 'project.add_project'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['project'] = self.kwargs.get('project', None)
+        return kwargs
 
 
 class RSEAllocationCreateView(AllocationCreateView):
