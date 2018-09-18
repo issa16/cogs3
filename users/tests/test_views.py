@@ -49,7 +49,7 @@ class RegisterViewTests(UserViewTests, TestCase):
         self.assertTrue(CustomUser.objects.filter(email=email).exists())
         user = CustomUser.objects.get(email=email)
         self.assertEqual(user.profile.account_status, Profile.AWAITING_APPROVAL)
-        self.assertFalse(user.get_all_permissions())
+        self.assertTrue(user.has_perm('project.add_project'))
 
     def test_register_view_as_unregistered_application_user(self):
         """

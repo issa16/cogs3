@@ -8,6 +8,7 @@ env:
 
 services:
   - mysql
+  - redis-server
 
 before_install:
   # Setup X to allow non-headless browsers to run

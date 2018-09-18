@@ -30,6 +30,7 @@ from project.models import Project
 from project.models import SystemAllocationRequest
 from project.models import RSEAllocation
 from project.models import ProjectUserMembership
+from project.notifications import project_membership_created
 from project.openldap import update_openldap_project_membership
 from funding.models import Attribution
 from funding.models import Publication
@@ -252,11 +253,12 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
         project = Project.objects.get(
             code=project_code,
         )
-        ProjectUserMembership.objects.create(
+        membership = ProjectUserMembership.objects.create(
             project=project,
             user=self.request.user,
             date_joined=datetime.date.today(),
         )
+        project_membership_created.delay(membership)
         return super().form_valid(form)
 
 
