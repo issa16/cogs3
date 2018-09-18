@@ -11,12 +11,12 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import ast
-import dj_database_url
 import os
 
+import dj_database_url
 from django.contrib.messages import constants as messages
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 from selenium import webdriver
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -147,7 +147,7 @@ LANGUAGE_CODE = 'en-gb'
 LOCALE_PATHS = ('locale', )
 TEMPLATE_CONTEXT_PROCESSORS = ('django.template.context_processors.i18n', )
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = True
 
