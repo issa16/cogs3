@@ -10,4 +10,9 @@
 	<p>
 		{% blocktrans %}Your Supercomputing Wales account has been {{status}}{% endblocktrans %}.
 	</p>
+	<p>
+		{% if status == "approved" %}
+			{% blocktrans %}Please now see the SCW Portal at https://portal.supercomputing.wales for information on how to join projects or apply for a new project.{% endblocktrans %}
+		{% endif %}
+	</p>
 {% endblock %}
