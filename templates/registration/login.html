@@ -7,8 +7,6 @@
         <img class="img-fluid" src="{% static "img/scw.png" %}" alt="{% trans "Supercomputing Wales" %}">
     </div>
     <div class="mx-auto mt-3 form-signin">
-        <div class="alert alert-success" role="alert">
-        </div>
         {% block form_content %}
             {% if request.session.shib_force_reauth %}
                 <div class="mx-auto mt-3">
