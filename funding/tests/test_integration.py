@@ -67,7 +67,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         self.get_url(reverse('list-attributions'))
         self.click_by_id('add_attribution_dropdown')
-        self.click_link_by_url(reverse('create-funding-source'))
+        self.click_link_by_url(reverse('add-funding-source'))
         self.fill_form_by_id(form_fields)
         self.select_from_dropdown_by_id('id_funding_body', 1)
         self.submit_form(form_fields)
