@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 
 from django.contrib.auth.models import Group
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.urls import reverse
 from django.utils.translation import activate
 
@@ -18,7 +18,7 @@ from users.models import Profile
 from funding.models import FundingBody
 
 
-class SeleniumTestsBase(StaticLiveServerTestCase):
+class SeleniumTestsBase(LiveServerTestCase):
     fixtures = [
         'institution/fixtures/institutions.json',
         'users/fixtures/tests/users.json',
