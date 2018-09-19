@@ -78,22 +78,27 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         # Add a funding source and include it
         self.click_by_id('fundingsources_dropdown')
         time.sleep(1)
-        self.click_link_by_url(reverse('create-funding-source')+'?_popup=1')
+        self.click_link_by_url(reverse('add-funding-source')+'?_popup=1')
 
         main_window_handle = self.selenium.current_window_handle
         self.selenium.switch_to.window(self.selenium.window_handles[1])
 
+        identifier_fields = {'id_identifier' : 'Identifier'}
+        self.fill_form_by_id(identifier_fields)
+        self.submit_form(identifier_fields)
+
         fundingsource_fields = {
             'id_title': 'Title',
-            'id_identifier': 'Id',
             'id_pi_email': self.user.email,
+            'id_amount': 2340983,
         }
-        self.select_from_dropdown_by_id('id_funding_body', 1)
         self.fill_form_by_id(fundingsource_fields)
+        self.select_from_dropdown_by_id('id_funding_body', 1)
+        time.sleep(1)
         self.submit_form(fundingsource_fields)
 
         self.selenium.switch_to.window(main_window_handle)
-        self.click_by_id('fundingsources_dropdown')
+
         time.sleep(1)
         self.click_by_id('id_attributions_0')
 
