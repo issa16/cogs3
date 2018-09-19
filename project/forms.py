@@ -49,6 +49,7 @@ class ProjectAdminForm(forms.ModelForm):
             'tech_lead',
             'category',
             'economic_user',
+            'custom_user_cap',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -348,6 +349,11 @@ class ProjectUserInviteForm(forms.Form):
             raise forms.ValidationError(_("You are currently a member of the project."))
         if ProjectUserMembership.objects.filter(project=project, user=user).exists():
             raise forms.ValidationError(_("A membership request for this project already exists."))
+        if not project.can_have_more_users():
+            raise forms.ValidationError(_(
+                "This project has reached its membership cap. "
+                "If you require more members, please contact support."
+            ))
 
         return email
 
@@ -385,6 +391,15 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
             return post_approved_options
         else:
             return pre_approved_options
+
+    def clean_status(self):
+        if (self.initial_status != ProjectUserMembership.AWAITING_AUTHORISED and
+            self.cleaned_data['status'] == ProjectUserMembership.AUTHORISED):
+            if not self.cleaned_data['project'].can_have_more_users():
+                raise forms.ValidationError(_(
+                    "This project has reached its membership cap. "
+                    "If you require more members, please contact support."
+                ))
 
     def save(self, commit=True):
         project_user_membership = super(ProjectUserMembershipAdminForm, self).save(commit=False)

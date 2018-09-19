@@ -11,10 +11,14 @@
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
 					{% if not project.is_awaiting_approval %}
 					<h4>{% trans "Project" %}</h4>
-						<a class="btn btn-primary" href="{% url 'project-membership-invite' project.pk %}" role="button">{% trans "Invite User" %}</a>
+						{% if project.can_have_new_members %}
+							<a class="btn btn-primary" href="{% url 'project-membership-invite' project.pk %}" role="button">{% trans "Invite User" %}</a>
+						{% else %}
+							<a class="btn btn-gray" data-toggle="tooltip" title="{% trans "This project has reached its membership cap. If you require more members, please contact support." %}">{% trans "Invite User" %}</a>
+						{% endif %}
 					{% else %}
 					<h4>{% trans "Project Application" %}</h4>
-						<button class="btn btn-gray" data-toggle="tooltip" title="Available after project is approved">{% trans "Invite User" %}</button>
+						<button class="btn btn-gray" data-toggle="tooltip" title="{% trans "Available after project is approved" %}">{% trans "Invite User" %}</button>
 					{% endif %}
 				</div>
 			</div>

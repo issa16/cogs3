@@ -130,6 +130,12 @@ class Project(models.Model):
         through='ProjectUserMembership',
         verbose_name=_('Members'),
     )
+
+    custom_user_cap = models.PositiveIntegerField(
+        verbose_name=_('Custom user cap'),
+        default=0,
+    )
+    
     AWAITING_APPROVAL = 0
     APPROVED = 1
     DECLINED = 2
@@ -147,6 +153,28 @@ class Project(models.Model):
 
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
+
+    def can_have_more_users(self):
+        if not self.custom_user_cap:
+            if not self.tech_lead.institution:
+                return True
+            elif not self.tech_lead.institution.default_project_user_cap:
+                return True
+            elif (self.tech_lead.institution.default_project_user_cap >=
+                  ProjectUserMembership.objects.filter(
+                      project=Project.objects.last(),
+                      status=ProjectUserMembership.AUTHORISED,
+                  ).count() + 1):
+                return True
+            else:
+                return False
+        elif (self.custom_user_cap >= ProjectUserMembership.objects.filter(
+                project=Project.objects.last(),
+                status=ProjectUserMembership.AUTHORISED,
+        ).count() + 1):
+            return True
+        else:
+            return False
 
     def get_allocation_requests(self):
         return SystemAllocationRequest.objects.filter(project=self.id).order_by('-start_date')
