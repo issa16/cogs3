@@ -152,7 +152,6 @@ class SystemAllocationRequestAdminForm(forms.ModelForm):
         allocation = super(SystemAllocationRequestAdminForm, self).save(commit=False)
         allocation.previous_status = self.initial_status
         if self.initial_status != allocation.status:
-            # TODO: Check if there is another open allocation
             update_openldap_project(allocation)
         if commit:
             allocation.save()
