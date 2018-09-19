@@ -22,7 +22,12 @@ def update_openldap_project(allocation):
         else:
             project_api.create_project.delay(project=project)
     elif project.status in deactivate_project_states:
-        project_api.deactivate_project.delay(project=project)
+        # Check for other approved allocations before deactivating
+        if not SystemAllocationRequest.objects.filter(
+            project=project,
+            status=SystemAllocationRequest.APPROVED
+        ).exists:
+            project_api.deactivate_project.delay(project=project)
 
 
 def update_openldap_project_membership(project_membership):
