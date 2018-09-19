@@ -92,23 +92,33 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         """
         self.sign_in(self.user)
 
-        form_fields = {
-            'id_title': 'Title',
+        first_form_fields = {
             'id_identifier': 'Id',
+        }
+
+        second_form_fields = {
+            'id_title': 'Title',
             'id_pi_email': self.user.email,
+            'id_amount': 11010
         }
 
         self.get_url(reverse('list-attributions'))
         self.click_by_id('add_attribution_dropdown')
-        self.click_link_by_url(reverse('create-funding-source'))
-        self.fill_form_by_id(form_fields)
+
+        # Fill and submit first form
+        self.click_link_by_url(reverse('add-funding-source'))
+        self.fill_form_by_id(first_form_fields)
+        self.submit_form(first_form_fields)
+
+        # Fill and submit second form
+        self.fill_form_by_id(second_form_fields)
         self.select_from_dropdown_by_id('id_funding_body', 1)
-        self.submit_form(form_fields)
+        self.submit_form(second_form_fields)
         if "This field is required." in self.selenium.page_source:
             raise AssertionError()
 
         # Check that the funding source was created
-        matching_sources = FundingSource.objects.filter(identifier=form_fields['id_identifier'])
+        matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
         if matching_sources.count() != 1:
             raise AssertionError()
 
@@ -117,14 +127,14 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Check the pi was identified correctly
         if funding_source.pi_email is not None:
-            raise AssertionError()
+            raise AssertionError('funding_source.pi_email is not None')
         if funding_source.pi != self.user:
-            raise AssertionError()
+            raise AssertionError('funding_source.pi is not a user')
 
         # Should be redirected to the list view
         if "funding/list/" not in self.selenium.current_url:
             raise AssertionError()
-        if form_fields['id_title'] not in self.selenium.page_source:
+        if second_form_fields['id_title'] not in self.selenium.page_source:
             raise AssertionError()
 
         # Click the update link and edit the title
@@ -163,6 +173,6 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
 
         # Check that the funding source was removed
-        matching_sources = FundingSource.objects.filter(identifier=form_fields['id_identifier'])
+        matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
         if matching_sources.count() != 0:
             raise AssertionError()
