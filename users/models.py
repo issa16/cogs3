@@ -5,6 +5,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from users.openldap import update_openldap_user
 
 from institution.models import Institution
 
@@ -93,6 +94,11 @@ class Profile(models.Model):
         verbose_name=_('Previous Status'),
     )
 
+    def activate(self):
+        self.status = self.APPROVED
+        self.save()
+        update_openldap_user(self)
+
     def get_account_status_choices(self):
         if Profile.STATUS_CHOICES[self.account_status] in Profile.POST_APPROVED_OPTIONS:
             return Profile.POST_APPROVED_OPTIONS
@@ -103,7 +109,10 @@ class Profile(models.Model):
         return True if self.account_status == Profile.AWAITING_APPROVAL else False
 
     def is_approved(self):
-        return True if self.account_status == Profile.APPROVED else False
+        if not self.institution.needs_user_approval or self.account_status == Profile.APPROVED:
+            return True
+        else:
+            return False
 
     def is_declined(self):
         return True if self.account_status == Profile.DECLINED else False

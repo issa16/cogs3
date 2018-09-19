@@ -30,6 +30,7 @@ class Institution(models.Model):
     local_repository_name = models.CharField(max_length=100, blank=True)
     local_repository_domain = models.CharField(max_length=100, blank=True)
     funding_database_name = models.CharField(max_length=100, blank=True)
+    needs_user_approval = models.BooleanField(default=False)
     logo_path = models.CharField(max_length=255, blank=True)
 
     @classmethod
