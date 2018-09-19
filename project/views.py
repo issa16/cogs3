@@ -344,7 +344,7 @@ class ProjectUserMembershipListView(LoginRequiredMixin, generic.ListView):
         return queryset.filter(user=self.request.user)
 
 
-class ProjectMembesrshipInviteView(PermissionRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, FormView):
+class ProjectMembershipInviteView(PermissionRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, FormView):
     ''' As tech lead, invite a user to the a project using an email address '''
     permission_required = 'project.change_projectusermembership'
     form_class = ProjectUserInviteForm
@@ -383,5 +383,6 @@ class ProjectMembesrshipInviteView(PermissionRequiredMixin, SuccessMessageMixin,
             user=user,
             initiated_by_user=False,
             date_joined=datetime.date.today(),
+            status=ProjectUserMembership.AUTHORISED,
         )
         return super().form_valid(form)
