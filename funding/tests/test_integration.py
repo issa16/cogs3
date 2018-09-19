@@ -17,25 +17,44 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         """
         self.sign_in(self.user)
 
+        identifier_form_fields = {
+            'id_identifier': 'Id',
+        }
+
         all_form_fields = {
             'id_title': 'Title',
-            'id_identifier': 'Id',
             'id_pi_email': self.user.email,
         }
 
         # Fill the project form with a field missing
         missing_fields = [
             'id_title',
-            'id_identifier',
             'id_pi_email',
         ]
+
+        # missing identifier field
+        self.get_url('')
+        self.click_link_by_url(reverse('list-attributions'))
+        self.click_by_id('add_attribution_dropdown')
+        self.click_link_by_url(reverse('add-funding-source'))
+        self.submit_form(identifier_form_fields)
+        if "This field is required." not in self.selenium.page_source:
+            raise AssertionError()
+
+        # other fields
         for missing_field in missing_fields:
             self.get_url('')
             self.click_link_by_url(reverse('list-attributions'))
             self.click_by_id('add_attribution_dropdown')
-            self.click_link_by_url(reverse('create-funding-source'))
+            self.click_link_by_url(reverse('add-funding-source'))
             form_field = dict(all_form_fields)
             form_field.pop(missing_field)
+
+            # fill first field
+            self.fill_form_by_id(identifier_form_fields)
+            self.submit_form(identifier_form_fields)
+
+            # fill second field
             self.fill_form_by_id(form_field)
             self.select_from_dropdown_by_id('id_funding_body', 1)
             self.submit_form(all_form_fields)
@@ -44,7 +63,13 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         self.get_url(reverse('list-attributions'))
         self.click_by_id('add_attribution_dropdown')
-        self.click_link_by_url(reverse('create-funding-source'))
+        self.click_link_by_url(reverse('add-funding-source'))
+
+        # fill first form
+        self.fill_form_by_id(identifier_form_fields)
+        self.submit_form(identifier_form_fields)
+
+        # fill in second form
         self.fill_form_by_id(all_form_fields)
         self.submit_form(all_form_fields)
         if "This field is required." not in self.selenium.page_source:
