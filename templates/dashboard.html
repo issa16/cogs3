@@ -37,7 +37,7 @@
 											<th>{% trans "Identity" %}</th>
 											<td>{{user.email}}</td>
 										</tr>
-										{% if user.profile.institution.needs_user_approval %}
+										{% if user.profile.institution and user.profile.institution.needs_user_approval %}
 										<tr>
 											<th>{% trans "Status" %}</th>
 											<td>{{user.profile.get_account_status_display }}</td>
@@ -80,22 +80,22 @@
 								<b>{% trans "Actions" %}</b>
 							</div>
 							<ul class="list-group list-group-flush">
-								{% if user.profile.is_approved %}
+								{% if user.profile.has_system_account %}
 									<li class="list-group-item d-flex justify-content-between align-items-center disabled">
 										<a href="https://portal.supercomputing.wales/index.php/index/accessing-the-system/">{% trans "Access SCW System" %}</a>
 									</li>
 									<li class="list-group-item d-flex justify-content-between align-items-center disabled">
 										<a href="#" data-toggle="modal" data-target="#password-reset-modal">{% trans "Reset SCW Password" %}</a>
 									</li>
-									{% if perms.project.add_project %}
-										<li class="list-group-item d-flex justify-content-between align-items-center">
-											{% if request.user.profile.institution.separate_allocation_requests %}
-												<a href="{% url 'create-project' %}">{% trans "Create a Project" %}</a>
-											{% else %}
-												<a href="{% url 'create-project-and-allocation' %}">{% trans "Create Project Application" %}</a>
-											{%endif%}
-										</li>
-									{% endif %}
+								{% endif %}
+								{% if perms.project.add_project %}
+									<li class="list-group-item d-flex justify-content-between align-items-center">
+										{% if request.user.profile.institution.separate_allocation_requests %}
+											<a href="{% url 'create-project' %}">{% trans "Create a Project" %}</a>
+										{% else %}
+											<a href="{% url 'create-project-and-allocation' %}">{% trans "Create Project Application" %}</a>
+										{%endif%}
+									</li>
 								{% endif %}
 								<li class="list-group-item d-flex justify-content-between align-items-center">
 									<a href="https://portal.supercomputing.wales/index.php/index/submit-support-ticket/">{% trans "Submit Support Ticket" %}</a>

@@ -314,9 +314,10 @@ class ProjectUserRequestMembershipUpdateView(LoginRequiredMixin, generic.UpdateV
         response = super().form_valid(form)
         if 'status' in form.changed_data:
             membership = form.instance
-            if (membership.status == ProjectUserMembership.AUTHORISED
-                    and not membership.user.profile.institution.needs_user_approval):
-                membership.user.profile.activate()
+            if membership.status == ProjectUserMembership.AUTHORISED:
+                user = membership.user
+                if user.profile.institution and membership.user.profile.institution.needs_user_approval:
+                    membership.user.profile.activate()
             update_openldap_project_membership(project_membership=form.instance)
         if self.request.is_ajax():
             return JsonResponse({'message': 'Successfully updated.'})

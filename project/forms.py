@@ -388,9 +388,10 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
     def save(self, commit=True):
         project_user_membership = super(ProjectUserMembershipAdminForm, self).save(commit=False)
         if self.initial_status != project_user_membership.status:
-            if (project_user_membership.status == ProjectUserMembership.AUTHORISED
-                    and not project_user_membership.user.profile.institution.needs_user_approval):
-                project_user_membership.user.profile.activate()
+            if project_user_membership.status == ProjectUserMembership.AUTHORISED:
+                user = project_user_membership.user
+                if user.profile.institution and user.profile.institution.needs_user_approval:
+                    user.profile.activate()
             update_openldap_project_membership(project_user_membership)
         if commit:
             project_user_membership.save()

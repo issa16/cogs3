@@ -109,7 +109,7 @@ class Profile(models.Model):
         return True if self.account_status == Profile.AWAITING_APPROVAL else False
 
     def is_approved(self):
-        if not self.institution.needs_user_approval or self.account_status == Profile.APPROVED:
+        if (self.institution and not self.institution.needs_user_approval) or self.account_status == Profile.APPROVED:
             return True
         else:
             return False
@@ -125,6 +125,9 @@ class Profile(models.Model):
 
     def is_closed(self):
         return True if self.account_status == Profile.CLOSED else False
+
+    def has_system_account(self):
+        return True if self.scw_username else False
 
     @property
     def institution(self):
