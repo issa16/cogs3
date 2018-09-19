@@ -37,7 +37,7 @@
 											<th>{% trans "Identity" %}</th>
 											<td>{{user.email}}</td>
 										</tr>
-										{% if user.profile.institution and user.profile.institution.needs_user_approval %}
+										{% if not user.profile.institution or user.profile.institution.needs_user_approval %}
 										<tr>
 											<th>{% trans "Status" %}</th>
 											<td>{{user.profile.get_account_status_display }}</td>
