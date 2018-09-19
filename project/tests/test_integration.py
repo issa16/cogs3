@@ -19,14 +19,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
     test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_file.txt')
 
-    default_project_form_fields = {
-        "id_title": "Test project",
-        "id_description": "This project aims to test the submission of projects",
-        "id_institution_reference": "test1",
-        "id_department": "SA2C",
-        "id_supervisor_name": "Joe Bloggs",
-        "id_supervisor_position": "RSE",
-        "id_supervisor_email": "joe.bloggs@swansea.ac.uk",
+    default_allocation_form_fields = {
         "id_start_date": "2018-09-17",
         "id_end_date": "2019-09-17",
         "id_requirements_software": "none",
@@ -37,6 +30,16 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         "id_allocation_storage_home": "200",
         "id_allocation_storage_scratch": "1",
         'id_document': test_file,
+    }
+
+    default_project_form_fields = {
+        "id_title": "Test project",
+        "id_description": "This project aims to test the submission of projects",
+        "id_institution_reference": "test1",
+        "id_department": "SA2C",
+        "id_supervisor_name": "Joe Bloggs",
+        "id_supervisor_position": "RSE",
+        "id_supervisor_email": "joe.bloggs@swansea.ac.uk",
     }
 
     def test_create_project_missing_fields(self):
@@ -65,7 +68,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.sign_in(self.user)
 
         self.get_url('')
-        self.click_link_by_url(reverse('create-project-and-allocation'))
+        self.click_link_by_url(reverse('create-project'))
 
         # Correctly fill the form
         self.fill_form_by_id(self.default_project_form_fields)
