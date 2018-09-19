@@ -76,7 +76,7 @@ class ProjectModelTests(TestCase):
         )
 
         # Create a funding body
-        name = 'A function source name'
+        name = 'A funding source name'
         description = 'A funding source description'
         self.funding_body = FundingBodyTests.create_funding_body(
             name=name,

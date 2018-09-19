@@ -37,7 +37,7 @@ class FundingBodyTests(TestCase):
         """
         Ensure we can create a FundingBody instance.
         """
-        name = 'A function source name'
+        name = 'A funding source name'
         description = 'A funding source description'
         funding_body = self.create_funding_body(
             name=name,
