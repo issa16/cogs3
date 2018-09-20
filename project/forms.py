@@ -10,6 +10,7 @@ from funding.models import FundingSource
 from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
 from users.models import CustomUser
+from institution.models import Institution
 
 
 class FileLinkWidget(forms.Widget):
@@ -195,6 +196,19 @@ class ProjectCreationForm(forms.ModelForm):
             ),
             required=False,
         )
+
+    def clean_supervisor_email(self):
+        cleaned_data = super().clean()
+        try:
+            email = cleaned_data['supervisor_email']
+            domain = email.split('@')[1]
+            if Institution.objects.filter(base_domain=domain).exists():
+                return email
+        except:
+            pass
+        raise forms.ValidationError(_(
+            'Needs to be a valid institutional email address.'
+        ))
 
     def clean(self):
         self.instance.tech_lead = self.user

@@ -35,6 +35,7 @@ from project.notifications import project_membership_created
 from project.openldap import update_openldap_project_membership
 from funding.models import Attribution
 from funding.models import FundingSource
+from common.util import email_user
 
 
 def list_attributions(request):
@@ -87,6 +88,27 @@ class ProjectCreateView(AllocationCreateView):
     template_name = 'project/create.html'
     permission_required = 'project.add_project'
 
+    def notify_supervisor(self, project):
+        subject = _('{company_name} Project Created'.format(company_name=settings.COMPANY_NAME))
+        context = {
+            'university': project.tech_lead.profile.institution.name,
+            'technical_lead': project.tech_lead,
+            'title': project.title,
+            'to': project.supervisor_email,
+            'id': project.id,
+        }
+        email_user(
+            subject,
+            context,
+            'notifications/project/supervisor_created.txt',
+            'notifications/project/supervisor_created.html',
+        )
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.notify_supervisor(self.object)
+        return response
+
     def get_success_url(self):
         return reverse_lazy('project-application-detail', args=[self.object.id])
 
@@ -113,7 +135,6 @@ class ProjectAddAttributionView(PermissionAndLoginRequiredMixin, generic.UpdateV
         return self.render_to_response(self.get_context_data(form=form))
 
 
-#the url for autoredirection is http://127.0.0.1:8000/en/accounts/login/?next=/en/projects/applications/20/supervisor-approve/
 class ProjectSupervisorApproveView(SuccessMessageMixin, generic.UpdateView):
     context_object_name = 'project'
     model = Project
