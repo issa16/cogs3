@@ -542,7 +542,7 @@ class RSEAllocation(models.Model):
         help_text=_('Internal notes'),
         verbose_name=_('Notes'),
     )
-    
+
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     start_date = models.DateField(null=True)
