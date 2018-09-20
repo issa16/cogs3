@@ -551,7 +551,6 @@ class RSEAllocation(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        #import pdb; pdb.set_trace()
         data = {
             'title': self.title,
             'duration': self.duration
