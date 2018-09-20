@@ -37,7 +37,9 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.click_link_by_url(reverse('list-attributions'))
         self.click_by_id('add_attribution_dropdown')
         self.click_link_by_url(reverse('add-funding-source'))
+        self.fill_form_by_id({})
         self.submit_form(identifier_form_fields)
+
         if "This field is required." not in self.selenium.page_source:
             raise AssertionError()
 

@@ -55,7 +55,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         ]
         for missing_field in missing_fields:
             self.get_url('')
-            self.click_link_by_url(reverse('create-project-and-allocation'))
+            self.click_link_by_url(reverse('create-project'))
             form_field = dict(self.default_project_form_fields)
             form_field.pop(missing_field)
             self.fill_form_by_id(form_field)
@@ -237,7 +237,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         assert project.code in self.selenium.page_source
         self.select_from_first_dropdown(1)
 
-        assert project_membership == ProjectUserMembership.AUTHORISED
+        assert project_membership.status == ProjectUserMembership.AUTHORISED
 
         # Delete the project and check the user was deleted from project_owners
         project.delete()
