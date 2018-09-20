@@ -33,7 +33,6 @@ from project.models import ProjectUserMembership
 from project.notifications import project_membership_created
 from project.openldap import update_openldap_project_membership
 from funding.models import Attribution
-from funding.models import Publication
 from funding.models import FundingSource
 
 
@@ -45,11 +44,10 @@ def list_attributions(request):
     # Add any fundingsources with an approved user membership
     fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
         fundingsourcemembership__user=request.user,
-        fundingsourcemembership__approved=True,
     ))
 
     attributions = attributions | fundingsources
-    values = [{'title': a.title, 'id': a.id, 'type': a.type} for a in attributions]
+    values = [{'title': a.string(request.user), 'id': a.id, 'type': a.type} for a in attributions]
     return JsonResponse({'results': list(values)})
 
 
