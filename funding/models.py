@@ -103,13 +103,16 @@ class Attribution(models.Model):
 
     history = HistoricalRecords()
 
-    def __str__(self):
-        return self.title
+    def string(self, user=False):
+        try:
+            return self.fundingsource.string(user)
+        except self._meta.model.fundingsource.RelatedObjectDoesNotExist:
+            return self.title
 
     class Meta:
         verbose_name_plural = _('Attributions')
         ordering = ('created_time', )
-    
+
 
 class FundingSource(Attribution):
     '''An individual funding source, such as a grant'''
@@ -153,6 +156,18 @@ class FundingSource(Attribution):
     )
 
     history = HistoricalRecords()
+
+    def string(self, user=False):
+        if user is not False:
+            if self.approved:
+                if FundingSourceMembership.objects.filter(
+                    fundingsource=self,
+                    user=user,
+                    approved=True
+                ).exists():
+                    return self.title
+            return self.title + ' (awaiting approval)'
+        return self.title
 
     class Meta:
         verbose_name_plural = _('Funding Sources')

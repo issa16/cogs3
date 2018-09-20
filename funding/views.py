@@ -101,24 +101,14 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         fundingsource.created_by = self.request.user
         fundingsource.save()
 
-        if institution.needs_funding_approval:
-            self.notify_pi(fundingsource)
-            if self.request.GET.get('_popup'):
-                return HttpResponse('''
-                    Closing popup
-                    <script>
-                    window.close();
-                    </script>
-                '''.format())
-        else:
-            if self.request.GET.get('_popup'):
-                return HttpResponse('''
-                    Closing popup
-                    <script>
-                    opener.updateField({new_id});
-                    window.close();
-                    </script>
-                '''.format(new_id=fundingsource.id))
+        if self.request.GET.get('_popup'):
+            return HttpResponse('''
+                Closing popup
+                <script>
+                opener.updateField({new_id});
+                window.close();
+                </script>
+            '''.format(new_id=fundingsource.id))
         return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
 
@@ -207,22 +197,13 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
             return HttpResponseRedirect(reverse_lazy('create-funding-source')+popup)
         
         if self.request.GET.get('_popup'):
-            if fundingsource.pi.profile.institution.needs_funding_approval:
-                return HttpResponse('''
-                    Closing popup
-                    <script>
-                    window.close();
-                    </script>
-                ''')
-            else:
-                if self.request.GET.get('_popup'):
-                    return HttpResponse('''
-                        Closing popup
-                        <script>
-                        opener.updateField({new_id});
-                        window.close();
-                        </script>
-                    '''.format(new_id=fundingsource.id))
+            return HttpResponse('''
+                Closing popup
+                <script>
+                opener.updateField({new_id});
+                window.close();
+                </script>
+            '''.format(new_id=fundingsource.id))
         return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
 
