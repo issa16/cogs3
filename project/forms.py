@@ -44,6 +44,7 @@ class ProjectAdminForm(forms.ModelForm):
             'supervisor_name',
             'supervisor_position',
             'supervisor_email',
+            'approved_by_supervisor',
             'attributions',
             'tech_lead',
             'category',
@@ -246,7 +247,24 @@ class ProjectManageAttributionForm(forms.ModelForm):
             required=False,
         )
 
-    
+
+class ProjectSupervisorApproveForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = ['approved_by_supervisor']
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    def clean(self):
+        if self.instance.supervisor_email != self.user.email:
+            raise forms.ValidationError(_(
+                'You are not the supervisor of this project.'
+            ))
+
+
 class SystemAllocationRequestCreationForm(ProjectAssociatedForm):
 
     class Meta:
@@ -269,7 +287,6 @@ class SystemAllocationRequestCreationForm(ProjectAssociatedForm):
             'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
             'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
         }
-
 
 
 class RSEAllocationRequestCreationForm(ProjectAssociatedForm):

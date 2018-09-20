@@ -99,6 +99,11 @@ class Project(models.Model):
         verbose_name=_("Project Leader's email"),
         blank=True,
     )
+    approved_by_supervisor = models.BooleanField(
+        default=False,
+        verbose_name=_('Confirmed by Supervisor'),
+    )
+
     attributions = models.ManyToManyField(
         Attribution,
         blank=True,

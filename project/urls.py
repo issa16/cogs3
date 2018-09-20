@@ -49,6 +49,11 @@ urlpatterns = [
         name='project-add-attributions',
     ),
     path(
+        'applications/<int:pk>/supervisor-approve/',
+        views.ProjectSupervisorApproveView.as_view(),
+        name='project-supervisor-approval',
+    ),
+    path(
         'applications/<int:project>/rse-time-application/',
         views.RSEAllocationCreateView.as_view(),
         name='request-project-rse-time',
