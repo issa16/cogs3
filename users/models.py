@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import Permission
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
@@ -8,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from users.openldap import update_openldap_user
 
 from institution.models import Institution
+from users.notifications import user_created_notification
 
 
 class Profile(models.Model):
@@ -152,7 +154,7 @@ class Profile(models.Model):
 
 class ShibbolethProfile(Profile):
     shibboleth_id = models.CharField(
-        max_length=50,
+        max_length=254,
         blank=True,
         help_text=_('Institutional address'),
     )
@@ -247,10 +249,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         'username',
-        max_length=150,
+        max_length=254,
         unique=True,
         help_text=_(
-            'Required. 150 characters or fewer. '
+            'Required. 254 characters or fewer. '
             'Letters, digits and @/./+/-/_ only.'
         ),
         validators=[username_validator],
@@ -258,7 +260,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             'unique': _("A user with that username already exists."),
         },
     )
-    email = models.EmailField(unique=True, null=True)
+    email = models.EmailField(
+        unique=True,
+        null=True,
+        max_length=254,
+    )
     is_shibboleth_login_required = models.BooleanField(
         default=True,
         help_text=_(
@@ -326,13 +332,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         if self.is_shibboleth_login_required:
             _, domain = self.email.split('@')
             institution = Institution.objects.get(base_domain=domain)
-            ShibbolethProfile.objects.update_or_create(
+            obj, created = ShibbolethProfile.objects.update_or_create(
                 user=self,
                 defaults={
                     'shibboleth_id': self.email,
                     'institution': institution,
                 },
             )
+            # Shibboleth users by default should be able to create project applications.
+            if created:
+                if not obj.user.has_perm('project.add_project'):
+                    permission = Permission.objects.get(codename='add_project')
+                    obj.user.user_permissions.add(permission)
+                user_created_notification.delay(obj.user)
         else:
             Profile.objects.update_or_create(user=self)
         self.profile.save()

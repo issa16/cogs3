@@ -44,6 +44,12 @@ DEBUG = ast.literal_eval(os.environ.get('DEBUG', 'False'))
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+SECURE_CONTENT_TYPE_NOSNIFF = ast.literal_eval(os.environ.get('SECURE_CONTENT_TYPE_NOSNIFF', 'True'))
+SECURE_BROWSER_XSS_FILTER = ast.literal_eval(os.environ.get('SECURE_BROWSER_XSS_FILTER', 'True'))
+SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get('SESSION_COOKIE_SECURE', 'True'))
+CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get('CSRF_COOKIE_SECURE', 'True'))
+X_FRAME_OPTIONS = os.environ.get('X_FRAME_OPTIONS')
+
 # Allow all host headers
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS')
 
@@ -180,6 +186,7 @@ MESSAGE_TAGS = {
 }
 
 # Email
+DEFAULT_SUPPORT_EMAIL = os.environ.get('DEFAULT_SUPPORT_EMAIL')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 DEFAULT_BCC_EMAIL = os.environ.get('DEFAULT_BCC_EMAIL')
 DEFAULT_CONTACT_EMAIL = os.environ.get('DEFAULT_CONTACT_EMAIL')
@@ -190,7 +197,7 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', False)
+EMAIL_USE_TLS = ast.literal_eval(os.environ.get('EMAIL_USE_TLS', 'False'))
 
 # Shibboleth
 SHIBBOLETH_IDENTITY_PROVIDER_LOGIN = os.environ.get('SHIBBOLETH_IDENTITY_PROVIDER_LOGIN')

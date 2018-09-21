@@ -136,7 +136,7 @@ class SystemAllocationCreateViewTests(ProjectViewTests, TestCase):
             'REMOTE_USER': self.project_applicant.email,
         }
         response = self.client.get(
-            reverse('create-allocation'),
+            reverse('create-allocation', args=[self.project.id]),
             **headers,
         )
         self.assertEqual(response.status_code, 302)
@@ -152,7 +152,7 @@ class SystemAllocationCreateViewTests(ProjectViewTests, TestCase):
             'REMOTE_USER': self.project_owner.email,
         }
         response = self.client.get(
-            reverse('create-allocation'),
+            reverse('create-allocation', args=[self.project.id]),
             **headers,
         )
         self.assertEqual(response.status_code, 200)
@@ -164,8 +164,8 @@ class SystemAllocationCreateViewTests(ProjectViewTests, TestCase):
         Ensure the project create view is not accessible to an unauthorised application user.
         """
         self._access_view_as_unauthorised_application_user(
-            reverse('create-allocation'),
-            '/en-gb/accounts/login/?next=/en-gb/projects/create-allocation/',
+            reverse('create-allocation', args=[self.project.id]),
+            f'/en-gb/accounts/login/?next=/en-gb/projects/{self.project.id}/create-allocation/',
         )
 
 

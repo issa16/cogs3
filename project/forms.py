@@ -6,11 +6,11 @@ from common.util import email_user
 from project.models import Project, SystemAllocationRequest, RSEAllocation
 from project.models import ProjectUserMembership
 from funding.models import Attribution
-from funding.models import Publication
 from funding.models import FundingSource
 from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
 from users.models import CustomUser
+from institution.models import Institution
 
 
 class FileLinkWidget(forms.Widget):
@@ -45,6 +45,7 @@ class ProjectAdminForm(forms.ModelForm):
             'supervisor_name',
             'supervisor_position',
             'supervisor_email',
+            'approved_by_supervisor',
             'attributions',
             'tech_lead',
             'category',
@@ -153,7 +154,6 @@ class SystemAllocationRequestAdminForm(forms.ModelForm):
         allocation = super(SystemAllocationRequestAdminForm, self).save(commit=False)
         allocation.previous_status = self.initial_status
         if self.initial_status != allocation.status:
-            # TODO: Check if there is another open allocation
             update_openldap_project(allocation)
         if commit:
             allocation.save()
@@ -198,6 +198,19 @@ class ProjectCreationForm(forms.ModelForm):
             required=False,
         )
 
+    def clean_supervisor_email(self):
+        cleaned_data = super().clean()
+        try:
+            email = cleaned_data['supervisor_email']
+            domain = email.split('@')[1]
+            if Institution.objects.filter(base_domain=domain).exists():
+                return email
+        except:
+            pass
+        raise forms.ValidationError(_(
+            'Needs to be a valid institutional email address.'
+        ))
+
     def clean(self):
         self.instance.tech_lead = self.user
         if self.instance.tech_lead.profile.institution is None:
@@ -238,10 +251,9 @@ class ProjectManageAttributionForm(forms.ModelForm):
         owned_attributions = Attribution.objects.filter(
             owner=self.user,
         )
-        # This will filter funding sources according to the two keys in the memberships
+        # Also get funding sources the user is a member of
         fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
             fundingsourcemembership__user=self.user,
-            fundingsourcemembership__approved=True,
         ))
         self.fields['attributions'] = forms.ModelMultipleChoiceField(
             label='',
@@ -249,6 +261,23 @@ class ProjectManageAttributionForm(forms.ModelForm):
             queryset=(owned_attributions | fundingsources),
             required=False,
         )
+
+
+class ProjectSupervisorApproveForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = ['approved_by_supervisor']
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    def clean(self):
+        if self.instance.supervisor_email != self.user.email:
+            raise forms.ValidationError(_(
+                'You are not the supervisor of this project.'
+            ))
 
 
 class SystemAllocationRequestCreationForm(ProjectAssociatedForm):

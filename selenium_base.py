@@ -99,7 +99,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
     def setUp(self):
         # Create a funding body
         self.funding_body = FundingBody(
-            name='A function source name',
+            name='A funding source name',
             description='A funding source description',
         )
         self.funding_body.save()

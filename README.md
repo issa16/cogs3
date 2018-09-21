@@ -6,13 +6,8 @@
 [![Code Health](https://landscape.io/github/tystakartografen/cogs3/master/landscape.svg?style=flat)](https://landscape.io/github/tystakartografen/cogs3/master)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/tystakartografen/cogs3/blob/master/LICENSE.md)
 
-- [Demo](#demo)
 - [Sequence Diagrams](#sequence-diagrams)
 - [Getting started](#getting-started)
-
-#### Demo
-
-[Development server](https://scw.bangor.ac.uk/)
 
 #### Sequence Diagrams
 
