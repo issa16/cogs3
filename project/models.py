@@ -162,11 +162,11 @@ class Project(models.Model):
 
     def can_have_more_users(self):
         if not self.custom_user_cap:
-            if not self.tech_lead.institution:
+            if not self.tech_lead.profile.institution:
                 return True
-            elif not self.tech_lead.institution.default_project_user_cap:
+            elif not self.tech_lead.profile.default_project_user_cap:
                 return True
-            elif (self.tech_lead.institution.default_project_user_cap >=
+            elif (self.tech_lead.profile.default_project_user_cap >=
                   ProjectUserMembership.objects.filter(
                       project=Project.objects.last(),
                       status=ProjectUserMembership.AUTHORISED,
