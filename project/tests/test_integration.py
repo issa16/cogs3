@@ -10,6 +10,7 @@ from django.urls import reverse
 from project.models import Project
 from project.models import SystemAllocationRequest
 from project.models import ProjectUserMembership
+from users.models import Profile
 
 
 class ProjectIntegrationTests(SeleniumTestsBase):
@@ -63,7 +64,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             if "This field is required." not in self.selenium.page_source:
                 raise AssertionError()
 
-    def test_create_project(self):
+    def project_create_workflow(self):
 
         self.sign_in(self.user)
 
@@ -178,7 +179,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if 'Successfully submitted a project membership request' not in self.selenium.page_source:
             raise AssertionError()
 
-        # Try an invalid code
+        # Try an incorrect code
         self.get_url('')
         self.fill_form_by_id({'project_code': 'Invalidcode1'})
         self.submit_form({'project_code': project.code})
@@ -228,7 +229,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.get_url('')
         self.click_link_by_url(reverse('project-user-membership-request-list'))
         assert self.external.email in self.selenium.page_source
-        assert 'Awaiting Authorisation' in self.selenium.page_source
+        assert 'Authorised' in self.selenium.page_source
 
         # Login as external and authorise the invitation
         self.log_out()
@@ -244,6 +245,17 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         project.delete()
         if self.user.groups.filter(name='project_owner').exists():
             raise AssertionError()
+
+    def test_create_project_with_authorised_user(self):
+        self.project_create_workflow()
+
+    def test_create_project_without_user_authorisation(self):
+        institution = self.user.profile.institution
+        institution.needs_user_approval = False
+        institution.save()
+        self.user.profile.account_status = Profile.AWAITING_APPROVAL
+        self.user.profile.save()
+        self.project_create_workflow()
 
     def test_create_project_external(self):
         """
