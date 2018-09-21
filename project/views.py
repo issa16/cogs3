@@ -106,7 +106,10 @@ class ProjectCreateView(AllocationCreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        self.notify_supervisor(self.object)
+        project = self.object
+        institution = project.tech_lead.profile.institution
+        if(institution.needs_supervisor_approval):
+            self.notify_supervisor(project)
         return response
 
     def get_success_url(self):
