@@ -82,7 +82,7 @@
       "local_repository_domain": "",
       "funding_database_name": "",
       "default_project_user_cap": 10,
-      "needs_user_approval", false,
+      "needs_user_approval": false,
       "logo_path": "/static/img/aberystwyth_logo.png"
     }
   }
