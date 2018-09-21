@@ -65,7 +65,7 @@ urlpatterns = [
     ),
     path(
         'applications/<int:pk>/invite-user',
-        views.ProjectMembesrshipInviteView.as_view(),
+        views.ProjectMembershipInviteView.as_view(),
         name='project-membership-invite',
     ),
     path(
