@@ -134,6 +134,28 @@
     }
   },
   {
+    "model": "users.customuser",
+    "pk": 7,
+    "fields": {
+      "password": "pbkdf2_sha256$100000$pDsB4aYMG1pK$Llfae4PRrAiNzFhsuWWWyb758Mjxvzsb2jW1B2ebpgU=",
+      "last_login": "2018-06-26T12:16:52.434Z",
+      "username": "test.user@example2.ac.uk",
+      "email": "test.user@example2.ac.uk",
+      "is_shibboleth_login_required": true,
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "created_at": "2018-06-26T10:50:45.805Z",
+      "updated_at": "2018-06-26T12:16:34.736Z",
+      "first_name": "",
+      "last_name": "",
+      "reason_for_account": "testing",
+      "accepted_terms_and_conditions": false,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
     "model": "users.shibbolethprofile",
     "pk": 1,
     "fields": {
@@ -178,6 +200,19 @@
     "fields": {
       "shibboleth_id": "preregistered.user@example.ac.uk",
       "institution": 1,
+      "department": "Departmental Studies",
+      "orcid": "xxxxxxxxxxxxxxxx",
+      "scopus": "http://example.ac.uk/scopus",
+      "homepage": "http://example.ac.uk/homepage",
+      "cronfa": "http://example.ac.uk/cronfa"
+    }
+  },
+  {
+    "model": "users.shibbolethprofile",
+    "pk": 7,
+    "fields": {
+      "shibboleth_id": "test.user@example2.ac.uk",
+      "institution": 2,
       "department": "Departmental Studies",
       "orcid": "xxxxxxxxxxxxxxxx",
       "scopus": "http://example.ac.uk/scopus",
@@ -284,6 +319,23 @@
       "description": "",
       "phone": "00000-000-000",
       "account_status": 1,
+      "previous_account_status": 0
+    }
+  },
+  {
+    "model": "users.profile",
+    "pk": 7,
+    "fields": {
+      "user": 7,
+      "scw_username": "test.user@example2.ac.uk",
+      "hpcw_username": "",
+      "hpcw_email": "",
+      "raven_username": "",
+      "raven_email": "",
+      "uid_number": null,
+      "description": "",
+      "phone": "00000-000-000",
+      "account_status": 0,
       "previous_account_status": 0
     }
   }
