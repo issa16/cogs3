@@ -164,9 +164,9 @@ class Project(models.Model):
         if not self.custom_user_cap:
             if not self.tech_lead.profile.institution:
                 return True
-            elif not self.tech_lead.profile.default_project_user_cap:
+            elif not self.tech_lead.profile.institution.default_project_user_cap:
                 return True
-            elif (self.tech_lead.profile.default_project_user_cap >=
+            elif (self.tech_lead.profile.institution.default_project_user_cap >=
                   ProjectUserMembership.objects.filter(
                       project=Project.objects.last(),
                       status=ProjectUserMembership.AUTHORISED,
