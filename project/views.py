@@ -22,6 +22,7 @@ from users.models import CustomUser
 
 from project.forms import ProjectCreationForm
 from project.forms import ProjectManageAttributionForm
+from project.forms import ProjectSupervisorApproveForm
 from project.forms import SystemAllocationRequestCreationForm
 from project.forms import RSEAllocationRequestCreationForm
 from project.forms import ProjectUserInviteForm
@@ -34,6 +35,7 @@ from project.notifications import project_membership_created
 from project.openldap import update_openldap_project_membership
 from funding.models import Attribution
 from funding.models import FundingSource
+from common.util import email_user
 
 
 def list_attributions(request):
@@ -86,6 +88,30 @@ class ProjectCreateView(AllocationCreateView):
     template_name = 'project/create.html'
     permission_required = 'project.add_project'
 
+    def notify_supervisor(self, project):
+        subject = _('{company_name} Project Created'.format(company_name=settings.COMPANY_NAME))
+        context = {
+            'university': project.tech_lead.profile.institution.name,
+            'technical_lead': project.tech_lead,
+            'title': project.title,
+            'to': project.supervisor_email,
+            'id': project.id,
+        }
+        email_user(
+            subject,
+            context,
+            'notifications/project/supervisor_created.txt',
+            'notifications/project/supervisor_created.html',
+        )
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        project = self.object
+        institution = project.tech_lead.profile.institution
+        if(institution.needs_supervisor_approval):
+            self.notify_supervisor(project)
+        return response
+
     def get_success_url(self):
         return reverse_lazy('project-application-detail', args=[self.object.id])
 
@@ -109,9 +135,39 @@ class ProjectAddAttributionView(PermissionAndLoginRequiredMixin, generic.UpdateV
         return reverse_lazy('project-application-detail', args=[self.kwargs['pk']])
 
     def form_invalid(self, form):
-        print('invalid form')
-        print(form.errors)
         return self.render_to_response(self.get_context_data(form=form))
+
+
+class ProjectSupervisorApproveView(SuccessMessageMixin, generic.UpdateView):
+    context_object_name = 'project'
+    model = Project
+    template_name = 'project/supervisor_approve.html'
+    success_message = _('Thank you. The project has been submitted to Supercomputing Wales')
+    redirect_field_name = '3'
+
+    def request_allowed(self, request):
+        # Check that the user is the supervisor
+        project = self.get_object()
+        try:
+            return project.supervisor_email == request.user.email
+        except Exception:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request_allowed(request):
+            return HttpResponseRedirect(reverse('home'))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form(self, form_class=None):
+        return ProjectSupervisorApproveForm(self.request.user, **self.get_form_kwargs())
+
+    def get_success_url(self):
+        return reverse_lazy('project-application-detail', args=[self.kwargs['pk']])
+
+    def form_valid(self, form):
+        project = form.save(commit=False)
+        project.approved_by_supervisor = True
+        return super().form_valid(form)
 
 
 class SystemAllocationCreateView(AllocationCreateView):
