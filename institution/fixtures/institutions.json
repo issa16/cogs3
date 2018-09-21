@@ -19,6 +19,8 @@
       "local_repository_name": "Cronfa",
       "local_repository_domain": "cronfa.swansea.ac.uk",
       "funding_database_name": "AMS",
+      "default_project_user_cap": 10,
+      "needs_user_approval": false,
       "logo_path": "/static/img/swansea_logo.png"
     }
   },
@@ -79,6 +81,8 @@
       "local_repository_name": "",
       "local_repository_domain": "",
       "funding_database_name": "",
+      "default_project_user_cap": 10,
+      "needs_user_approval", false,
       "logo_path": "/static/img/aberystwyth_logo.png"
     }
   }

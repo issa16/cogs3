@@ -316,12 +316,11 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
         return super().form_valid(form)
 
 
-class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, generic.ListView):
+class ProjectUserRequestMembershipListView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'project_user_membership_requests'
     paginate_by = 50
     model = ProjectUserMembership
     template_name = 'project/membership/requests.html'
-    permission_required = 'project.change_projectusermembership'
     ordering = ['-created_time']
 
     def get_queryset(self):
@@ -334,12 +333,11 @@ class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, gene
         return queryset.exclude(user=self.request.user)
 
 
-class ProjectUserRequestMembershipUpdateView(PermissionAndLoginRequiredMixin, generic.UpdateView):
+class ProjectUserRequestMembershipUpdateView(LoginRequiredMixin, generic.UpdateView):
     success_url = reverse_lazy('project-user-membership-request-list')
     context_object_name = 'project_user_membership_requests'
     model = ProjectUserMembership
     fields = ['status']
-    permission_required = 'project.change_projectusermembership'
     ordering = ['date_joined']
 
     def request_allowed(self, request):
@@ -371,6 +369,11 @@ class ProjectUserRequestMembershipUpdateView(PermissionAndLoginRequiredMixin, ge
     def form_valid(self, form):
         response = super().form_valid(form)
         if 'status' in form.changed_data:
+            membership = form.instance
+            if membership.status == ProjectUserMembership.AUTHORISED:
+                user = membership.user
+                if user.profile.institution and membership.user.profile.institution.needs_user_approval:
+                    membership.user.profile.activate()
             update_openldap_project_membership(project_membership=form.instance)
         if self.request.is_ajax():
             return JsonResponse({'message': 'Successfully updated.'})
@@ -397,7 +400,7 @@ class ProjectUserMembershipListView(LoginRequiredMixin, generic.ListView):
         return queryset.filter(user=self.request.user)
 
 
-class ProjectMembesrshipInviteView(PermissionRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, FormView):
+class ProjectMembershipInviteView(PermissionRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, FormView):
     ''' As tech lead, invite a user to the a project using an email address '''
     permission_required = 'project.change_projectusermembership'
     form_class = ProjectUserInviteForm
@@ -436,5 +439,6 @@ class ProjectMembesrshipInviteView(PermissionRequiredMixin, SuccessMessageMixin,
             user=user,
             initiated_by_user=False,
             date_joined=datetime.date.today(),
+            status=ProjectUserMembership.AUTHORISED,
         )
         return super().form_valid(form)

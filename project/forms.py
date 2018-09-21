@@ -50,6 +50,7 @@ class ProjectAdminForm(forms.ModelForm):
             'tech_lead',
             'category',
             'economic_user',
+            'custom_user_cap',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -376,6 +377,11 @@ class ProjectUserInviteForm(forms.Form):
             raise forms.ValidationError(_("You are currently a member of the project."))
         if ProjectUserMembership.objects.filter(project=project, user=user).exists():
             raise forms.ValidationError(_("A membership request for this project already exists."))
+        if not project.can_have_more_users():
+            raise forms.ValidationError(_(
+                "This project has reached its membership cap. "
+                "If you require more members, please contact support."
+            ))
 
         return email
 
@@ -414,9 +420,22 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
         else:
             return pre_approved_options
 
+    def clean_status(self):
+        if (self.initial_status != ProjectUserMembership.AWAITING_AUTHORISED and
+            self.cleaned_data['status'] == ProjectUserMembership.AUTHORISED):
+            if not self.cleaned_data['project'].can_have_more_users():
+                raise forms.ValidationError(_(
+                    "This project has reached its membership cap. "
+                    "If you require more members, please contact support."
+                ))
+
     def save(self, commit=True):
         project_user_membership = super(ProjectUserMembershipAdminForm, self).save(commit=False)
         if self.initial_status != project_user_membership.status:
+            if project_user_membership.status == ProjectUserMembership.AUTHORISED:
+                user = project_user_membership.user
+                if user.profile.institution and user.profile.institution.needs_user_approval:
+                    user.profile.activate()
             update_openldap_project_membership(project_user_membership)
         if commit:
             project_user_membership.save()
