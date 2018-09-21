@@ -147,11 +147,13 @@
       "is_superuser": false,
       "created_at": "2018-06-26T10:50:45.805Z",
       "updated_at": "2018-06-26T12:16:34.736Z",
-      "first_name": "",
-      "last_name": "",
+      "first_name": "Test",
+      "last_name": "User",
       "reason_for_account": "testing",
-      "accepted_terms_and_conditions": false,
-      "groups": [],
+      "accepted_terms_and_conditions": true,
+      "groups": [
+        1
+      ],
       "user_permissions": []
     }
   },
@@ -215,9 +217,9 @@
       "institution": 2,
       "department": "Departmental Studies",
       "orcid": "xxxxxxxxxxxxxxxx",
-      "scopus": "http://example.ac.uk/scopus",
-      "homepage": "http://example.ac.uk/homepage",
-      "cronfa": "http://example.ac.uk/cronfa"
+      "scopus": "http://example2.ac.uk/scopus",
+      "homepage": "http://example2.ac.uk/homepage",
+      "cronfa": "http://example2.ac.uk/cronfa"
     }
   },
   {
@@ -327,7 +329,7 @@
     "pk": 7,
     "fields": {
       "user": 7,
-      "scw_username": "test.user@example2.ac.uk",
+      "scw_username": "test.user",
       "hpcw_username": "",
       "hpcw_email": "",
       "raven_username": "",

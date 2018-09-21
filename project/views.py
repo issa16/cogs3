@@ -68,7 +68,8 @@ class PermissionAndLoginRequiredMixin(PermissionRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_not_logged_in()
-        return super(PermissionAndLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
+        response = super(PermissionAndLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
+        return response
 
 
 class AllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
@@ -87,6 +88,9 @@ class ProjectCreateView(AllocationCreateView):
                         'You may now want to create a system allocation request or RSE time request below, or add members to your project using the invite button.')
     template_name = 'project/create.html'
     permission_required = 'project.add_project'
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def notify_supervisor(self, project):
         subject = _('{company_name} Project Created'.format(company_name=settings.COMPANY_NAME))
@@ -316,12 +320,13 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
         return super().form_valid(form)
 
 
-class ProjectUserRequestMembershipListView(LoginRequiredMixin, generic.ListView):
+class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, generic.ListView):
     context_object_name = 'project_user_membership_requests'
     paginate_by = 50
     model = ProjectUserMembership
     template_name = 'project/membership/requests.html'
     ordering = ['-created_time']
+    permission_required = 'project.add_project'
 
     def get_queryset(self):
         queryset = super().get_queryset()
