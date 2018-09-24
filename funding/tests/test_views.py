@@ -251,21 +251,20 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
         user2 = CustomUser.objects.get(email="test.user@example2.ac.uk")
         institution = Institution.objects.get(name="Example University")
         funding_source = FundingSource.objects.get(identifier="scw0001")
-        funding_source2 = FundingSource.objects.get(identifier="scw0002")
 
         accounts = [
             {
                 'email': user.email,
                 'expected_status_code': 200,
-                'funding_source': funding_source,
             },
             {
                 'email': user2.email,
                 'expected_status_code': 302,
-                'funding_source': funding_source2,
             },
         ]
         for account in accounts:
+            funding_source.pi_email = account.get('email')
+            funding_source.save()
             headers = {
                 'Shib-Identity-Provider': institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
@@ -273,7 +272,7 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
             response = self.client.get(
                 reverse(
                     'update-attribution',
-                    args=[account.get('funding_source').id]
+                    args=[funding_source.id]
                 ),
                 **headers
             )
@@ -293,7 +292,7 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
                     response.url,
                     reverse(
                         'funding_source-detail-view',
-                        args=[account.get('funding_source').id]
+                        args=[funding_source.id]
                     )
                 )
 
@@ -302,19 +301,26 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
         Ensure the correct account types can access the funding source list view.
         """
         user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
+        user2 = CustomUser.objects.get(email="test.user@example2.ac.uk")
         institution = Institution.objects.get(name="Example University")
         publication = Publication.objects.get(title="Test publication")
 
         accounts = [
             {
-                'email': user.email,
+                'user': user,
+                'expected_status_code': 200,
+            },
+            {
+                'user': user2,
                 'expected_status_code': 200,
             },
         ]
         for account in accounts:
+            publication.created_by = account.get('user')
+            publication.save()
             headers = {
                 'Shib-Identity-Provider': institution.identity_provider,
-                'REMOTE_USER': account.get('email'),
+                'REMOTE_USER': account.get('user').email,
             }
             response = self.client.get(
                 reverse(
@@ -340,14 +346,14 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
 
         accounts = [
             {
-                'email': user.email,
+                'user': user,
                 'expected_status_code': 302,
             },
         ]
         for account in accounts:
             headers = {
                 'Shib-Identity-Provider': institution.identity_provider,
-                'REMOTE_USER': account.get('email'),
+                'REMOTE_USER': account.get('user').email,
             }
             response = self.client.get(
                 reverse(
@@ -407,6 +413,46 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
         Ensure unauthorised users can not access the delete view.
         """
         user = CustomUser.objects.get(email="guest.user@external.ac.uk")
+        user2 = CustomUser.objects.get(email="test.user@example2.ac.uk")
+        institution = Institution.objects.get(name="Example University")
+        funding_source = FundingSource.objects.get(title="Test funding source")
+
+        accounts = [
+            {
+                'email': user.email,
+                'expected_status_code': 302,
+            },
+            {
+                'email': user2.email,
+                'expected_status_code': 302,
+            },
+        ]
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': account.get('email'),
+            }
+            response = self.client.get(
+                reverse(
+                    'delete-attribution',
+                    args=[funding_source.id]
+                ),
+                **headers
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
+
+        self.access_view_as_unauthorised_user(
+            reverse(
+                'delete-attribution',
+                args=[funding_source.id]
+            )
+        )
+
+    def test_view_without_user_approval(self):
+        """
+        Ensure unauthorised users can not access the delete view.
+        """
+        user = CustomUser.objects.get(email="test.user@example2.ac.uk")
         institution = Institution.objects.get(name="Example University")
         funding_source = FundingSource.objects.get(title="Test funding source")
 
@@ -417,6 +463,8 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             },
         ]
         for account in accounts:
+            funding_source.pi_email = account.get('email')
+            funding_source.save()
             headers = {
                 'Shib-Identity-Provider': institution.identity_provider,
                 'REMOTE_USER': account.get('email'),

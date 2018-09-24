@@ -317,6 +317,13 @@ class AttributioneDeleteView(LoginRequiredMixin, generic.DeleteView):
     template_name = 'funding/delete.html'
 
     def user_passes_test(self, request):
+        attribution = self.get_object()
+        if attribution.is_fundingsource:
+            fundingsource = attribution.child
+            if fundingsource.pi.profile.institution.needs_funding_approval:
+                return False
+            else:
+                return fundingsource.owner == self.request.user
         return Attribution.objects.filter(id=self.kwargs['pk'], owner=self.request.user).exists()
 
     def dispatch(self, request, *args, **kwargs):

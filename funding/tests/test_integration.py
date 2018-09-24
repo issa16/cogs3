@@ -23,13 +23,12 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         all_form_fields = {
             'id_title': 'Title',
-            'id_pi_email': self.user.email,
+            'id_amount': '300 000',
         }
 
         # Fill the project form with a field missing
         missing_fields = [
             'id_title',
-            'id_pi_email',
         ]
 
         # missing identifier field
@@ -37,7 +36,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.click_link_by_url(reverse('list-attributions'))
         self.click_by_id('add_attribution_dropdown')
         self.click_link_by_url(reverse('add-funding-source'))
-        self.fill_form_by_id({})
+        self.clear_field_by_id('id_identifier')
         self.submit_form(identifier_form_fields)
 
         if "This field is required." not in self.selenium.page_source:
@@ -52,11 +51,11 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             form_field = dict(all_form_fields)
             form_field.pop(missing_field)
 
-            # fill first field
+            # fill first form
             self.fill_form_by_id(identifier_form_fields)
             self.submit_form(identifier_form_fields)
 
-            # fill second field
+            # fill second form
             self.fill_form_by_id(form_field)
             self.select_from_dropdown_by_id('id_funding_body', 1)
             self.submit_form(all_form_fields)
@@ -100,7 +99,8 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.click_by_id('add_attribution_dropdown')
         self.click_link_by_url(reverse('add-funding-source'))
 
-        # fill first form
+        # fill first form (clear in case browser remembers previous test)
+        self.clear_field_by_id('id_identifier')
         self.fill_form_by_id(id_form_fields)
         self.submit_form(id_form_fields)
 
@@ -144,6 +144,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Fill and submit first form
         self.click_link_by_url(reverse('add-funding-source'))
+        self.clear_field_by_id('id_identifier')
         self.fill_form_by_id(first_form_fields)
         self.submit_form(first_form_fields)
 
@@ -173,6 +174,35 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
         if second_form_fields['id_title'] not in self.selenium.page_source:
             raise AssertionError()
+
+        # Editing and deleting is only available if the institution
+        # Does not require funding approval
+
+        self.user.profile.institution.needs_funding_approval = True
+        self.user.profile.institution.save()
+
+        url = reverse(
+            'update-attribution',
+            args=[funding_source.id]
+        )
+        self.click_link_by_url(url)
+        if "url" in self.selenium.current_url:
+            raise AssertionError()
+        
+        # Should be redirected to detail view
+        url = reverse(
+            'funding_source-detail-view',
+            args=[funding_source.id]
+        )
+        if url not in self.selenium.current_url:
+            raise AssertionError()
+
+        # Now try the workflow without approval
+        self.user.profile.institution.needs_funding_approval = False
+        self.user.profile.institution.save()
+
+        # Back to the list page
+        self.get_url(reverse('list-attributions'))
 
         # Click the update link and edit the title
         self.click_link_by_url(
@@ -207,7 +237,6 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         # Should be redirected to the list view again
         if "funding/list/" not in self.selenium.current_url:
             raise AssertionError()
-
 
         # Check that the funding source was removed
         matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
