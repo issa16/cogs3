@@ -10,6 +10,7 @@ from django.urls import reverse
 from project.models import Project
 from project.models import SystemAllocationRequest
 from project.models import ProjectUserMembership
+from users.models import CustomUser
 from users.models import Profile
 
 
@@ -276,4 +277,22 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         # This should throw us to the login page
         if "accounts/login" not in self.selenium.current_url:
+            raise AssertionError()
+
+    def test_project_supervisor_authorisation(self):
+        # Click the link without signing in (using external, shibboleth used in email)
+        self.get_url('/accounts/external/login/?next=/en/projects/applications/1/supervisor-approve/')
+
+        # Sign in at the login page
+        form_fields = {
+            "id_username": self.user.email,
+            "id_password": self.user_password,
+        }
+        self.fill_form_by_id(form_fields)
+        self.submit_form(form_fields)
+        
+        self.click_button()
+
+        project = Project.objects.first()
+        if not project.approved_by_supervisor:
             raise AssertionError()
