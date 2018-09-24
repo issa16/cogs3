@@ -31,7 +31,7 @@
       "modified_time": "2018-05-02T10:41:45.591Z",
       "identity_provider": "https://idp.example2.ac.uk/shibboleth",
       "needs_legacy_inst_id": false,
-      "separate_allocation_requests": false,
+      "separate_allocation_requests": true,
       "allows_rse_requests": true,
       "rse_notify_email": "rse_team@example2.ac.uk",
       "local_repository_name": "arXiv",

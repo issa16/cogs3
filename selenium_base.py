@@ -86,7 +86,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
         # This seems to be necessary Geckodriver (Firefox)
         # I'm guessing it take a moment to process the submission
-        time.sleep(2)
+        time.sleep(1)
 
     def click_by_id(self, text):
         self.selenium.find_element_by_id(text).click()
@@ -115,7 +115,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
 
         # Create a number of user for different roles
         self.user_password = "password"
-        institution = Institution.objects.get(id=1)
+        institution = Institution.objects.get(id=2)
         email = '@'.join(['user', institution.base_domain])
         self.user = CustomUser(
             username=email,

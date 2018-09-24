@@ -242,4 +242,4 @@ class CustomUserTests(TestCase):
 
             users[i] = CustomUserTests.create_custom_user(email=email)
 
-            return (names, users)
+        return (names, users)
