@@ -280,8 +280,12 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
     def test_project_supervisor_authorisation(self):
-        # Click the link without signing in (using external, shibboleth used in email)
-        self.get_url('/accounts/external/login/?next=/en/projects/applications/1/supervisor-approve/')
+        project = Project.objects.get(code="scw0001")
+        project.approved_by_supervisor = False
+        project.save()
+
+        # Click the link in the email without signing in (using external, shibboleth used in email)
+        self.get_url('/accounts/external/login/?next=/en/projects/applications/2/supervisor-approve/')
 
         # Sign in at the login page
         form_fields = {
@@ -293,6 +297,5 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         
         self.click_button()
 
-        project = Project.objects.first()
         if not project.approved_by_supervisor:
             raise AssertionError()
