@@ -10,6 +10,8 @@ from django.urls import reverse
 from project.models import Project
 from project.models import SystemAllocationRequest
 from project.models import ProjectUserMembership
+from users.models import CustomUser
+from users.models import Profile
 
 
 class ProjectIntegrationTests(SeleniumTestsBase):
@@ -39,7 +41,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         "id_department": "SA2C",
         "id_supervisor_name": "Joe Bloggs",
         "id_supervisor_position": "RSE",
-        "id_supervisor_email": "joe.bloggs@swansea.ac.uk",
+        "id_supervisor_email": "joe.bloggs@example2.ac.uk",
     }
 
     def test_create_project_missing_fields(self):
@@ -63,7 +65,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             if "This field is required." not in self.selenium.page_source:
                 raise AssertionError()
 
-    def test_create_project(self):
+    def test_create_project_with_authorised_user(self):
 
         self.sign_in(self.user)
 
@@ -113,7 +115,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         publication_fields = {
             'id_title': 'Title',
-            'id_url': 'http://cronfa.swansea.ac.uk/test/cronfa/url',
+            'id_url': 'http://arxiv.org/abs/1806.06043',
         }
         self.fill_form_by_id(publication_fields)
         self.submit_form(publication_fields)
@@ -178,7 +180,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if 'Successfully submitted a project membership request' not in self.selenium.page_source:
             raise AssertionError()
 
-        # Try an invalid code
+        # Try an incorrect code
         self.get_url('')
         self.fill_form_by_id({'project_code': 'Invalidcode1'})
         self.submit_form({'project_code': project.code})

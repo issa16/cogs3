@@ -20,8 +20,10 @@ from funding.models import FundingBody
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
     fixtures = [
-        'institution/fixtures/institutions.json',
+        'institution/fixtures/tests/institutions.json',
         'users/fixtures/tests/users.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
         'funding/fixtures/tests/funding_bodies.json',
         'funding/fixtures/tests/attributions.json',
     ]
@@ -40,6 +42,9 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         for field, value in fields.items():
             element = self.selenium.find_element_by_id(field)
             element.send_keys(value)
+
+    def clear_field_by_id(self, field):
+        self.selenium.find_element_by_id(field).clear()
 
     def select_from_dropdown_by_id(self, id, index):
         element = Select(self.selenium.find_element_by_id(id))
@@ -106,7 +111,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
 
         # Create a number of user for different roles
         self.user_password = "password"
-        institution = Institution.objects.get(id=1)
+        institution = Institution.objects.get(id=2)
         email = '@'.join(['user', institution.base_domain])
         self.user = CustomUser(
             username=email,
