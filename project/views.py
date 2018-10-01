@@ -141,7 +141,7 @@ class RSEAllocationCreateView(AllocationCreateView):
 
 
 class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, generic.TemplateView):
-    http_method_names = ['get','post']
+    http_method_names = ['get', 'post']
     template_name = 'project/createprojectandallocation.html'
     permission_required = 'project.add_project'
     success_message = _('Successfully submitted a project application.')
@@ -169,12 +169,13 @@ class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, generic.Te
 
         if project_form.is_valid() and allocation_form.is_valid():
             project = project_form.save()
+
             allocation = allocation_form.save(commit=False)
             allocation.project = project
+
             allocation.save()
 
             messages.success(self.request, self.success_message)
-
             return HttpResponseRedirect(reverse('project-application-list'))
 
         return self.render_to_response(self.get_context_data(project_form=project_form, allocation_form=allocation_form))

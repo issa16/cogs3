@@ -246,7 +246,7 @@ class ProjectManageAttributionForm(forms.ModelForm):
             required=False,
         )
 
-    
+
 class SystemAllocationRequestCreationForm(ProjectAssociatedForm):
 
     class Meta:
