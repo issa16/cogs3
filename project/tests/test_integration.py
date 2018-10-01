@@ -294,8 +294,10 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         }
         self.fill_form_by_id(form_fields)
         self.submit_form(form_fields)
-        
+
         self.click_button()
+
+        project.refresh_from_db()
 
         if not project.approved_by_supervisor:
             raise AssertionError()
