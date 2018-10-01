@@ -361,47 +361,12 @@ class SystemAllocationRequest(models.Model):
         self.status = self.previous_status
         self.save()
 
-    def _assign_project_owner_project_membership(self):
-        try:
-            project_membership, created = ProjectUserMembership.objects.get_or_create(
-                project=self,
-                user=self.tech_lead,
-                date_joined=datetime.date.today(),
-                status=ProjectUserMembership.AUTHORISED,
-                previous_status=ProjectUserMembership.AUTHORISED,
-            )
-            # Assign the 'project_owner' group to the project's technical lead.
-            group = Group.objects.get(name='project_owner')
-            self.tech_lead.groups.add(group)
-
-            # Propagate the changes to LDAP
-            if created:
-                project_membership_api.create_project_membership(project_membership=project_membership)
-        except Exception:
-            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
-
-    def _generate_project_code(self):
-        prefix = 'scw'
-        last_project = Project.objects.order_by('id').last()
-        if not last_project:
-            if self.legacy_arcca_id or self.legacy_hpcw_id:
-                return prefix + '0000'
-            else:
-                return prefix + '1000'
-        else:
-            code = last_project.code.split(prefix)[1]
-            return prefix + str(int(code) + 1).zfill(4)
-
     def save(self, *args, **kwargs):
-        if self.code is '':
-            self.code = self._generate_project_code()
-            project_created_notification.delay(self)
-        if self.status == Project.APPROVED:
-            self._assign_project_owner_project_membership()
-        super(Project, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.code
+
 
 class ProjectSystemAllocation(models.Model):
 
