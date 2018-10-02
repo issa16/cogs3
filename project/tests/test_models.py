@@ -189,7 +189,7 @@ class ProjectTests(ProjectModelTests, TestCase):
         """
         A test to ensure a project can be created when the title exists in the database.
 
-        Issues: 
+        Issues:
             - https://github.com/tystakartografen/cogs3/issues/30
             - https://github.com/tystakartografen/cogs3/issues/31
         """
@@ -215,6 +215,28 @@ class ProjectTests(ProjectModelTests, TestCase):
         self._verify_project_details(project_1, title_1, code_1)
         self._verify_project_details(project_2, title_2, code_2)
         self.assertEqual(Project.objects.count(), 2)
+
+    def test_project_tech_lead_membership(self):
+        """
+        Check that the a membership is correctly created when a project is saved
+        """
+        title = 'Project title'
+        code = 'SCW-12345'
+        project = self.create_project(
+            title=title,
+            code=code,
+            tech_lead=self.project_owner,
+            category=self.category,
+            funding_source=self.funding_source,
+        )
+        project.save()
+
+        # Approving the project should create the membership
+        project.status = Project.APPROVED
+        project.save()
+        group = self.project_owner.groups.filter(name='project_owner')
+        if not group.exists():
+            raise AssertionError()
 
 
 class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
