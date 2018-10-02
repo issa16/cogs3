@@ -24,11 +24,14 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         all_form_fields = {
             'id_title': 'Title',
             'id_amount': '300 000',
+            'id_pi_email': self.user.email,
         }
 
         # Fill the project form with a field missing
         missing_fields = [
             'id_title',
+            'id_amount',
+            'id_pi_email',
         ]
 
         # missing identifier field
