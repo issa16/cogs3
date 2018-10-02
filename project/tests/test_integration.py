@@ -248,8 +248,14 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
     def test_create_project_and_allocation(self):
+        # Test the workflow for project creation when separate allocations
+        # are not enabled
         institution = self.user.profile.institution
         institution.separate_allocation_requests = False
+
+        # Also test the funding source creation part without approval
+        institution.needs_funding_approval = False
+
         institution.save()
 
         self.sign_in(self.user)
@@ -285,10 +291,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         self.fill_form_by_id(fundingsource_fields)
         self.select_from_dropdown_by_id('id_funding_body', 1)
 
-        # click save first time
-        self.submit_form(fundingsource_fields)
-
-        # ...need to click save twice (this is the workflow!)
+        # click save
         self.submit_form(fundingsource_fields)
 
         self.selenium.switch_to.window(main_window_handle)
