@@ -130,7 +130,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             "id_end_date",
         ]
         for missing_field in missing_fields:
-            print(missing_field)
             self.get_url('')
             self.click_link_by_url(reverse('create-project-and-allocation'))
             form_field = dict(self.default_allocation_form_fields)

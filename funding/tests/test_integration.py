@@ -200,6 +200,56 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         if url not in self.selenium.current_url:
             raise AssertionError()
 
+    def test_create_funding_source_requiring_approval_with_other_pi(self):
+        """
+        Create a funding source using someone else as the pi
+        """
+        self.sign_in(self.user)
+
+        institution = Institution.objects.get(base_domain="example2.ac.uk")
+        email = '@'.join(['test', institution.base_domain])
+
+        id_form_fields = {
+            'id_identifier': 'Id',
+        }
+
+        form_fields = {
+            'id_title': 'Title',
+            'id_pi_email': email,
+            'id_amount': 11345234,
+        }
+
+        self.get_url(reverse('list-attributions'))
+        self.click_by_id('add_attribution_dropdown')
+        self.click_link_by_url(reverse('add-funding-source'))
+
+        # fill first form
+        self.clear_field_by_id('id_identifier')
+        self.fill_form_by_id(id_form_fields)
+        self.submit_form(id_form_fields)
+
+        # fill second form
+        self.fill_form_by_id(form_fields)
+        self.select_from_dropdown_by_id('id_funding_body', 1)
+        self.submit_form(form_fields)
+        if "This field is required." in self.selenium.page_source:
+            raise AssertionError()
+
+        # Submit again to confirm
+        self.submit_form(form_fields)
+
+        # Check that the funding source was created
+        matching_sources = FundingSource.objects.filter(identifier=id_form_fields['id_identifier'])
+        if matching_sources.count() != 1:
+            raise AssertionError()
+
+        # Get the object
+        funding_source = matching_sources.get()
+        if funding_source.pi_email is not None:
+            raise AssertionError('pi_email should be None')
+        if funding_source.pi is None or funding_source.pi.email != email:
+            raise AssertionError()
+
     def test_create_and_update_funding_source(self):
         """
         Try creating, updating and deleting a funding source

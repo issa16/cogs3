@@ -273,6 +273,35 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
                                        FundingSourceForm))
             self.assertTrue(isinstance(response.context_data.get('view'),
                                        AttributionUpdateView))
+                            
+    def test_fundingource_view_as_an_authorised_user(self):
+        """
+        Ensure the correct account types can access the funding source list view.
+        """
+        user = CustomUser.objects.get(email="test.user@example2.ac.uk")
+        institution = Institution.objects.get(base_domain="example2.ac.uk")
+        funding_source = FundingSource.objects.get(title="Test funding source 2")
+
+        accounts = [
+            {
+                'email': user.email,
+                'expected_status_code': 302,
+            },
+        ]
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': account.get('email'),
+            }
+            response = self.client.get(
+                reverse(
+                    'update-attribution',
+                    args=[funding_source.id]
+                ),
+                **headers
+            )
+            self.assertEqual(response.status_code,
+                             account.get('expected_status_code'))
 
     def test_publication_view_as_an_authorised_user(self):
         """
