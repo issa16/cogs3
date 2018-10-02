@@ -91,7 +91,6 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
 
 
 class FundingSourceAddViewTests(FundingViewTests, TestCase):
-
     fixtures = [
         'institution/fixtures/tests/institutions.json',
         'users/fixtures/tests/users.json',
@@ -149,7 +148,6 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
         """
         user = CustomUser.objects.get(email="test.user@example2.ac.uk")
         institution = Institution.objects.get(base_domain="example2.ac.uk")
-
         accounts = [
             {
                 'email': user.email,
@@ -181,7 +179,6 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
             )
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/en-gb/funding/create-funding-source/")
-
             # Test post with existing id
             response = self.client.post(
                 reverse('add-funding-source'),
@@ -197,7 +194,7 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
         """
         Ensure unauthorised users can not access the project create view.
         """
-        self.access_view_as_unauthorised_user(reverse('create-funding-source'))
+        self.access_view_as_unauthorised_user(reverse('add-funding-source'))
 
 
 class AttributionListViewTests(FundingViewTests, TestCase):
@@ -285,16 +282,35 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
                                        FundingSourceForm))
                 self.assertTrue(isinstance(response.context_data.get('view'),
                                        AttributionUpdateView))
-            
-            if response.status_code == 302:
-                # Not allowed to update
-                self.assertEqual(
-                    response.url,
-                    reverse(
-                        'funding_source-detail-view',
-                        args=[funding_source.id]
-                    )
-                )
+                            
+    def test_fundingource_view_as_an_authorised_user(self):
+        """
+        Ensure the correct account types can access the funding source list view.
+        """
+        user = CustomUser.objects.get(email="test.user@example2.ac.uk")
+        institution = Institution.objects.get(base_domain="example2.ac.uk")
+        funding_source = FundingSource.objects.get(title="Test funding source 2")
+
+        accounts = [
+            {
+                'email': user.email,
+                'expected_status_code': 302,
+            },
+        ]
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': account.get('email'),
+            }
+            response = self.client.get(
+                reverse(
+                    'update-attribution',
+                    args=[funding_source.id]
+                ),
+                **headers
+            )
+            self.assertEqual(response.status_code,
+                             account.get('expected_status_code'))
 
     def test_publication_view_as_an_authorised_user(self):
         """
