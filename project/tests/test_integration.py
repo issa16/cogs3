@@ -66,6 +66,34 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             if "This field is required." not in self.selenium.page_source:
                 raise AssertionError()
 
+    def test_create_allocation_missing_fields(self):
+        """
+        Test project creation and project membership workflows
+        with missing fields
+        """
+        self.sign_in(self.user)
+
+        self.get_url('')
+        self.click_link_by_url(reverse('create-project'))
+        self.fill_form_by_id(self.default_project_form_fields)
+        self.submit_form(self.default_project_form_fields)
+        project = Project.objects.get(title=self.default_project_form_fields['id_title'])
+
+        # Fill the project form with a field missing
+        missing_fields = [
+            "id_start_date",
+            "id_end_date",
+        ]
+        for missing_field in missing_fields:
+            self.get_url(reverse('project-application-detail', kwargs={'pk': project.id}))
+            self.click_link_by_url(reverse('create-allocation', kwargs={'project': project.id}))
+            form_field = dict(self.default_allocation_form_fields)
+            form_field.pop(missing_field)
+            self.fill_form_by_id(form_field)
+            self.submit_form(self.default_allocation_form_fields)
+            if "This field is required." not in self.selenium.page_source:
+                raise AssertionError()
+
     def test_create_project_and_allocation_missing_fields(self):
         """
         Test project creation and project membership workflows
