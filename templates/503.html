@@ -1,0 +1,15 @@
+<!-- templates/503.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+<div class="form-logo mx-auto mt-3">
+    <img class="img-fluid" src="{% static 'img/scw.png' %}" alt="{% trans 'Supercomputing Wales' %}">
+</div>
+<div class="mx-auto mt-3 form-signin">
+    <div class="text-center mt-3">
+        <p>{% trans "MySCW is temporarily down for maintenance." %}</p>
+    </div>
+    <p class="mt-3 mb-1 text-center text-muted">&#169; {% trans "Supercomputing Wales" %}</p>
+</div>
+{% endblock %}
