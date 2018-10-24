@@ -34,9 +34,9 @@ class Institution(models.Model):
         try:
             _, domain = email.split('@')
             support_email = Institution.objects.get(base_domain=domain).support_email
-            return support_email if support_email else settings.DEFAULT_BCC_EMAIL
+            return support_email if support_email else settings.DEFAULT_SUPPORT_EMAIL
         except Exception:
-            return settings.DEFAULT_BCC_EMAIL
+            return settings.DEFAULT_SUPPORT_EMAIL
         
     @classmethod
     def is_valid_email_address(cls, email):

@@ -75,7 +75,7 @@ class InstitutionTests(TestCase):
         )
         self.assertEqual(institution.id_str(), "example-university")
 
-    @override_settings(DEFAULT_BCC_EMAIL='support@another-example.ac.uk')
+    @override_settings(DEFAULT_SUPPORT_EMAIL='support@another-example.ac.uk')
     def test_parse_support_email_from_user_email(self):
         """
         Ensure the correct support email address is returned.
@@ -87,7 +87,7 @@ class InstitutionTests(TestCase):
         )
         test_cases = {
             "user@example.ac.uk": institution.support_email,
-            "user@another-example.ac.uk": settings.DEFAULT_BCC_EMAIL
+            "user@another-example.ac.uk": settings.DEFAULT_SUPPORT_EMAIL
         }
         for user_email, support_email in test_cases.items():
             result = Institution.parse_support_email_from_user_email(user_email)
