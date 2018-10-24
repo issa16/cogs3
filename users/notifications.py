@@ -22,13 +22,12 @@ def email_user(subject, context, text_template_path, html_template_path):
     html_alternative = html_template.render(context)
     text_alternative = text_template.render(context)
 
-    support_email = Institution.parse_support_email_from_user_email(context['to'])
     email = EmailMultiAlternatives(
         subject,
         text_alternative,
         settings.DEFAULT_FROM_EMAIL,
         [context['to']],
-        bcc=[support_email],
+        bcc=[settings.DEFAULT_BCC_EMAIL],
     )
     email.attach_alternative(html_alternative, "text/html")
     email.send(fail_silently=False)
@@ -39,14 +38,14 @@ def user_created_notification(user):
     """
     Notify support that a user has created an account. 
     """
-    subject = 'User Account Created'
     subject = _('{company_name} User Account Created'.format(company_name=settings.COMPANY_NAME))
+    support_email = Institution.parse_support_email_from_user_email(user.email)
     context = {
         'first_name': user.first_name,
         'last_name': user.last_name,
         'university': user.profile.institution.name,
         'reason': user.reason_for_account,
-        'to': settings.DEFAULT_SUPPORT_EMAIL,
+        'to': support_email,
     }
     text_template_path = 'notifications/user/created.txt'
     html_template_path = 'notifications/user/created.html'
