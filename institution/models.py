@@ -1,8 +1,9 @@
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext as _
 
-from institution.exceptions import InvalidInstitutionalEmailAddress
-from institution.exceptions import InvalidInstitutionalIndentityProvider
+from institution.exceptions import (InvalidInstitutionalEmailAddress,
+                                    InvalidInstitutionalIndentityProvider)
 
 
 class Institution(models.Model):
@@ -19,8 +20,24 @@ class Institution(models.Model):
         blank=True,
         verbose_name='Shibboleth Identity Provider',
     )
+    support_email = models.EmailField(blank=True)
     logo_path = models.CharField(max_length=255, blank=True)
 
+    @classmethod
+    def parse_support_email_from_user_email(cls, email):
+        """
+        Parse the institutions support email address from a user's email address.
+
+        Args:
+            email (str): User's email address.
+        """
+        try:
+            _, domain = email.split('@')
+            support_email = Institution.objects.get(base_domain=domain).support_email
+            return support_email if support_email else settings.DEFAULT_BCC_EMAIL
+        except Exception:
+            return settings.DEFAULT_BCC_EMAIL
+        
     @classmethod
     def is_valid_email_address(cls, email):
         """

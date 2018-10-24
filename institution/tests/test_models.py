@@ -1,7 +1,8 @@
-from django.test import TestCase
+from django.conf import settings
+from django.test import TestCase, override_settings
 
-from institution.exceptions import InvalidInstitutionalEmailAddress
-from institution.exceptions import InvalidInstitutionalIndentityProvider
+from institution.exceptions import (InvalidInstitutionalEmailAddress,
+                                    InvalidInstitutionalIndentityProvider)
 from institution.models import Institution
 
 
@@ -73,3 +74,21 @@ class InstitutionTests(TestCase):
             identity_provider='https://example.ac.uk/shibboleth',
         )
         self.assertEqual(institution.id_str(), "example-university")
+
+    @override_settings(DEFAULT_BCC_EMAIL='support@another-example.ac.uk')
+    def test_parse_support_email_from_user_email(self):
+        """
+        Ensure the correct support email address is returned.
+        """
+        institution = Institution.objects.create(
+            name='Example University',
+            base_domain='example.ac.uk',
+            support_email='support@example.ac.uk',
+        )
+        test_cases = {
+            "user@example.ac.uk": institution.support_email,
+            "user@another-example.ac.uk": settings.DEFAULT_BCC_EMAIL
+        }
+        for user_email, support_email in test_cases.items():
+            result = Institution.parse_support_email_from_user_email(user_email)
+            self.assertEqual(result, support_email)
