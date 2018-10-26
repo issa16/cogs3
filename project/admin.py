@@ -1,14 +1,10 @@
 from django.contrib import admin
 
-from project.forms import ProjectAdminForm
-from project.forms import ProjectUserMembershipAdminForm
-from project.models import Project
-from project.models import ProjectCategory
-from project.models import ProjectFundingSource
-from project.models import ProjectSystemAllocation
-from project.models import ProjectUserMembership
-from project.openldap import update_openldap_project
-from project.openldap import update_openldap_project_membership
+from project.forms import ProjectAdminForm, ProjectUserMembershipAdminForm
+from project.models import (Project, ProjectCategory, ProjectFundingSource,
+                            ProjectSystemAllocation, ProjectUserMembership)
+from project.openldap import (update_openldap_project,
+                              update_openldap_project_membership)
 
 
 @admin.register(ProjectCategory)
@@ -79,6 +75,7 @@ class ProjectUserMembershipAdmin(admin.ModelAdmin):
         'user__first_name',
         'user__last_name',
         'user__email',
+        'user__profile__scw_username',
     )
 
 
