@@ -336,7 +336,7 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
         for account in accounts:
             # Create a project.
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            project = Project.objects.get(title="Project title")
+            project = Project.objects.get(code="scw0000")
             # self.approve_project(project)
 
             # A request to create a project user membership should be rejected.
@@ -361,7 +361,7 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
         """
         # Create a project.
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        project = Project.objects.get(title="Project title")
+        project = Project.objects.get(code="scw0000")
         # self.approve_project(project)
 
         # Create a project user membership.
