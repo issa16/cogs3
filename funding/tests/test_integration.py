@@ -23,12 +23,14 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         all_form_fields = {
             'id_title': 'Title',
+            'id_amount': '300 000',
             'id_pi_email': self.user.email,
         }
 
         # Fill the project form with a field missing
         missing_fields = [
             'id_title',
+            'id_amount',
             'id_pi_email',
         ]
 
@@ -37,7 +39,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.click_link_by_url(reverse('list-attributions'))
         self.click_by_id('add_attribution_dropdown')
         self.click_link_by_url(reverse('add-funding-source'))
-        self.fill_form_by_id({})
+        self.clear_field_by_id('id_identifier')
         self.submit_form(identifier_form_fields)
 
         if "This field is required." not in self.selenium.page_source:
@@ -52,11 +54,11 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             form_field = dict(all_form_fields)
             form_field.pop(missing_field)
 
-            # fill first field
+            # fill first form
             self.fill_form_by_id(identifier_form_fields)
             self.submit_form(identifier_form_fields)
 
-            # fill second field
+            # fill second form
             self.fill_form_by_id(form_field)
             self.select_from_dropdown_by_id('id_funding_body', 1)
             self.submit_form(all_form_fields)
@@ -67,7 +69,8 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.click_by_id('add_attribution_dropdown')
         self.click_link_by_url(reverse('add-funding-source'))
 
-        # fill first form
+        # fill first form (clear in case browser remembers previous test)
+        self.clear_field_by_id('id_identifier')
         self.fill_form_by_id(identifier_form_fields)
         self.submit_form(identifier_form_fields)
 
@@ -83,7 +86,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         """
         self.sign_in(self.user)
 
-        institution = Institution.objects.get(name="Example University")
+        institution = Institution.objects.get(base_domain="example.ac.uk")
         email = '@'.join(['test', institution.base_domain])
 
         id_form_fields = {
@@ -100,7 +103,8 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.click_by_id('add_attribution_dropdown')
         self.click_link_by_url(reverse('add-funding-source'))
 
-        # fill first form
+        # fill first form (clear in case browser remembers previous test)
+        self.clear_field_by_id('id_identifier')
         self.fill_form_by_id(id_form_fields)
         self.submit_form(id_form_fields)
 
@@ -123,10 +127,13 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         if funding_source.pi is None or funding_source.pi.email != email:
             raise AssertionError()
 
-    def test_create_and_update_funding_source(self):
+    def test_create_funding_source_requiring_approval(self):
         """
-        Try creating, updating and deleting a funding source
+        Try creating a funding source with an institution that requires appproval
         """
+        self.user.profile.institution.needs_funding_approval = True
+        self.user.profile.institution.save()
+
         self.sign_in(self.user)
 
         first_form_fields = {
@@ -144,6 +151,138 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Fill and submit first form
         self.click_link_by_url(reverse('add-funding-source'))
+        self.clear_field_by_id('id_identifier')
+        self.fill_form_by_id(first_form_fields)
+        self.submit_form(first_form_fields)
+
+        # Fill and submit second form
+        self.fill_form_by_id(second_form_fields)
+        self.select_from_dropdown_by_id('id_funding_body', 1)
+        self.submit_form(second_form_fields)
+        if "This field is required." in self.selenium.page_source:
+            raise AssertionError()
+
+        # Submit again to confirm
+        self.submit_form(second_form_fields)
+
+        # Check that the funding source was created
+        matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
+        if matching_sources.count() != 1:
+            raise AssertionError()
+        
+        # Get the object
+        funding_source = matching_sources.get()
+
+        # Check the pi was identified correctly
+        if funding_source.pi_email is not None:
+            raise AssertionError('funding_source.pi_email is not None')
+        if funding_source.pi != self.user:
+            raise AssertionError('funding_source.pi is not a user')
+
+        # Should be redirected to the list view
+        if "funding/list/" not in self.selenium.current_url:
+            raise AssertionError()
+        if second_form_fields['id_title'] not in self.selenium.page_source:
+            raise AssertionError()
+
+        # Editing and deleting is only available if the institution
+        # Does not require funding approval
+
+        self.user.profile.institution.needs_funding_approval = True
+        self.user.profile.institution.save()
+
+        url = reverse(
+            'update-attribution',
+            args=[funding_source.id]
+        )
+        self.click_link_by_url(url)
+        if "url" in self.selenium.current_url:
+            raise AssertionError()
+        
+        # Should be redirected to detail view
+        url = reverse(
+            'funding_source-detail-view',
+            args=[funding_source.id]
+        )
+        if url not in self.selenium.current_url:
+            raise AssertionError()
+
+    def test_create_funding_source_requiring_approval_with_other_pi(self):
+        """
+        Create a funding source using someone else as the pi
+        """
+        self.sign_in(self.user)
+
+        institution = Institution.objects.get(base_domain="example2.ac.uk")
+        email = '@'.join(['test', institution.base_domain])
+
+        id_form_fields = {
+            'id_identifier': 'Id',
+        }
+
+        form_fields = {
+            'id_title': 'Title',
+            'id_pi_email': email,
+            'id_amount': 11345234,
+        }
+
+        self.get_url(reverse('list-attributions'))
+        self.click_by_id('add_attribution_dropdown')
+        self.click_link_by_url(reverse('add-funding-source'))
+
+        # fill first form
+        self.clear_field_by_id('id_identifier')
+        self.fill_form_by_id(id_form_fields)
+        self.submit_form(id_form_fields)
+
+        # fill second form
+        self.fill_form_by_id(form_fields)
+        self.select_from_dropdown_by_id('id_funding_body', 1)
+        self.submit_form(form_fields)
+        if "This field is required." in self.selenium.page_source:
+            raise AssertionError()
+
+        # Submit again to confirm
+        self.submit_form(form_fields)
+
+        # Check that the funding source was created
+        matching_sources = FundingSource.objects.filter(identifier=id_form_fields['id_identifier'])
+        if matching_sources.count() != 1:
+            raise AssertionError()
+
+        # Get the object
+        funding_source = matching_sources.get()
+        if funding_source.pi_email is not None:
+            raise AssertionError('pi_email should be None')
+        if funding_source.pi is None or funding_source.pi.email != email:
+            raise AssertionError()
+
+    def test_create_and_update_funding_source(self):
+        """
+        Try creating, updating and deleting a funding source
+        when approval is not required
+        """
+        self.user.profile.institution.needs_funding_approval = False
+        self.user.profile.institution.save()
+
+        self.sign_in(self.user)
+
+        first_form_fields = {
+            'id_identifier': 'Id',
+        }
+
+        second_form_fields = {
+            'id_title': 'Title',
+            'id_pi_email': self.user.email,
+            'id_amount': 11010
+        }
+
+        self.get_url(reverse('list-attributions'))
+        self.click_by_id('add_attribution_dropdown')
+
+        # Fill and submit first form
+        self.click_link_by_url(reverse('add-funding-source'))
+        self.clear_field_by_id('id_identifier')
         self.fill_form_by_id(first_form_fields)
         self.submit_form(first_form_fields)
 
@@ -207,7 +346,6 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         # Should be redirected to the list view again
         if "funding/list/" not in self.selenium.current_url:
             raise AssertionError()
-
 
         # Check that the funding source was removed
         matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])

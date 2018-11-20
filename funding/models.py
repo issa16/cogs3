@@ -63,6 +63,9 @@ class Attribution(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.title
+
     @property
     def is_fundingsource(self):
         try:
@@ -156,6 +159,9 @@ class FundingSource(Attribution):
     )
 
     history = HistoricalRecords()
+
+    def __str__(self):
+        return self.title
 
     def string(self, user=False):
         if user is not False:

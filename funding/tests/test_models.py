@@ -87,8 +87,74 @@ class FundingSourceTests(TestCase):
         """
 
         fundingbody = FundingBody.objects.get(name="Test")
-        institution = Institution.objects.get(name="Example University")
+        institution = Institution.objects.get(base_domain="example.ac.uk")
         user = CustomUser.objects.get(email="admin.user@example.ac.uk")
+
+        title = 'A funding source title'
+        identifier = 'A funding source identifier'
+        pi_email = '@'.join(['pi', institution.base_domain])
+
+        funding_source = self.create_funding_source(
+            title=title,
+            identifier=identifier,
+            funding_body=fundingbody,
+            owner=user,
+            pi_email=pi_email,
+            amount=1000,
+        )
+
+        self.assertTrue(isinstance(funding_source, FundingSource))
+        self.assertEqual(funding_source.__str__(), funding_source.title)
+        self.assertEqual(funding_source.title, title)
+        self.assertEqual(funding_source.identifier, identifier)
+        self.assertEqual(funding_source.created_by, user)
+        self.assertEqual(funding_source.funding_body, fundingbody)
+        self.assertEqual(funding_source.approved, False)
+        self.assertEqual(funding_source.pi.email, pi_email)
+        self.assertEqual(funding_source.owner, user)
+
+    def test_project_funding_source_creation_with_approval_required(self):
+        """
+        Ensure we can create a Fundingsource instance when approval is
+        required by the institution
+        """
+        fundingbody = FundingBody.objects.get(name="Test")
+        institution = Institution.objects.get(base_domain="example2.ac.uk")
+        user = CustomUser.objects.get(email="test.user@example2.ac.uk")
+
+        title = 'A funding source title'
+        identifier = 'A funding source identifier'
+        pi_email = '@'.join(['pi', institution.base_domain])
+
+        funding_source = self.create_funding_source(
+            title=title,
+            identifier=identifier,
+            funding_body=fundingbody,
+            owner=user,
+            pi_email=pi_email,
+            amount=1000,
+        )
+
+        self.assertTrue(isinstance(funding_source, FundingSource))
+        self.assertEqual(funding_source.__str__(), funding_source.title)
+        self.assertEqual(funding_source.title, title)
+        self.assertEqual(funding_source.identifier, identifier)
+        self.assertEqual(funding_source.created_by, user)
+        self.assertEqual(funding_source.funding_body, fundingbody)
+
+        self.assertEqual(funding_source.approved, False)
+        self.assertEqual(funding_source.pi.email, pi_email)
+        self.assertEqual(funding_source.owner, user)
+
+    def test_project_funding_source_creation_with_approval_required(self):
+        """
+        Ensure we can create a Fundingsource instance when approval is
+        required by the institution
+        """
+
+        fundingbody = FundingBody.objects.get(name="Test")
+        institution = Institution.objects.get(base_domain="example2.ac.uk")
+        user = CustomUser.objects.get(email="test.user@example2.ac.uk")
 
         title = 'A funding source title'
         identifier = 'A funding source identifier'
@@ -107,3 +173,7 @@ class FundingSourceTests(TestCase):
         self.assertEqual(funding_source.identifier, identifier)
         self.assertEqual(funding_source.created_by, user)
         self.assertEqual(funding_source.funding_body, fundingbody)
+
+        self.assertEqual(funding_source.approved, False)
+        self.assertEqual(funding_source.pi.email, pi_email)
+        self.assertEqual(funding_source.owner, funding_source.pi)
