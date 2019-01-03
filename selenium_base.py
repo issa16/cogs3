@@ -38,13 +38,17 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         link = self.selenium.find_element_by_css_selector(selector)
         link.click()
 
+    def click_button(self):
+        button = self.selenium.find_elements_by_css_selector('.btn-primary')[0]
+        button.click()
+
+    def clear_field_by_id(self, field):
+        self.selenium.find_element_by_id(field).clear()
+
     def fill_form_by_id(self, fields):
         for field, value in fields.items():
             element = self.selenium.find_element_by_id(field)
             element.send_keys(value)
-
-    def clear_field_by_id(self, field):
-        self.selenium.find_element_by_id(field).clear()
 
     def select_from_dropdown_by_id(self, id, index):
         element = Select(self.selenium.find_element_by_id(id))

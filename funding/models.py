@@ -160,6 +160,9 @@ class FundingSource(Attribution):
 
     history = HistoricalRecords()
 
+    def __str__(self):
+        return self.title
+
     def string(self, user=False):
         if user is not False:
             if self.approved:

@@ -15,6 +15,8 @@
       "local_repository_name": "arXiv",
       "local_repository_domain": "arxiv.org",
       "funding_database_name": "",
+      "default_project_user_cap": 10,
+      "needs_user_approval": true,
       "needs_funding_approval": false,
       "logo_path": "/static/img/example-logo.png"
     }
@@ -35,6 +37,8 @@
       "local_repository_name": "arXiv",
       "local_repository_domain": "arxiv.org",
       "funding_database_name": "",
+      "default_project_user_cap": 10,
+      "needs_user_approval": false,
       "needs_funding_approval": true,
       "logo_path": "/static/img/example-logo.png"
     }

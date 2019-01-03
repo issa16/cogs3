@@ -24,11 +24,14 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         all_form_fields = {
             'id_title': 'Title',
             'id_amount': '300 000',
+            'id_pi_email': self.user.email,
         }
 
         # Fill the project form with a field missing
         missing_fields = [
             'id_title',
+            'id_amount',
+            'id_pi_email',
         ]
 
         # missing identifier field
@@ -100,7 +103,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.click_by_id('add_attribution_dropdown')
         self.click_link_by_url(reverse('add-funding-source'))
 
-        # fill first form
+        # fill first form (clear in case browser remembers previous test)
         self.clear_field_by_id('id_identifier')
         self.fill_form_by_id(id_form_fields)
         self.submit_form(id_form_fields)
@@ -132,9 +135,11 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.user.profile.institution.save()
 
         self.sign_in(self.user)
+
         first_form_fields = {
             'id_identifier': 'Id',
         }
+
         second_form_fields = {
             'id_title': 'Title',
             'id_pi_email': self.user.email,
@@ -182,8 +187,10 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Editing and deleting is only available if the institution
         # Does not require funding approval
+
         self.user.profile.institution.needs_funding_approval = True
         self.user.profile.institution.save()
+
         url = reverse(
             'update-attribution',
             args=[funding_source.id]
@@ -339,7 +346,6 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         # Should be redirected to the list view again
         if "funding/list/" not in self.selenium.current_url:
             raise AssertionError()
-
 
         # Check that the funding source was removed
         matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])

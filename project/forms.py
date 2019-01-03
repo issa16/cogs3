@@ -10,6 +10,7 @@ from funding.models import FundingSource
 from project.openldap import update_openldap_project
 from project.openldap import update_openldap_project_membership
 from users.models import CustomUser
+from institution.models import Institution
 
 
 class FileLinkWidget(forms.Widget):
@@ -44,10 +45,12 @@ class ProjectAdminForm(forms.ModelForm):
             'supervisor_name',
             'supervisor_position',
             'supervisor_email',
+            'approved_by_supervisor',
             'attributions',
             'tech_lead',
             'category',
             'economic_user',
+            'custom_user_cap',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -195,6 +198,19 @@ class ProjectCreationForm(forms.ModelForm):
             required=False,
         )
 
+    def clean_supervisor_email(self):
+        cleaned_data = super().clean()
+        try:
+            email = cleaned_data['supervisor_email']
+            domain = email.split('@')[1]
+            if Institution.objects.filter(base_domain=domain).exists():
+                return email
+        except:
+            pass
+        raise forms.ValidationError(_(
+            'Needs to be a valid institutional email address.'
+        ))
+
     def clean(self):
         self.instance.tech_lead = self.user
         if self.instance.tech_lead.profile.institution is None:
@@ -247,6 +263,23 @@ class ProjectManageAttributionForm(forms.ModelForm):
         )
 
 
+class ProjectSupervisorApproveForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = ['approved_by_supervisor']
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    def clean(self):
+        if self.instance.supervisor_email != self.user.email:
+            raise forms.ValidationError(_(
+                'You are not the supervisor of this project.'
+            ))
+
+
 class SystemAllocationRequestCreationForm(ProjectAssociatedForm):
 
     class Meta:
@@ -269,7 +302,6 @@ class SystemAllocationRequestCreationForm(ProjectAssociatedForm):
             'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
             'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
         }
-
 
 
 class RSEAllocationRequestCreationForm(ProjectAssociatedForm):
@@ -345,6 +377,11 @@ class ProjectUserInviteForm(forms.Form):
             raise forms.ValidationError(_("You are currently a member of the project."))
         if ProjectUserMembership.objects.filter(project=project, user=user).exists():
             raise forms.ValidationError(_("A membership request for this project already exists."))
+        if not project.can_have_more_users():
+            raise forms.ValidationError(_(
+                "This project has reached its membership cap. "
+                "If you require more members, please contact support."
+            ))
 
         return email
 
@@ -383,9 +420,22 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
         else:
             return pre_approved_options
 
+    def clean_status(self):
+        if (self.initial_status != ProjectUserMembership.AWAITING_AUTHORISED and
+            self.cleaned_data['status'] == ProjectUserMembership.AUTHORISED):
+            if not self.cleaned_data['project'].can_have_more_users():
+                raise forms.ValidationError(_(
+                    "This project has reached its membership cap. "
+                    "If you require more members, please contact support."
+                ))
+
     def save(self, commit=True):
         project_user_membership = super(ProjectUserMembershipAdminForm, self).save(commit=False)
         if self.initial_status != project_user_membership.status:
+            if project_user_membership.status == ProjectUserMembership.AUTHORISED:
+                user = project_user_membership.user
+                if user.profile.institution and user.profile.institution.needs_user_approval:
+                    user.profile.activate()
             update_openldap_project_membership(project_user_membership)
         if commit:
             project_user_membership.save()

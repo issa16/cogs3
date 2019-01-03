@@ -48,6 +48,9 @@ class ProjectViewTests(TestCase):
 
     def setUp(self):
         self.project_applicant = CustomUser.objects.get(email='norman.gordon@example.ac.uk')
+        
+        # Applicant from an institution that does not verify users
+        self.inst2_applicant = CustomUser.objects.get(email='test.user@example2.ac.uk')
 
         # Applicant from an institution that does not verify users
         self.inst2_applicant = CustomUser.objects.get(email='test.user@example2.ac.uk')
@@ -96,7 +99,7 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('create-project'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
@@ -109,6 +112,24 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
         headers = {
             'Shib-Identity-Provider': self.project_owner.profile.institution.identity_provider,
             'REMOTE_USER': self.project_owner.email,
+        }
+        response = self.client.get(
+            reverse('create-project'),
+            **headers
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response.context_data.get('form'), ProjectCreationForm))
+        self.assertTrue(isinstance(response.context_data.get('view'), ProjectCreateView))
+
+    def test_view_as_authorised_with_project_add_without_user_approval(self):
+        """
+        Ensure the project create view is accessible to an authorised application user,
+        who does have the required permissions and who is not required to be authorised
+        and the user in in awaiting approval status
+        """
+        headers = {
+            'Shib-Identity-Provider': self.inst2_applicant.profile.institution.identity_provider,
+            'REMOTE_USER': self.inst2_applicant.email,
         }
         response = self.client.get(
             reverse('create-project'),
@@ -189,6 +210,23 @@ class SystemAllocationCreateViewTests(ProjectViewTests, TestCase):
         headers = {
             'Shib-Identity-Provider': self.project_owner.profile.institution.identity_provider,
             'REMOTE_USER': self.project_owner.email,
+        }
+        response = self.client.get(
+            reverse('create-allocation', args=[self.project.id]),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response.context_data.get('form'), SystemAllocationRequestCreationForm))
+        self.assertTrue(isinstance(response.context_data.get('view'), SystemAllocationCreateView))
+
+    def test_view_without_user_approval_with_project_add_permission(self):
+        """
+        Ensure the project create view is accessible to a user who is not required to be authorised,
+        who does have the required permissions.
+        """
+        headers = {
+            'Shib-Identity-Provider': self.inst2_applicant.profile.institution.identity_provider,
+            'REMOTE_USER': self.inst2_applicant.email,
         }
         response = self.client.get(
             reverse('create-allocation', args=[self.project.id]),
@@ -482,6 +520,13 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
         """
         Ensure the project user request membership update view is accessible to an authorised
         application user, who does not have the required permissions.
+        """
+        pass
+
+    def test_view_as_without_user_authorisation_with_project_change_membership_permission(self):
+        """
+        Ensure the project user request membership update view is accessible to a user who is
+        not required to be authorised, who does not have the required permissions.
         """
         pass
 

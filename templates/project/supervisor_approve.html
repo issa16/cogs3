@@ -1,0 +1,139 @@
+<!-- templates/project/create.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}{% trans "Supervisor Project Approval" %}{% endblock %}
+{% block content %}
+	<div class="my-3 p-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4>{% trans "Supervisor Project Approval" %}</h4>
+				</div>
+				<p> The following project has been added to the system. Click approve below to confirm that you are the project supervisor and the project may be submitted to Supercomputing Wales. </p>
+				
+				<div class="table-responsive">
+					  <table class="table table-bordered">
+						  <tbody>
+							  <tr>
+								  <th scope="row" style="width:25%">{% trans "Title" %}</th>
+								  <td style="width:75%">{{project.title}}</td>
+							  </tr>
+							  {% if project.code %}
+								  <tr>
+									  <th scope="row">{% trans "Code" %}</th>
+									  <td>{{project.code}}</td>
+								  </tr>
+							  {% endif %}
+							  <tr>
+								  <th scope="row">{% trans "Description" %}</th>
+								  <td>{{project.description}}</td>
+							  </tr>
+							  {% if project.legacy_hpcw_id %}
+								  <tr>
+									  <th scope="row">{% trans "Legacy HPC Wales ID" %}</th>
+									  <td>{{project.legacy_hpcw_id}}</td>
+								  </tr>
+							  {% endif %}
+							  {% if project.legacy_arcca_id %}
+								  <tr>
+									  <th scope="row">{% trans "Legacy ARCCA ID" %}</th>
+									  <td>{{project.legacy_arcca_id}}</td>
+								  </tr>
+							  {% endif %}
+							  <tr>
+								  <th scope="row">{% trans "Institution of technical lead" %}</th>
+								  <td>{{project.tech_lead.profile.institution}}</td>
+							  </tr>
+							  <tr>
+								  <th scope="row">{% trans "Institution project reference" %}</th>
+								  <td>{{project.institution_reference}}</td>
+							  </tr>
+							  <tr>
+								  <th scope="row">{% trans "Project Leader" %}</th>
+								  <td>{{project.supervisor_name}} <br>
+									  {{project.supervisor_position}} <br>
+									  {{project.supervisor_email}}</td>
+							  </tr>
+							  <tr>
+								  <th scope="row">{% trans "Attributions" %}</th>
+								  <td>
+									  {% if project.attributions.all %}
+										  {% trans "Funding Sources and Grants" %}
+										  {% for source in project.attributions.get_fundingsources %}
+											  <li>{{source.title}}</li>
+										  {% empty %}
+											  <li>{% trans "None yet" %}</li>
+										  {% endfor %}
+										  <br />
+										  {% trans "Publications" %}
+										  {% for source in project.attributions.get_publications %}
+											  <li>{{source.title}}</li>
+										  {% empty %}
+											  <li>{% trans "None yet" %}</li>
+										  {% endfor %}
+									  {% else %}
+										  {% trans "None yet" %}
+									  {% endif %}
+									  <br />
+								  </td>
+							  </tr>
+						  </tbody>
+					  </table>
+  
+					  {% if request.user.profile.institution.separate_allocation_requests %}
+					  <h5> {% trans "System allocation requests" %}: </h5>
+					  {% endif %}
+					  <table class="table table-bordered">
+						  <tbody>
+							  <tr>
+								  <th>{% trans "Start Date" %}</th>
+								  <th>{% trans "Request Status" %}</th>
+								  <th></th>
+							  </tr>
+							  {% for allocation in project.get_allocation_requests %}
+							  <tr>
+								  <td> {{allocation.start_date}} </td>
+								  <td> {{allocation.get_status_display}} </td>
+								  <td>
+									  <a href="{% url 'allocation-request-detail' allocation.pk %}"> {% trans "Show details" %} </a>
+								  </td>
+							  </tr>
+							  {% endfor %}
+						  </tbody>
+					  </table>
+					  {% if request.user.profile.institution.allows_rse_requests %}
+					  <h5> {% trans "RSE time allocation requests" %}: </h5>
+					  <table class="table table-bordered">
+						  <tbody>
+							  <tr>
+								  <th>{% trans "Date requested" %}</th>
+								  <th>{% trans "Title" %}</th>
+								  <th>{% trans "Request Status" %}</th>
+								  <th></th>
+							  </tr>
+							  {% for allocation in project.get_rse_requests %}
+							  <tr>
+								  <td> {{allocation.created_time|date}} </td>
+								  <td> {{allocation.title}} </td>
+								  <td> {{allocation.get_status_display}} </td>
+								  <td>
+									  <a href="{% url 'rse-allocation-detail' allocation.pk %}"> {% trans "Show details" %} </a>
+								  </td>
+							  </tr>
+							  {% endfor %}
+						  </tbody>
+					  </table>
+					  {% endif %}
+				  </div>
+				  
+					  <form method="post" enctype="multipart/form-data" novalidate>
+						{% csrf_token %}
+						<button type="submit" class="btn btn-primary">{% trans "Approve" %}</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

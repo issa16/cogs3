@@ -76,7 +76,6 @@ class AllocationRequestFormTests(TestCase):
         for i in self.institution_names:
             user = self.institution_users[i]
             form = SystemAllocationRequestCreationForm(user)
-            
 
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):

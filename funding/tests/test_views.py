@@ -2,10 +2,11 @@ from django.test import TestCase
 from django.urls import reverse
 
 from funding.forms import FundingSourceForm
-from funding.views import FundingSourceCreateView
 from funding.forms import PublicationForm
 from funding.forms import AddFundingSourceForm
 from funding.views import FundingSourceAddView
+from funding.views import FundingSourceCreateView
+from funding.views import PublicationCreateView
 from funding.views import AttributionListView
 from funding.views import AttributionUpdateView
 from funding.views import AttributioneDeleteView
@@ -120,16 +121,15 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
                 'Shib-Identity-Provider': institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
             }
+
+            # Test get. Response is a form
             response = self.client.get(
                 reverse('add-funding-source'),
                 **headers
             )
-            self.assertEqual(response.status_code,
-                             account.get('expected_status_code'))
-            self.assertTrue(isinstance(response.context_data.get('form'),
-                                       AddFundingSourceForm))
-            self.assertTrue(isinstance(response.context_data.get('view'),
-                                       FundingSourceAddView))
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('form'), AddFundingSourceForm))
+            self.assertTrue(isinstance(response.context_data.get('view'), FundingSourceAddView))
 
             # Test post with new id. Redirects to create form
             response = self.client.post(
@@ -179,7 +179,6 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
             )
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/en-gb/funding/create-funding-source/")
-            
             # Test post with existing id
             response = self.client.post(
                 reverse('add-funding-source'),
@@ -246,16 +245,23 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
         Ensure the correct account types can access the funding source list view.
         """
         user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
+        user2 = CustomUser.objects.get(email="test.user@example2.ac.uk")
         institution = Institution.objects.get(name="Example University")
-        funding_source = FundingSource.objects.get(title="Test funding source")
+        funding_source = FundingSource.objects.get(identifier="scw0001")
 
         accounts = [
             {
                 'email': user.email,
                 'expected_status_code': 200,
             },
+            {
+                'email': user2.email,
+                'expected_status_code': 302,
+            },
         ]
         for account in accounts:
+            funding_source.pi_email = account.get('email')
+            funding_source.save()
             headers = {
                 'Shib-Identity-Provider': institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
@@ -269,9 +275,12 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
             )
             self.assertEqual(response.status_code,
                              account.get('expected_status_code'))
-            self.assertTrue(isinstance(response.context_data.get('form'),
+
+            if response.status_code == 200:
+                # Allowed to update
+                self.assertTrue(isinstance(response.context_data.get('form'),
                                        FundingSourceForm))
-            self.assertTrue(isinstance(response.context_data.get('view'),
+                self.assertTrue(isinstance(response.context_data.get('view'),
                                        AttributionUpdateView))
                             
     def test_fundingource_view_as_an_authorised_user(self):
@@ -308,19 +317,26 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
         Ensure the correct account types can access the funding source list view.
         """
         user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
+        user2 = CustomUser.objects.get(email="test.user@example2.ac.uk")
         institution = Institution.objects.get(name="Example University")
         publication = Publication.objects.get(title="Test publication")
 
         accounts = [
             {
-                'email': user.email,
+                'user': user,
+                'expected_status_code': 200,
+            },
+            {
+                'user': user2,
                 'expected_status_code': 200,
             },
         ]
         for account in accounts:
+            publication.created_by = account.get('user')
+            publication.save()
             headers = {
                 'Shib-Identity-Provider': institution.identity_provider,
-                'REMOTE_USER': account.get('email'),
+                'REMOTE_USER': account.get('user').email,
             }
             response = self.client.get(
                 reverse(
@@ -346,14 +362,14 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
 
         accounts = [
             {
-                'email': user.email,
+                'user': user,
                 'expected_status_code': 302,
             },
         ]
         for account in accounts:
             headers = {
                 'Shib-Identity-Provider': institution.identity_provider,
-                'REMOTE_USER': account.get('email'),
+                'REMOTE_USER': account.get('user').email,
             }
             response = self.client.get(
                 reverse(
@@ -413,6 +429,46 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
         Ensure unauthorised users can not access the delete view.
         """
         user = CustomUser.objects.get(email="guest.user@external.ac.uk")
+        user2 = CustomUser.objects.get(email="test.user@example2.ac.uk")
+        institution = Institution.objects.get(name="Example University")
+        funding_source = FundingSource.objects.get(title="Test funding source")
+
+        accounts = [
+            {
+                'email': user.email,
+                'expected_status_code': 302,
+            },
+            {
+                'email': user2.email,
+                'expected_status_code': 302,
+            },
+        ]
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': account.get('email'),
+            }
+            response = self.client.get(
+                reverse(
+                    'delete-attribution',
+                    args=[funding_source.id]
+                ),
+                **headers
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
+
+        self.access_view_as_unauthorised_user(
+            reverse(
+                'delete-attribution',
+                args=[funding_source.id]
+            )
+        )
+
+    def test_view_without_user_approval(self):
+        """
+        Ensure unauthorised users can not access the delete view.
+        """
+        user = CustomUser.objects.get(email="test.user@example2.ac.uk")
         institution = Institution.objects.get(name="Example University")
         funding_source = FundingSource.objects.get(title="Test funding source")
 
@@ -423,6 +479,8 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             },
         ]
         for account in accounts:
+            funding_source.pi_email = account.get('email')
+            funding_source.save()
             headers = {
                 'Shib-Identity-Provider': institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
