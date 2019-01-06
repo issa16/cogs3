@@ -1,14 +1,6 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
-from project.forms import (ProjectAdminForm, ProjectUserMembershipAdminForm,
-                           SystemAllocationRequestAdminForm)
-from project.models import (Project, ProjectCategory, ProjectFundingSource,
-                            ProjectSystemAllocation, ProjectUserMembership,
-                            RSEAllocation, SystemAllocationRequest)
-from project.openldap import (update_openldap_project,
-                              update_openldap_project_membership)
-
 
 @admin.register(ProjectCategory)
 class ProjectCategoryAdmin(SimpleHistoryAdmin):
