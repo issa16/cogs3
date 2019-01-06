@@ -11,12 +11,11 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import ast
-import dj_database_url
 import os
 
+import dj_database_url
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
-
 from selenium import webdriver
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -41,6 +40,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ast.literal_eval(os.environ.get('DEBUG', 'False'))
 
+MAINTENANCE_MODE = ast.literal_eval(os.environ.get('MAINTENANCE_MODE', 'False'))
+MAINTENANCE_MODE_IGNORE_ADMIN_SITE = ast.literal_eval(os.environ.get('MAINTENANCE_MODE_IGNORE_ADMIN_SITE', 'False'))
+
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -55,6 +57,7 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS')
 
 # Application definition
 INSTALLED_APPS = [
+    'maintenance_mode',
     'cookielaw',
     'dashboard.apps.DashboardConfig',
     'django.contrib.admin',
@@ -92,6 +95,7 @@ MIDDLEWARE = [
     'users.middleware.TermsOfServiceMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'maintenance_mode.middleware.MaintenanceModeMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -153,7 +157,7 @@ LANGUAGE_CODE = 'en-gb'
 LOCALE_PATHS = ('locale', )
 TEMPLATE_CONTEXT_PROCESSORS = ('django.template.context_processors.i18n', )
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = True
 
