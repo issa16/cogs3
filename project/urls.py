@@ -9,7 +9,7 @@ urlpatterns = [
         name='create-project',
     ),
     path(
-        'create-allocation/',
+        '<int:project>/create-allocation/',
         views.SystemAllocationCreateView.as_view(),
         name='create-allocation',
     ),
@@ -49,6 +49,11 @@ urlpatterns = [
         name='project-add-attributions',
     ),
     path(
+        'applications/<int:pk>/supervisor-approve/',
+        views.ProjectSupervisorApproveView.as_view(),
+        name='project-supervisor-approval',
+    ),
+    path(
         'applications/<int:project>/rse-time-application/',
         views.RSEAllocationCreateView.as_view(),
         name='request-project-rse-time',
@@ -65,7 +70,7 @@ urlpatterns = [
     ),
     path(
         'applications/<int:pk>/invite-user',
-        views.ProjectMembesrshipInviteView.as_view(),
+        views.ProjectMembershipInviteView.as_view(),
         name='project-membership-invite',
     ),
     path(

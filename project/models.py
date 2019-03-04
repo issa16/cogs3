@@ -9,6 +9,7 @@ from django.core.validators import MinValueValidator
 from simple_history.models import HistoricalRecords
 
 from openldap.api import project_membership_api
+from project.notifications import project_created_notification
 from system.models import System
 from funding.models import Attribution
 
@@ -98,6 +99,11 @@ class Project(models.Model):
         verbose_name=_("Project Leader's email"),
         blank=True,
     )
+    approved_by_supervisor = models.BooleanField(
+        default=False,
+        verbose_name=_('Confirmed by Supervisor'),
+    )
+
     attributions = models.ManyToManyField(
         Attribution,
         blank=True,
@@ -130,6 +136,12 @@ class Project(models.Model):
         through='ProjectUserMembership',
         verbose_name=_('Members'),
     )
+
+    custom_user_cap = models.PositiveIntegerField(
+        verbose_name=_('Custom user cap'),
+        default=0,
+    )
+    
     AWAITING_APPROVAL = 0
     APPROVED = 1
     DECLINED = 2
@@ -148,6 +160,28 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
 
+    def can_have_more_users(self):
+        if not self.custom_user_cap:
+            if not self.tech_lead.profile.institution:
+                return True
+            elif not self.tech_lead.profile.institution.default_project_user_cap:
+                return True
+            elif (self.tech_lead.profile.institution.default_project_user_cap >=
+                  ProjectUserMembership.objects.filter(
+                      project=Project.objects.last(),
+                      status=ProjectUserMembership.AUTHORISED,
+                  ).count() + 1):
+                return True
+            else:
+                return False
+        elif (self.custom_user_cap >= ProjectUserMembership.objects.filter(
+                project=Project.objects.last(),
+                status=ProjectUserMembership.AUTHORISED,
+        ).count() + 1):
+            return True
+        else:
+            return False
+
     def get_allocation_requests(self):
         return SystemAllocationRequest.objects.filter(project=self.id).order_by('-start_date')
 
@@ -161,13 +195,13 @@ class Project(models.Model):
             project_membership, created = ProjectUserMembership.objects.get_or_create(
                 project=self,
                 user=self.tech_lead,
-                date_joined=datetime.date.today(),
-                status=ProjectUserMembership.AUTHORISED,
-                previous_status=ProjectUserMembership.AUTHORISED,
+                defaults=dict(
+                    date_joined=datetime.date.today(),
+                    status=ProjectUserMembership.AUTHORISED,
+                    previous_status=ProjectUserMembership.AUTHORISED,
+                    initiated_by_user=False,
+                )
             )
-            # Assign the 'project_owner' group to the project's technical lead.
-            group = Group.objects.get(name='project_owner')
-            self.tech_lead.groups.add(group)
 
             # Propagate the changes to LDAP
             if created:
@@ -207,6 +241,11 @@ class Project(models.Model):
         super(Project, self).save(*args, **kwargs)
 
         self._assign_project_owner_project_membership()
+
+        # Assign the 'project_owner' group to the project's technical lead.
+        if self.tech_lead.groups.filter(name='project_owner').count():
+            group = Group.objects.get(name='project_owner')
+            self.tech_lead.groups.add(group)
 
         # If the project already exists check for changes
         if(Project.objects.filter(pk=self.id).exists()):
@@ -355,6 +394,12 @@ class SystemAllocationRequest(models.Model):
         self.status = self.previous_status
         self.save()
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.code
+
 
 class ProjectSystemAllocation(models.Model):
 
@@ -495,7 +540,7 @@ class RSEAllocation(models.Model):
         help_text=_('Internal notes'),
         verbose_name=_('Notes'),
     )
-    
+
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     start_date = models.DateField(null=True)
@@ -504,12 +549,12 @@ class RSEAllocation(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        #import pdb; pdb.set_trace()
         data = {
             'title': self.title,
             'duration': self.duration
         }
         return _("Project to '{title}' in {duration} weeks").format(**data)
+
 
 class ProjectUserMembershipManager(models.Manager):
 
@@ -517,6 +562,7 @@ class ProjectUserMembershipManager(models.Manager):
         projects = Project.objects.filter(tech_lead=user)
         project_user_memberships = ProjectUserMembership.objects.filter(
             project__in=projects,
+            status=ProjectUserMembership.AWAITING_AUTHORISATION,
         )
         return project_user_memberships
 

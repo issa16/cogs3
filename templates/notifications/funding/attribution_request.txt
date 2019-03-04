@@ -1,0 +1,5 @@
+New attribution access request from {{user}}
+
+Dear {{first_name}},
+
+{{user}} has requested for the right to attribute the funding source "{{title}}" with identifier "{{identifier}}" to projects. To allow attribution, please access the funding source at https://my.supercomputing.wales/funding/list/ and click Approve in the list of users.

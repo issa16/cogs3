@@ -1,0 +1,61 @@
+<!-- templates/funding/list.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}{% trans "Funding Source Authorisations" %}{% endblock %}
+{% block content %}
+	<div class="my-3 p-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4>{% trans "Funding Source Authorisations" %}</h4>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				{% include 'includes/errors.html'%}
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				{% include 'includes/messages.html'%}
+			</div>
+		</div>
+		<div class="table-responsive">
+			<table class="table table-bordered">
+				<thead class="thead-light">
+					<tr>
+						<th scope="col">{% trans "Funding Source" %}</th>
+						<th scope="col">{% trans "User" %}</th>
+						<th scope="col">{% trans "Approved" %}</th>
+						<th scope="col"></th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for membership in memberships %}
+						<tr>
+							<td><a href="{% url 'update-attribution' membership.fundingsource.pk %}">{{membership.fundingsource}}</a></td>
+							<td>{{membership.user}}</td>
+							<td>{% if membership.approved %} Approved {% else %} Awaiting Approval {% endif %} </td>
+							<td>
+                                <form method="post" action="{% url 'toggle-funding_source_membership-approved' membership.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">
+                                    {% if membership.approved %} Retract {% else %} Approve {% endif %}
+                                </button>
+                                </form>
+                            </td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div class="row">
+			<div class="col">
+				{% include 'includes/pagination.html'%}
+			</div>
+		</div>
+	</div>
+{% endblock %}

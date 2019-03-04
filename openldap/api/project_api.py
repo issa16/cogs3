@@ -13,6 +13,7 @@ from openldap.schemas.project.list_projects import list_projects_json
 from openldap.util import decode_response
 from openldap.util import raise_for_data_error
 from openldap.util import verify_payload_data
+from users.notifications import email_user
 
 
 @job
@@ -110,10 +111,12 @@ def create_project(project, notify_user=True):
         project.save()
 
         if notify_user:
-            subject = _('{company_name} Project {code} Created'.format(
-                company_name=settings.COMPANY_NAME,
-                code=project.code,
-            ))
+            subject = _(
+                '{company_name} Project {code} Created'.format(
+                    company_name=settings.COMPANY_NAME,
+                    code=project.code,
+                )
+            )
             context = {
                 'first_name': project.tech_lead.first_name,
                 'to': project.tech_lead.email,
@@ -149,10 +152,12 @@ def deactivate_project(project, notify_user=True):
         response.raise_for_status()
 
         if notify_user:
-            subject = _('{company_name} Project {code} Deactivated'.format(
-                company_name=settings.COMPANY_NAME,
-                code=project.code,
-            ))
+            subject = _(
+                '{company_name} Project {code} Deactivated'.format(
+                    company_name=settings.COMPANY_NAME,
+                    code=project.code,
+                )
+            )
             context = {
                 'first_name': project.tech_lead.first_name,
                 'to': project.tech_lead.email,
@@ -190,10 +195,12 @@ def activate_project(project, notify_user=True):
         raise_for_data_error(response.get('data'))
 
         if notify_user:
-            subject = _('{company_name} Project {code} Activated'.format(
-                company_name=settings.COMPANY_NAME,
-                code=project.code,
-            ))
+            subject = _(
+                '{company_name} Project {code} Activated'.format(
+                    company_name=settings.COMPANY_NAME,
+                    code=project.code,
+                )
+            )
             context = {
                 'first_name': project.tech_lead.first_name,
                 'to': project.tech_lead.email,

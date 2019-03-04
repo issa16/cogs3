@@ -52,7 +52,11 @@
 						<tr>
 							<td>{{attribution.verbose_type}}</td>
 							<td><a href="{% url 'update-attribution' attribution.pk %}">{{attribution.title}}</a></td>
-							<td><a class="btn btn-danger" href="{% url 'delete-attribution' attribution.pk %}">{% trans "Delete" %}</a></td>
+							<td>
+								{% if attribution.owner == request.user and not attribution.fundingsource.approved %}
+								<a class="btn btn-danger" href="{% url 'delete-attribution' attribution.pk %}">{% trans "Delete" %}</a>
+								{% endif %}
+							</td>
 						</tr>
 					{% endfor %}
 				</tbody>
@@ -65,7 +69,7 @@
 						<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" id="add_attribution_dropdown">{% trans "Add" %}
 			  		<span class="caret"></span></button>
 			  		<div class="dropdown-menu">
-			    		<a href="{% url 'create-funding-source' %}" class="list-group-item">{% trans "Funding Source" %}	</a>
+			    		<a href="{% url 'add-funding-source' %}" class="list-group-item">{% trans "Funding Source" %}	</a>
 			    		<a href="{% url 'create-publication' %}" class="list-group-item">{% trans "Publication" %}	</a>
 			  		</div>
 					</div>

@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from funding.forms import FundingSourceForm, PublicationForm
+from funding.forms import FundingSourceForm, AddFundingSourceForm
+from funding.forms import PublicationForm
 from users.models import CustomUser
 from funding.models import FundingBody
 from institution.models import Institution
@@ -79,6 +80,17 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
                 'funding_body': funding_body.id,
                 'pi_email': email,
                 'amount': 1000,
+            },
+        )
+        self.assertTrue(form.is_valid())
+
+    def test_add_funding_source_form(self):
+        """
+        The form only takes an identifier
+        """
+        form = AddFundingSourceForm(
+            data={
+                'identifier': 'Id',
             },
         )
         self.assertTrue(form.is_valid())

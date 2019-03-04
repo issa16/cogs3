@@ -28,12 +28,6 @@ class ProfileUpdateForm(forms.ModelForm):
     def save(self, commit=True):
         profile = super(ProfileUpdateForm, self).save(commit=False)
 
-        # Assign the project.add permission to an approved user.
-        if profile.account_status == Profile.APPROVED:
-            if not profile.user.has_perm('project.add_project'):
-                permission = Permission.objects.get(codename='add_project')
-                profile.user.user_permissions.add(permission)
-
         # Ensure any updates to the account status are propagated to LDAP.
         profile.previous_account_status = self.initial_account_status
         if self.initial_account_status != profile.account_status:

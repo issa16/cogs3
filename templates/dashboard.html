@@ -1,6 +1,7 @@
 <!-- templates/dashboard.html -->
 {% extends 'base.html' %}
 {% load i18n %}
+{% load users_extras %}
 {% block title %}{% trans "Dashboard" %}{% endblock %}
 {% block content %}
 	<div class="my-3 px-3 pt-3 bg-white rounded box-shadow">
@@ -36,10 +37,12 @@
 											<th>{% trans "Identity" %}</th>
 											<td>{{user.email}}</td>
 										</tr>
+										{% if not user.profile.institution or user.profile.institution.needs_user_approval %}
 										<tr>
 											<th>{% trans "Status" %}</th>
 											<td>{{user.profile.get_account_status_display }}</td>
 										</tr>
+										{% endif %}
 										{% if user.profile.hpcw_username %}
 											<tr>
 												<th>{% trans "HPCW username" %}</th>
@@ -77,18 +80,22 @@
 								<b>{% trans "Actions" %}</b>
 							</div>
 							<ul class="list-group list-group-flush">
-								{% if user.profile.is_approved %}
+								{% if user.profile.has_system_account %}
 									<li class="list-group-item d-flex justify-content-between align-items-center disabled">
 										<a href="https://portal.supercomputing.wales/index.php/index/accessing-the-system/">{% trans "Access SCW System" %}</a>
 									</li>
 									<li class="list-group-item d-flex justify-content-between align-items-center disabled">
 										<a href="#" data-toggle="modal" data-target="#password-reset-modal">{% trans "Reset SCW Password" %}</a>
 									</li>
-									{% if perms.project.add_project %}
-										<li class="list-group-item d-flex justify-content-between align-items-center">
+								{% endif %}
+								{% if perms.project.add_project %}
+									<li class="list-group-item d-flex justify-content-between align-items-center">
+										{% if request.user.profile.institution.separate_allocation_requests %}
+											<a href="{% url 'create-project' %}">{% trans "Create a Project" %}</a>
+										{% else %}
 											<a href="{% url 'create-project-and-allocation' %}">{% trans "Create Project Application" %}</a>
-										</li>
-									{% endif %}
+										{%endif%}
+									</li>
 								{% endif %}
 								<li class="list-group-item d-flex justify-content-between align-items-center">
 									<a href="https://portal.supercomputing.wales/index.php/index/submit-support-ticket/">{% trans "Submit Support Ticket" %}</a>
@@ -137,13 +144,31 @@
 								<li class="list-group-item d-flex justify-content-between align-items-center">
 									<a href="{% url 'project-membership-list' %}">{% trans "Project Memberships" %}</a>
 								</li>
+
 								<li class="list-group-item d-flex justify-content-between align-items-center">
-									<a href="{% url 'list-attributions' %}">{% trans "Attributions" %}</a>
+										<a href="{% url 'list-attributions' %}">{% trans "Attributions" %}</a>
+									</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				{% if user.profile.is_approved and perms.funding.approve_funding_sources %}
+				<div class="row mb-3">
+					<div class="col">
+						<div class="card">
+							<div class="card-header">
+								<b>{% trans "Administration" %}</b>
+							</div>
+							<ul class="list-group list-group-flush">
+
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									<a href="{% url 'list-unapproved-funding_sources' %}">{% trans "Approve Funding Sources for SCW" %}</a>
 								</li>
 							</ul>
 						</div>
 					</div>
 				</div>
+				{%endif%}
 			</div>
 		</div>
 	</div>

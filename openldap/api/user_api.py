@@ -14,6 +14,7 @@ from openldap.schemas.user.reset_user_password import reset_user_password_json
 from openldap.util import decode_response
 from openldap.util import raise_for_data_error
 from openldap.util import verify_payload_data
+from users.notifications import email_user
 
 
 @job

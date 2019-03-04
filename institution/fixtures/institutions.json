@@ -9,14 +9,20 @@
       "modified_time": "2018-05-02T10:41:45.591Z",
       "identity_provider": "https://iss-openathensla-runtime.swan.ac.uk/oala/metadata",
       "needs_legacy_inst_id": false,	
+      "needs_funding_approval": true,	
       "separate_allocation_requests": true,
       "allows_rse_requests": true,
       "rse_notify_email": "sa2c-support@swansea.ac.uk",
+      "funding_document_email": "E.A.Carpenter@Swansea.ac.uk",
+      "funding_document_receiver": "Sherryl",
+      "funding_document_template": "Swansea.docx",
       "local_repository_name": "Cronfa",
       "local_repository_domain": "cronfa.swansea.ac.uk",
       "local_mailing_list_name": "SA2C",
       "local_mailing_list_link": "https://mailman.swansea.ac.uk/mailman/subscribe/sa2c-users?email={email}",
       "funding_database_name": "AMS",
+      "default_project_user_cap": 10,
+      "needs_user_approval": false,
       "logo_path": "/static/img/swansea_logo.png"
     }
   },
@@ -30,6 +36,7 @@
       "modified_time": "2018-05-02T10:41:26.874Z",
       "identity_provider": "https://idp.bangor.ac.uk/shibboleth",
       "needs_legacy_inst_id": false,	
+      "needs_funding_approval": false,	
       "separate_allocation_requests": false,	
       "allows_rse_requests": false,
       "rse_notify_email": null,
@@ -51,6 +58,7 @@
       "modified_time": "2018-05-02T10:41:13.329Z",
       "identity_provider": "https://idp.cardiff.ac.uk/shibboleth",
       "needs_legacy_inst_id": true,	
+      "needs_funding_approval": false,	
       "separate_allocation_requests": false,	
       "allows_rse_requests": false,
       "rse_notify_email": null,
@@ -72,6 +80,7 @@
       "modified_time": "2018-05-02T10:40:56.816Z",
       "identity_provider": "https://shibboleth.aber.ac.uk/shibboleth",
       "needs_legacy_inst_id": false,	
+      "needs_funding_approval": false,	
       "separate_allocation_requests": false,	
       "allows_rse_requests": false,
       "rse_notify_email": null,
@@ -80,6 +89,8 @@
       "local_mailing_list_name": null,
       "local_mailing_list_link": null,
       "funding_database_name": "",
+      "default_project_user_cap": 10,
+      "needs_user_approval": false,
       "logo_path": "/static/img/aberystwyth_logo.png"
     }
   }

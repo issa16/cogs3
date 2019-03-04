@@ -6,13 +6,8 @@
 [![Code Health](https://landscape.io/github/tystakartografen/cogs3/master/landscape.svg?style=flat)](https://landscape.io/github/tystakartografen/cogs3/master)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/tystakartografen/cogs3/blob/master/LICENSE.md)
 
-- [Demo](#demo)
 - [Sequence Diagrams](#sequence-diagrams)
 - [Getting started](#getting-started)
-
-#### Demo
-
-[Development server](https://scw.bangor.ac.uk/)
 
 #### Sequence Diagrams
 
@@ -30,7 +25,7 @@
    git clone git@github.com:tystakartografen/cogs3.git
    ```
 
-1. Create a virtual environment.
+2. Create a virtual environment.
 
    ```sh
    mkdir -p ~/venvs/cogs3 && cd $_
@@ -41,45 +36,45 @@
    Replace `/usr/local/bin/python3` with the path to a Python 3 executable.
    On macOS this should be installed from Homebrew.
 
-1. Install the requirements.
+3. Install the requirements.
 
    ```sh
    cd ~/code/cogs3
    pip install -r requirements.txt
    ```
 
-1. Configure the environment variables.
+4. Configure the environment variables.
 
    ```sh
    cd cogs3
    mv .template_env .env
    ```
 
-1. Edit `.env` to include, at a minimum, an arbitrary `SECRET_KEY`.
+5. Edit `.env` to include, at a minimum, an arbitrary `SECRET_KEY`.
    Email, RQ, OpenLDAP, and Shibboleth can be configured if desired, but
    are not required for development and testing not touching those features.
 
-1. Create the database.
+6. Create the database.
 
    ```sh
    cd ..
    python manage.py migrate
    ```
 
-1. Load data fixtures into the database.
+7. Load data fixtures into the database.
 
    ```sh
    python manage.py loaddata institutions.json
    python manage.py loaddata systems.json
    ```
 
-1. Create an admin user.
+8. Create an admin user.
 
    ```sh
    python manage.py createsuperuser
    ```
 
-1. Install geckodriver.
+9. Install geckodriver.
 
    macOS
 
@@ -97,20 +92,20 @@
    rm geckodriver-v0.20.1-linux64.tar.gz
    ```
 
-1. Run the unit tests.
+10. Run the unit tests.
 
    ```sh
    python manage.py test -v 3
    ```
 
-1. Generate coverage report.
+11. Generate coverage report.
 
    ```sh
    coverage run manage.py test
    coverage html
    ```
 
-1. Install redis.
+12. Install redis.
 
    ```sh
    brew install redis
@@ -123,26 +118,26 @@
    sudo apt install redis-server
    ```
 
-1. Start the redis server.
+13. Start the redis server.
 
    ```sh
    redis-server &
    ```
 
-1. Test redis server is running.
+14. Test redis server is running.
 
     ```sh
     redis-cli ping
     >>> PONG
     ```
 
-1. Generate history tables
+15. Generate history tables
 
    ```sh
    python manage.py populate_history --auto
    ```
 
-1. Start the development server.
+16. Start the development server.
 
    ```sh
    python manage.py runserver

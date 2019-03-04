@@ -1,0 +1,34 @@
+{% extends 'notifications/email_base.html' %}
+{% load i18n %}
+{% block title %}
+	{% blocktrans %}New Project as Supervisor{% endblocktrans %}
+{% endblock %}
+{% block content %}
+	<p>
+		<b>{% blocktrans %}New Project as Supervisor{% endblocktrans %}.</b>
+	</p>
+	<p>
+		{% blocktrans %}A project application has been created on my.supercomputin.wales
+		with you as supervisor. We as you to confirm your role in the project
+		before it is submitted for approval.{% endblocktrans %}.
+	</p>
+	<p>
+	{% blocktrans %}Please access {% endblocktrans %}
+	<a href='https://scw.bangor.ac.uk/accounts/login/?next=/en/projects/applications/{{id}}/supervisor-approve/'>{% blocktrans %}this page.{% endblocktrans %}</a>
+	Choose you institution and login using your institutional credentials.
+	After reviewing the project click 'Approve' at the bottom of the page.
+	</p>
+
+	<p>
+		<b>University:</b>
+		{{university}}
+	</p>
+	<p>
+		<b>Technical lead:</b>
+		{{technical_lead}}
+	</p>
+	<p>
+		<b>Title:</b>
+		{{title}}
+	</p>
+{% endblock %}

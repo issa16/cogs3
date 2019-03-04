@@ -17,6 +17,31 @@
       "funding_database_name": "",
       "local_mailing_list_name": "Example HPC",
       "local_mailing_list_link": "https://example.ac.uk/mailman/subscribe/hpc?email={email}",
+      "default_project_user_cap": 10,
+      "needs_user_approval": true,
+      "needs_funding_approval": false,
+      "logo_path": "/static/img/example-logo.png"
+    }
+  },
+  {
+    "model": "institution.institution",
+    "pk": 2,
+    "fields": {
+      "name": "University with no user approval",
+      "base_domain": "example2.ac.uk",
+      "created_time": "2018-04-16T12:00:28Z",
+      "modified_time": "2018-05-02T10:41:45.591Z",
+      "identity_provider": "https://idp.example2.ac.uk/shibboleth",
+      "needs_legacy_inst_id": false,
+      "separate_allocation_requests": true,
+      "allows_rse_requests": true,
+      "rse_notify_email": "rse_team@example2.ac.uk",
+      "local_repository_name": "arXiv",
+      "local_repository_domain": "arxiv.org",
+      "funding_database_name": "",
+      "default_project_user_cap": 10,
+      "needs_user_approval": false,
+      "needs_funding_approval": true,
       "logo_path": "/static/img/example-logo.png"
     }
   }
