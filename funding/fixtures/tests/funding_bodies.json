@@ -1,0 +1,12 @@
+[
+  {
+    "model": "funding.fundingbody",
+    "pk": 1,
+    "fields": {
+      "name": "Test",
+      "description": "Test funding body",
+      "created_time": "2018-06-26T19:57:11.653Z",
+      "modified_time": "2018-06-26T19:57:11.653Z"
+    }
+  }
+]

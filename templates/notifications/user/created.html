@@ -1,0 +1,18 @@
+{% extends 'notifications/email_base.html' %}
+{% load i18n %}
+{% block title %}
+	{% blocktrans %}User Account Created{% endblocktrans %}
+{% endblock %}
+{% block content %}
+	<p>
+		<b>{% blocktrans %}User Account Created{% endblocktrans %}.</b>
+	</p>
+	<p>
+		{% blocktrans %}{{first_name}} {{last_name}} from {{university}} has requested access to a Supercomputing Wales account{% endblocktrans %}.
+	</p>
+	<p>
+		<b>Reason:</b>
+		{{reason}}
+	</p>
+
+{% endblock %}

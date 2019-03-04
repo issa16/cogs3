@@ -21,6 +21,25 @@ class TermsOfService(LoginRequiredMixin, generic.UpdateView):
         return self.request.user
 
 
+class CompleteRegistrationView(LoginRequiredMixin, generic.UpdateView):
+    form_class = RegisterForm
+    model = CustomUser
+    success_url = reverse_lazy('login')
+    template_name = 'registration/register.html'
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def dispatch(self, *args, **kwargs):
+        if not self.request.session.get('shib', None):
+            return redirect(reverse('login'))
+        if (self.request.user.is_authenticated
+            and self.request.user.first_name != ''
+            and self.request.user.last_name != ''):
+            return redirect(reverse('home'))
+        return super().dispatch(*args, **kwargs)
+
+
 class RegisterView(generic.CreateView):
     form_class = RegisterForm
     success_url = reverse_lazy('login')

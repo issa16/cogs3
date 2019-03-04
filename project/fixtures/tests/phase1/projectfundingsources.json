@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Test",
-      "description": "Test funding body",
+      "description": "Test funding source",
       "created_time": "2018-04-16T12:00:28Z",
       "modified_time": "2018-04-16T12:00:28Z"
     }

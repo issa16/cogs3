@@ -9,6 +9,21 @@ urlpatterns = [
         name='create-project',
     ),
     path(
+        '<int:project>/create-allocation/',
+        views.SystemAllocationCreateView.as_view(),
+        name='create-allocation',
+    ),
+    path(
+        'create-project-and-allocation/',
+        views.ProjectAndAllocationCreateView.as_view(),
+        name='create-project-and-allocation',
+    ),
+    path(
+        'rse-time/request/',
+        views.RSEAllocationCreateView.as_view(),
+        name='request-rse-time'
+    ),
+    path(
         'join/',
         views.ProjectUserMembershipFormView.as_view(),
         name='project-membership-create',
@@ -19,13 +34,43 @@ urlpatterns = [
         name='project-application-list',
     ),
     path(
+        'rse-time/',
+        views.ProjectListView.as_view(),
+        name='rse-allocation-list',
+    ),
+    path(
         'applications/<int:pk>/',
         views.ProjectDetailView.as_view(),
         name='project-application-detail',
     ),
     path(
+        'applications/<int:pk>/attributions/',
+        views.ProjectAddAttributionView.as_view(),
+        name='project-add-attributions',
+    ),
+    path(
+        'applications/<int:pk>/supervisor-approve/',
+        views.ProjectSupervisorApproveView.as_view(),
+        name='project-supervisor-approval',
+    ),
+    path(
+        'applications/<int:project>/rse-time-application/',
+        views.RSEAllocationCreateView.as_view(),
+        name='request-project-rse-time',
+    ),
+    path(
+        'allocations/<int:pk>/',
+        views.SystemAllocationRequestDetailView.as_view(),
+        name='allocation-request-detail',
+    ),
+    path(
+        'rse-time/<int:pk>/',
+        views.RSEAllocationRequestDetailView.as_view(),
+        name='rse-allocation-detail',
+    ),
+    path(
         'applications/<int:pk>/invite-user',
-        views.ProjectMembesrshipInviteView.as_view(),
+        views.ProjectMembershipInviteView.as_view(),
         name='project-membership-invite',
     ),
     path(
@@ -52,5 +97,15 @@ urlpatterns = [
         'applications/<int:pk>/document/',
         views.ProjectDocumentView.as_view(),
         name='project-application-document',
+    ),
+    path(
+        'list_attributions/',
+        views.list_attributions,
+        name='list_attributions',
+    ),
+    path(
+        'allocations/create',
+        views.SystemAllocationCreateView.as_view(),
+        name='create_application',
     ),
 ]

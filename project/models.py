@@ -4,10 +4,14 @@ import logging
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext_lazy
+from django.core.validators import MinValueValidator
+from simple_history.models import HistoricalRecords
 
 from openldap.api import project_membership_api
+from project.notifications import project_created_notification
 from system.models import System
+from funding.models import Attribution
 
 logger = logging.getLogger('apps')
 
@@ -26,32 +30,10 @@ class ProjectCategory(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.name
-
-
-class ProjectFundingSource(models.Model):
-
-    class Meta:
-        verbose_name_plural = _('Project Funding Sources')
-        ordering = ('name', )
-
-    name = models.CharField(
-        max_length=128,
-        unique=True,
-    )
-    description = models.CharField(max_length=512)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
-
-
-class ProjectManager(models.Manager):
-
-    def awaiting_approval(self, user):
-        return Project.objects.filter(tech_lead=user, status=Project.AWAITING_APPROVAL)
 
 
 class Project(models.Model):
@@ -98,9 +80,33 @@ class Project(models.Model):
         blank=True,
         verbose_name=_('Department'),
     )
-    pi = models.CharField(
+    pi_legacy = models.CharField(
         max_length=256,
-        verbose_name=_("Principal Investigator's name, position and email"),
+        verbose_name=_("[Deprecated]Principal Investigator's name, position and email"),
+    )
+    supervisor_name = models.CharField(
+        max_length=256,
+        verbose_name=_("Project Leader's name"),
+        blank=True,
+    )
+    supervisor_position = models.CharField(
+        max_length=256,
+        verbose_name=_("Project Leader's position"),
+        blank=True,
+    )
+    supervisor_email = models.CharField(
+        max_length=256,
+        verbose_name=_("Project Leader's email"),
+        blank=True,
+    )
+    approved_by_supervisor = models.BooleanField(
+        default=False,
+        verbose_name=_('Confirmed by Supervisor'),
+    )
+
+    attributions = models.ManyToManyField(
+        Attribution,
+        blank=True,
     )
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -114,43 +120,169 @@ class Project(models.Model):
         null=True,
         verbose_name=_('Category'),
     )
-    funding_source = models.ForeignKey(
-        ProjectFundingSource,
-        on_delete=models.CASCADE,
-        verbose_name=_('Funding source'),
-    )
-    start_date = models.DateField(verbose_name=_('Start date'))
-    end_date = models.DateField(verbose_name=_('End date'))
     economic_user = models.BooleanField(
         default=False,
         verbose_name=_('Economic user'),
     )
-    requirements_software = models.TextField(
-        max_length=512,
-        blank=True,
-        help_text=_('Software name and versions'),
-        verbose_name=_('Software Requirements'),
+
+    allocation_systems = models.ManyToManyField(
+        System,
+        through='ProjectSystemAllocation',
+        verbose_name=_('Allocation systems'),
     )
-    requirements_gateways = models.TextField(
-        max_length=512,
-        blank=True,
-        help_text=_('Web gateway or portal name and versions'),
-        verbose_name=_('Gateway Requirements'),
+    
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='ProjectUserMembership',
+        verbose_name=_('Members'),
     )
-    requirements_training = models.TextField(
-        max_length=512,
-        blank=True,
-        verbose_name=_('Training Requirements'),
+
+    custom_user_cap = models.PositiveIntegerField(
+        verbose_name=_('Custom user cap'),
+        default=0,
     )
-    requirements_onboarding = models.TextField(
-        max_length=512,
-        blank=True,
-        verbose_name=_('Onboarding Requirements'),
+    
+    AWAITING_APPROVAL = 0
+    APPROVED = 1
+    DECLINED = 2
+    REVOKED = 3
+    SUSPENDED = 4
+    CLOSED = 5
+    STATUS_CHOICES = (
+        (AWAITING_APPROVAL, _('Awaiting Approval')),
+        (APPROVED, _('Approved')),
+        (DECLINED, _('Declined')),
+        (REVOKED, _('Revoked')),
+        (SUSPENDED, _('Suspended')),
+        (CLOSED, _('Closed')),
     )
+
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
+    modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
+
+    def can_have_more_users(self):
+        if not self.custom_user_cap:
+            if not self.tech_lead.profile.institution:
+                return True
+            elif not self.tech_lead.profile.institution.default_project_user_cap:
+                return True
+            elif (self.tech_lead.profile.institution.default_project_user_cap >=
+                  ProjectUserMembership.objects.filter(
+                      project=Project.objects.last(),
+                      status=ProjectUserMembership.AUTHORISED,
+                  ).count() + 1):
+                return True
+            else:
+                return False
+        elif (self.custom_user_cap >= ProjectUserMembership.objects.filter(
+                project=Project.objects.last(),
+                status=ProjectUserMembership.AUTHORISED,
+        ).count() + 1):
+            return True
+        else:
+            return False
+
+    def get_allocation_requests(self):
+        return SystemAllocationRequest.objects.filter(project=self.id).order_by('-start_date')
+
+    def get_rse_requests(self):
+        return RSEAllocation.objects.filter(project=self.id).order_by('-created_time')
+
+    # objects = ProjectManager()
+
+    def _assign_project_owner_project_membership(self):
+        try:
+            project_membership, created = ProjectUserMembership.objects.get_or_create(
+                project=self,
+                user=self.tech_lead,
+                defaults=dict(
+                    date_joined=datetime.date.today(),
+                    status=ProjectUserMembership.AUTHORISED,
+                    previous_status=ProjectUserMembership.AUTHORISED,
+                    initiated_by_user=False,
+                )
+            )
+
+            # Propagate the changes to LDAP
+            if created:
+                project_membership_api.create_project_membership(project_membership=project_membership)
+        except Exception:
+            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
+
+    def _remove_from_project_owner(self, old_techlead):
+        try:
+            # If the old tech lead no longer has any projects,
+            # remove them from the project_owner group
+            techlead_projects = Project.objects.filter(
+                tech_lead=old_techlead,
+            )
+            if techlead_projects.count() == 1:
+                group = Group.objects.get(name='project_owner')
+                old_techlead.groups.remove(group)
+        except Exception:
+            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
+
+    def _generate_project_code(self):
+        prefix = 'scw'
+        last_project = Project.objects.order_by('id').last()
+        if not last_project:
+            if self.legacy_arcca_id or self.legacy_hpcw_id:
+                return prefix + '0000'
+            else:
+                return prefix + '1000'
+        else:
+            code = last_project.code.split(prefix)[1]
+            return prefix + str(int(code) + 1).zfill(4)
+
+    def save(self, *args, **kwargs):
+        if self.code is '':
+            self.code = self._generate_project_code()
+
+        super(Project, self).save(*args, **kwargs)
+
+        self._assign_project_owner_project_membership()
+
+        # Assign the 'project_owner' group to the project's technical lead.
+        if self.tech_lead.groups.filter(name='project_owner').count():
+            group = Group.objects.get(name='project_owner')
+            self.tech_lead.groups.add(group)
+
+        # If the project already exists check for changes
+        if(Project.objects.filter(pk=self.id).exists()):
+            current = Project.objects.get(pk=self.id)
+            if self.tech_lead != current.tech_lead:
+                self._remove_from_project_owner(current.tech_lead)
+
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.code
+
+
+class SystemAllocationRequest(models.Model):
+
+    class Meta:
+        verbose_name_plural = _('System Allocation Requests')
+
+    information = models.TextField(
+        max_length=1024,
+        blank=True,
+        verbose_name=_('Additional details of the allocation request not present in the project description'),
+    )
+    project = models.ForeignKey(
+        Project,
+        related_name='system_allocation_as_project',
+        on_delete=models.CASCADE,
+        verbose_name=_('Project'),
+    )
+    start_date = models.DateField(verbose_name=_('Start date'))
+    end_date = models.DateField(verbose_name=_('End date'))
+
     allocation_rse = models.BooleanField(
         default=False,
         verbose_name=_('RSE available to?'),
     )
+
     allocation_cputime = models.PositiveIntegerField(
         null=True,
         blank=True,
@@ -171,22 +303,31 @@ class Project(models.Model):
         blank=True,
         verbose_name=_('Scratch storage in GB'),
     )
+
+    requirements_software = models.TextField(
+        max_length=512,
+        blank=True,
+        help_text=_('Software name and versions'),
+        verbose_name=_('Software Requirements'),
+    )
+    requirements_training = models.TextField(
+        max_length=512,
+        blank=True,
+        verbose_name=_('Training Requirements'),
+    )
+    requirements_onboarding = models.TextField(
+        max_length=512,
+        blank=True,
+        verbose_name=_('Onboarding Requirements'),
+    )
+
     document = models.FileField(
         verbose_name=_('Upload Supporting Documents'),
         upload_to="documents/%Y/%m/%d/%M/",
         blank=True,
         null=True,
     )
-    allocation_systems = models.ManyToManyField(
-        System,
-        through='ProjectSystemAllocation',
-        verbose_name=_('Allocation systems'),
-    )
-    members = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        through='ProjectUserMembership',
-        verbose_name=_('Members'),
-    )
+
     AWAITING_APPROVAL = 0
     APPROVED = 1
     DECLINED = 2
@@ -214,19 +355,19 @@ class Project(models.Model):
     reason_decision = models.TextField(
         max_length=256,
         blank=True,
-        verbose_name=_('Reason for the project status decision:'),
+        verbose_name=_('Reason for the system allocation status decision:'),
         help_text=_('The reason will be emailed to the project\'s technical lead upon project status update.'),
     )
     notes = models.TextField(
         max_length=512,
         blank=True,
-        help_text=_('Internal project notes'),
+        help_text=_('Internal notes'),
         verbose_name=_('Notes'),
     )
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
 
-    objects = ProjectManager()
+    history = HistoricalRecords()
 
     def is_awaiting_approval(self):
         return True if self.status == Project.AWAITING_APPROVAL else False
@@ -253,43 +394,8 @@ class Project(models.Model):
         self.status = self.previous_status
         self.save()
 
-    def _assign_project_owner_project_membership(self):
-        try:
-            project_membership, created = ProjectUserMembership.objects.get_or_create(
-                project=self,
-                user=self.tech_lead,
-                date_joined=datetime.date.today(),
-                status=ProjectUserMembership.AUTHORISED,
-                previous_status=ProjectUserMembership.AUTHORISED,
-            )
-            # Assign the 'project_owner' group to the project's technical lead.
-            group = Group.objects.get(name='project_owner')
-            self.tech_lead.groups.add(group)
-
-            # Propagate the changes to LDAP
-            if created:
-                project_membership_api.create_project_membership(project_membership=project_membership)
-        except Exception:
-            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
-
-    def _generate_project_code(self):
-        prefix = 'scw'
-        last_project = Project.objects.order_by('id').last()
-        if not last_project:
-            if self.legacy_arcca_id or self.legacy_hpcw_id:
-                return prefix + '0000'
-            else:
-                return prefix + '1000'
-        else:
-            code = last_project.code.split(prefix)[1]
-            return prefix + str(int(code) + 1).zfill(4)
-
     def save(self, *args, **kwargs):
-        if self.code is '':
-            self.code = self._generate_project_code()
-        if self.status == Project.APPROVED:
-            self._assign_project_owner_project_membership()
-        super(Project, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.code
@@ -325,6 +431,8 @@ class ProjectSystemAllocation(models.Model):
         verbose_name='OpenLDAP status',
     )
 
+    history = HistoricalRecords()
+
     def __str__(self):
         data = {
             'project': self.project,
@@ -333,6 +441,119 @@ class ProjectSystemAllocation(models.Model):
             'date_unallocated': self.date_unallocated
         }
         return _('{project} on {system} from {date_allocated} to {date_unallocated}').format(**data)
+
+
+class RSEAllocation(models.Model):
+    class meta:
+        verbose_name_plural = _('Project RSE Allocations')
+
+    title = models.CharField(
+        max_length=256,
+        verbose_name=_('Subproject title'),
+        help_text=_(
+            "A one-sentence summary of the work to be done by the RSE team."
+        )
+    )
+    software = models.TextField(
+        max_length=2000,
+        verbose_name=_('Software description'),
+        help_text=_(
+            "The software currently in use to deliver the research outcomes. "
+            "Questions to consider: Is it commercial, open-source, or in-house "
+            "code? What language is it written in? What libraries does it "
+            "depend on? Is it parallelised?"
+        )
+    )
+    duration = models.DecimalField(
+        decimal_places=1,
+        max_digits=5,
+        verbose_name=_('Estimated duration (in weeks)'),
+        validators=[MinValueValidator(
+            0.01,
+            "Estimated duration must be a positive number of weeks."
+        )]
+    )
+    goals = models.TextField(
+        max_length=5000,
+        verbose_name='Project goals',
+        help_text=_(
+            "Describe in as much detail as possible what you would like the "
+            "RSE team to achieve. What steps are necessary to achieve this?"
+        )
+    )
+    outcomes = models.TextField(
+        max_length=2000,
+        verbose_name='Project outcomes',
+        help_text=_(
+            "What effect will the completion of this work have on your "
+            "research, e.g. in terms of publications or grants enabled? "
+        )
+    )
+    confidentiality = models.TextField(
+        max_length=1000,
+        blank=True,
+        verbose_name=_('Confidentiality constraints'),
+        help_text=_(
+            "Is the research or code restricted from being published openly "
+            "and presented at conferences and other events related to "
+            "research software? If so, please describe the restrictions."
+        )
+    )
+
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+    )
+
+    AWAITING_APPROVAL = 0
+    APPROVED = 1
+    DECLINED = 2
+    IN_PROGRESS = 3
+    COMPLETED = 4
+    CLOSED = 5
+    STATUS_CHOICES = (
+        (AWAITING_APPROVAL, _('Awaiting Approval')),
+        (APPROVED, _('Approved; awaiting RSE time')),
+        (DECLINED, _('Declined')),
+        (IN_PROGRESS, _('In progress')),
+        (COMPLETED, _('Completed')),
+        (CLOSED, _('Closed')),
+    )
+    status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_APPROVAL,
+        verbose_name=_('Current Status'),
+    )
+    previous_status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES,
+        default=AWAITING_APPROVAL,
+        verbose_name=_('Previous Status'),
+    )
+    reason_decision = models.TextField(
+        max_length=256,
+        blank=True,
+        verbose_name=_('Reason for the RSE allocation status decision:'),
+    )
+    notes = models.TextField(
+        max_length=512,
+        blank=True,
+        help_text=_('Internal notes'),
+        verbose_name=_('Notes'),
+    )
+
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+    start_date = models.DateField(null=True)
+    completed_date = models.DateField(null=True)
+
+    history = HistoricalRecords()
+
+    def __str__(self):
+        data = {
+            'title': self.title,
+            'duration': self.duration
+        }
+        return _("Project to '{title}' in {duration} weeks").format(**data)
 
 
 class ProjectUserMembershipManager(models.Manager):
@@ -434,6 +655,8 @@ class ProjectUserMembership(models.Model):
         """
         self.status = self.previous_status
         self.save()
+
+    history = HistoricalRecords()
 
     def __str__(self):
         data = {

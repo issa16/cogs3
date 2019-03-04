@@ -204,7 +204,7 @@ class CustomUserTests(TestCase):
         return user
 
     @classmethod
-    def create_shibboleth_user(cls, email):
+    def create_shibboleth_user(cls, email, institution):
         """
         Create a CustomUser instance that requires authentication via shibboleth.
 
@@ -242,4 +242,4 @@ class CustomUserTests(TestCase):
 
             users[i] = CustomUserTests.create_custom_user(email=email)
 
-            return (names, users)
+        return (names, users)

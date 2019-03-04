@@ -1,0 +1,12 @@
+New RSE time request from {{user}}
+
+Dear RSE team,
+
+A request for RSE time has been received from {{user}}. Details:
+
+Title: {{title}}
+Estimated duration: {{duration}} weeks
+Project goals: {{goals}}
+Software description: {{software}}
+Project outcomes: {{outcomes}}
+Confidentiality constraints: {{confidentiality|default:"none"}}

@@ -1,0 +1,5 @@
+User Account Created
+
+{{first_name}} {{last_name}} from {{university}} has requested access to a Supercomputing Wales account.
+
+Reason: {{reason}}

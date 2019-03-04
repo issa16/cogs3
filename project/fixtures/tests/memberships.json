@@ -18,7 +18,7 @@
     "pk": 2,
     "fields": {
       "project": 1,
-      "user": 4,
+      "user": 5,
       "status": 0,
       "previous_status": 0,
       "date_joined": "2018-06-26",

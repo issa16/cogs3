@@ -103,16 +103,18 @@ class CustomUserAdmin(UserAdmin):
                 'accepted_terms_and_conditions',
             )
         }),
-        ('Permissions', {
-            'fields': (
-                'is_shibboleth_login_required',
-                'is_active',
-                'is_staff',
-                'is_superuser',
-                'groups',
-                'user_permissions',
-            )
-        }),
+        (
+            'Permissions', {
+                'fields': (
+                    'is_shibboleth_login_required',
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                    'groups',
+                    'user_permissions',
+                )
+            }
+        ),
         ('Important dates', {
             'fields': (
                 'last_login',
@@ -123,15 +125,20 @@ class CustomUserAdmin(UserAdmin):
     )
 
     # Fields to be displayed when creating a CustomUser instance.
-    add_fieldsets = ((None, {
-        'classes': ('wide', ),
-        'fields': (
-            'email',
-            'first_name',
-            'last_name',
-            'is_shibboleth_login_required',
+    add_fieldsets = (
+        (
+            None, {
+                'classes': ('wide', ),
+                'fields': (
+                    'email',
+                    'first_name',
+                    'last_name',
+                    'is_shibboleth_login_required',
+                    'reason_for_account',
+                ),
+            }
         ),
-    }), )
+    )
     search_fields = (
         'email',
         'first_name',
@@ -151,7 +158,10 @@ class CustomUserAdmin(UserAdmin):
 
     @classmethod
     def get_account_status(cls, instance):
-        return instance.profile.get_account_status_display()
+        if instance.profile.institution and instance.profile.institution.needs_user_approval:
+            return instance.profile.get_account_status_display()
+        else:
+            return ""
 
     get_account_status.short_description = 'SCW Account Status'
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-11 11:27+0000\n"
+"POT-Creation-Date: 2018-10-08 16:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,17 +35,17 @@ msgstr ""
 msgid "Aberystwyth University"
 msgstr ""
 
-#: openldap/api/project_api.py:113
+#: openldap/api/project_api.py:114
 #, python-brace-format
 msgid "{company_name} Project {code} Created"
 msgstr ""
 
-#: openldap/api/project_api.py:152
+#: openldap/api/project_api.py:155
 #, python-brace-format
 msgid "{company_name} Project {code} Deactivated"
 msgstr ""
 
-#: openldap/api/project_api.py:193
+#: openldap/api/project_api.py:198
 #, python-brace-format
 msgid "{company_name} Project {code} Activated"
 msgstr ""
@@ -55,7 +55,7 @@ msgstr ""
 msgid "{company_name} Project Membership Created"
 msgstr ""
 
-#: openldap/api/project_membership_api.py:109
+#: openldap/api/project_membership_api.py:111
 #, python-brace-format
 msgid "{company_name} Project Membership Deleted"
 msgstr ""
@@ -108,238 +108,248 @@ msgstr ""
 msgid "Invalid Project Code."
 msgstr ""
 
-#: project/models.py:18
+#: project/models.py:19
 msgid "Project Categories"
 msgstr ""
 
-#: project/models.py:36
+#: project/models.py:37
 msgid "Project Funding Sources"
 msgstr ""
 
-#: project/models.py:60
+#: project/models.py:61
 msgid "Projects"
 msgstr ""
 
-#: project/models.py:64
+#: project/models.py:65
 msgid "Project Title"
 msgstr ""
 
-#: project/models.py:68
+#: project/models.py:69
 msgid "Project Description"
 msgstr ""
 
-#: project/models.py:73 templates/project/application_detail.html:41
+#: project/models.py:74 templates/project/application_detail.html:41
 msgid "Legacy HPC Wales ID"
 msgstr ""
 
-#: project/models.py:74
+#: project/models.py:75
 msgid "Project legacy ID from HPC Wales"
 msgstr ""
 
-#: project/models.py:79 templates/project/application_detail.html:47
+#: project/models.py:80 templates/project/application_detail.html:47
 msgid "Legacy ARCCA ID"
 msgstr ""
 
-#: project/models.py:80
+#: project/models.py:81
 msgid "Project legacy ID ARCCA"
 msgstr ""
 
-#: project/models.py:84
+#: project/models.py:85
 msgid "Project code assigned by SCW"
 msgstr ""
 
-#: project/models.py:89
+#: project/models.py:90
 msgid "OpenLDAP GID Number"
 msgstr ""
 
-#: project/models.py:94
+#: project/models.py:95
 msgid "Owning institution project reference"
 msgstr ""
 
-#: project/models.py:99
+#: project/models.py:100
 msgid "Department"
 msgstr ""
 
-#: project/models.py:103
+#: project/models.py:104
 msgid "Principal Investigator's name, position and email"
 msgstr ""
 
-#: project/models.py:109
+#: project/models.py:110
 msgid "Technical Lead"
 msgstr ""
 
-#: project/models.py:115
+#: project/models.py:116
 msgid "Category"
 msgstr ""
 
-#: project/models.py:120 templates/project/application_detail.html:64
+#: project/models.py:121 templates/project/application_detail.html:64
 msgid "Funding source"
 msgstr ""
 
-#: project/models.py:122 templates/project/application_detail.html:68
+#: project/models.py:123 templates/project/application_detail.html:68
 msgid "Start date"
 msgstr ""
 
-#: project/models.py:123 templates/project/application_detail.html:72
+#: project/models.py:124 templates/project/application_detail.html:72
 msgid "End date"
 msgstr ""
 
-#: project/models.py:126
+#: project/models.py:127
 msgid "Economic user"
 msgstr ""
 
-#: project/models.py:131
+#: project/models.py:132
 msgid "Software name and versions"
 msgstr ""
 
-#: project/models.py:132
+#: project/models.py:133
 msgid "Software Requirements"
 msgstr ""
 
-#: project/models.py:137
+#: project/models.py:138
 msgid "Web gateway or portal name and versions"
 msgstr ""
 
-#: project/models.py:138
+#: project/models.py:139
 msgid "Gateway Requirements"
 msgstr ""
 
-#: project/models.py:143
+#: project/models.py:144
 msgid "Training Requirements"
 msgstr ""
 
-#: project/models.py:148
+#: project/models.py:149
 msgid "Onboarding Requirements"
 msgstr ""
 
-#: project/models.py:152
+#: project/models.py:153
 msgid "RSE available to?"
 msgstr ""
 
-#: project/models.py:157 templates/project/application_detail.html:92
+#: project/models.py:158 templates/project/application_detail.html:92
 msgid "CPU time allocation in hours"
 msgstr ""
 
-#: project/models.py:162 templates/project/application_detail.html:96
+#: project/models.py:163 templates/project/application_detail.html:96
 msgid "RAM allocation in GB"
 msgstr ""
 
-#: project/models.py:167 templates/project/application_detail.html:100
+#: project/models.py:168 templates/project/application_detail.html:100
 msgid "Home storage in GB"
 msgstr ""
 
-#: project/models.py:172 templates/project/application_detail.html:104
+#: project/models.py:173 templates/project/application_detail.html:104
 msgid "Scratch storage in GB"
 msgstr ""
 
-#: project/models.py:175
+#: project/models.py:176
 msgid "Upload Supporting Documents"
 msgstr ""
 
-#: project/models.py:183
+#: project/models.py:184
 msgid "Allocation systems"
 msgstr ""
 
-#: project/models.py:188
+#: project/models.py:189
 msgid "Members"
 msgstr ""
 
-#: project/models.py:197
+#: project/models.py:198
 msgid "Awaiting Approval"
 msgstr ""
 
-#: project/models.py:198
+#: project/models.py:199
 msgid "Approved"
 msgstr ""
 
-#: project/models.py:199 project/models.py:371
+#: project/models.py:200 project/models.py:373
 msgid "Declined"
 msgstr ""
 
-#: project/models.py:200 project/models.py:372
+#: project/models.py:201 project/models.py:374
 msgid "Revoked"
 msgstr ""
 
-#: project/models.py:201 project/models.py:373
+#: project/models.py:202 project/models.py:375
 msgid "Suspended"
 msgstr ""
 
-#: project/models.py:202
+#: project/models.py:203
 msgid "Closed"
 msgstr ""
 
-#: project/models.py:207 project/models.py:378 users/models.py:88
+#: project/models.py:208 project/models.py:380 users/models.py:90
 msgid "Current Status"
 msgstr ""
 
-#: project/models.py:212 project/models.py:383 users/models.py:93
+#: project/models.py:213 project/models.py:385 users/models.py:95
 msgid "Previous Status"
 msgstr ""
 
-#: project/models.py:217
+#: project/models.py:218
 msgid "Reason for the project status decision:"
 msgstr ""
 
-#: project/models.py:218
+#: project/models.py:219
 msgid ""
 "The reason will be emailed to the project's technical lead upon project "
 "status update."
 msgstr ""
 
-#: project/models.py:223
+#: project/models.py:224
 msgid "Internal project notes"
 msgstr ""
 
-#: project/models.py:224
+#: project/models.py:225
 msgid "Notes"
 msgstr ""
 
-#: project/models.py:226
+#: project/models.py:227
 msgid "Created time"
 msgstr ""
 
-#: project/models.py:227
+#: project/models.py:228
 msgid "Modified time"
 msgstr ""
 
-#: project/models.py:301
+#: project/models.py:303
 msgid "Project System Allocations"
 msgstr ""
 
-#: project/models.py:335
+#: project/models.py:337
 #, python-brace-format
 msgid "{project} on {system} from {date_allocated} to {date_unallocated}"
 msgstr ""
 
-#: project/models.py:352
+#: project/models.py:354
 msgid "Project User Memberships"
 msgstr ""
 
-#: project/models.py:369
+#: project/models.py:371
 msgid "Awaiting Authorisation"
 msgstr ""
 
-#: project/models.py:370
+#: project/models.py:372
 msgid "Authorised"
 msgstr ""
 
-#: project/models.py:420
+#: project/models.py:422
 #, python-brace-format
 msgid "{user} on {project} from {date_joined} to {date_left}"
 msgstr ""
 
-#: project/views.py:48
+#: project/notifications.py:13
+#, python-brace-format
+msgid "{company_name} Project Created"
+msgstr ""
+
+#: project/notifications.py:31
+#, python-brace-format
+msgid "{company_name} Project Membership Request"
+msgstr ""
+
+#: project/views.py:49
 msgid "Successfully submitted a project application."
 msgstr ""
 
-#: project/views.py:105
+#: project/views.py:106
 msgid "Successfully submitted a project membership request."
 msgstr ""
 
-#: templates/base.html:14 templates/base.html:30
+#: templates/base.html:14 templates/base.html:30 templates/base.html:78
 #: templates/registration/logged_out.html:7
 #: templates/registration/logged_out.html:12
-#: templates/registration/login.html:7 templates/registration/login.html:23
+#: templates/registration/login.html:7 templates/registration/login.html:20
 #: templates/registration/register.html:7
 #: templates/registration/register.html:39
 msgid "Supercomputing Wales"
@@ -356,6 +366,18 @@ msgstr ""
 
 #: templates/base.html:51
 msgid "Logout"
+msgstr ""
+
+#: templates/base.html:66
+msgid ""
+"<i>Supercomputing Wales is part-funded by the </br> European Regional "
+"Development Fund (ERDF)</br> via Welsh Government.</i>"
+msgstr ""
+
+#: templates/base.html:83
+msgid ""
+"Supercomputing Wales is part-funded by the European Regional Development "
+"Fund (ERDF) via Welsh Government."
 msgstr ""
 
 #: templates/cookielaw/banner.html:3
@@ -417,7 +439,7 @@ msgstr ""
 msgid "Reset SCW Password"
 msgstr ""
 
-#: templates/dashboard.html:89
+#: templates/dashboard.html:90
 msgid "Create Project Application"
 msgstr ""
 
@@ -500,6 +522,16 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
+#: templates/notifications/project/created.html:4
+#: templates/notifications/project/created.html:8
+#, python-format
+msgid "Project %(code)s Created"
+msgstr ""
+
+#: templates/notifications/project/created.html:11
+msgid "A project application has been created and is awaiting approval"
+msgstr ""
+
 #: templates/notifications/project/update.html:4
 #, python-format
 msgid "Project %(code)s Update"
@@ -518,6 +550,30 @@ msgstr ""
 msgid "Your Supercomputing Wales project %(code)s has been %(status)s"
 msgstr ""
 
+#: templates/notifications/project_membership/created.html:4
+#: templates/notifications/project_membership/created.html:8
+msgid "Project Membership Request"
+msgstr ""
+
+#: templates/notifications/project_membership/created.html:11
+#, python-format
+msgid "Dear %(tech_lead_first_name)s"
+msgstr ""
+
+#: templates/notifications/project_membership/created.html:14
+#, python-format
+msgid ""
+"%(applicant_first_name)s %(applicant_last_name)s from "
+"%(applicant_university)s has requested to join your Supercomputing Wales "
+"project %(code)s"
+msgstr ""
+
+#: templates/notifications/project_membership/created.html:17
+msgid ""
+"Project user requests can be managed via our online <a href=\"https://my."
+"supercomputing.wales\">MySCW</a> service."
+msgstr ""
+
 #: templates/notifications/project_membership/update.html:4
 #, python-format
 msgid "Project %(code)s Membership Update"
@@ -526,6 +582,18 @@ msgstr ""
 #: templates/notifications/project_membership/update.html:11
 #, python-format
 msgid "Your project membership for project %(code)s has been %(status)s"
+msgstr ""
+
+#: templates/notifications/user/created.html:4
+#: templates/notifications/user/created.html:8
+msgid "User Account Created"
+msgstr ""
+
+#: templates/notifications/user/created.html:11
+#, python-format
+msgid ""
+"%(first_name)s %(last_name)s from %(university)s has requested access to a "
+"Supercomputing Wales account"
 msgstr ""
 
 #: templates/notifications/user/password_reset.html:4
@@ -555,6 +623,12 @@ msgstr ""
 #: templates/notifications/user/update.html:11
 #, python-format
 msgid "Your Supercomputing Wales account has been %(status)s"
+msgstr ""
+
+#: templates/notifications/user/update.html:15
+msgid ""
+"Please now see the SCW Portal at https://portal.supercomputing.wales for "
+"information on how to join projects or apply for a new project."
 msgstr ""
 
 #: templates/project/application_detail.html:6
@@ -715,15 +789,7 @@ msgstr ""
 msgid "Close this web browser (including all tabs and windows)."
 msgstr ""
 
-#: templates/registration/login.html:11
-msgid "Service Status"
-msgstr ""
-
-#: templates/registration/login.html:11
-msgid "Beta Testing"
-msgstr ""
-
-#: templates/registration/login.html:16
+#: templates/registration/login.html:13
 msgid ""
 "You must close this web browser (including all tabs and windows) before "
 "logging in."
@@ -813,7 +879,7 @@ msgstr ""
 msgid "Last name"
 msgstr ""
 
-#: templates/registration/register.html:27 users/models.py:260
+#: templates/registration/register.html:27 users/models.py:266
 msgid "Reason for account"
 msgstr ""
 
@@ -821,8 +887,13 @@ msgstr ""
 msgid "I agree to the"
 msgstr ""
 
-#: users/forms.py:134
+#: users/forms.py:128
 msgid "To continue please accept the terms and conditions."
+msgstr ""
+
+#: users/notifications.py:40
+#, python-brace-format
+msgid "{company_name} User Account Created"
 msgstr ""
 
 #: users/openldap.py:32

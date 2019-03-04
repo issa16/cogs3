@@ -4,10 +4,11 @@ python:
   - "3.6"
 
 env:
-  - DJANGO_VERSION=2.0.2
+  - DJANGO_VERSION=2.1.2
 
 services:
   - mysql
+  - redis-server
 
 before_install:
   # Setup X to allow non-headless browsers to run

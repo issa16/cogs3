@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -20,11 +21,36 @@ from django.views.generic.edit import FormView
 from users.models import CustomUser
 
 from project.forms import ProjectCreationForm
+from project.forms import ProjectManageAttributionForm
+from project.forms import ProjectSupervisorApproveForm
+from project.forms import SystemAllocationRequestCreationForm
+from project.forms import RSEAllocationRequestCreationForm
 from project.forms import ProjectUserInviteForm
 from project.forms import ProjectUserMembershipCreationForm
 from project.models import Project
+from project.models import SystemAllocationRequest
+from project.models import RSEAllocation
 from project.models import ProjectUserMembership
+from project.notifications import project_membership_created
 from project.openldap import update_openldap_project_membership
+from funding.models import Attribution
+from funding.models import FundingSource
+from common.util import email_user
+
+
+def list_attributions(request):
+    attributions = Attribution.objects.filter(
+        owner=request.user
+    )
+
+    # Add any fundingsources with an approved user membership
+    fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
+        fundingsourcemembership__user=request.user,
+    ))
+
+    attributions = attributions | fundingsources
+    values = [{'title': a.string(request.user), 'id': a.id, 'type': a.type} for a in attributions]
+    return JsonResponse({'results': list(values)})
 
 
 class PermissionAndLoginRequiredMixin(PermissionRequiredMixin):
@@ -42,14 +68,63 @@ class PermissionAndLoginRequiredMixin(PermissionRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_not_logged_in()
-        return super(PermissionAndLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
+        response = super(PermissionAndLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
+        return response
 
 
-class ProjectCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
+class AllocationCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
+    def get_form(self, form_class=None):
+        """
+        Return an instance of the form to be used in this view.
+        """
+        if form_class is None:
+            form_class = self.get_form_class()
+        return form_class(self.request.user, **self.get_form_kwargs())
+
+
+class ProjectCreateView(AllocationCreateView):
     form_class = ProjectCreationForm
-    success_url = reverse_lazy('project-application-list')
-    success_message = _('Successfully submitted a project application.')
+    success_message = _('Successfully submitted a project application. ' +
+                        'You may now want to create a system allocation request or RSE time request below, or add members to your project using the invite button.')
     template_name = 'project/create.html'
+    permission_required = 'project.add_project'
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def notify_supervisor(self, project):
+        subject = _('{company_name} Project Created'.format(company_name=settings.COMPANY_NAME))
+        context = {
+            'university': project.tech_lead.profile.institution.name,
+            'technical_lead': project.tech_lead,
+            'title': project.title,
+            'to': project.supervisor_email,
+            'id': project.id,
+        }
+        email_user(
+            subject,
+            context,
+            'notifications/project/supervisor_created.txt',
+            'notifications/project/supervisor_created.html',
+        )
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        project = self.object
+        institution = project.tech_lead.profile.institution
+        if(institution.needs_supervisor_approval):
+            self.notify_supervisor(project)
+        return response
+
+    def get_success_url(self):
+        return reverse_lazy('project-application-detail', args=[self.object.id])
+
+
+class ProjectAddAttributionView(PermissionAndLoginRequiredMixin, generic.UpdateView):
+    form_class = ProjectManageAttributionForm
+    context_object_name = 'project'
+    model = Project
+    template_name = 'project/add_attributions.html'
     permission_required = 'project.add_project'
 
     def get_form(self, form_class=None):
@@ -59,6 +134,111 @@ class ProjectCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, ge
         if form_class is None:
             form_class = self.get_form_class()
         return form_class(self.request.user, **self.get_form_kwargs())
+
+    def get_success_url(self):
+        return reverse_lazy('project-application-detail', args=[self.kwargs['pk']])
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+class ProjectSupervisorApproveView(SuccessMessageMixin, generic.UpdateView):
+    context_object_name = 'project'
+    model = Project
+    template_name = 'project/supervisor_approve.html'
+    success_message = _('Thank you. The project has been submitted to Supercomputing Wales')
+    redirect_field_name = '3'
+
+    def request_allowed(self, request):
+        # Check that the user is the supervisor
+        project = self.get_object()
+        try:
+            return project.supervisor_email == request.user.email
+        except Exception:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request_allowed(request):
+            return HttpResponseRedirect(reverse('home'))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form(self, form_class=None):
+        return ProjectSupervisorApproveForm(self.request.user, **self.get_form_kwargs())
+
+    def get_success_url(self):
+        return reverse_lazy('project-application-detail', args=[self.kwargs['pk']])
+
+    def form_valid(self, form):
+        project = form.save(commit=False)
+        project.approved_by_supervisor = True
+        return super().form_valid(form)
+
+
+class SystemAllocationCreateView(AllocationCreateView):
+    form_class = SystemAllocationRequestCreationForm
+    success_url = reverse_lazy('project-application-list')
+    success_message = _('Successfully submitted a system allocation application.')
+    template_name = 'project/createallocation.html'
+    permission_required = 'project.add_project'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['project'] = self.kwargs.get('project', None)
+        return kwargs
+
+
+class RSEAllocationCreateView(AllocationCreateView):
+    form_class = RSEAllocationRequestCreationForm
+    success_url = reverse_lazy('rse-allocation-list')
+    success_message = _('Successfully submitted an RSE time allocation application.')
+    template_name = 'project/rse_time.html'
+    permission_required = 'project.add_project'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['project'] = self.kwargs.get('project', None)
+        return kwargs
+
+
+class ProjectAndAllocationCreateView(PermissionAndLoginRequiredMixin, generic.TemplateView):
+    http_method_names = ['get', 'post']
+    template_name = 'project/createprojectandallocation.html'
+    permission_required = 'project.add_project'
+    success_message = _('Successfully submitted a project application.')
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectAndAllocationCreateView, self).get_context_data(**kwargs)
+
+        if 'project_form' in kwargs:
+            context['project_form'] = kwargs['project_form']
+        else:
+            context['project_form'] = ProjectCreationForm(self.request.user)
+        if 'allocation_form' in kwargs:
+            context['allocation_form'] = kwargs['allocation_form']
+        else:
+            context['allocation_form'] = SystemAllocationRequestCreationForm(self.request.user)
+            # These two fields are unnecessary in the combined view
+            del context['allocation_form'].fields['information']
+            del context['allocation_form'].fields['project']
+
+        return context
+
+    def post(self, request):
+        project_form = ProjectCreationForm(request.user, data=request.POST)
+        allocation_form = SystemAllocationRequestCreationForm(request.user, include_project=False, data=request.POST, files=request.FILES)
+
+        if project_form.is_valid() and allocation_form.is_valid():
+            project = project_form.save()
+
+            allocation = allocation_form.save(commit=False)
+            allocation.project = project
+
+            allocation.save()
+
+            messages.success(self.request, self.success_message)
+            return HttpResponseRedirect(reverse('project-application-list'))
+
+        return self.render_to_response(self.get_context_data(project_form=project_form, allocation_form=allocation_form))
 
 
 class ProjectListView(PermissionAndLoginRequiredMixin, generic.ListView):
@@ -82,10 +262,24 @@ class ProjectDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):
     permission_required = 'project.add_project'
 
 
+class SystemAllocationRequestDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):
+    context_object_name = 'allocation'
+    model = SystemAllocationRequest
+    template_name = 'project/allocation_detail.html'
+    permission_required = 'project.add_project'
+
+
+class RSEAllocationRequestDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):
+    context_object_name = 'allocation'
+    model = RSEAllocation
+    template_name = 'project/rse_detail.html'
+    permission_required = 'project.add_project'
+
+
 class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
 
     def user_passes_test(self, request):
-        if Project.objects.filter(id=self.kwargs['pk'], tech_lead=self.request.user).exists():
+        if SystemAllocationRequest.objects.filter(id=self.kwargs['pk'], project__tech_lead=self.request.user).exists():
             return True
         else:
             return self.request.user.is_superuser
@@ -93,8 +287,8 @@ class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
             return HttpResponseRedirect(reverse('project-application-list'))
-        project = Project.objects.get(id=self.kwargs['pk'])
-        filename = os.path.join(settings.MEDIA_ROOT, project.document.name)
+        allocation = SystemAllocationRequest.objects.get(id=self.kwargs['pk'])
+        filename = os.path.join(settings.MEDIA_ROOT, allocation.document.name)
         with open(filename, 'rb') as f:
             data = f.read()
         response = HttpResponse(data, content_type=mimetypes.guess_type(filename)[0])
@@ -117,13 +311,13 @@ class ProjectUserMembershipFormView(SuccessMessageMixin, LoginRequiredMixin, For
         project_code = form.cleaned_data['project_code']
         project = Project.objects.get(
             code=project_code,
-            status=Project.APPROVED,
         )
-        ProjectUserMembership.objects.create(
+        membership = ProjectUserMembership.objects.create(
             project=project,
             user=self.request.user,
             date_joined=datetime.date.today(),
         )
+        project_membership_created.delay(membership)
         return super().form_valid(form)
 
 
@@ -132,26 +326,24 @@ class ProjectUserRequestMembershipListView(PermissionAndLoginRequiredMixin, gene
     paginate_by = 50
     model = ProjectUserMembership
     template_name = 'project/membership/requests.html'
-    permission_required = 'project.change_projectusermembership'
     ordering = ['-created_time']
+    permission_required = 'project.add_project'
 
     def get_queryset(self):
         queryset = super().get_queryset()
         projects = Project.objects.filter(
             tech_lead=self.request.user,
-            status=Project.APPROVED,
         )
         queryset = queryset.filter(project__in=projects)
         # Omit the user's membership request
         return queryset.exclude(user=self.request.user)
 
 
-class ProjectUserRequestMembershipUpdateView(PermissionAndLoginRequiredMixin, generic.UpdateView):
+class ProjectUserRequestMembershipUpdateView(LoginRequiredMixin, generic.UpdateView):
     success_url = reverse_lazy('project-user-membership-request-list')
     context_object_name = 'project_user_membership_requests'
     model = ProjectUserMembership
     fields = ['status']
-    permission_required = 'project.change_projectusermembership'
     ordering = ['date_joined']
 
     def request_allowed(self, request):
@@ -183,6 +375,11 @@ class ProjectUserRequestMembershipUpdateView(PermissionAndLoginRequiredMixin, ge
     def form_valid(self, form):
         response = super().form_valid(form)
         if 'status' in form.changed_data:
+            membership = form.instance
+            if membership.status == ProjectUserMembership.AUTHORISED:
+                user = membership.user
+                if user.profile.institution and membership.user.profile.institution.needs_user_approval:
+                    membership.user.profile.activate()
             update_openldap_project_membership(project_membership=form.instance)
         if self.request.is_ajax():
             return JsonResponse({'message': 'Successfully updated.'})
@@ -206,11 +403,10 @@ class ProjectUserMembershipListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(user=self.request.user)
-        return queryset.filter(project__status=Project.APPROVED)
+        return queryset.filter(user=self.request.user)
 
 
-class ProjectMembesrshipInviteView(PermissionRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, FormView):
+class ProjectMembershipInviteView(PermissionRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, FormView):
     ''' As tech lead, invite a user to the a project using an email address '''
     permission_required = 'project.change_projectusermembership'
     form_class = ProjectUserInviteForm
@@ -224,21 +420,20 @@ class ProjectMembesrshipInviteView(PermissionRequiredMixin, SuccessMessageMixin,
         return data
 
     def get_success_url(self):
-        return reverse_lazy('project-application-detail', args = [self.kwargs['pk']])
+        return reverse_lazy('project-application-detail', args=[self.kwargs['pk']])
 
     def project_passes_test(self, request):
         try:
-            project = Project.objects.filter(
+            return Project.objects.filter(
                 id=self.kwargs['pk'],
                 tech_lead=self.request.user
-            ).first()
-            return project.is_approved()
+            ).exists()
         except Exception:
             return False
 
     def dispatch(self, request, *args, **kwargs):
         if not self.project_passes_test(request):
-            return HttpResponseRedirect(reverse_lazy('project-application-detail', args = [self.kwargs['pk']]))
+            return HttpResponseRedirect(reverse_lazy('project-application-detail', args=[self.kwargs['pk']]))
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -250,5 +445,6 @@ class ProjectMembesrshipInviteView(PermissionRequiredMixin, SuccessMessageMixin,
             user=user,
             initiated_by_user=False,
             date_joined=datetime.date.today(),
+            status=ProjectUserMembership.AUTHORISED,
         )
         return super().form_valid(form)

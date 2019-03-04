@@ -11,12 +11,11 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import ast
-import dj_database_url
 import os
 
+import dj_database_url
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
-
 from selenium import webdriver
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -41,14 +40,24 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ast.literal_eval(os.environ.get('DEBUG', 'False'))
 
+MAINTENANCE_MODE = ast.literal_eval(os.environ.get('MAINTENANCE_MODE', 'False'))
+MAINTENANCE_MODE_IGNORE_ADMIN_SITE = ast.literal_eval(os.environ.get('MAINTENANCE_MODE_IGNORE_ADMIN_SITE', 'False'))
+
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SECURE_CONTENT_TYPE_NOSNIFF = ast.literal_eval(os.environ.get('SECURE_CONTENT_TYPE_NOSNIFF', 'True'))
+SECURE_BROWSER_XSS_FILTER = ast.literal_eval(os.environ.get('SECURE_BROWSER_XSS_FILTER', 'True'))
+SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get('SESSION_COOKIE_SECURE', 'True'))
+CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get('CSRF_COOKIE_SECURE', 'True'))
+X_FRAME_OPTIONS = os.environ.get('X_FRAME_OPTIONS')
 
 # Allow all host headers
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS')
 
 # Application definition
 INSTALLED_APPS = [
+    'maintenance_mode',
     'cookielaw',
     'dashboard.apps.DashboardConfig',
     'django.contrib.admin',
@@ -58,17 +67,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django.forms',
+    'institution.apps.InstitutionConfig',
+    'funding.apps.FundingConfig',
+    'project.apps.ProjectConfig',
     'django_rq',
     'hreflang',
-    'institution.apps.InstitutionConfig',
     'openldap',
-    'project.apps.ProjectConfig',
     'security',
     'shibboleth',
     'stats',
     'system.apps.SystemConfig',
     'users.apps.UsersConfig',
     'widget_tweaks',
+    'simple_history',
 ]
 
 MIDDLEWARE = [
@@ -82,6 +94,8 @@ MIDDLEWARE = [
     'users.middleware.SCWRemoteUserMiddleware',
     'users.middleware.TermsOfServiceMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
+    'maintenance_mode.middleware.MaintenanceModeMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -106,6 +120,8 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'cogs3.wsgi.application'
 
@@ -141,7 +157,7 @@ LANGUAGE_CODE = 'en-gb'
 LOCALE_PATHS = ('locale', )
 TEMPLATE_CONTEXT_PROCESSORS = ('django.template.context_processors.i18n', )
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = True
 
@@ -174,6 +190,7 @@ MESSAGE_TAGS = {
 }
 
 # Email
+DEFAULT_SUPPORT_EMAIL = os.environ.get('DEFAULT_SUPPORT_EMAIL')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 DEFAULT_BCC_EMAIL = os.environ.get('DEFAULT_BCC_EMAIL')
 DEFAULT_CONTACT_EMAIL = os.environ.get('DEFAULT_CONTACT_EMAIL')
@@ -184,7 +201,7 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', False)
+EMAIL_USE_TLS = ast.literal_eval(os.environ.get('EMAIL_USE_TLS', 'False'))
 
 # Shibboleth
 SHIBBOLETH_IDENTITY_PROVIDER_LOGIN = os.environ.get('SHIBBOLETH_IDENTITY_PROVIDER_LOGIN')

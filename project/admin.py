@@ -1,39 +1,36 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
 
-from project.forms import ProjectAdminForm
-from project.forms import ProjectUserMembershipAdminForm
-from project.models import Project
-from project.models import ProjectCategory
-from project.models import ProjectFundingSource
-from project.models import ProjectSystemAllocation
-from project.models import ProjectUserMembership
-from project.openldap import update_openldap_project
-from project.openldap import update_openldap_project_membership
+from project.forms import (ProjectAdminForm, ProjectUserMembershipAdminForm,
+                           SystemAllocationRequestAdminForm)
+from project.models import (Project, ProjectCategory, ProjectSystemAllocation,
+                            ProjectUserMembership, RSEAllocation,
+                            SystemAllocationRequest)
+from project.openldap import (update_openldap_project,
+                              update_openldap_project_membership)
 
 
 @admin.register(ProjectCategory)
-class ProjectCategoryAdmin(admin.ModelAdmin):
+class ProjectCategoryAdmin(SimpleHistoryAdmin):
     list_display = ('name', )
 
 
-@admin.register(ProjectFundingSource)
-class ProjectFundingSourceAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'description',
-    )
-
-
 @admin.register(ProjectSystemAllocation)
-class ProjectSystemAllocationAdmin(admin.ModelAdmin):
+class ProjectSystemAllocationAdmin(SimpleHistoryAdmin):
     list_display = (
         'project',
         'system',
     )
 
+@admin.register(RSEAllocation)
+class RSEAllocationAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'project',
+        'title',
+    )
 
 @admin.register(ProjectUserMembership)
-class ProjectUserMembershipAdmin(admin.ModelAdmin):
+class ProjectUserMembershipAdmin(SimpleHistoryAdmin):
 
     def _project_membership_action_message(self, rows_updated):
         if rows_updated == 1:
@@ -79,63 +76,77 @@ class ProjectUserMembershipAdmin(admin.ModelAdmin):
         'user__first_name',
         'user__last_name',
         'user__email',
+        'user__profile__scw_username',
     )
 
 
 @admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
-
-    def _project_action_message(self, rows_updated):
-        if rows_updated == 1:
-            message = '1 project was'
-        else:
-            message = '{rows} project were'.format(rows=rows_updated)
-        return message
-
-    def activate_projects(self, request, queryset):
-        rows_updated = 0
-        for project in queryset:
-            project.status = Project.APPROVED
-            project.save()
-            update_openldap_project(project)
-            rows_updated += 1
-        message = self._project_action_message(rows_updated)
-        self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
-
-    activate_projects.short_description = 'Activate selected projects in LDAP'
-
-    def deactivate_projects(self, request, queryset):
-        rows_updated = 0
-        for project in queryset:
-            project.status = Project.REVOKED
-            project.save()
-            update_openldap_project(project)
-            rows_updated += 1
-        message = self._project_action_message(rows_updated)
-        self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
-
-    deactivate_projects.short_description = 'Deactivate selected projects in LDAP'
+class ProjectAdmin(SimpleHistoryAdmin):
 
     form = ProjectAdminForm
-    actions = [activate_projects, deactivate_projects]
 
     # Fields to be used when displaying a Project instance.
     list_display = (
         'code',
         'created_time',
-        'start_date',
         'tech_lead',
-        'status',
     )
-    list_filter = ('status', )
     search_fields = (
         'title',
         'legacy_hpcw_id',
         'legacy_arcca_id',
         'code',
         'gid_number',
-        'pi',
+        'supervisor_name',
+        'supervisor_position',
+        'supervisor_email',
         'tech_lead__first_name',
         'tech_lead__last_name',
         'tech_lead__email',
+    )
+
+
+@admin.register(SystemAllocationRequest)
+class SystemAllocationRequestAdmin(SimpleHistoryAdmin):
+
+    def _allocation_action_message(self, rows_updated):
+        if rows_updated == 1:
+            message = '1 allocation request was'
+        else:
+            message = '{rows} allocation requests were'.format(rows=rows_updated)
+        return message
+
+    def activate_allocations(self, request, queryset):
+        rows_updated = 0
+        for allocation in queryset:
+            allocation.status = SystemAllocationRequest.APPROVED
+            allocation.save()
+            update_openldap_project(allocation)
+            rows_updated += 1
+        message = self._allocation_action_message(rows_updated)
+        self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
+
+    activate_allocations.short_description = 'Activate selected allocations in LDAP'
+
+    def deactivate_allocations(self, request, queryset):
+        rows_updated = 0
+        for allocation in queryset:
+            allocation.status = SystemAllocationRequest.APPROVED
+            allocation.save()
+            update_openldap_project(allocation)
+            rows_updated += 1
+        message = self._allocation_action_message(rows_updated)
+        self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
+
+    deactivate_allocations.short_description = 'Deactivate selected allocations in LDAP'
+
+    form = SystemAllocationRequestAdminForm
+    actions = [activate_allocations, deactivate_allocations]
+
+    # Fields to be used when displaying a SystemAllocationRequestAdminForm instance.
+    list_display = (
+        'project',
+        'start_date',
+        'end_date',
+        'allocation_cputime',
     )

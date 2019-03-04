@@ -32,33 +32,30 @@ class Command(BaseCommand):
                                 user.set_password(CustomUser.objects.make_random_password())
                                 user.save()
                                 message = 'Successfully created user account: {email}'.format(
-                                    email=row['institutional_address'])
+                                    email=row['institutional_address']
+                                )
                                 self.stdout.write(self.style.SUCCESS(message))
                             else:
                                 message = '{email} already exists.'.format(email=row['institutional_address'])
                                 self.stdout.write(self.style.SUCCESS(message))
 
                             profile = user.profile
-                            profile.hpcw_username = row['hpcw_username'].lower()
-                            profile.hpcw_email = row['hpcw_email'].lower()
+                            if not profile.hpcw_username:
+                                profile.hpcw_username = row['hpcw_username'].lower()
+                            if not profile.hpcw_email:
+                                profile.hpcw_email = row['hpcw_email'].lower()
                             profile.raven_username = row['raven_username']
                             if row['raven_uid']:
                                 profile.uid_number = int(row['raven_uid'])
                             profile.raven_email = row['raven_email'].lower()
                             profile.description = row['description']
                             profile.phone = row['phone']
-                            profile.account_status = Profile.AWAITING_APPROVAL
                             profile.shibboleth_id = row['institutional_address'].lower()
-                            # Pending new fields?
-                            # profile.department = row['department']?
-                            # profile.orcid = row['orcid']?
-                            # profile.scopus = row['scopus']?
-                            # profile.homepage = row['homepage']?
-                            # profile.cronfa = row['cronfa']?
                             profile.save()
 
                             message = 'Successfully updated user profile: {email}'.format(
-                                email=row['institutional_address'])
+                                email=row['institutional_address']
+                            )
                             self.stdout.write(self.style.SUCCESS(message))
                     except Exception as e:
                         message = '{error}\n{row}'.format(error=e, row=row)
