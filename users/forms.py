@@ -90,6 +90,7 @@ class RegisterForm(forms.ModelForm):
             'last_name',
             'reason_for_account',
             'accepted_terms_and_conditions',
+            'join_mailing_list',
         )
 
     def __init__(self, *args, **kwargs):
