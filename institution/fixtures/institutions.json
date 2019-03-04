@@ -18,6 +18,8 @@
       "funding_document_template": "Swansea.docx",
       "local_repository_name": "Cronfa",
       "local_repository_domain": "cronfa.swansea.ac.uk",
+      "local_mailing_list_name": "SA2C",
+      "local_mailing_list_link": "https://mailman.swansea.ac.uk/mailman/subscribe/sa2c-users?email={email}",
       "funding_database_name": "AMS",
       "default_project_user_cap": 10,
       "needs_user_approval": false,
@@ -40,6 +42,8 @@
       "rse_notify_email": null,
       "local_repository_name": "",
       "local_repository_domain": "",
+      "local_mailing_list_name": null,
+      "local_mailing_list_link": null,
       "funding_database_name": "",
       "logo_path": "/static/img/bangor_logo.svg"
     }
@@ -60,6 +64,8 @@
       "rse_notify_email": null,
       "local_repository_name": "",
       "local_repository_domain": "",
+      "local_mailing_list_name": null,
+      "local_mailing_list_link": null,
       "funding_database_name": "",
       "logo_path": "/static/img/cardiff_logo.svg"
     }
@@ -80,6 +86,8 @@
       "rse_notify_email": null,
       "local_repository_name": "",
       "local_repository_domain": "",
+      "local_mailing_list_name": null,
+      "local_mailing_list_link": null,
       "funding_database_name": "",
       "default_project_user_cap": 10,
       "needs_user_approval": false,
