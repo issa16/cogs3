@@ -89,4 +89,4 @@ class Institution(models.Model):
         return self.name.lower().replace(" ", "-")
 
     def __str__(self):
-        return _(self.name)
+        return self.name
