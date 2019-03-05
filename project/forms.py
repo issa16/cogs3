@@ -3,14 +3,13 @@ from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from common.util import email_user
-from project.models import Project, SystemAllocationRequest, RSEAllocation
-from project.models import ProjectUserMembership
-from funding.models import Attribution
-from funding.models import FundingSource
-from project.openldap import update_openldap_project
-from project.openldap import update_openldap_project_membership
-from users.models import CustomUser
+from funding.models import Attribution, FundingSource
 from institution.models import Institution
+from project.models import (Project, ProjectUserMembership, RSEAllocation,
+                            SystemAllocationRequest)
+from project.openldap import (update_openldap_project,
+                              update_openldap_project_membership)
+from users.models import CustomUser
 
 
 class FileLinkWidget(forms.Widget):
@@ -19,7 +18,7 @@ class FileLinkWidget(forms.Widget):
         self.object = obj
         super(FileLinkWidget, self).__init__(attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if self.object.pk:
             return u'<a target="_blank" href="/en/projects/applications/%s/document">Download</a>' % (self.object.id)
         else:
@@ -382,7 +381,6 @@ class ProjectUserInviteForm(forms.Form):
                 "This project has reached its membership cap. "
                 "If you require more members, please contact support."
             ))
-
         return email
 
 
