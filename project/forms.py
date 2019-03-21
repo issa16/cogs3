@@ -3,10 +3,10 @@ from django.db.models import Q
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from project.models import Project
-from project.models import ProjectUserMembership
-from project.openldap import update_openldap_project
-from project.openldap import update_openldap_project_membership
+from project.models import Project, ProjectUserMembership
+from project.openldap import (update_openldap_project, update_openldap_project_membership)
+
+PROJECT_CODE_PREFIX = "scw"
 
 
 class FileLinkWidget(forms.Widget):
@@ -15,7 +15,7 @@ class FileLinkWidget(forms.Widget):
         self.object = obj
         super(FileLinkWidget, self).__init__(attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if self.object.pk:
             return u'<a target="_blank" href="/en/projects/applications/%s/document">Download</a>' % (self.object.id)
         else:
@@ -85,6 +85,8 @@ class ProjectAdminForm(forms.ModelForm):
         """
         current_legacy_hpcw_id = self.instance.legacy_hpcw_id
         updated_legacy_hpcw_id = self.cleaned_data['legacy_hpcw_id']
+        if updated_legacy_hpcw_id.startswith(PROJECT_CODE_PREFIX):
+            raise forms.ValidationError(_('SCW Project codes are reserved.'))
         if current_legacy_hpcw_id != updated_legacy_hpcw_id:
             if Project.objects.filter(legacy_hpcw_id=updated_legacy_hpcw_id).exists():
                 raise forms.ValidationError(_('Project legacy HPCW id must be unique.'))
@@ -96,6 +98,8 @@ class ProjectAdminForm(forms.ModelForm):
         """
         current_legacy_arcca_id = self.instance.legacy_arcca_id
         updated_legacy_arcca_id = self.cleaned_data['legacy_arcca_id']
+        if updated_legacy_arcca_id.startswith(PROJECT_CODE_PREFIX):
+            raise forms.ValidationError(_('SCW Project codes are reserved.'))
         if current_legacy_arcca_id != updated_legacy_arcca_id:
             if Project.objects.filter(legacy_arcca_id=updated_legacy_arcca_id).exists():
                 raise forms.ValidationError(_('Project legacy ARCCA id must be unique.'))
@@ -187,7 +191,8 @@ class ProjectUserMembershipCreationForm(forms.Form):
         project_code = self.cleaned_data['project_code']
         try:
             project = Project.objects.get(
-                Q(code=project_code) | Q(legacy_hpcw_id=project_code) | Q(legacy_arcca_id=project_code))
+                Q(code=project_code) | Q(legacy_hpcw_id=project_code) | Q(legacy_arcca_id=project_code)
+            )
             user = self.initial.get('user', None)
             # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:
