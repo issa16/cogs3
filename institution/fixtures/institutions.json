@@ -81,9 +81,9 @@
       "funding_document_email": "myt@aber.ac.uk",
       "funding_document_receiver": "Reyer",
       "funding_document_template": "Aberystwyth.docx",
-      "local_repository_name": "",
-      "local_repository_domain": "",
-      "funding_database_name": "",
+      "local_repository_name": "Aberystwyth Research Portal",
+      "local_repository_domain": "research.aber.ac.uk",
+      "funding_database_name": "Aberystwyth Research Portal",
       "default_project_user_cap": 10,
       "needs_user_approval": false,
       "logo_path": "/static/img/aberystwyth_logo.png"
