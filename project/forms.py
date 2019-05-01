@@ -20,7 +20,9 @@ class FileLinkWidget(forms.Widget):
 
     def render(self, name, value, attrs=None, renderer=None):
         if self.object.pk:
-            return u'<a target="_blank" href="/en/projects/applications/%s/document">Download</a>' % (self.object.id)
+            return u'<a target="_blank" href="/en/projects/applications/%s/document">Download</a>' % (
+                self.object.id
+            )
         else:
             return u''
 
@@ -73,7 +75,8 @@ class ProjectAdminForm(forms.ModelForm):
         current_legacy_hpcw_id = self.instance.legacy_hpcw_id
         updated_legacy_hpcw_id = self.cleaned_data['legacy_hpcw_id']
         if current_legacy_hpcw_id != updated_legacy_hpcw_id:
-            if Project.objects.filter(legacy_hpcw_id=updated_legacy_hpcw_id).exists():
+            if Project.objects.filter(legacy_hpcw_id=updated_legacy_hpcw_id
+                                     ).exists():
                 raise forms.ValidationError(_('Project legacy HPCW id must be unique.'))
         return updated_legacy_hpcw_id
 
@@ -84,7 +87,8 @@ class ProjectAdminForm(forms.ModelForm):
         current_legacy_arcca_id = self.instance.legacy_arcca_id
         updated_legacy_arcca_id = self.cleaned_data['legacy_arcca_id']
         if current_legacy_arcca_id != updated_legacy_arcca_id:
-            if Project.objects.filter(legacy_arcca_id=updated_legacy_arcca_id).exists():
+            if Project.objects.filter(legacy_arcca_id=updated_legacy_arcca_id
+                                     ).exists():
                 raise forms.ValidationError(_('Project legacy ARCCA id must be unique.'))
         return updated_legacy_arcca_id
 
@@ -128,9 +132,13 @@ class SystemAllocationRequestAdminForm(forms.ModelForm):
         super(SystemAllocationRequestAdminForm, self).__init__(*args, **kwargs)
         self.initial_status = self.instance.status
         self.fields['document_download'].widget = FileLinkWidget(self.instance)
-        self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status))
+        self.fields['status'] = forms.ChoiceField(
+            choices=self._get_status_choices(self.instance.status)
+        )
         if self.instance.id is None:
-            self.fields['status'] = forms.ChoiceField(choices=[Project.STATUS_CHOICES[Project.AWAITING_APPROVAL]])
+            self.fields['status'] = forms.ChoiceField(
+                choices=[Project.STATUS_CHOICES[Project.AWAITING_APPROVAL]]
+            )
 
     def _get_status_choices(self, status):
         pre_approved_options = [
@@ -150,7 +158,8 @@ class SystemAllocationRequestAdminForm(forms.ModelForm):
             return pre_approved_options
 
     def save(self, commit=True):
-        allocation = super(SystemAllocationRequestAdminForm, self).save(commit=False)
+        allocation = super(SystemAllocationRequestAdminForm,
+                           self).save(commit=False)
         allocation.previous_status = self.initial_status
         if self.initial_status != allocation.status:
             update_openldap_project(allocation)
@@ -172,8 +181,6 @@ class ProjectCreationForm(forms.ModelForm):
         fields = [
             'title',
             'description',
-            'legacy_hpcw_id',
-            'legacy_arcca_id',
             'institution_reference',
             'department',
             'supervisor_name',
@@ -185,15 +192,10 @@ class ProjectCreationForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super(ProjectCreationForm, self).__init__(*args, **kwargs)
         self.user = user
-        if self.user.profile.institution is not None and not self.user.profile.institution.needs_legacy_inst_id:
-            del self.fields['legacy_arcca_id']
-
         self.fields['attributions'] = forms.ModelMultipleChoiceField(
             label='',
             widget=SelectMultipleTickbox(),
-            queryset=Attribution.objects.filter(
-                created_by=self.user
-            ),
+            queryset=Attribution.objects.filter(created_by=self.user),
             required=False,
         )
 
@@ -220,15 +222,18 @@ class ProjectCreationForm(forms.ModelForm):
 
 class ProjectAssociatedForm(forms.ModelForm):
 
-    def __init__(self, user, include_project=True, project=None,
-                 *args, **kwargs):
+    def __init__(
+        self, user, include_project=True, project=None, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.user = user
         if project:
             self.fields['project'].initial = project
             self.fields['project'].widget = forms.HiddenInput()
         elif include_project:
-            self.fields['project'] = forms.ModelChoiceField(queryset=Project.objects.filter(tech_lead=user))
+            self.fields['project'] = forms.ModelChoiceField(
+                queryset=Project.objects.filter(tech_lead=user)
+            )
         else:
             del self.fields['project']
 
@@ -247,13 +252,12 @@ class ProjectManageAttributionForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
-        owned_attributions = Attribution.objects.filter(
-            owner=self.user,
-        )
+        owned_attributions = Attribution.objects.filter(owner=self.user,)
         # Also get funding sources the user is a member of
-        fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
-            fundingsourcemembership__user=self.user,
-        ))
+        fundingsources = Attribution.objects.filter(
+            fundingsource__in=FundingSource.objects.
+            filter(fundingsourcemembership__user=self.user,)
+        )
         self.fields['attributions'] = forms.ModelMultipleChoiceField(
             label='',
             widget=SelectMultipleTickbox(),
@@ -295,7 +299,7 @@ class SystemAllocationRequestCreationForm(ProjectAssociatedForm):
             'requirements_training',
             'requirements_onboarding',
             'document',
-            'project'
+            'project',
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
@@ -314,7 +318,7 @@ class RSEAllocationRequestCreationForm(ProjectAssociatedForm):
             'software',
             'outcomes',
             'confidentiality',
-            'project'
+            'project',
         ]
 
     def save(self, *args, **kwargs):
@@ -348,12 +352,16 @@ class ProjectUserMembershipCreationForm(forms.Form):
         project_code = self.cleaned_data['project_code']
         try:
             project = Project.objects.get(
-                Q(code=project_code) | Q(legacy_hpcw_id=project_code) | Q(legacy_arcca_id=project_code))
+                Q(code=project_code) | Q(legacy_hpcw_id=project_code) |
+                Q(legacy_arcca_id=project_code)
+            )
             user = self.initial.get('user', None)
             # The technical lead will automatically be added as a member of the of project.
             if project.tech_lead == user:
                 raise forms.ValidationError(_("You are currently a member of the project."))
-            if ProjectUserMembership.objects.filter(project=project, user=user).exists():
+            if ProjectUserMembership.objects.filter(
+                project=project, user=user
+            ).exists():
                 raise forms.ValidationError(_("A membership request for this project already exists."))
         except Project.DoesNotExist:
             raise forms.ValidationError(_("Invalid Project Code."))
@@ -374,7 +382,9 @@ class ProjectUserInviteForm(forms.Form):
             raise forms.ValidationError(_("No user exists with given email."))
         if project.tech_lead == user:
             raise forms.ValidationError(_("You are currently a member of the project."))
-        if ProjectUserMembership.objects.filter(project=project, user=user).exists():
+        if ProjectUserMembership.objects.filter(
+            project=project, user=user
+        ).exists():
             raise forms.ValidationError(_("A membership request for this project already exists."))
         if not project.can_have_more_users():
             raise forms.ValidationError(_(
@@ -400,9 +410,12 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectUserMembershipAdminForm, self).__init__(*args, **kwargs)
         self.initial_status = self.instance.status
-        self.fields['status'] = forms.ChoiceField(choices=self._get_status_choices(self.instance.status))
+        self.fields['status'] = forms.ChoiceField(
+            choices=self._get_status_choices(self.instance.status)
+        )
 
     def _get_status_choices(self, status):
+        # yapf: disable
         pre_approved_options = [
             ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.AWAITING_AUTHORISATION],
             ProjectUserMembership.STATUS_CHOICES[ProjectUserMembership.AUTHORISED],
@@ -417,10 +430,13 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
             return post_approved_options
         else:
             return pre_approved_options
+        # yapf: enable
 
     def clean_status(self):
-        if (self.initial_status != ProjectUserMembership.AWAITING_AUTHORISED and
-            self.cleaned_data['status'] == ProjectUserMembership.AUTHORISED):
+        if (
+            self.initial_status != ProjectUserMembership.AWAITING_AUTHORISED and
+            self.cleaned_data['status'] == ProjectUserMembership.AUTHORISED
+        ):
             if not self.cleaned_data['project'].can_have_more_users():
                 raise forms.ValidationError(_(
                     "This project has reached its membership cap. "
@@ -428,7 +444,8 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
                 ))
 
     def save(self, commit=True):
-        project_user_membership = super(ProjectUserMembershipAdminForm, self).save(commit=False)
+        project_user_membership = super(ProjectUserMembershipAdminForm,
+                                        self).save(commit=False)
         if self.initial_status != project_user_membership.status:
             if project_user_membership.status == ProjectUserMembership.AUTHORISED:
                 user = project_user_membership.user
