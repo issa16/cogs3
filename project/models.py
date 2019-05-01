@@ -398,7 +398,7 @@ class SystemAllocationRequest(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.code
+        return '{}.{}'.format(self.project.code, self.id)
 
 
 class ProjectSystemAllocation(models.Model):
