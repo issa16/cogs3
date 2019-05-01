@@ -252,8 +252,9 @@ class Project(models.Model):
 
         self._assign_project_owner_project_membership()
 
-        # Assign the 'project_owner' group to the project's technical lead.
-        if self.tech_lead.groups.filter(name='project_owner').count():
+        # Assign the 'project_owner' group to the project's technical lead
+        # if it is not already assigned
+        if self.tech_lead.groups.filter(name='project_owner').count() == 0:
             group = Group.objects.get(name='project_owner')
             self.tech_lead.groups.add(group)
 
