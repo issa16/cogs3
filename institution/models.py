@@ -9,7 +9,7 @@ from institution.exceptions import (InvalidInstitutionalEmailAddress,
 class Institution(models.Model):
 
     class Meta:
-        ordering = ('name', )
+        ordering = ('name',)
 
     name = models.CharField(max_length=255, unique=True)
     base_domain = models.CharField(max_length=255, blank=True)
@@ -21,10 +21,16 @@ class Institution(models.Model):
         verbose_name='Shibboleth Identity Provider',
     )
     separate_allocation_requests = models.BooleanField(default=False)
-    allows_rse_requests = models.BooleanField(default=False)
+    allows_rse_requests = models.BooleanField(
+        default=False,
+        verbose_name='Allow RSE requests',
+    )
     needs_funding_approval = models.BooleanField(default=False)
     needs_supervisor_approval = models.BooleanField(default=False)
-    rse_notify_email = models.EmailField(null=True)
+    rse_notify_email = models.EmailField(
+        null=True,
+        verbose_name='RSE notification email',
+    )
     funding_document_email = models.EmailField(null=True)
     funding_document_receiver = models.CharField(max_length=100, null=True)
     funding_document_template = models.CharField(max_length=100, null=True)
@@ -48,11 +54,13 @@ class Institution(models.Model):
         """
         try:
             _, domain = email.split('@')
-            support_email = Institution.objects.get(base_domain=domain).support_email
+            support_email = Institution.objects.get(
+                base_domain=domain
+            ).support_email
             return support_email if support_email else settings.DEFAULT_SUPPORT_EMAIL
         except Exception:
             return settings.DEFAULT_SUPPORT_EMAIL
-        
+
     @classmethod
     def is_valid_email_address(cls, email):
         """
@@ -65,7 +73,9 @@ class Institution(models.Model):
             _, domain = email.split('@')
             Institution.objects.get(base_domain=domain)
         except Exception:
-            raise InvalidInstitutionalEmailAddress('Email address domain is not supported.')
+            raise InvalidInstitutionalEmailAddress(
+                'Email address domain is not supported.'
+            )
         else:
             return True
 
@@ -80,7 +90,9 @@ class Institution(models.Model):
         try:
             Institution.objects.get(identity_provider=identity_provider)
         except Exception:
-            raise InvalidInstitutionalIndentityProvider('Identity provider is not supported.')
+            raise InvalidInstitutionalIndentityProvider(
+                'Identity provider is not supported.'
+            )
         else:
             return True
 

@@ -49,13 +49,14 @@ class InstitutionTests(TestCase):
             Institution.is_valid_identity_provider('https://idp.invalid-identity-provider.ac.uk/shibboleth')
         self.assertEqual(str(e.exception), 'Identity provider is not supported.')
 
-    def test_id_str_produced(self):
+    def test_str_representation(self):
         institution = Institution.objects.create(
-            name='example University',
+            name='Example University',
             base_domain='example.ac.uk',
             identity_provider='https://example.ac.uk/shibboleth',
         )
         self.assertEqual(institution.id_str(), "example-university")
+        self.assertEqual(institution.__str__(), "Example University")
 
     @override_settings(DEFAULT_SUPPORT_EMAIL='support@another-example.ac.uk')
     def test_parse_support_email_from_user_email(self):
