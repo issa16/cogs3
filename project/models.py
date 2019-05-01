@@ -182,6 +182,16 @@ class Project(models.Model):
         else:
             return False
 
+    def can_view_project(self, user):
+        if ProjectUserMembership.objects.filter(
+                project=self,
+                status=ProjectUserMembership.AUTHORISED,
+                user=user
+        ).count() > 0:
+            return True
+        else:
+            return False
+
     def is_approved(self):
         allocation_requests = self.get_allocation_requests()
         for allocation_request in allocation_requests:
