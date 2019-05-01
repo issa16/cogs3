@@ -168,7 +168,7 @@ class Project(models.Model):
                 return True
             elif (self.tech_lead.profile.institution.default_project_user_cap >=
                   ProjectUserMembership.objects.filter(
-                      project=Project.objects.last(),
+                      project=self,
                       status=ProjectUserMembership.AUTHORISED,
                   ).count() + 1):
                 return True
