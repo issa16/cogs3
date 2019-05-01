@@ -182,6 +182,16 @@ class Project(models.Model):
         else:
             return False
 
+    def is_approved(self):
+        allocation_requests = self.get_allocation_requests()
+        for allocation_request in allocation_requests:
+            if allocation_request.is_approved():
+                return True
+        return False
+
+    def has_allocation_request(self):
+        return len(self.get_allocation_requests()) > 0
+
     def get_allocation_requests(self):
         return SystemAllocationRequest.objects.filter(project=self.id).order_by('-start_date')
 
