@@ -23,6 +23,7 @@ class Institution(models.Model):
     needs_legacy_inst_id = models.BooleanField(default=False)
     separate_allocation_requests = models.BooleanField(default=False)
     allows_rse_requests = models.BooleanField(default=False)
+    needs_funding_workflow = models.BooleanField(default=False)
     needs_funding_approval = models.BooleanField(default=False)
     needs_supervisor_approval = models.BooleanField(default=False)
     rse_notify_email = models.EmailField(null=True)

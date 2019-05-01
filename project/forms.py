@@ -188,15 +188,17 @@ class ProjectCreationForm(forms.ModelForm):
         self.user = user
         if self.user.profile.institution is not None and not self.user.profile.institution.needs_legacy_inst_id:
             del self.fields['legacy_arcca_id']
-
-        self.fields['attributions'] = forms.ModelMultipleChoiceField(
-            label='',
-            widget=SelectMultipleTickbox(),
-            queryset=Attribution.objects.filter(
-                created_by=self.user
-            ),
-            required=False,
-        )
+        if self.user.profile.institution is not None and not self.user.profile.institution.needs_funding_workflow:
+            del self.fields['attributions']
+        else:
+            self.fields['attributions'] = forms.ModelMultipleChoiceField(
+                label='',
+                widget=SelectMultipleTickbox(),
+                queryset=Attribution.objects.filter(
+                    created_by=self.user
+                ),
+                required=False,
+            )
 
     def clean_supervisor_email(self):
         cleaned_data = super().clean()

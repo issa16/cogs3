@@ -73,6 +73,7 @@
 									{{project.supervisor_position}} <br>
 									{{project.supervisor_email}}</td>
 							</tr>
+							{% if request.user.profile.institution.needs_funding_workflow %}
 							<tr>
 								<th scope="row">{% trans "Attributions" %}</th>
 								<td>
@@ -97,6 +98,7 @@
 									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Manage attributions" %}</a>
 								</td>
 							</tr>
+							{% endif %}
 						</tbody>
 					</table>
 
