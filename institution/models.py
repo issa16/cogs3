@@ -20,7 +20,6 @@ class Institution(models.Model):
         blank=True,
         verbose_name='Shibboleth Identity Provider',
     )
-    needs_legacy_inst_id = models.BooleanField(default=False)
     separate_allocation_requests = models.BooleanField(default=False)
     allows_rse_requests = models.BooleanField(default=False)
     needs_funding_approval = models.BooleanField(default=False)

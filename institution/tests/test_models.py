@@ -14,17 +14,11 @@ class InstitutionTests(TestCase):
 
     def _check_institution_system(self, institution):
         inst_name = institution.base_domain.split('.')[0]
-        legacy_id = institution.needs_legacy_inst_id
         separate_alloc = institution.separate_allocation_requests
-        if inst_name in ['bangor', 'aber']:
-            self.assertFalse(legacy_id)
+        if inst_name in ['bangor', 'aber', 'cardiff']:
             self.assertFalse(separate_alloc)
         elif inst_name == 'swan':
             self.assertTrue(separate_alloc)
-            self.assertFalse(legacy_id)
-        elif inst_name == 'cardiff':
-            self.assertTrue(legacy_id)
-            self.assertFalse(separate_alloc)
         else:
             raise ValueError(f'Institution {inst_name} not recognised')
 
