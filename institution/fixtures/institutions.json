@@ -36,12 +36,8 @@
       "needs_funding_approval": false,
       "separate_allocation_requests": false,
       "allows_rse_requests": false,
-      "rse_notify_email": null,
-      "local_repository_name": "",
-      "local_repository_domain": "",
-      "local_mailing_list_name": null,
-      "local_mailing_list_link": null,
-      "funding_database_name": "",
+      "default_project_user_cap": 0,
+      "needs_user_approval": true,
       "logo_path": "/static/img/bangor_logo.svg"
     }
   },
@@ -57,12 +53,8 @@
       "needs_funding_approval": false,
       "separate_allocation_requests": false,
       "allows_rse_requests": false,
-      "rse_notify_email": null,
-      "local_repository_name": "",
-      "local_repository_domain": "",
-      "local_mailing_list_name": null,
-      "local_mailing_list_link": null,
-      "funding_database_name": "",
+      "default_project_user_cap": 0,
+      "needs_user_approval": true,
       "logo_path": "/static/img/cardiff_logo.svg"
     }
   },
@@ -78,12 +70,6 @@
       "needs_funding_approval": false,
       "separate_allocation_requests": false,
       "allows_rse_requests": false,
-      "rse_notify_email": null,
-      "local_repository_name": "",
-      "local_repository_domain": "",
-      "local_mailing_list_name": null,
-      "local_mailing_list_link": null,
-      "funding_database_name": "",
       "default_project_user_cap": 10,
       "needs_user_approval": false,
       "logo_path": "/static/img/aberystwyth_logo.png"

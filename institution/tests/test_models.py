@@ -13,14 +13,14 @@ class InstitutionTests(TestCase):
     ]
 
     def _check_institution_system(self, institution):
-        inst_name = institution.base_domain.split('.')[0]
+        institution_name = institution.base_domain.split('.')[0]
         separate_alloc = institution.separate_allocation_requests
-        if inst_name in ['bangor', 'aber', 'cardiff']:
+        if institution_name in ['bangor', 'aber', 'cardiff']:
             self.assertFalse(separate_alloc)
-        elif inst_name == 'swan':
+        elif institution_name == 'swan':
             self.assertTrue(separate_alloc)
         else:
-            raise ValueError(f'Institution {inst_name} not recognised')
+            raise ValueError(f'Institution {institution_name} not recognised')
 
     def test_invalid_institutional_system(self):
         with self.assertRaises(ValueError) as e:
