@@ -1,16 +1,17 @@
 import jsonschema
 import requests
-
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django_rq import job
 
 from common.util import email_user
-from openldap.schemas.project_membership.create_project_membership import create_project_membership_json
-from openldap.schemas.project_membership.delete_project_membership import delete_project_membership_json
-from openldap.schemas.project_membership.list_project_memberships import list_project_memberships_json
-from openldap.util import decode_response
-from openldap.util import raise_for_data_error
+from openldap.schemas.project_membership.create_project_membership import \
+    create_project_membership_json
+from openldap.schemas.project_membership.delete_project_membership import \
+    delete_project_membership_json
+from openldap.schemas.project_membership.list_project_memberships import \
+    list_project_memberships_json
+from openldap.util import decode_response, raise_for_data_error
 from users.notifications import email_user
 
 
@@ -19,7 +20,10 @@ def list_project_memberships(project_code):
     """
     List all OpenLDAP project memberships for a given project.
     """
-    url = ''.join([settings.OPENLDAP_HOST, 'project/member/', project_code, '/'])
+    url = ''.join([
+        settings.OPENLDAP_HOST, 'project/member/', project_code, '/'
+    ])
+    headers = {'Cache-Control': 'no-cache'}
     try:
         response = requests.get(
             url,
@@ -44,7 +48,10 @@ def create_project_membership(project_membership, notify_user=True):
         project_membership (str): Project Membership - required
         notify_user (bool): Issue a notification email to the user? - optional
     """
-    url = ''.join([settings.OPENLDAP_HOST, 'project/member/', project_membership.project.code, '/'])
+    url = ''.join([
+        settings.OPENLDAP_HOST, 'project/member/',
+        project_membership.project.code, '/'
+    ])
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cache-Control': 'no-cache',
@@ -90,12 +97,10 @@ def delete_project_membership(project_membership, notify_user=True):
         project_membership (str): Project Membership - required
         notify_user (bool): Issue a notification email to the user? - optional
     """
-    url = ''.join(
-        [
-            settings.OPENLDAP_HOST, 'project/member/', project_membership.project.code, '/',
-            project_membership.user.email, '/'
-        ]
-    )
+    url = ''.join([
+        settings.OPENLDAP_HOST, 'project/member/',
+        project_membership.project.code, '/', project_membership.user.email, '/'
+    ])
     headers = {'Cache-Control': 'no-cache'}
     try:
         response = requests.delete(
