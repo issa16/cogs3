@@ -3,15 +3,16 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.db import models
-from django.utils.translation import gettext_lazy as _, ngettext_lazy
 from django.core.validators import MinValueValidator
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext_lazy
 from simple_history.models import HistoricalRecords
 
+from funding.models import Attribution
 from openldap.api import project_membership_api
 from project.notifications import project_created_notification
 from system.models import System
-from funding.models import Attribution
 
 logger = logging.getLogger('apps')
 

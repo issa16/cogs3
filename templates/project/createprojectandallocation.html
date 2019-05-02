@@ -13,10 +13,9 @@
 				</div>
 				<form method="post" enctype="multipart/form-data" novalidate>
 					{% csrf_token %}
-					<h4>{% trans "Project Details" %}</h4>
 					{% include 'includes/generic_form.html' with form=project_form %}
 					<hr>
-					<h4>{% trans "Allocation Details" %}</h4>
+					<h5>{% trans "Allocation Details" %}</h5>
 					{% include 'includes/generic_form.html' with form=allocation_form %}
 					<button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
 				</form>
