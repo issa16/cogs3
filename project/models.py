@@ -169,7 +169,7 @@ class Project(models.Model):
                 return True
             elif (self.tech_lead.profile.institution.default_project_user_cap >=
                   ProjectUserMembership.objects.filter(
-                      project=Project.objects.last(),
+                      project=self,
                       status=ProjectUserMembership.AUTHORISED,
                   ).count() + 1):
                 return True
@@ -182,6 +182,26 @@ class Project(models.Model):
             return True
         else:
             return False
+
+    def can_view_project(self, user):
+        if ProjectUserMembership.objects.filter(
+                project=self,
+                status=ProjectUserMembership.AUTHORISED,
+                user=user
+        ).count() > 0:
+            return True
+        else:
+            return False
+
+    def is_approved(self):
+        allocation_requests = self.get_allocation_requests()
+        for allocation_request in allocation_requests:
+            if allocation_request.is_approved():
+                return True
+        return False
+
+    def has_allocation_request(self):
+        return len(self.get_allocation_requests()) > 0
 
     def get_allocation_requests(self):
         return SystemAllocationRequest.objects.filter(project=self.id).order_by('-start_date')
@@ -243,8 +263,9 @@ class Project(models.Model):
 
         self._assign_project_owner_project_membership()
 
-        # Assign the 'project_owner' group to the project's technical lead.
-        if self.tech_lead.groups.filter(name='project_owner').count():
+        # Assign the 'project_owner' group to the project's technical lead
+        # if it is not already assigned
+        if self.tech_lead.groups.filter(name='project_owner').count() == 0:
             group = Group.objects.get(name='project_owner')
             self.tech_lead.groups.add(group)
 
@@ -399,7 +420,7 @@ class SystemAllocationRequest(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.project.code
+        return '{}.{}'.format(self.project.code, self.id)
 
 
 class ProjectSystemAllocation(models.Model):

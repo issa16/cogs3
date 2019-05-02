@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -260,6 +261,23 @@ class ProjectDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):
     model = Project
     template_name = 'project/application_detail.html'
     permission_required = 'project.add_project'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if not self.object.can_view_project(request.user):
+            raise PermissionDenied
+
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if not self.object.can_view_project(request.user):
+            raise PermissionDenied
+
+        return super().post(request, *args, **kwargs)
+
 
 
 class SystemAllocationRequestDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):

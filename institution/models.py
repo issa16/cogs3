@@ -21,6 +21,7 @@ class Institution(models.Model):
         verbose_name='Shibboleth Identity Provider',
     )
     separate_allocation_requests = models.BooleanField(default=False)
+    needs_funding_workflow = models.BooleanField(default=False)
     allows_rse_requests = models.BooleanField(
         default=False,
         verbose_name='Allow RSE requests',
