@@ -251,7 +251,7 @@ class FundingSourceMembership(models.Model):
 
 class Publication(Attribution):
     """
-    An individual funding source, such as a grant.
+    An individual Publication.
     """
 
     class Meta:

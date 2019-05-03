@@ -248,3 +248,39 @@ class FundingSourceTests(FundingTests):
         self.assertEqual(funding_source.approved, False)
         self.assertEqual(funding_source.pi.email, pi_email)
         self.assertEqual(funding_source.owner, user)
+
+
+class PublicationTests(FundingTests):
+
+    @classmethod
+    def create_publication(cls, title, created_by, owner, url):
+        """
+        Create a Publication instance.
+
+        Args:
+            title (str): Name of publication.
+            created_by (CustomUser): Creator of publication.
+            owner (CustomUser): Owner of publication.
+            url (str): URL of publication. 
+        """
+        publication = Publication.objects.create(
+            title=title, created_by=created_by, owner=owner, url=url
+        )
+        return publication
+
+    def test_publication_creation(self):
+        """
+        Ensure we can create a Publication instance.
+        """
+        title = 'A publication title'
+        user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
+        url = 'https://example.ac.uk/publications/1'
+        publication = self.create_publication(
+            title=title, created_by=user, owner=user, url=url
+        )
+        self.assertTrue(isinstance(publication, Publication))
+        self.assertEqual(publication.__str__(), title)
+        self.assertEqual(publication.title, title)
+        self.assertEqual(publication.url, url)
+        self.assertEqual(publication.created_by, user)
+        self.assertEqual(publication.owner, user)
