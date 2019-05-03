@@ -1,5 +1,4 @@
-[
-  {
+[{
     "model": "funding.Attribution",
     "pk": 1,
     "fields": {
