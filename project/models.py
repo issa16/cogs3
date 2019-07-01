@@ -45,22 +45,24 @@ class Project(models.Model):
     title = models.CharField(
         max_length=256,
         verbose_name=_('Project Title'),
+        help_text=_("Write a one-line description of the work you will be doing in this project."),
     )
     description = models.TextField(
         max_length=1024,
         verbose_name=_('Project Description'),
+        help_text=_("Write an abstract for the research that you will be doing in this project, including a description of what sort of computations will be done."),
     )
     legacy_hpcw_id = models.CharField(
         max_length=50,
         blank=True,
         verbose_name=_('Legacy HPC Wales ID'),
-        help_text=_('Project legacy ID from HPC Wales'),
+        help_text=_('If the project previously made use of the HPC Wales facilities, enter the ID here.'),
     )
     legacy_arcca_id = models.CharField(
         max_length=50,
         blank=True,
         verbose_name=_('Legacy ARCCA ID'),
-        help_text=_('Project legacy ID ARCCA'),
+        help_text=_('If the project has previously made use of ARCCA resources and has an ARCCA ID, enter it here'),
     )
     code = models.CharField(
         max_length=20,
@@ -75,11 +77,13 @@ class Project(models.Model):
         max_length=128,
         blank=True,
         verbose_name=_('Owning institution project reference'),
+        help_text=_(' If your institution assigns identifiers to research projects, enter the identifier for this project here'),
     )
     department = models.CharField(
         max_length=128,
         blank=True,
         verbose_name=_('Department'),
+        help_text= ('Enter the department or other division of the university that the project will be based in'),
     )
     pi_legacy = models.CharField(
         max_length=256,
@@ -88,16 +92,19 @@ class Project(models.Model):
     supervisor_name = models.CharField(
         max_length=256,
         verbose_name=_("Project Leader's name"),
+        help_text= ("Enter the name of the member of staff who is leading this research. This need not be you, but should be a permanent member of University staff. If this research is funded, this would typically be the local Principal Investigator on the grant."),
         blank=True,
     )
     supervisor_position = models.CharField(
         max_length=256,
         verbose_name=_("Project Leader's position"),
+        help_text= (' What position does the Project Leader named above hold? (For example, Lecturer, Professor, Head of Department)'),
         blank=True,
     )
     supervisor_email = models.CharField(
         max_length=256,
         verbose_name=_("Project Leader's email"),
+        help_text= ('Enter the email address of the Project Leader named above.'),
         blank=True,
     )
     approved_by_supervisor = models.BooleanField(
@@ -297,8 +304,8 @@ class SystemAllocationRequest(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_('Project'),
     )
-    start_date = models.DateField(verbose_name=_('Start date'))
-    end_date = models.DateField(verbose_name=_('End date'))
+    start_date = models.DateField(verbose_name=_('Start date'), help_text= ('When do you like to start using the system for this project?'),)
+    end_date = models.DateField(verbose_name=_('End date'), help_text= ('When do you anticipate being finished with the system for this project?'),)
 
     allocation_rse = models.BooleanField(
         default=False,
@@ -309,42 +316,50 @@ class SystemAllocationRequest(models.Model):
         null=True,
         blank=True,
         verbose_name=_('CPU time allocation in hours'),
+        help_text=('How many "core-hours" do you anticipate this project needing? For example, if you have a program that only uses one CPU on your laptop, and runs for 48 hours, and you need to run it 1000 times, then this number would be 48,000; if instead it used four cores on your laptop for the same amount of time, it would be 192,000.'),
     )
     allocation_memory = models.PositiveIntegerField(
         null=True,
         blank=True,
         verbose_name=_('RAM allocation in GB'),
+        help_text=('How much memory will your program need at once per node? If you don\'t know this number, but know that the program runs on your computer, then enter the amount of RAM on your computer.'),
     )
     allocation_storage_home = models.PositiveIntegerField(
         null=True,
         blank=True,
         verbose_name=_('Home storage in GB'),
-    )
+        help_text=('Home storage is long-term (although not backed up) file storage used for data you need to keep on the system for months at a time. This is subject to a quota. Enter the amount of storage you need for the longer term; 100GB is the default size.'),
+        )
     allocation_storage_scratch = models.PositiveIntegerField(
         null=True,
         blank=True,
         verbose_name=_('Scratch storage in GB'),
+        help_text=('Scratch storage is short-term file storage used for intermediary data you need temporarily, but will either delete or move off the system once it is no longer needed. There is no quota on scratch, but it is shared with other users, and when it is full, then old unused files will be deleted. Enter the amount of short-term intermediary storage you will need.'),
     )
 
     requirements_software = models.TextField(
         max_length=512,
         blank=True,
-        help_text=_('Software name and versions'),
+ #       help_text=_('Software name and versions'),
         verbose_name=_('Software Requirements'),
+        help_text=('Enter details of any software you require to be installed on the system to be able to use it for your research. Examples include compilers (Intel and GNU C, C++, and Fortran compilers are available already), interpreters (Python and R are available already), open-source libraries, and commercial software (e.g. Stata, Matlab, Molpro). In addition if you require a specific version of the software then please specify this.'),
     )
     requirements_training = models.TextField(
         max_length=512,
         blank=True,
         verbose_name=_('Training Requirements'),
+        help_text=('Do you require training in order to make use of the system? If so, write details of this here.'),
     )
     requirements_onboarding = models.TextField(
         max_length=512,
         blank=True,
         verbose_name=_('Onboarding Requirements'),
+        help_text=('Do you require any assistance in adapting your software to be able to make use of the system? If so, write details of this here.'),
     )
 
     document = models.FileField(
         verbose_name=_('Upload Supporting Documents'),
+        help_text=('If you have any documentation that you feel Supercomputing Wales would benefit from seeing with regards to this project, or have been asked to include some documentation in your request, please attach it here.'),
         upload_to="documents/%Y/%m/%d/%M/",
         blank=True,
         null=True,

@@ -29,7 +29,7 @@ def backwards(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
+    atomic = False
     dependencies = [
         ('funding', '0006_auto_20180829_0942'),
     ]
