@@ -107,10 +107,14 @@ class AllocationRequestFormTests(TestCase):
         # Create users for each institution
         self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
 
-    def test_project_form_arcca_field(self):
+    def test_project_allocation_form_arcca_field(self):
         for i in self.institution_names:
             user = self.institution_users[i]
             form = SystemAllocationRequestCreationForm(user)
+            if user.profile.institution.base_domain == 'cardiff.ac.uk':
+                self.assertTrue('legacy_arcca_id' in form.fields)
+            else:
+                self.assertFalse('legacy_arcca_id' in form.fields)
 
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTestCase):
