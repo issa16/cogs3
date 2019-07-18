@@ -10,6 +10,7 @@ from project.forms import ProjectUserMembershipCreationForm
 from project.forms import ProjectUserInviteForm
 from project.forms import RSEAllocationRequestCreationForm
 from project.forms import SystemAllocationRequestCreationForm
+from project.forms import ProjectManageAttributionForm
 from project.models import Project
 from project.models import ProjectUserMembership
 from users.models import CustomUser
@@ -142,6 +143,35 @@ class AllocationRequestFormTests(TestCase):
         self.data['project'] = self.project.id
         self.form = SystemAllocationRequestCreationForm(self.user, project=self.project, data=self.data)
         self.assertFalse( self.form.is_valid() )
+
+
+class ProjectManageAttributionFormTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
+
+    def setUp(self):
+        self.title = "Example project title"
+        # Create users for each institution
+        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+
+        self.project_code = 'scw0000'
+        self.project = Project.objects.get(code=self.project_code)
+        self.user = self.project.tech_lead
+        self.data = {
+            'attributions': [],
+        }
+
+    def test_project_allocation_form_validation(self):
+        self.form = ProjectManageAttributionForm(self.user, data=self.data)
+        self.assertTrue( self.form.is_valid() )
 
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTestCase):
