@@ -12,7 +12,7 @@
     "institution_reference": "E-1234",
     "department": "Chemistry",
     "supervisor_name": "John Doe",
-    "supervisor_email": "user@example.ac.uk",
+    "supervisor_email": "shibboleth.user@example.ac.uk",
     "supervisor_position": "Technical Director",
     "tech_lead": 1,
     "category": 1,
