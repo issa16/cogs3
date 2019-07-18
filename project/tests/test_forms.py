@@ -44,7 +44,7 @@ class ProjectFormTests(ProjectFormTestCase):
     def setUp(self):
         super().setUp()
         institution = self.institution_names[0]
-        user = self.institution_users[institution]
+        self.user = self.institution_users[institution]
         self.data = {
             'title': 'Test Project',
             'description': 'A test project',
@@ -54,7 +54,7 @@ class ProjectFormTests(ProjectFormTestCase):
             'supervisor_position': 'Researcher',
             'supervisor_email': 'supervisor@example.ac.uk',
         }
-        self.form = ProjectCreationForm(user,self.data)
+        self.form = ProjectCreationForm(self.user,self.data)
 
 
     def test_project_form_arcca_field(self):
@@ -69,8 +69,18 @@ class ProjectFormTests(ProjectFormTestCase):
     def test_project_form_valid(self):
         self.assertTrue( self.form.is_valid() )
 
-    def test_project_form_supervisor_email(self):
+    def test_project_form_bad_supervisor_email(self):
+        self.form.data['supervisor_email'] = 'supervisor at gmail.com'
+        self.assertFalse( self.form.is_valid() )
+
+    def test_project_form_bad_supervisor_domain(self):
         self.form.data['supervisor_email'] = 'supervisor@gmail.com'
+        self.assertFalse( self.form.is_valid() )
+
+    def test_project_form_external_user(self):
+        self.user.profile.institution = None
+        self.user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.form = ProjectCreationForm(self.user,self.data)
         self.assertFalse( self.form.is_valid() )
 
 
