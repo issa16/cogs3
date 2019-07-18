@@ -11,6 +11,7 @@ from project.forms import ProjectUserInviteForm
 from project.forms import RSEAllocationRequestCreationForm
 from project.forms import SystemAllocationRequestCreationForm
 from project.forms import ProjectManageAttributionForm
+from project.forms import ProjectSupervisorApproveForm
 from project.models import Project
 from project.models import ProjectUserMembership
 from users.models import CustomUser
@@ -172,6 +173,35 @@ class ProjectManageAttributionFormTests(TestCase):
     def test_project_allocation_form_validation(self):
         self.form = ProjectManageAttributionForm(self.user, data=self.data)
         self.assertTrue( self.form.is_valid() )
+
+
+class ProjectSupervisorApproveFormTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
+
+    def setUp(self):
+        self.project = Project.objects.get(code='scw0000')
+        self.user = CustomUser.objects.get(email=self.project.supervisor_email)
+        self.data = {
+            'approved_by_supervisor': True,
+        }
+
+    def test_project_supervisor_form_validation(self):
+        self.form = ProjectSupervisorApproveForm(self.user, instance=self.project, data = self.data)
+        self.assertTrue( self.form.is_valid() )
+
+    def test_project_supervisor_form_incorrect_email(self):
+        user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.form = ProjectSupervisorApproveForm(user, instance=self.project, data = self.data)
+        self.assertFalse( self.form.is_valid() )
 
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTestCase):
