@@ -98,14 +98,27 @@ class AllocationRequestFormTests(TestCase):
 
     def setUp(self):
         self.title = "Example project title"
-        self.institution = Institution.objects.get(name='Example University')
-        self.project_code = 'scw0000'
-        self.project = Project.objects.get(code=self.project_code)
-        self.project_owner = self.project.tech_lead
-        self.project_applicant = CustomUser.objects.get(email='admin.user@example.ac.uk')
-
         # Create users for each institution
         self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+
+        self.project_code = 'scw0000'
+        self.project = Project.objects.get(code=self.project_code)
+        self.user = self.project.tech_lead
+        self.data = {
+            'information': 'A test allocation',
+            'start_date': '01/09/1985',
+            'end_date': '01/09/1985',
+            'allocation_cputime': '5',
+            'allocation_memory': '1',
+            'allocation_storage_home': '23',
+            'allocation_storage_scratch': '65',
+            'requirements_software': '',
+            'requirements_training': '',
+            'requirements_onboarding': '',
+            'document': None,
+            'attributions': [],
+            'project': self.project.id,
+        }
 
     def test_project_allocation_form_arcca_field(self):
         for i in self.institution_names:
@@ -115,6 +128,20 @@ class AllocationRequestFormTests(TestCase):
                 self.assertTrue('legacy_arcca_id' in form.fields)
             else:
                 self.assertFalse('legacy_arcca_id' in form.fields)
+
+    def test_project_allocation_form_validation(self):
+        self.form = SystemAllocationRequestCreationForm(self.user, data=self.data)
+        self.assertTrue( self.form.is_valid() )
+
+    def test_project_allocation_form_without_project(self):
+        self.form = SystemAllocationRequestCreationForm(self.user, include_project=False, data=self.data)
+        self.assertFalse( 'project' in self.form.fields )
+
+    def test_project_allocation_form_other_project(self):
+        self.project = Project.objects.get(code='scw0001')
+        self.data['project'] = self.project.id
+        self.form = SystemAllocationRequestCreationForm(self.user, project=self.project, data=self.data)
+        self.assertFalse( self.form.is_valid() )
 
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTestCase):
