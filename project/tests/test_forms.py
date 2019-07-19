@@ -557,10 +557,12 @@ class RSEAllocationRequestCreationFormTests(ProjectFormTestCase):
     }
     
     def test_valid_form(self):
+        user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
         form = RSEAllocationRequestCreationForm(
-            CustomUser.objects.get(email='shibboleth.user@example.ac.uk'),
+            user,
             data=self.default_data
         )
+        form.is_valid()
         self.assertTrue(form.is_valid())
 
     def test_invalid_durations(self):
@@ -577,4 +579,28 @@ class RSEAllocationRequestCreationFormTests(ProjectFormTestCase):
             data=self.default_data
         )
         self.assertFalse(form.is_valid())
+
+    def test_save_no_email(self):
+        user = CustomUser.objects.get(email='test.user@example3.ac.uk')
+        data = dict(self.default_data)
+        data['project'] = 3
+        form = RSEAllocationRequestCreationForm(
+            user,
+            data=data
+        )
+        self.assertTrue(form.is_valid())
+        instance = form.save()
+        self.assertTrue(instance.project.id == 3)
+        instance.delete()
+        
+    def test_save_with_email(self):
+        form = RSEAllocationRequestCreationForm(
+            CustomUser.objects.get(email='shibboleth.user@example.ac.uk'),
+            data=self.default_data
+        )
+        self.assertTrue(form.is_valid())
+        instance = form.save()
+        self.assertTrue(instance.project.id == 1)
+        instance.delete()
+
         
