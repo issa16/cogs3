@@ -10,13 +10,15 @@ from project.forms import ProjectUserMembershipCreationForm
 from project.forms import ProjectUserInviteForm
 from project.forms import RSEAllocationRequestCreationForm
 from project.forms import SystemAllocationRequestCreationForm
+from project.forms import ProjectManageAttributionForm
+from project.forms import ProjectSupervisorApproveForm
 from project.models import Project
 from project.models import ProjectUserMembership
 from users.models import CustomUser
 from users.tests.test_models import CustomUserTests
 
 
-class ProjectFormTests(TestCase):
+class ProjectFormTestCase(TestCase):
 
     fixtures = [
         'institution/fixtures/tests/institutions.json',
@@ -39,6 +41,24 @@ class ProjectFormTests(TestCase):
         # Create users for each institution
         self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
 
+
+class ProjectFormTests(ProjectFormTestCase):
+    def setUp(self):
+        super().setUp()
+        institution = self.institution_names[0]
+        self.user = self.institution_users[institution]
+        self.data = {
+            'title': 'Test Project',
+            'description': 'A test project',
+            'institution_reference': 'X',
+            'department': 'Testing Department',
+            'supervisor_name': 'supervisor',
+            'supervisor_position': 'Researcher',
+            'supervisor_email': 'supervisor@example.ac.uk',
+        }
+        self.form = ProjectCreationForm(self.user,self.data)
+
+
     def test_project_form_arcca_field(self):
         for i in self.institution_names:
             user = self.institution_users[i]
@@ -47,6 +67,23 @@ class ProjectFormTests(TestCase):
                 self.assertTrue('legacy_arcca_id' in form.fields)
             else:
                 self.assertFalse('legacy_arcca_id' in form.fields)
+
+    def test_project_form_valid(self):
+        self.assertTrue( self.form.is_valid() )
+
+    def test_project_form_bad_supervisor_email(self):
+        self.form.data['supervisor_email'] = 'supervisor at gmail.com'
+        self.assertFalse( self.form.is_valid() )
+
+    def test_project_form_bad_supervisor_domain(self):
+        self.form.data['supervisor_email'] = 'supervisor@gmail.com'
+        self.assertFalse( self.form.is_valid() )
+
+    def test_project_form_external_user(self):
+        self.user.profile.institution = None
+        self.user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.form = ProjectCreationForm(self.user,self.data)
+        self.assertFalse( self.form.is_valid() )
 
 
 class AllocationRequestFormTests(TestCase):
@@ -63,22 +100,111 @@ class AllocationRequestFormTests(TestCase):
 
     def setUp(self):
         self.title = "Example project title"
-        self.institution = Institution.objects.get(name='Example University')
-        self.project_code = 'scw0000'
-        self.project = Project.objects.get(code=self.project_code)
-        self.project_owner = self.project.tech_lead
-        self.project_applicant = CustomUser.objects.get(email='admin.user@example.ac.uk')
-
         # Create users for each institution
         self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
 
-    def test_project_form_arcca_field(self):
+        self.project_code = 'scw0000'
+        self.project = Project.objects.get(code=self.project_code)
+        self.user = self.project.tech_lead
+        self.data = {
+            'information': 'A test allocation',
+            'start_date': '01/09/1985',
+            'end_date': '01/09/1985',
+            'allocation_cputime': '5',
+            'allocation_memory': '1',
+            'allocation_storage_home': '23',
+            'allocation_storage_scratch': '65',
+            'requirements_software': '',
+            'requirements_training': '',
+            'requirements_onboarding': '',
+            'document': None,
+            'attributions': [],
+            'project': self.project.id,
+        }
+
+    def test_project_allocation_form_arcca_field(self):
         for i in self.institution_names:
             user = self.institution_users[i]
             form = SystemAllocationRequestCreationForm(user)
+            if user.profile.institution.base_domain == 'cardiff.ac.uk':
+                self.assertTrue('legacy_arcca_id' in form.fields)
+            else:
+                self.assertFalse('legacy_arcca_id' in form.fields)
+
+    def test_project_allocation_form_validation(self):
+        self.form = SystemAllocationRequestCreationForm(self.user, data=self.data)
+        self.assertTrue( self.form.is_valid() )
+
+    def test_project_allocation_form_without_project(self):
+        self.form = SystemAllocationRequestCreationForm(self.user, include_project=False, data=self.data)
+        self.assertFalse( 'project' in self.form.fields )
+
+    def test_project_allocation_form_other_project(self):
+        self.project = Project.objects.get(code='scw0001')
+        self.data['project'] = self.project.id
+        self.form = SystemAllocationRequestCreationForm(self.user, project=self.project, data=self.data)
+        self.assertFalse( self.form.is_valid() )
 
 
-class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
+class ProjectManageAttributionFormTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
+
+    def setUp(self):
+        self.title = "Example project title"
+        # Create users for each institution
+        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+
+        self.project_code = 'scw0000'
+        self.project = Project.objects.get(code=self.project_code)
+        self.user = self.project.tech_lead
+        self.data = {
+            'attributions': [],
+        }
+
+    def test_project_allocation_form_validation(self):
+        self.form = ProjectManageAttributionForm(self.user, data=self.data)
+        self.assertTrue( self.form.is_valid() )
+
+
+class ProjectSupervisorApproveFormTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
+
+    def setUp(self):
+        self.project = Project.objects.get(code='scw0000')
+        self.user = CustomUser.objects.get(email=self.project.supervisor_email)
+        self.data = {
+            'approved_by_supervisor': True,
+        }
+
+    def test_project_supervisor_form_validation(self):
+        self.form = ProjectSupervisorApproveForm(self.user, instance=self.project, data = self.data)
+        self.assertTrue( self.form.is_valid() )
+
+    def test_project_supervisor_form_incorrect_email(self):
+        user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.form = ProjectSupervisorApproveForm(user, instance=self.project, data = self.data)
+        self.assertFalse( self.form.is_valid() )
+
+
+class ProjectUserRequestMembershipFormTests(ProjectFormTestCase):
 
     def test_request_membership_form_with_valid_data(self):
         pass
@@ -96,7 +222,7 @@ class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
         pass
 
 
-class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
+class ProjectUserMembershipCreationFormTests(ProjectFormTestCase):
 
     # Project are no longer approved, allocations are. Members can be added immediately
     # when a project is created.
@@ -272,7 +398,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         )
 
 
-class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
+class ProjectUserInviteFormTests(ProjectFormTestCase):
 
     # Project are no longer approved, allocations are. Members can be added immediately
     # when a project is created.
@@ -391,7 +517,7 @@ class ProjectUserInviteFormTests(ProjectFormTests, TestCase):
         self.assertFalse(form.is_valid())
 
 
-class SystemAllocationRequestCreationFormTests(ProjectFormTests, TestCase):
+class SystemAllocationRequestCreationFormTests(ProjectFormTestCase):
 
     def test_form_with_unauthorized_project(self):
         """
@@ -418,7 +544,7 @@ class SystemAllocationRequestCreationFormTests(ProjectFormTests, TestCase):
         self.assertFalse(form.is_valid())
 
 
-class RSEAllocationRequestCreationFormTests(ProjectFormTests, TestCase):
+class RSEAllocationRequestCreationFormTests(ProjectFormTestCase):
     default_data = {
         'title': 'Project to implement a management system',
         'duration': 1,

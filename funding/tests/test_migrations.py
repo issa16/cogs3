@@ -12,7 +12,7 @@ class TestMigration(TestCase):
 
     def setUp(self):
         assert self.migrate_from and self.migrate_to, \
-            "migrate_to and migrate_from mist be defined"
+            "migrate_to and migrate_from must be defined"
         executor = MigrationExecutor(connection)
         apps = executor.loader.project_state(self.migrate_from).apps
 
