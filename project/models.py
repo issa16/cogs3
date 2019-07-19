@@ -167,22 +167,6 @@ class Project(models.Model):
 
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
-# New fields added for Prioritisation
-    Attribution_points=models.IntegerField(
-            verbose_name=('Attribution points (Ap)'),
-            default=50000,
-            help_text=('Calculated Attribution points for this project'),
-            editable=False,)
-    Qos = models.IntegerField(
-            verbose_name=('Quality of Service (QOS)'),   
-            help_text=('Quality of service value for this project, to be input into slurm.'),
-            default=1,
-            editable=False,)
-    prioritized_time = models.IntegerField(
-            verbose_name=('Total prioritized time'),
-            help_text=('Sum of priortized cpu time alocated to this project'),
-            default = 0,
-            editable=False,)
     def can_have_more_users(self):
         if not self.custom_user_cap:
             if not self.tech_lead.profile.institution:

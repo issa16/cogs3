@@ -42,5 +42,27 @@
     "created_time": "2018-06-26T19:57:11.653Z",
     "modified_time": "2018-06-26T19:57:11.653Z"
   }
+},
+{
+  "model": "project.project",
+  "pk": 3,
+  "fields": {
+    "title": "Project title 2",
+    "description": "Project description 2",
+    "legacy_hpcw_id": "1234567",
+    "legacy_arcca_id": "7654321",
+    "code": "scw1001",
+    "gid_number": null,
+    "institution_reference": "E-1234",
+    "department": "Chemistry",
+    "supervisor_name": "John Doe",
+    "supervisor_email": "user@example2.ac.uk",
+    "supervisor_position": "Technical Director",
+    "tech_lead": 7,
+    "category": 1,
+    "economic_user": false,
+    "created_time": "2018-06-26T19:57:11.653Z",
+    "modified_time": "2018-06-26T19:57:11.653Z"
+  }
 }
 ]
