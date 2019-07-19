@@ -39,18 +39,6 @@ def backwards(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('funding', '0001_initial'),
-        ('project', '0037_auto_20180717_1128'),
-    ]
-
-    operations = [
-        migrations.RunPython(forwards, backwards),
-    ]
-
-
-class Migration(migrations.Migration):
-
-    dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('project', '0041_auto_20180731_1239'),
     ]

@@ -52,9 +52,6 @@ class ProjectViewTests(TestCase):
         # Applicant from an institution that does not verify users
         self.inst2_applicant = CustomUser.objects.get(email='test.user@example2.ac.uk')
 
-        # Applicant from an institution that does not verify users
-        self.inst2_applicant = CustomUser.objects.get(email='test.user@example2.ac.uk')
-
         self.project = Project.objects.get(code='scw0000')
         self.project_owner = self.project.tech_lead
 
@@ -159,8 +156,8 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
 
     def test_view_without_user_approval_with_project_add_permission(self):
         """
-        Ensure the project create view is accessible to a user who is not required to be authorised,
-        who does have the required permissions.
+        Ensure the project create view is accessible to a user who is not required
+        to be authorised, who does have the required permissions.
         """
         headers = {
             'Shib-Identity-Provider': self.inst2_applicant.profile.institution.identity_provider,
@@ -505,44 +502,6 @@ class ProjectUserRequestMembershipListViewTests(ProjectViewTests, TestCase):
             reverse('project-user-membership-request-list'),
             '/en-gb/accounts/login/?next=/en-gb/projects/memberships/user-requests/',
         )
-
-
-class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
-
-    def test_view_as_authorised_application_user_without_project_change_membership_permission(self):
-        """
-        Ensure the project user request membership update view is not accessible to an authorised
-        application user, who does not have the required permissions.
-        """
-        pass
-
-    def test_view_as_authorised_application_user_with_project_change_membership_permission(self):
-        """
-        Ensure the project user request membership update view is accessible to an authorised
-        application user, who does not have the required permissions.
-        """
-        pass
-
-    def test_view_as_without_user_authorisation_with_project_change_membership_permission(self):
-        """
-        Ensure the project user request membership update view is accessible to a user who is
-        not required to be authorised, who does not have the required permissions.
-        """
-        pass
-
-    def test_view_as_authorised_application_user_with_invalid_request_params(self):
-        """
-        Ensure it is not possible for a user, who is not the project's technical lead, to update
-        a project membership user request.
-        """
-        pass
-
-    def test_view_as_unauthorised_application_user(self):
-        """
-        Ensure the project user request membership update view is not accessible to an unauthorised
-        application user.
-        """
-        pass
 
 
 class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
