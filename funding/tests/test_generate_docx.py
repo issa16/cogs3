@@ -14,14 +14,19 @@ class create_funding_documentTest(TestCase):
             'pi_lastname': 'PILASTNAME',
             'pi_department': 'PIDEPARTMENT',
             'receiver': 'RECEIVER',
-            'template': 'Swansea.docx'
         }
-        content = create_funding_document(**self.fixture)
-
-        # reconstructing the document
-        docx = Document(BytesIO(content))
-        self.text = '\n'.join([p.text for p in docx.paragraphs])
+        templates = ['Swansea.docx', 'Aberystwyth.docx']
+        self.texts = dict()
+        for template in templates:
+            content = create_funding_document(**self.fixture, template=template)
+            # reconstructing the document
+            docx = Document(BytesIO(content))
+            self.texts[template] = '\n'.join([p.text for p in docx.paragraphs])
 
     def test_argument_in_text(self):
-        for key in self.fixture.keys() - ['template']:
-            assert self.fixture[key] in self.text, f'{key} Not present'
+        for text in self.texts.values():
+            for key in self.fixture.keys():
+                with self.subTest():
+                    assert self.fixture[
+                        key
+                    ] in text, f'{key}=({self.fixture[key]}) Not present'
