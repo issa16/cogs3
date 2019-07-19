@@ -516,6 +516,25 @@ class ProjectUserInviteFormTests(ProjectFormTestCase):
         )
         self.assertFalse(form.is_valid())
 
+    def test_form_when_user_is_not_found(self):
+        """
+        Ensure it is not possible to create a project user membership when the use does
+        not exist.
+        """
+        # Create a project.
+        project = Project.objects.get(code="scw0000")
+
+        # A request to create a project user membership should be rejected.
+        form = ProjectUserInviteForm(
+            initial={
+                'project_id': project.id,
+            },
+            data={
+                'email': 'user_does_not_exist@example.ac.uk',
+            },
+        )
+        self.assertFalse(form.is_valid())
+
 
 class SystemAllocationRequestCreationFormTests(ProjectFormTestCase):
 
