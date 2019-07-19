@@ -24,8 +24,8 @@ class MailingListMixin:
         context['mailing_list'] = None
         context['institution_name'] = None
         if self.institution:
-            context['mailing_list'] = institution.local_mailing_list_name
-            context['institution_name'] = _(institution.name)
+            context['mailing_list'] = self.institution.local_mailing_list_name
+            context['institution_name'] = _(self.institution.name)
 
         return context
 
