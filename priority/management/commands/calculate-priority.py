@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from project.models import Project
 from funding.models import Attribution
 from priority.models import slurm_priority
+import sys
 class Command(BaseCommand):
     def handle(self, *args, **options):
         #number of QOS levels
@@ -14,27 +15,30 @@ class Command(BaseCommand):
         #engine for reading/writing sql files
         # sqlite://<nohostname>/<pathtofile>
         engine = create_engine('sqlite:///db.sqlite3', echo=False)
-        #df = pd.read_csv ('~/Documents/full_sacct_dump.csv',sep='|')
-        df = pd.read_csv ('~/Documents/Cogs3/cogs3/priority/fixtures/TEST_dump.csv',sep='|')
+        df = pd.read_csv ('~/Documents/full_sacct_dump.csv',sep='|')
+        #df = pd.read_csv ('~/Documents/Cogs3/cogs3/priority/fixtures/TEST_dump.csv',sep='|')
         #remove NANs
         df=df.dropna(how='any')
         #convert cpu time from core seconds to core hours
-        cpuhours=df['CPUTimeRAW']/3600
-        df['CPU-HOURS']=cpuhours.astype(int)
+        df.loc['CPUTimeRAW']=df['CPUTimeRAW'].div(3600)
+        #df['CPU-HOURS']=cpuhours.astype(int)
         #seperate into gpu and not gpu
-        gpu=df[df.Partition=="gpu"]
-        compute=df[df.Partition!="gpu"]
-        
+        gpu=df[(df.Partition=="gpu")|(df.Partition=="xgpu")]
+        compute=df[(df.Partition!="gpu")|(df.Partition!="xgpu")]
+        compute.to_csv(path_or_buf='~/Documents/Cogs3/cogs3/compute.csv')
         #calculate the total raw cpu time used for each project
-        cpu_sum=compute.groupby('Account')['CPU-HOURS'].sum().astype(int).to_frame(name='cpu_sum')
-        gpu_sum=gpu.groupby('Account')['CPU-HOURS'].sum().astype(int).to_frame(name='gpu_sum')
-        
+        cpu_sum=compute.groupby('Account')['CPUTimeRAW'].sum().astype(int).to_frame(name='cpu_sum')
+        gpu_sum=gpu.groupby('Account')['CPUTimeRAW'].sum().astype(int).to_frame(name='gpu_sum')
+        print(gpu_sum)
         #generate random ap values for testing
-        #Ap=list(np.random.randint(50000,250000,len(combi_sum.index)))
+        #default_Ap=pd.Series(np.random.randint(50000,250000,len(SCW['Ap'])),name='Ap').astype(int)
         SCW=caculate_AP()
         #combine the three data frames into one
         SCW = pd.merge(SCW,cpu_sum, on='Account', how='outer').fillna(0)
         SCW = pd.merge(SCW,gpu_sum, on='Account', how='outer').fillna(0)
+        #give all new entries an Ap of 50000
+        #SCW.update(default_Ap,overwrite=False,filter_func=new_data)
+        SCW.Ap.loc[SCW.Ap==0]=50000
         SCW['Cpu_New']=SCW['cpu_sum'].subtract(SCW['CPU_hours'])
         SCW['Gpu_New']=SCW['gpu_sum'].subtract(SCW['GPU_hours'])
         
@@ -45,24 +49,22 @@ class Command(BaseCommand):
         #check if previous run was prioritezed and if so add the time since last sactdump to total priortized time
         P=SCW['Qos']>0
         Prioritsed=SCW[P]
-        Prioritsed['P_CPU']=Prioritsed['P_CPU']+Prioritsed['Cpu_New']
-        Prioritsed['P_GPU']=Prioritsed['P_GPU']+Prioritsed['Gpu_New']
+        Prioritsed['P_CPU'].add(Prioritsed['Cpu_New'])
+        Prioritsed['P_GPU'].add(Prioritsed['Gpu_New'])
         
         SCW.update(Prioritsed)
         SCW['CPU_hours']=SCW['CPU_hours']+SCW['Cpu_New']
         SCW['GPU_hours']=SCW['GPU_hours']+SCW['Gpu_New']
-        print(SCW['CPU_hours'])
         #calculate Priority
         Priority =(SCW['Ap']-(SCW['P_CPU'] + SCW['P_GPU']*40)).to_frame(name='Priority_Sum').astype(int)
-        Priority['QOS']=SCW['Ap'].map(lambda a : k*np.log10(a))
+        Priority['QOS']=SCW['Ap'].map(lambda a : k*np.log10(a)).astype(int)
         Priority['QOS']= Priority['QOS'].where(Priority['Priority_Sum']>=0,0)
         Priority['Account']=SCW['Account']
         
         
-        #create datframe for output to django
+        #create dataframe for output to django
         COGS_DB = pd.DataFrame(Priority['Account'], columns=['Account'])
-        #COGS_DB['Account']=Priority['Account']
-        COGS_DB['QOS']=Priority['QOS'].astype(int)
+        COGS_DB['QOS']=Priority['QOS']
         COGS_DB['CPU_hours']=SCW['CPU_hours']
         COGS_DB['GPU_hours']=SCW['GPU_hours']
         COGS_DB['P_CPU']=SCW['P_CPU']
@@ -84,7 +86,9 @@ def caculate_AP():
     from project.models import Project, ProjectSystemAllocation
     from funding.models import Attribution
     from priority.models import slurm_priority
+    from datetime import date, timedelta
 #list all projects that are on sunbird
+    yesterday=date.today()-timedelta(1)
     on_sunbird=[]
     Sunbird=ProjectSystemAllocation.objects.exclude(system=1)
     for I in Sunbird:
@@ -107,5 +111,11 @@ def caculate_AP():
     Attpoints=pd.DataFrame(list(priorities.items()),columns=['Account','Ap'])
 #query the priorities datbase and merge in the Ap values 
     Priority_DB = pd.DataFrame(list(slurm_priority.objects.all().values('Account','CPU_hours','GPU_hours','P_CPU','P_GPU','Qos')))
-    SCW=pd.merge(Priority_DB,Attpoints, on='Account', how='outer').fillna(50000)
+    try:
+        SCW=pd.merge(Priority_DB,Attpoints, on='Account', how='left').fillna(0)
+    except KeyError:
+        #create some placeholder data in the event that the DB is empty 
+        slurm_priority.objects.create(Date=yesterday,Account='root',CPU_hours=0,GPU_hours=0,P_CPU=0,P_GPU=0,Qos=0)
+        Priority_DB = pd.DataFrame(list(slurm_priority.objects.all().values('Account','CPU_hours','GPU_hours','P_CPU','P_GPU','Qos')))
+        SCW=pd.merge(Priority_DB,Attpoints, on='Account', how='left').fillna(0) 
     return SCW
