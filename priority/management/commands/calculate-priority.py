@@ -24,8 +24,7 @@ class Command(BaseCommand):
         #df['CPU-HOURS']=cpuhours.astype(int)
         #seperate into gpu and not gpu
         gpu=df[(df.Partition=="gpu")|(df.Partition=="xgpu")]
-        compute=df[(df.Partition!="gpu")|(df.Partition!="xgpu")]
-        compute.to_csv(path_or_buf='~/Documents/Cogs3/cogs3/compute.csv')
+        compute=df[(df.Partition!="gpu")&(df.Partition!="xgpu")]
         #calculate the total raw cpu time used for each project
         cpu_sum=compute.groupby('Account')['CPUTimeRAW'].sum().astype(int).to_frame(name='cpu_sum')
         gpu_sum=gpu.groupby('Account')['CPUTimeRAW'].sum().astype(int).to_frame(name='gpu_sum')
