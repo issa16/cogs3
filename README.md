@@ -142,3 +142,7 @@
    ```sh
    python manage.py runserver
    ```
+Note that if you are developing locally without SSL, then you may need to disable secure cookies to enable cookies in development. This can be accomplished with:
+   ```sh
+CSRF_COOKIE_SECURE=False SESSION_COOKIE_SECURE=False python manage.py runserver
+   ```
