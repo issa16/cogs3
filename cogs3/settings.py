@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'widget_tweaks',
     'simple_history',
+    'priority',
 ]
 
 MIDDLEWARE = [

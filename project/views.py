@@ -40,17 +40,22 @@ from common.util import email_user
 
 
 def list_attributions(request):
-    attributions = Attribution.objects.filter(
-        owner=request.user
-    )
+    owned_attributions = Attribution.objects.filter(owner=request.user)
+    
+    id_list=[]
+    already_attributed=Project.objects.exclude(attributions=None)
+    for A in already_attributed:
+        for B in A.attributions.all():
+            id_list.append(B.id)
+    No_attributions = Attribution.objects.exclude(pk__in=id_list)
 
     # Add any fundingsources with an approved user membership
     fundingsources = Attribution.objects.filter(fundingsource__in=FundingSource.objects.filter(
         fundingsourcemembership__user=request.user,
     ))
 
-    attributions = attributions | fundingsources
-    values = [{'title': a.string(request.user), 'id': a.id, 'type': a.type} for a in attributions]
+    owned_attributions = (owned_attributions | fundingsources)& No_attributions
+    values = [{'title': a.string(request.user), 'id': a.id, 'type': a.type} for a in owned_attributions]
     return JsonResponse({'results': list(values)})
 
 

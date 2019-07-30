@@ -12,12 +12,14 @@
   {% endfor %}
 {% endfor %}
 </div>
-<p class="attributions">{% trans "Funding Sources and Grants" %}<br />
+<p class="attributions">{% trans "Funding Sources and Grants"%}</p>
+ <p style="color:grey">{% trans "If this research has already been funded, then add details of any grants that are attributable to the Supercomputing Wales resource. If the project is funded at a later date as a result of the Supercomputing Wales resource, you will be able to add these details by visiting the project status page."  %}<br />
   <div id='fundingsources'> </div>
   <div class="dropdown-divider"></div>
   <a href="{% url 'add-funding-source' %}?_popup=1" onclick='return showPopup(this);' class="dropdown-item" >{% trans "Add New" %}	</a>
 </p>
-<p class="attributions">{% trans "Publications" %}<br />
+<p class="attributions">{% trans "Publications" %}</p>
+<p style="color:grey">{% trans "If this research has already produced publications using the Supercomputing Wales facilities, add them here. Once the project publishes more research as a result of using the Supercomputing Wales facilities, you will be able to add them by visiting the project status page." %}<br />
   <div id='publications' class='list-group'></div>
   <div class="dropdown-divider"></div>
   <a href="{% url 'create-publication' %}?_popup=1" onclick='return showPopup(this);' class="dropdown-item" >{% trans "Add New" %}	</a>

@@ -5,7 +5,7 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
+    atomic = False
     dependencies = [
         ('funding', '0008_auto_20180829_1156'),
     ]
