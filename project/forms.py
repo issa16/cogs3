@@ -11,6 +11,8 @@ from project.openldap import (update_openldap_project,
                               update_openldap_project_membership)
 from users.models import CustomUser
 
+PROJECT_CODE_PREFIX = "scw"
+
 
 class FileLinkWidget(forms.Widget):
 
@@ -74,6 +76,8 @@ class ProjectAdminForm(forms.ModelForm):
         """
         current_legacy_hpcw_id = self.instance.legacy_hpcw_id
         updated_legacy_hpcw_id = self.cleaned_data['legacy_hpcw_id']
+        if updated_legacy_hpcw_id.startswith(PROJECT_CODE_PREFIX):
+            raise forms.ValidationError(_('SCW Project codes are reserved.'))
         if current_legacy_hpcw_id != updated_legacy_hpcw_id:
             if Project.objects.filter(legacy_hpcw_id=updated_legacy_hpcw_id
                                      ).exists():
@@ -86,6 +90,8 @@ class ProjectAdminForm(forms.ModelForm):
         """
         current_legacy_arcca_id = self.instance.legacy_arcca_id
         updated_legacy_arcca_id = self.cleaned_data['legacy_arcca_id']
+        if updated_legacy_arcca_id.startswith(PROJECT_CODE_PREFIX):
+            raise forms.ValidationError(_('SCW Project codes are reserved.'))
         if current_legacy_arcca_id != updated_legacy_arcca_id:
             if Project.objects.filter(legacy_arcca_id=updated_legacy_arcca_id
                                      ).exists():
