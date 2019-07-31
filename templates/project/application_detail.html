@@ -81,7 +81,7 @@
 									{{project.supervisor_position}} <br>
 									{{project.supervisor_email}}</td>
 							</tr>
-<!-- This has been changed to assume that funding workflow applies to institutions who have opted in and external users since technical leads can be external users. -->
+<!-- This has been changed to assume that funding workflow applies to institutions who have opted in and external users for testing purposes. -->
 							{% if project.tech_lead.institution.needs_funding_workflow or project.tech_lead.institution == None %}
 							<tr>
 								<th scope="row">{% trans "Attributions" %}</th>
@@ -109,7 +109,8 @@
 							</tr>
 							{% endif %}
 <!-- For priority workflow. This currently will only be displayed for projects run on Sunbird since the default values for Ap and Qos are Null and are set by the calculate-priority script. This checks the system each project is run on and only updates the database for those that are run on Sunbird, leaving all the values for projects on Hawk as Null. -->
-							{% if project.Ap and project.Qos %}
+<!-- This has been changed to assume that priority workflow applies to institutions who have opted in and external users for testing purposes. -->
+							{% if project.tech_lead.institution.needs_priority_workflow or project.tech_lead.institution == None %}
 							<tr>
 								<th scope="row">{% trans "Priority Information" %}</th>
 								<td>
