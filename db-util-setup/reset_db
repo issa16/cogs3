@@ -5,7 +5,4 @@ cd ..
 
 rm db.sqlite3
 python manage.py migrate
-python manage.py loaddata institutions.json
-python manage.py loaddata $HERE/one-user-per-institution.json
-python manage.py loaddata ./funding/fixtures/tests/funding_bodies.json
-python manage.py loaddata systems.json
+python manage.py loaddata institutions.json $HERE/one-user-per-institution.json systems.json ./funding/fixtures/tests/funding_bodies.json
