@@ -15,8 +15,8 @@ from institution.models import Institution
 
 class MailingListMixin:
     def dispatch(self, request, *args, **kwargs):
-        if request.session.shib.username:
-            _, domain = request.session.shib.username.split('@')
+        if request.session['shib']['username']:
+            _, domain = request.session['shib']['username'].split('@')
             self.institution = Institution.objects.get(base_domain=domain)
 
     def get_context_data(self, **kwargs):
