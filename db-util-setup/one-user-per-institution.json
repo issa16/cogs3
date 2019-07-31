@@ -128,7 +128,7 @@
       "username": "superuser",
       "email": "super@user.com",
       "is_shibboleth_login_required": false,
-      "is_staff": false,
+      "is_staff": true,
       "is_active": true,
       "is_superuser": true,
       "created_at": "2018-06-26T10:50:45.805Z",
