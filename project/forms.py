@@ -220,7 +220,11 @@ class ProjectCreationForm(forms.ModelForm):
         except:
             pass
         raise forms.ValidationError(_(
-            'Needs to be a valid institutional email address.'
+            'Please enter an institutional email address ending '
+            'with one of: ' + ', '.join(
+                '@' + institution.base_domain
+                for institution in Institution.objects.all()
+            ) + '.'
         ))
 
     def clean(self):
