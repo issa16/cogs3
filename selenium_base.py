@@ -9,8 +9,7 @@ from django.urls import reverse
 from django.utils.translation import activate
 
 from cogs3.settings import LANGUAGE_CODE
-from cogs3.settings import SELENIUM_WEBDRIVER
-from cogs3.settings import SELENIUM_WEBDRIVER_PROFILE
+from cogs3.settings import SELENIUM_GET_WEBDRIVER
 from django.core.exceptions import ObjectDoesNotExist
 from institution.models import Institution
 from users.models import CustomUser
@@ -181,9 +180,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
 
         # Setup selenium
         activate(LANGUAGE_CODE)
-        profile = SELENIUM_WEBDRIVER_PROFILE()
-        profile.set_preference('intl.accept_languages', 'en-gb')
-        self.selenium = SELENIUM_WEBDRIVER(profile)
+        self.selenium = SELENIUM_GET_WEBDRIVER()
         self.selenium.implicitly_wait(2)
         self.get_url('')
         self.selenium.add_cookie({
