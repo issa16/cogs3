@@ -37,7 +37,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
     default_project_form_fields = {
         "id_title": "Test project",
         "id_description": "This project aims to test the submission of projects",
-        "id_institution_reference": "test1",
         "id_department": "SA2C",
         "id_supervisor_name": "Joe Bloggs",
         "id_supervisor_position": "RSE",

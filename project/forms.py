@@ -209,6 +209,7 @@ class ProjectCreationForm(forms.ModelForm):
                 ),
                 required=False,
             )
+            del self.fields['institution_reference']
 
     def clean_supervisor_email(self):
         cleaned_data = super().clean()
