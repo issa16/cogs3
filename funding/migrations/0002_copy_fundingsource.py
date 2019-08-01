@@ -36,7 +36,6 @@ def backwards(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    atomic = False
     dependencies = [
         ('funding', '0001_initial'),
         ('project', '0037_auto_20180717_1128'),
