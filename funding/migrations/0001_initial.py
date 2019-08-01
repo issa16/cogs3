@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-    atomic = False
     initial = True
 
     dependencies = [
