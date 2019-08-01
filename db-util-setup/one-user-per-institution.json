@@ -109,9 +109,9 @@
       "is_superuser": false,
       "created_at": "2018-06-26T10:50:45.805Z",
       "updated_at": "2018-06-26T12:16:34.736Z",
-      "first_name": "Ellie",
+      "first_name": "Attr",
       "last_name": "User",
-      "reason_for_account": "test Ellie users",
+      "reason_for_account": "test attr users",
       "accepted_terms_and_conditions": true,
       "groups": [
         1
