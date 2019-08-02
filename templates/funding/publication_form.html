@@ -15,8 +15,14 @@
 					{% csrf_token %}
 					{% include 'includes/generic_form.html' with form=form %}
 					<button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+					<button type="button" onclick="window.close();" class="btn btn-secondary" id="close_button" style="display: none;">{% trans "Cancel" %}</button>
 				</form>
 			</div>
 		</div>
 	</div>
+	<script>
+	  if (window.name == 'cogs_popup') {
+	      document.getElementById('close_button').style='';
+	  };
+	</script>
 {% endblock %}
