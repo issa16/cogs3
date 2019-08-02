@@ -41,7 +41,8 @@ class FundingSourceFormTests(FundingFormTests, TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors['pi_email'],
-            ['Needs to be a valid institutional email address.'],
+            ['Please enter an institutional email address ending with one of: '
+             '@example.ac.uk, @example3.ac.uk, @example2.ac.uk.'],
         )
 
     def test_form_with_valid_email(self):

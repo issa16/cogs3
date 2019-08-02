@@ -40,7 +40,11 @@ class FundingSourceForm(forms.ModelForm):
         domain = email.split('@')[1]
         if not Institution.objects.filter(base_domain=domain).exists():
             raise forms.ValidationError(_(
-                'Needs to be a valid institutional email address.'
+                'Please enter an institutional email address ending '
+                'with one of: ' + ', '.join(
+                    '@' + institution.base_domain
+                    for institution in Institution.objects.all()
+                ) + '.'
             ))
         self.institution = Institution.objects.get(base_domain=domain)
         return email
@@ -98,7 +102,11 @@ class FundingSourceApprovalForm(forms.ModelForm):
         domain = email.split('@')[1]
         if not Institution.objects.filter(base_domain=domain).exists():
             raise forms.ValidationError(_(
-                'Needs to be a valid institutional email address.'
+                'Please enter an institutional email address ending '
+                'with one of: ' + ', '.join(
+                    '@' + institution.base_domain
+                    for institution in Institution.objects.all()
+                ) + '.'
             ))
         return email
 

@@ -238,10 +238,14 @@ class AttributionListView(LoginRequiredMixin, generic.ListView):
     template_name = 'funding/list.html'
     model = Attribution
     paginate_by = 10
+    model_filter = None
 
     def get_queryset(self):
         user = self.request.user
-        queryset = super().get_queryset()
+        query_filter = {}
+        if self.model_filter:
+            query_filter[f'{self.model_filter}__isnull'] = False
+        queryset = super().get_queryset().filter(**query_filter)
         owned_set = queryset.filter(owner=user)
         user_set = queryset.filter(fundingsource__in=FundingSource.objects.filter(
             fundingsourcemembership__user=user,
@@ -251,11 +255,11 @@ class AttributionListView(LoginRequiredMixin, generic.ListView):
 
 
 class PublicationListView(AttributionListView):
-    model = Publication
+    model_filter = 'publication'
 
 
 class FundingSourceListView(AttributionListView):
-    model = FundingSource
+    model_filter = 'fundingsource'
 
 
 class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):

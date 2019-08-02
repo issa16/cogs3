@@ -187,10 +187,7 @@ class FundingSource(Attribution):
             pi_group = Group.objects.get(name='funding_source_pi')
             pi_group.user_set.add(self.pi)
 
-        if self.pi.profile.institution.needs_funding_approval:
-            self.owner = self.pi
-        else:
-            self.owner = self.created_by
+        self.owner = self.created_by
 
         self.pi_email = None
 

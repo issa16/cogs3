@@ -209,6 +209,7 @@ class ProjectCreationForm(forms.ModelForm):
                 ),
                 required=False,
             )
+            del self.fields['institution_reference']
 
     def clean_supervisor_email(self):
         cleaned_data = super().clean()
@@ -220,7 +221,11 @@ class ProjectCreationForm(forms.ModelForm):
         except:
             pass
         raise forms.ValidationError(_(
-            'Needs to be a valid institutional email address.'
+            'Please enter an institutional email address ending '
+            'with one of: ' + ', '.join(
+                '@' + institution.base_domain
+                for institution in Institution.objects.all()
+            ) + '.'
         ))
 
     def clean(self):

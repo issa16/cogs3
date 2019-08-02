@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 from institution.exceptions import (InvalidInstitutionalEmailAddress,
                                     InvalidInstitutionalIndentityProvider)
@@ -22,6 +22,7 @@ class Institution(models.Model):
     )
     separate_allocation_requests = models.BooleanField(default=False)
     needs_funding_workflow = models.BooleanField(default=False)
+    needs_priority_workflow = models.BooleanField(default=False)
     allows_rse_requests = models.BooleanField(
         default=False,
         verbose_name='Allow RSE requests',
@@ -38,8 +39,6 @@ class Institution(models.Model):
     local_repository_name = models.CharField(max_length=100, blank=True)
     local_repository_domain = models.CharField(max_length=100, blank=True)
     funding_database_name = models.CharField(max_length=100, blank=True)
-    local_mailing_list_name = models.CharField(max_length=100, null=True)
-    local_mailing_list_link = models.CharField(max_length=255, null=True)
     default_project_user_cap = models.PositiveIntegerField(default=0)
     needs_user_approval = models.BooleanField(default=True)
     support_email = models.EmailField(blank=True)

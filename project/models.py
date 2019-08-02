@@ -164,7 +164,18 @@ class Project(models.Model):
         (SUSPENDED, _('Suspended')),
         (CLOSED, _('Closed')),
     )
-
+# added for priority calculations
+    Ap = models.PositiveIntegerField(
+        verbose_name=_('Current attribution points'),
+        null=True,
+        default=None,
+    )
+    Qos = models.PositiveIntegerField(
+        verbose_name=_('Current Qualitty of service level'),
+        null=True,
+        default=None,
+    )
+    
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
     def can_have_more_users(self):
@@ -285,7 +296,40 @@ class Project(models.Model):
 
     def __str__(self):
         return self.code
-
+# Function added to projet model to allow calculation of Ap outside of calculate-priority script.      
+    def calculate_AP():
+        import logging
+        from cogs3.settings import BASE_DIR
+        # setup for error logging
+        logger = logging.getLogger('calculate_prioity')
+        hdlr = logging.FileHandler(BASE_DIR + '/logs/calculate_prioity.log')
+        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+        hdlr.setFormatter(formatter)
+        logger.addHandler(hdlr)
+        logger.setLevel(logging.WARNING)
+    # list all projects that are subject to the prioritized workflow.
+        prioritised_project_list = []
+        are_prioritised = ProjectSystemAllocation.objects.filter(system_id=2)
+        for I in are_prioritised:
+            prioritised_project_list.append(I.project.code)
+        prioritised_projects = Project.objects.filter(code__in=prioritised_project_list)
+        priorities = {}
+    # query the Database for attributions associted to each project and
+    # calculate Ap based on the type of attribution
+        for Projects in prioritised_projects:
+            Ap = 50000
+            if Projects.attributions:
+                for Att in Projects.attributions.all():
+                    if Att.is_fundingsource:
+                        Ap = Ap + Att.fundingsource.amount
+                    elif Att.is_publication:
+                        Ap = Ap + 10000
+                    else:
+                        # Unknown Attribution type so send a warning to the log don't update the Ap.
+                        logger.warning(
+                        'Attribution type not recognised and hence was not included in the Ap calculations.')
+            priorities.update({Projects.code: Ap})
+        return priorities
 
 class SystemAllocationRequest(models.Model):
 

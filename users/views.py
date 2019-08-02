@@ -4,38 +4,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
-from common.util import mailing_list_subscribe
 from users.forms import RegisterForm
 from users.forms import TermsOfServiceForm
 from users.models import CustomUser
-from institution.models import Institution
-
-class MailingListMixin:
-    def dispatch(self, request, *args, **kwargs):
-        if request.session['shib']['username']:
-            _, domain = request.session['shib']['username'].split('@')
-            self.institution = Institution.objects.get(base_domain=domain)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['mailing_list'] = None
-        context['institution_name'] = None
-        if self.institution:
-            context['mailing_list'] = self.institution.local_mailing_list_name
-            context['institution_name'] = _(self.institution.name)
-
-        return context
-
-    def form_valid(self, form):
-        if self.institution and form.instance.join_mailing_list:
-            mailing_list_subscribe(
-                self.institution.local_mailing_list_link,
-                form.instance.email
-            )
-        return super().form_valid(form)
 
 
 class TermsOfService(LoginRequiredMixin, generic.UpdateView):
@@ -48,8 +21,7 @@ class TermsOfService(LoginRequiredMixin, generic.UpdateView):
         return self.request.user
 
 
-class CompleteRegistrationView(LoginRequiredMixin, MailingListMixin,
-                               generic.UpdateView):
+class CompleteRegistrationView(LoginRequiredMixin, generic.UpdateView):
     form_class = RegisterForm
     model = CustomUser
     success_url = reverse_lazy('login')
@@ -68,7 +40,7 @@ class CompleteRegistrationView(LoginRequiredMixin, MailingListMixin,
         return super().dispatch(*args, **kwargs)
 
 
-class RegisterView(MailingListMixin, generic.CreateView):
+class RegisterView(generic.CreateView):
     form_class = RegisterForm
     success_url = reverse_lazy('login')
     template_name = 'registration/register.html'

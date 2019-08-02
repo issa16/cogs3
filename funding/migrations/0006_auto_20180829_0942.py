@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-    atomic = False
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('funding', '0005_auto_20180820_1607'),

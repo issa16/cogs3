@@ -391,5 +391,15 @@ LOGGING = {
 }
 
 # Selenium testing
-SELENIUM_WEBDRIVER = webdriver.Firefox
-SELENIUM_WEBDRIVER_PROFILE = webdriver.FirefoxProfile
+def selenium_firefox_client():
+    options = webdriver.firefox.options.Options()
+    options.headless = True
+
+    profile = webdriver.FirefoxProfile()
+    profile.set_preference('intl.accept_languages', 'en-gb')
+
+    client = webdriver.Firefox(firefox_profile = profile, firefox_options = options)
+
+    return client
+
+SELENIUM_GET_WEBDRIVER=selenium_firefox_client
