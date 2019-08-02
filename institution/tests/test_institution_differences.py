@@ -60,26 +60,31 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
 
         # USERS AWAITING AUTHORISATION
         # Create user for Aberystwyth
-        self.aberystwyth_user_aa = self._createuser(instname='Aberystwyth',
-                username = 'user_tid_aa')
+        self.aberystwyth_user_aa = self._createuser(
+            instname='Aberystwyth', username='user_tid_aa'
+        )
         self._create_test_user_unapproved(self.aberystwyth_user)
 
         # Create user for Bangor
-        self.bangor_user_aa = self._createuser(instname='Bangor',
-                username = 'user_tid_aa')
+        self.bangor_user_aa = self._createuser(
+            instname='Bangor', username='user_tid_aa'
+        )
         self._create_test_user_unapproved(self.bangor_user)
 
         # Create user for Cardiff
-        self.cardiff_user_aa = self._createuser(instname='Cardiff',
-                username = 'user_tid_aa')
+        self.cardiff_user_aa = self._createuser(
+            instname='Cardiff', username='user_tid_aa'
+        )
         self._create_test_user_unapproved(self.cardiff_user)
 
         # Create user for Swansea
-        self.swansea_user_aa = self._createuser(instname='Swansea',
-                username = 'user_tid_aa')
+        self.swansea_user_aa = self._createuser(
+            instname='Swansea', username='user_tid_aa'
+        )
         self._create_test_user_unapproved(self.swansea_user)
 
         self.fake_project_title = 'My Fake Project'
+        self.local_institutional_identifier = 'A Local Institutional Identifier'
 
     def _create_test_user_unapproved(self, user):
         user.set_password(self.user_password)
@@ -87,7 +92,7 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         user.save()
 
     # For conveninence and for DRY code
-    def _createuser(self,instname,username = 'user_tid'):
+    def _createuser(self, instname, username='user_tid'):
         institution = Institution.objects.get(name=f"{instname} University")
         # tid : Test Institution Differences
         email = '@'.join([username, institution.base_domain])
@@ -100,7 +105,6 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
             is_shibboleth_login_required=True,
             accepted_terms_and_conditions=True,
         )
-
 
     def _go_to_dashboard(self):
         self.selenium.find_element_by_link_text('Dashboard').click()
@@ -270,6 +274,7 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         )
         # checking that there is/ there is not 'Attributions' in the page source.
         match = re.search('[Aa]ttributions', self.selenium.page_source)
+        sleep(5)
         if need_funding_workflow:
             # There is mention of Attributions
             assert match is not None, 'No mention of Attributions in page source'
@@ -372,80 +377,121 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         )
 
     # funding approval
-    def _create_funding_source(self):
-        pass # TODO, Workflow must be understood first
-
-
-
-    def _check_funding_approval_availability(
-        self, user, needs_funding_approval, separate_allocation_requests
-    ):
+    def _check_funding_approval_availability( self, user, needs_funding_approval):
         self.sign_in(user)
+        # maybe use partial link text or regexp?
+        # or some other string reference? This would be much more robust.
+        # click on the Attributions link
+        self.selenium.find_element_by_link_text('Attributions').click()
+        # click on the 'Add' button, which shows a dropdown
+        self.selenium.find_element_by_id('add_attribution_dropdown').click()
+        # click on the link with text 'Funding Source' in the dropdown
+        self.selenium.find_element_by_partial_link_text('Funding Source'
+                                                       ).click()
+        # brittl1e. Hope the identifier does not change!
+        fields = {'id_identifier': self.local_institutional_identifier}
+        self.fill_form_by_id(fields)
+        # click on the 'Save' button
+        self.selenium.find_element_by_css_selector('button.btn.btn-primary'
+                                                  ).click()
 
-    @skipIf(True, 'Workflow must be understood first')
+        # filling the fields that need to be filled
+        fields = {
+            'id_title': 'A funding source title',
+            'id_amount': '1'
+            }
+        approver_field_id = 'id_pi_email'
+        try :
+            el = self.selenium.find_element_by_id(approver_field_id)
+            if not needs_funding_approval:
+                raise AssertionError('An approver field should not be present')
+        except NoSuchElementException:
+            if not needs_funding_approval:
+                raise AssertionError('An approver field is needed')
+
+        fields[approver_field_id] = 'pi@aber.ac.uk' 
+        self.fill_form_by_id(fields)
+        # taking care of the dropdown
+        self.select_from_dropdown_by_id(id='id_funding_body', index=1)
+
+        # click on the 'Save' button
+        self.selenium.find_element_by_css_selector('button.btn.btn-primary'
+                                                  ).click()
+
+
+    #@skipIf(True, 'Workflow must be understood first')
+    @tag("funding_approval")
     def test_aberystwyth_user_sees_funding_approval_YES(self):
-        pass
+        self._check_funding_approval_availability(
+            user=self.aberystwyth_user,
+            needs_funding_approval=True
+        )
 
-    @skipIf(True, 'Workflow must be understood first')
+    #@skipIf(True, 'Workflow must be understood first')
     @skipIf(
         True, 'Bangor users do not need funding workflow in the first place.'
     )
+    @tag("funding_approval")
     def test_bangor_user_sees_funding_approval_NO(self):
         pass
 
-    @skipIf(True, 'Workflow must be understood first')
+    #@skipIf(True, 'Workflow must be understood first')
     @skipIf(
         True, 'Cardiff users do not need funding workflow in the first place'
     )
+    @tag("funding_approval")
     def test_cardiff_user_sees_funding_approval_NO(self):
         pass
 
-    @skipIf(True, 'Workflow must be understood first')
+    @tag("funding_approval")
     def test_swansea_user_sees_funding_approval_YES(self):
-        pass
+        self._check_funding_approval_availability(
+            user=self.aberystwyth_user,
+            needs_funding_approval=True
+        )
 
 
     # supervisor approval
-    @skipIf(True,'Not implemented yet')
+    @skipIf(True, 'Not implemented yet')
     def test_aberystwyth_user_sees_supervisor_approval_NO(self):
         pass
 
-    @skipIf(True,'Not implemented yet')
+    @skipIf(True, 'Not implemented yet')
     def test_bangor_user_sees_supervisor_approval_NO(self):
         pass
 
-    @skipIf(True,'Not implemented yet')
+    @skipIf(True, 'Not implemented yet')
     def test_cardiff_user_sees_supervisor_approval_NO(self):
         pass
 
-    @skipIf(True,'Not implemented yet')
+    @skipIf(True, 'Not implemented yet')
     def test_swansea_user_sees_supervisor_approval_YES(self):
         pass
 
     # user approval
-    def _check_user_approval_matters(self,user,needs_user_approval):
+    def _check_user_approval_matters(self, user, needs_user_approval):
         # at the dashboard
         self.sign_in(user)
-        # check that we see what 
-        pass # TODO, Workflow must be understood first
+        # check that we see what
+        # user can/cannot join a project
+        match = re.search('[jJ]oin\s+\w*\s+[Pp]roject',self.selenium.page_source)
+        if needs_user_approval:
+            assert match is None, 'Unapproved user cannot join projects')
 
 
-    @skipIf(True,'Workflow must be understood first')
+
+    @skipIf(True, 'Workflow must be understood first')
     def test_aberystwyth_user_sees_user_approval_NO(self):
         pass
 
-    @skipIf(True,'Workflow must be understood first')
+    @skipIf(True, 'Workflow must be understood first')
     def test_bangor_user_sees_user_approval_YES(self):
         pass
 
-    @skipIf(True,'Workflow must be understood first')
+    @skipIf(True, 'Workflow must be understood first')
     def test_cardiff_user_sees_user_approval_YES(self):
         pass
 
-    @skipIf(True,'Workflow must be understood first')
+    @skipIf(True, 'Workflow must be understood first')
     def test_swansea_user_sees_user_approval_NO(self):
         pass
-
-
-
-
