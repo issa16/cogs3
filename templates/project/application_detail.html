@@ -120,8 +120,10 @@
                                 <br>
 
                                 {% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
-                                <small class="text-muted">{% trans "Note: These may take up to 24hrs to update if new Attributions have been added."%}
-                                    {%endif%}
+                                <small class="text-muted">
+                                    {% trans "Note: These may take up to 24hrs to update if new Attributions have been added."%} 
+                                </small>
+                                {%endif%}
                             </td>
                             {% endif %}
                     </tbody>
