@@ -38,7 +38,7 @@ class Institution(models.Model):
     funding_document_template = models.CharField(max_length=100, null=True)
     local_repository_name = models.CharField(max_length=100, blank=True)
     local_repository_domain = models.CharField(max_length=100, blank=True)
-    funding_database_name = models.CharField(max_length=100, blank=True)
+    funding_database_entry_name = models.CharField(max_length=100, blank=True)
     default_project_user_cap = models.PositiveIntegerField(default=0)
     needs_user_approval = models.BooleanField(default=True)
     support_email = models.EmailField(blank=True)

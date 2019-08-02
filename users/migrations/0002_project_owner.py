@@ -12,7 +12,7 @@ groups = {
         'change_project',
         'add_projectusermembership',
         'change_projectusermembership',
-    ],
+    ]
 }
 
 
