@@ -5,116 +5,116 @@
 {% load widget_tweaks %}
 {% block title %}{% trans "Project details" %}{% endblock %}
 {% block content %}
-<div class="my-3 p-3 bg-white rounded box-shadow">
-    <div class="row">
-        <div class="col">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                {% if project.is_approved %}
-                <h4>{% trans "Project" %}</h4>
-                {% if project.can_have_more_users %}
-                <a class="btn btn-primary" href="{% url 'project-membership-invite' project.pk %}" role="button">{% trans "Invite User" %}</a>
-                {% else %}
-                <a class="btn btn-gray" data-toggle="tooltip" title="{% trans "This project has reached its membership cap. If you require more members, please contact support." %}">{% trans "Invite User" %}</a>
-                {% endif %}
-                {% else %}
-                <h4>{% trans "Project Application" %}</h4>
-                {% if project.has_allocation_request %}
-                {% if request.user.profile.institution.separate_allocation_requests %}
-                <button class="btn btn-gray" data-toggle="tooltip" title="{% trans "Available after a system allocation request has been approved" %}">{% trans "Invite User" %}</button>
-                {% else %}
-                <button class="btn btn-gray" data-toggle="tooltip" title="{% trans "Available after the project has been approved" %}">{% trans "Invite User" %}</button>
-                {% endif %}
-                {% else %}
-                <button class="btn btn-gray" data-toggle="tooltip" title="{% trans "Available after a system allocation request has been created and approved" %}">{% trans "Invite User" %}</button>
-                {% endif %}
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            {% include 'includes/messages.html'%}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <th scope="row" style="width:25%">{% trans "Title" %}</th>
-                            <td style="width:75%">{{project.title}}</td>
-                        </tr>
-                        {% if project.code %}
-                        <tr>
-                            <th scope="row">{% trans "Code" %}</th>
-                            <td>{{project.code}}</td>
-                        </tr>
-                        {% endif %}
-                        <tr>
-                            <th scope="row">{% trans "Description" %}</th>
-                            <td>{{project.description}}</td>
-                        </tr>
-                        {% if project.legacy_hpcw_id %}
-                        <tr>
-                            <th scope="row">{% trans "Legacy HPC Wales ID" %}</th>
-                            <td>{{project.legacy_hpcw_id}}</td>
-                        </tr>
-                        {% endif %}
-                        {% if project.legacy_arcca_id %}
-                        <tr>
-                            <th scope="row">{% trans "Legacy ARCCA ID" %}</th>
-                            <td>{{project.legacy_arcca_id}}</td>
-                        </tr>
-                        {% endif %}
-                        <tr>
-                            <th scope="row">{% trans "Institution of technical lead" %}</th>
-                            <td>{{project.tech_lead.profile.institution}}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">{% trans "Institution project reference" %}</th>
-                            <td>{{project.institution_reference}}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">{% trans "Project Leader" %}</th>
-                            <td>{{project.supervisor_name}} <br>
-                                {{project.supervisor_position}} <br>
-                                {{project.supervisor_email}}</td>
-                        </tr>
-                        <!-- This has been changed to assume that funding workflow applies to institutions who have opted in and external users for testing purposes. -->
-                        {% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
-                        <tr>
-                            <th scope="row">{% trans "Attributions" %}</th>
-                            <td>
-                                {% if project.attributions.all %}
-                                {% trans "Funding Sources and Grants" %}
-                                {% for source in project.attributions.get_fundingsources %}
-                                <li>{{source.title}}</li>
-                                {% empty %}
-                                <li>{% trans "None yet" %}</li>
-                                {% endfor %}
-                                <br />
-                                {% trans "Publications" %}
-                                {% for source in project.attributions.get_publications %}
-                                <li>{{source.title}}</li>
-                                {% empty %}
-                                <li>{% trans "None yet" %}</li>
-                                {% endfor %}
-                                {% else %}
-                                {% trans "None yet" %}
-                                {% endif %}
-                                <br />
-                                <a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Manage attributions" %}</a>
-                            </td>
-                        </tr>
-                        {% endif %}
-                        <!-- For priority workflow. This currently will only be displayed for projects run on Sunbird since the default values for Ap and Qos are Null and are set by the calculate-priority script. This checks the system each project is run on and only updates the database for those that are run on Sunbird, leaving all the values for projects on Hawk as Null. -->
-                        <!-- This has been changed to assume that priority workflow applies to institutions who have opted in and external users for testing purposes. -->
-                        {% if project.tech_lead.institution.needs_priority_workflow or project.tech_lead.institution == None %}
-                        <tr>
-                            <th scope="row">{% trans "Priority Information" %}</th>
-                            <td>
-                                {% trans "Current Ap" %}: {{project.Ap}}
+	<div class="my-3 p-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					{% if project.is_approved %}
+					<h4>{% trans "Project" %}</h4>
+						{% if project.can_have_more_users %}
+							<a class="btn btn-primary" href="{% url 'project-membership-invite' project.pk %}" role="button">{% trans "Invite User" %}</a>
+						{% else %}
+							<a class="btn btn-primary" onclick="alert('This project has reached its membership cap. If you require more members, please contact support.')"}>{% trans "Invite User" %}</a>
+						{% endif %}
+					{% else %}
+					<h4>{% trans "Project Application" %}</h4>
+						{% if project.has_allocation_request %}
+							{% if request.user.profile.institution.separate_allocation_requests %}
+								<button class="btn btn-primary" onclick="alert('You can only invite users to a project after a system allocation request has been approved')">{% trans "Invite User" %}</button>
+							{% else %}
+								<button class="btn btn-primary" onclick="alert('You can only invite users to a project after the project has been approved')">{% trans "Invite User" %}</button>
+							{% endif %}
+						{% else %}
+							<button class="btn btn-primary" onclick="alert('You can only invite users to a project after a system allocation request has been created and approved')">{% trans "Invite User" %}</button>
+						{% endif %}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		<div class="row">
+	  	<div class="col">
+	  		{% include 'includes/messages.html'%}
+	  	</div>
+	  </div>
+		<div class="row">
+			<div class="col">
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<tbody>
+							<tr>
+								<th scope="row" style="width:25%">{% trans "Title" %}</th>
+								<td style="width:75%">{{project.title}}</td>
+							</tr>
+							{% if project.code %}
+								<tr>
+									<th scope="row">{% trans "Code" %}</th>
+									<td>{{project.code}}</td>
+								</tr>
+							{% endif %}
+							<tr>
+								<th scope="row">{% trans "Description" %}</th>
+								<td>{{project.description}}</td>
+							</tr>
+							{% if project.legacy_hpcw_id %}
+								<tr>
+									<th scope="row">{% trans "Legacy HPC Wales ID" %}</th>
+									<td>{{project.legacy_hpcw_id}}</td>
+								</tr>
+							{% endif %}
+							{% if project.legacy_arcca_id %}
+								<tr>
+									<th scope="row">{% trans "Legacy ARCCA ID" %}</th>
+									<td>{{project.legacy_arcca_id}}</td>
+								</tr>
+							{% endif %}
+							<tr>
+								<th scope="row">{% trans "Institution of technical lead" %}</th>
+								<td>{{project.tech_lead.profile.institution}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Institution project reference" %}</th>
+								<td>{{project.institution_reference}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Project Leader" %}</th>
+								<td>{{project.supervisor_name}} <br>
+									{{project.supervisor_position}} <br>
+									{{project.supervisor_email}}</td>
+							</tr>
+<!-- This has been changed to assume that funding workflow applies to institutions who have opted in and external users for testing purposes. -->
+							{% if project.tech_lead.institution.needs_funding_workflow or project.tech_lead.institution == None %}
+							<tr>
+								<th scope="row">{% trans "Attributions" %}</th>
+								<td>
+									{% if project.attributions.all %}
+										{% trans "Funding Sources and Grants" %}
+										{% for source in project.attributions.get_fundingsources %}
+											<li>{{source.title}}</li>
+										{% empty %}
+											<li>{% trans "None yet" %}</li>
+										{% endfor %}
+										<br />
+										{% trans "Publications" %}
+										{% for source in project.attributions.get_publications %}
+											<li>{{source.title}}</li>
+										{% empty %}
+											<li>{% trans "None yet" %}</li>
+										{% endfor %}
+									{% else %}
+										{% trans "None yet" %}
+									{% endif %}
+									<br />
+									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Manage attributions" %}</a>
+								</td>
+							</tr>
+							{% endif %}
+<!-- For priority workflow. This currently will only be displayed for projects run on Sunbird since the default values for Ap and Qos are Null and are set by the calculate-priority script. This checks the system each project is run on and only updates the database for those that are run on Sunbird, leaving all the values for projects on Hawk as Null. -->
+<!-- This has been changed to assume that priority workflow applies to institutions who have opted in and external users for testing purposes. -->
+							{% if project.tech_lead.institution.needs_priority_workflow or project.tech_lead.institution == None %}
+							<tr>
+								<th scope="row">{% trans "Priority Information" %}</th>
+								<td>
+								{% trans "Current Ap" %}: {{project.Ap}}
                                 <br>
                                 {% trans "Priority Level" %}: {{project.Qos}}
                                 <br>
