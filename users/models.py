@@ -315,9 +315,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         default=False,
         verbose_name=_('Terms and Conditions'),
     )
-    join_mailing_list = models.BooleanField(
-        default=False,
-    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

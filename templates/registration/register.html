@@ -27,16 +27,6 @@
 				<label for="reason-for-account">{% trans "Reason for account" %}</label>
 				<textarea rows="5" class="form-control" id="reason-for-account" name="reason_for_account" required></textarea>
 			</div>
-			{% if mailing_list %}
-			<div class="form-group mb-3">
-				<div class="form-check">
-					<input class="form-check-input" type="checkbox" id="join-mailing-list" name="join_mailing_list">
-					<label for="join-mailing-list">{% blocktrans %}
-					Sign me up to the {{ mailing_list }} mailing list to keep up to date with HPC-related activities at {{ institution_name }}.
-					{% endblocktrans %}</label>
-				</div>
-			</div>
-			{% endif %}
 			<div class="form-group text-center mb-3">
 				<div class="form-check">
 					<input class="form-check-input" type="checkbox" id="accepted-terms-and-conditions" name="accepted_terms_and_conditions" required>
