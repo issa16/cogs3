@@ -19,7 +19,7 @@ and the filename of a file in which to place the output, which
 will be a comma-delimited text file containing project (Slurm Account)
 codes and new Quality of Service values.
 
-```
+```shell
 $ python manage.py calculate-priority slurm_dump.dat new_qoses.csv
 ```
 
