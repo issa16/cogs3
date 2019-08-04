@@ -9,7 +9,7 @@ urlpatterns = [
         name='add-funding-source',
     ),
     path(
-        'create-funding-source/',
+        'create-funding-source/<identifier>',
         views.FundingSourceCreateView.as_view(),
         name='create-funding-source',
     ),

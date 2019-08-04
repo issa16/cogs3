@@ -11,13 +11,9 @@ class FundingSourceForm(forms.ModelForm):
         model = FundingSource
         fields = ['title', 'identifier', 'amount', 'funding_body', 'pi_email']
 
-    def __init__(self, user, *args, **kwargs):
-        instance = kwargs.get('instance', {})
-        if hasattr(instance, 'pi') and instance.pi is not None:
-            initial = kwargs.get('initial', {})
-            initial['pi_email'] = instance.pi.email
-            kwargs['initial'] = initial
+    def __init__(self, user, *args, identifier=None, **kwargs):
         super(FundingSourceForm, self).__init__(*args, **kwargs)
+
         if user.profile.institution is not None:
             self.fields['pi_email'].label = _(
                 '{} Principal Investigator Email address'.format(
@@ -48,7 +44,6 @@ class FundingSourceForm(forms.ModelForm):
             ))
         self.institution = Institution.objects.get(base_domain=domain)
         return email
-
 
 class AddFundingSourceForm(forms.ModelForm):
     class Meta:
