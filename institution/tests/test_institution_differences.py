@@ -18,6 +18,8 @@ This is an end-to-end test that checks also the fixtures.
 
 from selenium_base import SeleniumTestsBase
 from institution.models import Institution
+from project.models import Project, SystemAllocationRequest
+from system.models import System
 from users.models import CustomUser
 
 from unittest import skipIf  # DEBUG
@@ -26,6 +28,7 @@ from time import sleep  # DEBUG
 from django.urls import reverse
 from django.test import tag
 from selenium.common.exceptions import NoSuchElementException
+from django.utils.translation import gettext_lazy as _
 import re
 
 
@@ -63,25 +66,25 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         self.aberystwyth_user_aa = self._createuser(
             instname='Aberystwyth', username='user_tid_aa'
         )
-        self._create_test_user_unapproved(self.aberystwyth_user)
+        self._create_test_user_unapproved(self.aberystwyth_user_aa)  # DEBUG
 
         # Create user for Bangor
         self.bangor_user_aa = self._createuser(
             instname='Bangor', username='user_tid_aa'
         )
-        self._create_test_user_unapproved(self.bangor_user)
+        self._create_test_user_unapproved(self.bangor_user_aa)
 
         # Create user for Cardiff
         self.cardiff_user_aa = self._createuser(
             instname='Cardiff', username='user_tid_aa'
         )
-        self._create_test_user_unapproved(self.cardiff_user)
+        self._create_test_user_unapproved(self.cardiff_user_aa)
 
         # Create user for Swansea
         self.swansea_user_aa = self._createuser(
             instname='Swansea', username='user_tid_aa'
         )
-        self._create_test_user_unapproved(self.swansea_user)
+        self._create_test_user_unapproved(self.swansea_user_aa)
 
         self.fake_project_title = 'My Fake Project'
         self.local_institutional_identifier = 'A Local Institutional Identifier'
@@ -123,14 +126,16 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         self.selenium.find_element_by_link_text(link_text).click()
 
     def _select_or_create_fake_project_in_project_list(
-        self, separate_allocation_requests
+        self, separate_allocation_requests, project_owner
     ):
         try:
             el = self.selenium.find_element_by_link_text(
                 self.fake_project_title
             )
         except NoSuchElementException:
-            self._create_fake_project(separate_allocation_requests)
+            self._create_fake_project_via_ui(
+                separate_allocation_requests, project_owner
+            )
             self._go_to_dashboard()
             self._go_to_project_list_from_dashboard()
             el = self.selenium.find_element_by_link_text(
@@ -138,14 +143,16 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
             )
         el.click()
 
-    def _create_fake_project(self, separate_allocation_requests):
+    def _create_fake_project_via_ui(
+        self, separate_allocation_requests, project_owner
+    ):
 
         self._go_to_dashboard()
         self._go_to_project_creation_from_dashboard()
 
         fields = {
             'id_title': self.fake_project_title,
-            'id_description': 'fake project description',
+            'id_description': 'fake project description - from UI',
             'id_supervisor_email': 'pi@aber.ac.uk'
         }
 
@@ -157,6 +164,27 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
 
         self.fill_form_by_id(fields)
         self.submit_form(fields)
+
+    def _create_fake_project_approved(self, project_owner):
+        fake_project = Project.objects.create(
+            title=self.fake_project_title,
+            description='fake project description',
+            supervisor_email="pi@aber.ac.uk",
+            tech_lead=project_owner,
+            #category=ProjectCategory.objects.get(id=1)  # a random one
+        )
+        fake_project.save()
+
+        # we create a fake system allocation request which is approved from the
+        # very beginning, so that the project should be approved
+        fake_system_allocation_request = SystemAllocationRequest(
+            project=fake_project,
+            start_date='2019-08-20',
+            end_date='2019-12-31',
+            status=Project.APPROVED
+        )
+        fake_system_allocation_request.save()
+        assert fake_project.is_approved()
 
     # Allocation/project separation
     def _check_allocation_separation(self, user, separate_allocation_requests):
@@ -270,11 +298,11 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         self._go_to_project_list_from_dashboard()
         # selecting project
         self._select_or_create_fake_project_in_project_list(
-            separate_allocation_requests
+            separate_allocation_requests, project_owner=user
         )
-        # checking that there is/ there is not 'Attributions' in the page source.
+
+        # checking that there is/there is not 'Attributions' in the page source.
         match = re.search('[Aa]ttributions', self.selenium.page_source)
-        sleep(5)
         if need_funding_workflow:
             # There is mention of Attributions
             assert match is not None, 'No mention of Attributions in page source'
@@ -329,7 +357,7 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         self.sign_in(user)
         self._go_to_project_list_from_dashboard()
         self._select_or_create_fake_project_in_project_list(
-            separate_allocation_requests
+            separate_allocation_requests, project_owner=user
         )
 
         try:
@@ -377,7 +405,9 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         )
 
     # funding approval
-    def _check_funding_approval_availability( self, user, needs_funding_approval):
+    def _check_funding_approval_availability(
+        self, user, needs_funding_approval
+    ):
         self.sign_in(user)
         # maybe use partial link text or regexp?
         # or some other string reference? This would be much more robust.
@@ -396,12 +426,9 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
                                                   ).click()
 
         # filling the fields that need to be filled
-        fields = {
-            'id_title': 'A funding source title',
-            'id_amount': '1'
-            }
+        fields = {'id_title': 'A funding source title', 'id_amount': '1'}
         approver_field_id = 'id_pi_email'
-        try :
+        try:
             el = self.selenium.find_element_by_id(approver_field_id)
             if not needs_funding_approval:
                 raise AssertionError('An approver field should not be present')
@@ -409,7 +436,7 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
             if not needs_funding_approval:
                 raise AssertionError('An approver field is needed')
 
-        fields[approver_field_id] = 'pi@aber.ac.uk' 
+        fields[approver_field_id] = 'pi@aber.ac.uk'
         self.fill_form_by_id(fields)
         # taking care of the dropdown
         self.select_from_dropdown_by_id(id='id_funding_body', index=1)
@@ -418,13 +445,11 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         self.selenium.find_element_by_css_selector('button.btn.btn-primary'
                                                   ).click()
 
-
     #@skipIf(True, 'Workflow must be understood first')
     @tag("funding_approval")
     def test_aberystwyth_user_sees_funding_approval_YES(self):
         self._check_funding_approval_availability(
-            user=self.aberystwyth_user,
-            needs_funding_approval=True
+            user=self.aberystwyth_user, needs_funding_approval=True
         )
 
     #@skipIf(True, 'Workflow must be understood first')
@@ -446,10 +471,8 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
     @tag("funding_approval")
     def test_swansea_user_sees_funding_approval_YES(self):
         self._check_funding_approval_availability(
-            user=self.aberystwyth_user,
-            needs_funding_approval=True
+            user=self.swansea_user, needs_funding_approval=True
         )
-
 
     # supervisor approval
     @skipIf(True, 'Not implemented yet')
@@ -469,29 +492,111 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         pass
 
     # user approval
-    def _check_user_approval_matters(self, user, needs_user_approval):
+    def _check_user_approval_in_dashboard(
+        self, unapproved_user, needs_user_approval
+    ):
         # at the dashboard
-        self.sign_in(user)
-        # check that we see what
-        # user can/cannot join a project
-        match = re.search('[jJ]oin\s+\w*\s+[Pp]roject',self.selenium.page_source)
+        self.sign_in(unapproved_user)
+
         if needs_user_approval:
-            assert match is None, 'Unapproved user cannot join projects')
+            # check that user is 'AWAITING APPROVAL'
+            match = re.search(
+                '[Aa]waiting\s+[Aa]pproval', self.selenium.page_source
+            )
+            assert match is not None, 'This test must run with an unapproved user.'
 
+        # check that user can/cannot join a project
+        match = re.search(
+            '[jJ]oin\s+\w*\s+[Pp]roject', self.selenium.page_source
+        )
+        if needs_user_approval:
+            assert match is None, 'Unapproved user cannot join projects'
 
+        # check that user can/cannot access project list
+        try:
+            el = self.selenium.find_element_by_link_text('Projects')
+            if needs_user_approval:
+                raise AssertionError(
+                    'User awaiting approval should not see the "Projects" link'
+                )
+        except NoSuchElementException:
+            if not needs_user_approval:
+                raise AssertionError('User should not see the "Projects" link')
 
-    @skipIf(True, 'Workflow must be understood first')
-    def test_aberystwyth_user_sees_user_approval_NO(self):
-        pass
+    def _check_user_awaiting_approval_cannot_be_invited_to_project(
+        self, project_owner_user, unapproved_user, needs_user_approval
+    ):
+        self._create_fake_project_approved(project_owner=project_owner_user)
+        self.sign_in(project_owner_user)
+        self._go_to_project_list_from_dashboard()
+        self.selenium.find_element_by_link_text(self.fake_project_title
+                                               ).click()
+        self.selenium.find_element_by_link_text('Invite User').click()
 
-    @skipIf(True, 'Workflow must be understood first')
-    def test_bangor_user_sees_user_approval_YES(self):
-        pass
+        fields = {'email': unapproved_user.email}
 
-    @skipIf(True, 'Workflow must be understood first')
-    def test_cardiff_user_sees_user_approval_YES(self):
-        pass
+        self.fill_form_by_id(fields)
+        self.submit_form(fields)
 
-    @skipIf(True, 'Workflow must be understood first')
-    def test_swansea_user_sees_user_approval_NO(self):
-        pass
+        # compare with /project/forms.py, 
+
+        if needs_user_approval:
+            assert 'User is still awaiting authorisation' in self.selenium.page_source, 'User awaiting authorisation should not be eligible for invitation'
+        else:
+            assert 'User is still awaiting authorisation' not in self.selenium.page_source, 'User awaiting authorisation should not matter in invitation'
+
+    @tag('user_approval')
+    def test_aberystwyth_user_approval_workflow_dashboard_NO(self):
+        self._check_user_approval_in_dashboard(
+            unapproved_user=self.aberystwyth_user_aa, needs_user_approval=False
+        )
+
+    @tag('user_approval')
+    def test_aberystwyth_user_approval_workflow_invitation_NO(self):
+        self._check_user_awaiting_approval_cannot_be_invited_to_project(
+            project_owner_user=self.aberystwyth_user,
+            unapproved_user=self.aberystwyth_user_aa,
+            needs_user_approval=False
+        )
+
+    @tag('user_approval')
+    def test_bangor_user_approval_workflow_dashboard_YES(self):
+        self._check_user_approval_in_dashboard(
+            unapproved_user=self.bangor_user_aa, needs_user_approval=True
+        )
+
+    @tag('user_approval')
+    def test_bangor_user_approval_workflow_invitation_YES(self):
+        self._check_user_awaiting_approval_cannot_be_invited_to_project(
+            project_owner_user=self.bangor_user,
+            unapproved_user=self.bangor_user_aa,
+            needs_user_approval=True
+        )
+
+    @tag('user_approval')
+    def test_cardiff_user_approval_workflow_dashboard_YES(self):
+        self._check_user_approval_in_dashboard(
+            unapproved_user=self.cardiff_user_aa, needs_user_approval=True
+        )
+
+    @tag('user_approval')
+    def test_cardiff_user_approval_workflow_invitation_YES(self):
+        self._check_user_awaiting_approval_cannot_be_invited_to_project(
+            project_owner_user=self.cardiff_user,
+            unapproved_user=self.cardiff_user_aa,
+            needs_user_approval=True
+        )
+
+    @tag('user_approval')
+    def test_swansea_user_approval_workflow_dashboard_NO(self):
+        self._check_user_approval_in_dashboard(
+            unapproved_user=self.swansea_user_aa, needs_user_approval=False
+        )
+
+    @tag('user_approval')
+    def test_swansea_user_approval_workflow_invitation_NO(self):
+        self._check_user_awaiting_approval_cannot_be_invited_to_project(
+            project_owner_user=self.swansea_user,
+            unapproved_user=self.swansea_user_aa,
+            needs_user_approval=False
+        )
