@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import reverse
 
 from funding.models import Attribution, FundingBody, FundingSource, Publication
 from institution.models import Institution
@@ -182,9 +183,10 @@ class FundingSourceTests(FundingTests):
         )
         return funding_source
 
-    def test_project_funding_source_creation(self):
+    def test_project_funding_source_creation_new_pi(self):
         """
-        Ensure we can create a FundingSource instance.
+        Ensure we can create a FundingSource instance which generates a new
+        user in the database to be its PI.
         """
         fundingbody = FundingBody.objects.get(name="Test")
         institution = Institution.objects.get(base_domain="example.ac.uk")
@@ -192,7 +194,8 @@ class FundingSourceTests(FundingTests):
 
         title = 'A funding source title'
         identifier = 'A funding source identifier'
-        pi_email = '@'.join(['pi', institution.base_domain])
+        pi_email = '@'.join(['new.pi', institution.base_domain])
+        num_existing_users = len(CustomUser.objects.all())
 
         funding_source = self.create_funding_source(
             title=title,
@@ -213,6 +216,98 @@ class FundingSourceTests(FundingTests):
         self.assertEqual(funding_source.approved, False)
         self.assertEqual(funding_source.pi.email, pi_email)
         self.assertEqual(funding_source.owner, user)
+        self.assertEqual(len(CustomUser.objects.all()), num_existing_users + 1)
+
+    def test_project_multiple_funding_source_creation_new_pi(self):
+        """
+        Ensure we can create multiple FundingSource instances when the PI
+        is a new user, without that user logging in between creations.
+        """
+        fundingbody = FundingBody.objects.get(name="Test")
+        institution = Institution.objects.get(base_domain="example.ac.uk")
+        user = CustomUser.objects.get(email="admin.user@example.ac.uk")
+
+        title1 = 'A funding source title'
+        identifier1 = 'A funding source identifier'
+        title2 = 'Another funding source title'
+        identifier2 = 'Another funding source identifier'
+        pi_email = '@'.join(['new.pi', institution.base_domain])
+        num_existing_users = len(CustomUser.objects.all())
+
+        funding_source1 = self.create_funding_source(
+            title=title1,
+            identifier=identifier1,
+            funding_body=fundingbody,
+            owner=user,
+            pi_email=pi_email,
+            amount=1000,
+        )
+        funding_source2 = self.create_funding_source(
+            title=title2,
+            identifier=identifier2,
+            funding_body=fundingbody,
+            owner=user,
+            pi_email=pi_email,
+            amount=1000,
+        )
+
+        self.assertEqual(institution.needs_funding_approval, False)
+        self.assertTrue(isinstance(funding_source1, FundingSource))
+        self.assertEqual(funding_source1.__str__(), funding_source1.title)
+        self.assertEqual(funding_source1.title, title1)
+        self.assertEqual(funding_source1.identifier, identifier1)
+        self.assertEqual(funding_source1.created_by, user)
+        self.assertEqual(funding_source1.funding_body, fundingbody)
+        self.assertEqual(funding_source1.approved, False)
+        self.assertEqual(funding_source1.pi.email, pi_email)
+        self.assertEqual(funding_source1.owner, user)
+
+        self.assertTrue(isinstance(funding_source2, FundingSource))
+        self.assertEqual(funding_source2.__str__(), funding_source2.title)
+        self.assertEqual(funding_source2.title, title2)
+        self.assertEqual(funding_source2.identifier, identifier2)
+        self.assertEqual(funding_source2.created_by, user)
+        self.assertEqual(funding_source2.funding_body, fundingbody)
+        self.assertEqual(funding_source2.approved, False)
+        self.assertEqual(funding_source2.pi.email, pi_email)
+        self.assertEqual(funding_source2.owner, user)
+
+        self.assertEqual(len(CustomUser.objects.all()), num_existing_users + 1)
+
+    def test_project_funding_source_creation_existing_pi(self):
+        """
+        Ensure we can create a FundingSource instance whose PI is already a
+        user.
+        """
+        fundingbody = FundingBody.objects.get(name="Test")
+        institution = Institution.objects.get(base_domain="example.ac.uk")
+        user = CustomUser.objects.get(email="admin.user@example.ac.uk")
+
+        title = 'A funding source title'
+        identifier = 'A funding source identifier'
+        pi_email = '@'.join(['shibboleth.user', institution.base_domain])
+        num_existing_users = len(CustomUser.objects.all())
+
+        funding_source = self.create_funding_source(
+            title=title,
+            identifier=identifier,
+            funding_body=fundingbody,
+            owner=user,
+            pi_email=pi_email,
+            amount=1000,
+        )
+
+        self.assertEqual(institution.needs_funding_approval, False)
+        self.assertTrue(isinstance(funding_source, FundingSource))
+        self.assertEqual(funding_source.__str__(), funding_source.title)
+        self.assertEqual(funding_source.title, title)
+        self.assertEqual(funding_source.identifier, identifier)
+        self.assertEqual(funding_source.created_by, user)
+        self.assertEqual(funding_source.funding_body, fundingbody)
+        self.assertEqual(funding_source.approved, False)
+        self.assertEqual(funding_source.pi.email, pi_email)
+        self.assertEqual(funding_source.owner, user)
+        self.assertEqual(len(CustomUser.objects.all()), num_existing_users)
 
     def test_project_funding_source_creation_with_funding_approval_required(
         self
@@ -248,6 +343,38 @@ class FundingSourceTests(FundingTests):
         self.assertEqual(funding_source.approved, False)
         self.assertEqual(funding_source.pi.email, pi_email)
         self.assertEqual(funding_source.owner, user)
+
+    def test_project_funding_source_creation_new_pi_can_log_in(self):
+        """
+        Ensure a user created during a FundingSource creation can log in.
+        """
+        fundingbody = FundingBody.objects.get(name="Test")
+        institution = Institution.objects.get(base_domain="example.ac.uk")
+        user = CustomUser.objects.get(email="admin.user@example.ac.uk")
+
+        title = 'A funding source title'
+        identifier = 'A funding source identifier'
+        pi_email = '@'.join(['new.pi', institution.base_domain])
+
+        funding_source = self.create_funding_source(
+            title=title,
+            identifier=identifier,
+            funding_body=fundingbody,
+            owner=user,
+            pi_email=pi_email,
+            amount=1000,
+        )
+        headers = {
+            'Shib-Identity-Provider': (funding_source.pi.profile
+                                       .institution.identity_provider),
+            'REMOTE_USER': pi_email
+        }
+        response = self.client.get(
+            reverse('login'),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('complete-registration'))
 
 
 class PublicationTests(FundingTests):
