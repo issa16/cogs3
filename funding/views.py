@@ -91,7 +91,8 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         fundingsource.created_by = self.request.user
         fundingsource.save()
 
-        self.notify_pi(fundingsource)
+        if institution.needs_funding_approval:
+            self.notify_pi(fundingsource)
 
         if self.request.GET.get('_popup'):
             return HttpResponse('''
