@@ -70,7 +70,7 @@ console.log(new_id);
     }
     publications.removeChild(publications.firstChild);
   }
-  $.getJSON("/projects/list_attributions/", {},
+  $.getJSON("/projects/list_attributions/{{ project_id }}", {},
     function(attributions) {
       var results = attributions.results;
       var index = 0;
