@@ -13,10 +13,7 @@ class InstitutionTests(TestCase):
     ]
 
     def _check_institution_system(self, institution):
-        # This checks institution fixtures. A bit redundant and 
-        # not flexible if we want to change the fixtures.
         institution_name = institution.base_domain.split('.')[0]
-        # checking separate_allocation_requests
         separate_alloc = institution.separate_allocation_requests
         if institution_name in ['bangor', 'aber', 'cardiff']:
             self.assertFalse(separate_alloc)
