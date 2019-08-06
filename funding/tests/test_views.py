@@ -107,7 +107,7 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
         # test endpoint with no identifier
         self.access_view_as_unauthorised_user(reverse('create-funding-source'))
 
-        # test endpoint with no identifier
+        # test endpoint with identifier
         endpoint = reverse('create-funding-source-with-identifier', args=['some-identifier'])
         self.access_view_as_unauthorised_user(endpoint)
 
