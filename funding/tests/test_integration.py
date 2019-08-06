@@ -177,7 +177,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError('funding_source.pi is not a user')
 
         # Should be redirected to the list view
-        if "funding/list/" not in self.selenium.current_url:
+        if reverse('list-attributions') not in self.selenium.current_url:
             raise AssertionError()
         if second_form_fields['id_title'] not in self.selenium.page_source:
             raise AssertionError()
@@ -302,8 +302,9 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError('funding_source.pi is not a user')
 
         # Should be redirected to the list view
-        if "funding/list/" not in self.selenium.current_url:
+        if reverse('list-attributions') not in self.selenium.current_url:
             raise AssertionError()
+
         if second_form_fields['id_title'] not in self.selenium.page_source:
             raise AssertionError()
 
