@@ -299,7 +299,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         if funding_source.pi_email is not None:
             raise AssertionError('funding_source.pi_email is not None')
         if funding_source.pi != self.user:
-            raise AssertionError('funding_source.pi is not a user')
+            raise AssertionError('funding_source.pi is not the current user')
 
         # Should be redirected to the list view
         if reverse('list-attributions') not in self.selenium.current_url:
