@@ -296,8 +296,8 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         funding_source = matching_sources.get()
 
         # Check the pi was identified correctly
-        if funding_source.pi_email is not None:
-            raise AssertionError('funding_source.pi_email is not None')
+        if funding_source.pi_email is not funding_source.pi.email:
+            raise AssertionError('funding_source.pi_email ({funding_source.pi_email}) is not the same as the pi email ({funding_source.pi.email})')
         if funding_source.pi != self.user:
             raise AssertionError('funding_source.pi is not the current user')
 

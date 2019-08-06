@@ -190,8 +190,6 @@ class FundingSource(Attribution):
 
         self.owner = self.created_by
 
-        self.pi_email = None
-
         super().save(*args, **kwargs)
 
         # Automatically add the user who created the funding source to users
