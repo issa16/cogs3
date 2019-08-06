@@ -158,6 +158,9 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                         "A funding source with this identifier has been found on the system. "
                         "An email will be sent to the PI to verify your ability to attibute the funding. "
                         "Are you sure you wish to submit your request? Click save again to confirm.")
+
+                    self.notify_pi(fundingsource)
+
                     return HttpResponseRedirect(reverse_lazy('add-funding-source', confirm)+popup)
 
             else:
