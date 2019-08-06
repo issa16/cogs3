@@ -43,6 +43,7 @@ class FundingSourceForm(forms.ModelForm):
         self.institution = Institution.objects.get(base_domain=domain)
         return email
 
+
 class AddFundingSourceForm(forms.ModelForm):
     class Meta:
         model = FundingSource
