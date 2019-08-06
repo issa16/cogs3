@@ -104,6 +104,11 @@ urlpatterns = [
         name='list_attributions',
     ),
     path(
+        'list_attributions/<int:pk>',
+        views.list_attributions,
+        name='list_attributions',
+    ),
+    path(
         'allocations/create',
         views.SystemAllocationCreateView.as_view(),
         name='create_application',

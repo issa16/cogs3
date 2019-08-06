@@ -39,11 +39,14 @@ from funding.models import FundingSource
 from common.util import email_user
 
 
-def list_attributions(request):
+def list_attributions(request, pk=None):
     owned_attributions = Attribution.objects.filter(owner=request.user)
-    
-    id_list=[]
-    already_attributed=Project.objects.exclude(attributions=None)
+
+    id_list = []
+    already_attributed = Project.objects.exclude(attributions=None)
+    if pk:
+        already_attributed = already_attributed.exclude(id=pk)
+
     for A in already_attributed:
         for B in A.attributions.all():
             id_list.append(B.id)
