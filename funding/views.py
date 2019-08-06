@@ -35,8 +35,17 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
     def notify_pi(self, fundingsource):
         user_name = fundingsource.created_by.first_name + ' ' + fundingsource.created_by.last_name
         subject = _('{company_name} Attribution Request by {user}'.format(company_name=settings.COMPANY_NAME, user=user_name))
+
+        if fundingsource.pi.first_name:
+            email_addressee = fundingsource.pi.first_name
+            letter_from_line = ' '.join((fundingsource.pi.first_name,
+                                         fundingsource.pi.last_name))
+        else:
+            email_addressee = fundingsource.pi.email.split('@')[0]
+            letter_from_line = 'YOUR NAME HERE'
+
         context = {
-            'first_name': fundingsource.pi.first_name,
+            'first_name': email_addressee,
             'to': fundingsource.pi.email,
             'identifier': fundingsource.identifier,
             'title': fundingsource.title,
@@ -46,8 +55,7 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         docx_file = create_funding_document(
             fundingsource.funding_body.name,
             fundingsource.title,
-            fundingsource.pi.first_name,
-            fundingsource.pi.last_name,
+            letter_from_line,
             fundingsource.pi.profile.shibbolethprofile.department,
             fundingsource.pi.profile.institution.funding_document_receiver,
             fundingsource.pi.profile.institution.funding_document_template,

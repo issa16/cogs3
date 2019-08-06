@@ -3,7 +3,7 @@ from io import BytesIO
 
 
 def create_funding_document(
-    funding_body, title, pi_firstname, pi_lastname, pi_department, receiver,
+    funding_body, title, pi_fullname, pi_department, receiver,
     template
 ):
     document = Document('templates/funding/document/' + template)
@@ -40,9 +40,7 @@ def create_funding_document(
     document.add_paragraph("")
     document.add_paragraph("")
     document.add_paragraph("______________________")
-    document.add_paragraph(
-        'Prof. {first} {last}'.format(first=pi_firstname, last=pi_lastname)
-    )
+    document.add_paragraph('Prof. {name}'.format(name=pi_fullname))
     if (pi_department):
         document.add_paragraph('{department}'.format(department=pi_department))
     document.add_paragraph("Swansea University")
