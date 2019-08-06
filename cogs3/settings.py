@@ -393,7 +393,7 @@ LOGGING = {
 # Selenium testing
 def selenium_firefox_client():
     options = webdriver.firefox.options.Options()
-    options.headless = True
+    options.headless = (int(os.getenv('SELENIUM_HEADLESS','1')) == 1)
 
     profile = webdriver.FirefoxProfile()
     profile.set_preference('intl.accept_languages', 'en-gb')
