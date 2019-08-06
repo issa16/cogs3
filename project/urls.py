@@ -101,7 +101,12 @@ urlpatterns = [
     path(
         'list_attributions/',
         views.list_attributions,
-        name='list_attributions',
+        name='project-list-attributions',
+    ),
+    path(
+        'list_attributions/<int:pk>',
+        views.list_attributions,
+        name='project-list-attributions-with-pk',
     ),
     path(
         'allocations/create',

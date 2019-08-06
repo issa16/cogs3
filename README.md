@@ -142,3 +142,8 @@
    ```sh
    python manage.py runserver
    ```
+
+17. If you are running a production server with at least one institution and
+    cluster that makes use of priority calculations, then set up the requisite
+    Cron jobs to update priorities daily, as described in
+    [the priority README](priority/README.md)

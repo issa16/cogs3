@@ -75,6 +75,8 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
                 'Shib-Identity-Provider': institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
             }
+
+            ## test endpoint with no identifier
             response = self.client.get(
                 reverse('create-funding-source'),
                 **headers
@@ -82,12 +84,32 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
             self.assertEqual(response.status_code, account.get('expected_status_code'))
             self.assertTrue(isinstance(response.context_data.get('form'), FundingSourceForm))
             self.assertTrue(isinstance(response.context_data.get('view'), FundingSourceCreateView))
+            # Check that initial value for identifier form field has not been set
+            self.assertEqual(response.context_data.get('form').initial, {})
+
+            ## test endpoint with identifier
+            test_identifier = 'my-identifier-for-testing-123$'
+
+            response = self.client.get(
+                reverse('create-funding-source-with-identifier', args=[test_identifier]),
+                **headers
+            )
+
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
+            self.assertTrue(isinstance(response.context_data.get('form'), FundingSourceForm))
+            self.assertTrue(isinstance(response.context_data.get('view'), FundingSourceCreateView))
+            self.assertEqual(response.context_data.get('form').initial['identifier'], test_identifier)
 
     def test_view_as_an_unauthorised_user(self):
         """
         Ensure unauthorised users can not access the project create view.
         """
+        # test endpoint with no identifier
         self.access_view_as_unauthorised_user(reverse('create-funding-source'))
+
+        # test endpoint with identifier
+        endpoint = reverse('create-funding-source-with-identifier', args=['some-identifier'])
+        self.access_view_as_unauthorised_user(endpoint)
 
 
 class FundingSourceAddViewTests(FundingViewTests, TestCase):
@@ -132,15 +154,16 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
             self.assertTrue(isinstance(response.context_data.get('view'), FundingSourceAddView))
 
             # Test post with new id. Redirects to create form
+            new_identifier = 'n53c7'
             response = self.client.post(
                 reverse('add-funding-source'),
                 data={
-                    'identifier': 'n53c7',
+                    'identifier': new_identifier,
                 },
                 **headers
             )
             self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.url, "/en-gb/funding/create-funding-source/")
+            self.assertEqual(response.url, "/en-gb/funding/create-funding-source/" + new_identifier)
 
     def test_add_fundingsource_view_as_authorised_with_approval_required(self):
         """
@@ -170,20 +193,24 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
             self.assertTrue(isinstance(response.context_data.get('view'), FundingSourceAddView))
 
             # Test post with new id. Redirects to create form
+            new_identifier = 'n53c7'
             response = self.client.post(
                 reverse('add-funding-source'),
                 data={
-                    'identifier': 'n53c7',
+                    'identifier': new_identifier
                 },
                 **headers
             )
             self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.url, "/en-gb/funding/create-funding-source/")
+            self.assertEqual(response.url, "/en-gb/funding/create-funding-source/" + new_identifier)
+
             # Test post with existing id
+            existing_identifier = 'scw0001'
+
             response = self.client.post(
                 reverse('add-funding-source'),
                 data={
-                    'identifier': 'scw0001',
+                    'identifier': existing_identifier,
                 },
                 **headers
             )

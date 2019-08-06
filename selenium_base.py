@@ -1,4 +1,4 @@
-import time
+import time, os
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
@@ -15,6 +15,7 @@ from institution.models import Institution
 from users.models import CustomUser
 from users.models import Profile
 from funding.models import FundingBody
+from django.conf import settings
 
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
@@ -26,6 +27,17 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         'funding/fixtures/tests/funding_bodies.json',
         'funding/fixtures/tests/attributions.json',
     ]
+
+    def __init__(self, *args, **kwargs):
+        super(SeleniumTestsBase, self).__init__(*args, **kwargs)
+
+        # Set selenium to show traceback pages (useful in test mode)
+
+        selenium_debug_setting = int(os.getenv('SELENIUM_DEBUG','0')) == 1
+
+        if (int(os.getenv('SELENIUM_DEBUG','0')) == 1):
+            settings.DEBUG = selenium_debug_setting
+
 
     serialized_rollback = True
 

@@ -35,8 +35,17 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
     def notify_pi(self, fundingsource):
         user_name = fundingsource.created_by.first_name + ' ' + fundingsource.created_by.last_name
         subject = _('{company_name} Attribution Request by {user}'.format(company_name=settings.COMPANY_NAME, user=user_name))
+
+        if fundingsource.pi.first_name:
+            email_addressee = fundingsource.pi.first_name
+            letter_from_line = ' '.join((fundingsource.pi.first_name,
+                                         fundingsource.pi.last_name))
+        else:
+            email_addressee = fundingsource.pi.email.split('@')[0]
+            letter_from_line = 'YOUR NAME HERE'
+
         context = {
-            'first_name': fundingsource.pi.first_name,
+            'first_name': email_addressee,
             'to': fundingsource.pi.email,
             'identifier': fundingsource.identifier,
             'title': fundingsource.title,
@@ -46,8 +55,7 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         docx_file = create_funding_document(
             fundingsource.funding_body.name,
             fundingsource.title,
-            fundingsource.pi.first_name,
-            fundingsource.pi.last_name,
+            letter_from_line,
             fundingsource.pi.profile.shibbolethprofile.department,
             fundingsource.pi.profile.institution.funding_document_receiver,
             fundingsource.pi.profile.institution.funding_document_template,
@@ -60,21 +68,14 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
             attachments=[('letter_template.docx', docx_file)]
         )
 
-    def get_initial(self):
-        if 'FundingSourceAddIdentifier' in self.request.session.keys():
-            self.initial['identifier'] = self.request.session['FundingSourceAddIdentifier']
-            del self.request.session['FundingSourceAddIdentifier']
-        if 'FundingSourceCreateInit' in self.request.session.keys():
-            self.initial = self.request.session['FundingSourceCreateInit']
-            self.confirmation_asked = True
-        else:
-            self.confirmation_asked = False
-        return self.initial
-
     def get_form(self):
+        kwargs = self.get_form_kwargs()
+        if 'identifier' in self.kwargs:
+            kwargs['initial']['identifier'] = self.kwargs['identifier']
+
         return FundingSourceForm(
             self.request.user,
-            **self.get_form_kwargs()
+            **kwargs
         )
 
     def form_valid(self, form):
@@ -87,19 +88,11 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         fundingsource = form.save(commit=False)
         domain = fundingsource.pi_email.split('@')[1]
         institution = Institution.objects.get(base_domain=domain)
-        if institution.needs_funding_approval and not self.confirmation_asked:
-            messages.add_message(self.request, messages.INFO,
-                "You are requesting for a new funding source to be attributed to SCW. "
-                "The PI will be notified and asked to attribute the funds to SCW. "
-                "Once this process is complete, you will be able to add the attribution to your project. "
-                "To proceed click Save again.")
-            self.request.session['FundingSourceCreateInit'] = self.request.POST
-            return HttpResponseRedirect(reverse_lazy('create-funding-source')+popup)
-
-        if institution.needs_funding_approval:
-            del self.request.session['FundingSourceCreateInit']
         fundingsource.created_by = self.request.user
         fundingsource.save()
+
+        if institution.needs_funding_approval:
+            self.notify_pi(fundingsource)
 
         if self.request.GET.get('_popup'):
             return HttpResponse('''
@@ -139,73 +132,60 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
             'notifications/funding/attribution_request.html',
         )
 
-    def get_initial(self):
-        if 'FundingSourceAddIdentifier' in self.request.session.keys():
-            self.initial['identifier'] = self.request.session['FundingSourceAddIdentifier']
-            self.confirmation_asked = True
-        else:
-            self.confirmation_asked = False
-        return self.initial
-
     def form_valid(self, form):
         # First time around we only ask for the identifier and check for matching funding sources
         identifier = form.cleaned_data['identifier']
-        matching = FundingSource.objects.filter(identifier=identifier)
+        matching_funding_source = FundingSource.objects.filter(identifier=identifier)
 
         # If this is a popup, add the label to redirects
         if self.request.GET.get('_popup'):
             popup = "?_popup=1"
         else:
             popup = ""
-    
-        if matching.exists():
-            fundingsource = matching.first()
-            if fundingsource.pi.profile.institution.needs_funding_approval and not self.confirmation_asked:
-                if FundingSourceMembership.objects.filter(
+
+        if matching_funding_source.exists():
+            fundingsource = matching_funding_source.first()
+            if fundingsource.pi.profile.institution.needs_funding_approval:
+                user_is_member = FundingSourceMembership.objects.filter(
                     user=self.request.user,
-                    fundingsource=fundingsource,
-                ).exists():
+                    fundingsource=fundingsource).exists()
+
+                if user_is_member:
                     messages.add_message(self.request, messages.INFO,
                         "You already are a member of this funding source. It will become visible in attributions once the PI approves your membership")
                     return HttpResponseRedirect(reverse_lazy('add-funding-source')+popup)
                 else:
-                    self.request.session['FundingSourceAddIdentifier'] = identifier
                     messages.add_message(self.request, messages.INFO,
                         "A funding source with this identifier has been found on the system. "
                         "An email will be sent to the PI to verify your ability to attibute the funding. "
                         "Are you sure you wish to submit your request? Click save again to confirm.")
-                    return HttpResponseRedirect(reverse_lazy('add-funding-source')+popup)
+
+                    self.notify_pi(fundingsource)
+
+                    return HttpResponseRedirect(reverse_lazy('add-funding-source', confirm)+popup)
 
             else:
-                fundingsource = matching.first()
-                membership, created = FundingSourceMembership.objects.get_or_create(
-                    user=self.request.user,
-                    fundingsource=fundingsource,
-                    defaults=dict(
-                        approved=False,
-                    )
-                )
-                if fundingsource.pi.profile.institution.needs_funding_approval:
-                    del self.request.session['FundingSourceAddIdentifier']
-                    self.notify_pi(membership)
+                if self.request.GET.get('_popup'):
+                    return HttpResponse('''
+                    Closing popup
+                    <script>
+                    opener.updateField({new_id});
+                    window.close();
+                    </script>
+                    '''.format(new_id=fundingsource.id))
+                return HttpResponseRedirect(reverse_lazy('list-attributions'))
+
         else:
             # No match, ask to create
-            self.request.session['FundingSourceAddIdentifier'] = identifier
             messages.add_message(self.request, messages.INFO,
                     "You have requested to attribute a funding source that does not yet exist in the system. "
                     "Please include additional detail for our records.")
-            return HttpResponseRedirect(reverse_lazy('create-funding-source')+popup)
-        
-        if self.request.GET.get('_popup'):
-            return HttpResponse('''
-                Closing popup
-                <script>
-                opener.updateField({new_id});
-                window.close();
-                </script>
-            '''.format(new_id=fundingsource.id))
-        return HttpResponseRedirect(reverse_lazy('list-attributions'))
+            if identifier:
+                endpoint = reverse_lazy('create-funding-source-with-identifier', args=[identifier])
+            else:
+                endpoint = reverse_lazy('create-funding-source')
 
+            return HttpResponseRedirect(endpoint + popup)
 
 class PublicationCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     model = Publication

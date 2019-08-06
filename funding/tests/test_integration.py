@@ -162,9 +162,6 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         if "This field is required." in self.selenium.page_source:
             raise AssertionError()
 
-        # Submit again to confirm
-        self.submit_form(second_form_fields)
-
         # Check that the funding source was created
         matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
         if matching_sources.count() != 1:
@@ -180,7 +177,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError('funding_source.pi is not a user')
 
         # Should be redirected to the list view
-        if "funding/list/" not in self.selenium.current_url:
+        if reverse('list-attributions') not in self.selenium.current_url:
             raise AssertionError()
         if second_form_fields['id_title'] not in self.selenium.page_source:
             raise AssertionError()
@@ -242,9 +239,6 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         if "This field is required." in self.selenium.page_source:
             raise AssertionError()
 
-        # Submit again to confirm
-        self.submit_form(form_fields)
-
         # Check that the funding source was created
         matching_sources = FundingSource.objects.filter(identifier=id_form_fields['id_identifier'])
         if matching_sources.count() != 1:
@@ -305,11 +299,12 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         if funding_source.pi_email is not None:
             raise AssertionError('funding_source.pi_email is not None')
         if funding_source.pi != self.user:
-            raise AssertionError('funding_source.pi is not a user')
+            raise AssertionError('funding_source.pi is not the current user')
 
         # Should be redirected to the list view
-        if "funding/list/" not in self.selenium.current_url:
+        if reverse('list-attributions') not in self.selenium.current_url:
             raise AssertionError()
+
         if second_form_fields['id_title'] not in self.selenium.page_source:
             raise AssertionError()
 
@@ -326,7 +321,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Should be redirected to the list view again
-        if "funding/list/" not in self.selenium.current_url:
+        if reverse('list-attributions') not in self.selenium.current_url:
             raise AssertionError()
         if 'New Title' not in self.selenium.page_source:
             raise AssertionError()
@@ -344,7 +339,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         delete_button.click()
 
         # Should be redirected to the list view again
-        if "funding/list/" not in self.selenium.current_url:
+        if reverse('list-attributions') not in self.selenium.current_url:
             raise AssertionError()
 
         # Check that the funding source was removed

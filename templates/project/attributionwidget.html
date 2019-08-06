@@ -70,7 +70,7 @@ console.log(new_id);
     }
     publications.removeChild(publications.firstChild);
   }
-  $.getJSON("/projects/list_attributions/", {},
+  $.getJSON("/projects/list_attributions/{{ project_id }}", {},
     function(attributions) {
       var results = attributions.results;
       var index = 0;
@@ -138,8 +138,10 @@ function label_click( event ){
 }
 function showPopup(triggeringLink) {
   var href = triggeringLink.href;
-  var win = window.open(href, '', 'height=640,width=800');
-  win.onload = function(){ insert_handle_save(win); };
+  var win = window.open(href, 'cogs_popup', 'height=640,width=800');
+  win.onload = function(){
+    insert_handle_save(win);
+  };
   win.focus();
 
   return false;

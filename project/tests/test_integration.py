@@ -141,6 +141,8 @@ class ProjectIntegrationTests(SeleniumTestsBase):
                 raise AssertionError()
 
     def test_create_project_with_authorised_user(self):
+        # Test the workflow for project creation when separate allocations
+        # are enabled
 
         self.sign_in(self.user)
 
@@ -154,7 +156,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         # Check that the project does not exist yet
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
         assert matching_projects.count() == 0
-
         # Add a funding source and include it
         self.click_link_by_url(reverse('add-funding-source')+'?_popup=1')
 
@@ -177,9 +178,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         # click save first time
         self.submit_form(fundingsource_fields)
 
-        # ...need to click save twice (this is the workflow!)
-        self.submit_form(fundingsource_fields)
-
         self.selenium.switch_to.window(main_window_handle)
 
         # Add a publication and include it
@@ -194,7 +192,7 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         }
         self.fill_form_by_id(publication_fields)
         self.submit_form(publication_fields)
-
+        
         self.selenium.switch_to.window(main_window_handle)
 
         # Submit the form
@@ -205,13 +203,27 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         # if "Successfully submitted a project application." not in self.selenium.page_source:
         #     raise AssertionError()
 
-        # Check that a project and an allocation was created
+        # Check that a project was created
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
         if matching_projects.count() != 1:
             raise AssertionError()
-
-        # Get the objects
+        
         project = matching_projects.first()
+        
+        #create system allocation
+        self.click_link_by_url(reverse('create-allocation', kwargs={'project': project.id}))
+        form_field = dict(self.default_allocation_form_fields)
+        self.fill_form_by_id(self.default_allocation_form_fields)
+#Needs to be run twice because selenium seems to get stuck on the date selection otherwise and doesn't submit the form
+        self.submit_form(self.default_allocation_form_fields)
+        self.submit_form(self.default_allocation_form_fields)
+        #Aprove the system alocation
+        SystemAllocationRequest.objects.filter(project=project).update(status=1)
+        
+        #check that allocation was created
+        matching_allocations = SystemAllocationRequest.objects.filter(project=project)
+        if matching_allocations.count() != 1:
+            raise AssertionError()
 
         # Check the project status
         self.get_url(reverse('project-application-list'))
@@ -396,20 +408,28 @@ class ProjectIntegrationTests(SeleniumTestsBase):
 
         # Check that a project and an allocation was created
         matching_projects = Project.objects.filter(title=self.default_project_form_fields['id_title'])
+        
         if matching_projects.count() != 1:
             raise AssertionError()
-
+        
         project = matching_projects.first()
         matching_allocations = SystemAllocationRequest.objects.filter(project=project)
         if matching_allocations.count() != 1:
             raise AssertionError()
 
+        #Aprove the system alocation
+        SystemAllocationRequest.objects.filter(project=project).update(status=1)
+        
         # Check the project status
         self.get_url(reverse('project-application-list'))
         self.click_link_by_url(reverse('project-application-detail', kwargs={'pk': project.id}))
         if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
             raise AssertionError()
-
+        
+        #check the system allocation has been aproved
+        if 'Awaiting Approval' in self.selenium.page_source:
+            raise AssertionError()
+        
         # Check that the technical lead is the user
         tech_lead_id = project.tech_lead.id
         user_id = self.user.id

@@ -32,6 +32,16 @@ class FileLinkWidget(forms.Widget):
 class SelectMultipleTickbox(forms.widgets.CheckboxSelectMultiple):
     template_name = 'project/attributionwidget.html'
 
+    def __init__(self, *args, project_id=None, **kwargs):
+        self.project_id = project_id
+        return super().__init__(*args, **kwargs)
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        if self.project_id:
+            context['project_id'] = self.project_id
+        return context
+
 
 class ProjectAdminForm(forms.ModelForm):
 
@@ -276,7 +286,7 @@ class ProjectManageAttributionForm(forms.ModelForm):
         )
         self.fields['attributions'] = forms.ModelMultipleChoiceField(
             label='',
-            widget=SelectMultipleTickbox(),
+            widget=SelectMultipleTickbox(project_id=kwargs['instance'].id),
             queryset=(owned_attributions | fundingsources),
             required=False,
         )

@@ -131,7 +131,8 @@ class FundingSource(Attribution):
     pi_email = models.EmailField(
         max_length=254,
         null=True,
-        verbose_name=_('PI Email')
+        verbose_name=_('PI Email'),
+        help_text="Please note that the PI will be notified with the email address provided, and asked to attribute the funds to SCW."
     )
     pi = models.ForeignKey(
         settings.AUTH_USER_MODEL,
