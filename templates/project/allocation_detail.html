@@ -3,13 +3,13 @@
 {% load i18n %}
 {% load static %}
 {% load widget_tweaks %}
-{% block title %}{% trans "Allocation request details" %}{% endblock %}
+{% block title %}{% trans "Supercomputer access request details" %}{% endblock %}
 {% block content %}
 	<div class="my-3 px-3 pt-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>{% trans "Allocation Request" %}</h4>
+					<h4>{% trans "Supercomputer Access Request" %}</h4>
 				</div>
 			</div>
 		</div>
@@ -44,7 +44,7 @@
 								<td>{{allocation.requirements_onboarding}}</td>
 							</tr>
 							<tr>
-								<th scope="row">{% trans "CPU time allocation in hours" %}</th>
+								<th scope="row">{% trans "Requested CPU time in hours" %}</th>
 								<td>{{allocation.allocation_cputime}}</td>
 							</tr>
 							<tr>
