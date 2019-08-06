@@ -177,9 +177,6 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         # click save first time
         self.submit_form(fundingsource_fields)
 
-        # ...need to click save twice (this is the workflow!)
-        self.submit_form(fundingsource_fields)
-
         self.selenium.switch_to.window(main_window_handle)
 
         # Add a publication and include it
