@@ -14,18 +14,18 @@
 						{% if project.can_have_more_users %}
 							<a class="btn btn-primary" href="{% url 'project-membership-invite' project.pk %}" role="button">{% trans "Invite User" %}</a>
 						{% else %}
-							<a class="btn btn-primary" onclick="alert('This project has reached its membership cap. If you require more members, please contact support.')"}>{% trans "Invite User" %}</a>
+							<a class="btn btn-gray" onclick="alert('{% trans "This project has reached its membership cap. If you require more members, please contact support." %}')"}>{% trans "Invite User" %}</a>
 						{% endif %}
 					{% else %}
 					<h4>{% trans "Project Application" %}</h4>
 						{% if project.has_allocation_request %}
 							{% if request.user.profile.institution.separate_allocation_requests %}
-								<button class="btn btn-primary" onclick="alert('You can only invite users to a project after a system allocation request has been approved')">{% trans "Invite User" %}</button>
+								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a system allocation request has been approved" %}')">{% trans "Invite User" %}</button>
 							{% else %}
-								<button class="btn btn-primary" onclick="alert('You can only invite users to a project after the project has been approved')">{% trans "Invite User" %}</button>
+								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after the project has been approved" %}')">{% trans "Invite User" %}</button>
 							{% endif %}
 						{% else %}
-							<button class="btn btn-primary" onclick="alert('You can only invite users to a project after a system allocation request has been created and approved')">{% trans "Invite User" %}</button>
+							<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a system allocation request has been created and approved" %}')">{% trans "Invite User" %}</button>
 						{% endif %}
 					{% endif %}
 				</div>
