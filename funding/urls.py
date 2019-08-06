@@ -9,9 +9,14 @@ urlpatterns = [
         name='add-funding-source',
     ),
     path(
-        'create-funding-source/',
+        'create-funding-source/<identifier>',
         views.FundingSourceCreateView.as_view(),
         name='create-funding-source',
+    ),
+    path(
+        'create-funding-source/<str:identifier>',
+        views.FundingSourceCreateView.as_view(),
+        name='create-funding-source-with-identifier',
     ),
     path(
         'create-publication/',

@@ -162,9 +162,6 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         if "This field is required." in self.selenium.page_source:
             raise AssertionError()
 
-        # Submit again to confirm
-        self.submit_form(second_form_fields)
-
         # Check that the funding source was created
         matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
         if matching_sources.count() != 1:
@@ -241,9 +238,6 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.submit_form(form_fields)
         if "This field is required." in self.selenium.page_source:
             raise AssertionError()
-
-        # Submit again to confirm
-        self.submit_form(form_fields)
 
         # Check that the funding source was created
         matching_sources = FundingSource.objects.filter(identifier=id_form_fields['id_identifier'])
