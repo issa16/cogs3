@@ -321,7 +321,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Should be redirected to the list view again
-        if "funding/list/" not in self.selenium.current_url:
+        if reverse('list-attributions') not in self.selenium.current_url:
             raise AssertionError()
         if 'New Title' not in self.selenium.page_source:
             raise AssertionError()
@@ -339,7 +339,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         delete_button.click()
 
         # Should be redirected to the list view again
-        if "funding/list/" not in self.selenium.current_url:
+        if reverse('list-attributions') not in self.selenium.current_url:
             raise AssertionError()
 
         # Check that the funding source was removed
