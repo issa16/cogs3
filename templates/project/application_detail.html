@@ -130,7 +130,7 @@
                 </table>
 
                 {% if request.user.profile.institution.separate_allocation_requests %}
-                <h5> {% trans "System allocation requests" %}: </h5>
+                <h5> {% trans "Supercomputer access requests" %}: </h5>
                 {% endif %}
                 <table class="table table-bordered">
                     <tbody>
@@ -151,7 +151,7 @@
                     </tbody>
                 </table>
                 {% if request.user.profile.institution.allows_rse_requests %}
-                <h5> {% trans "RSE time allocation requests" %}: </h5>
+                <h5> {% trans "RSE support requests" %}: </h5>
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
@@ -175,10 +175,10 @@
                 {% endif %}
             </div>
             {% if request.user.profile.institution.separate_allocation_requests %}
-            <a class='btn btn-primary' href="{% url 'create-allocation' project.pk %}">{% trans "New Allocation Request" %}</a>
+            <a class='btn btn-primary' href="{% url 'create-allocation' project.pk %}">{% trans "Request supercomputer usage" %}</a>
             {% endif %}
             {% if request.user.profile.institution.allows_rse_requests %}
-            <a class='btn btn-primary' href="{% url 'request-project-rse-time' project.pk %}">{% trans "New RSE time Request" %}</a>
+            <a class='btn btn-primary' href="{% url 'request-project-rse-time' project.pk %}">{% trans "Request RSE support" %}</a>
             {% endif %}
         </div>
     </div>
