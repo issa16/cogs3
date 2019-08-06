@@ -9,7 +9,7 @@ from project.models import (Project, ProjectUserMembership, RSEAllocation,
                             SystemAllocationRequest)
 from project.openldap import (update_openldap_project,
                               update_openldap_project_membership)
-from users.models import CustomUser
+from users.models import CustomUser,Profile
 
 PROJECT_CODE_PREFIX = "scw"
 
@@ -396,6 +396,8 @@ class ProjectUserInviteForm(forms.Form):
         # The technical lead will automatically be added as a member of the of project.
         if not user:
             raise forms.ValidationError(_("No user exists with given email."))
+        if user.profile.account_status != Profile.APPROVED and user.profile.institution.needs_user_approval:
+            raise forms.ValidationError( _('User is still awaiting authorisation'))
         if project.tech_lead == user:
             raise forms.ValidationError(_("You are currently a member of the project."))
         if ProjectUserMembership.objects.filter(
