@@ -168,8 +168,12 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
             messages.add_message(self.request, messages.INFO,
                     "You have requested to attribute a funding source that does not yet exist in the system. "
                     "Please include additional detail for our records.")
-            return HttpResponseRedirect(reverse_lazy('create-funding-source', args=[identifier])+popup)
+            if identifier:
+                endpoint = reverse_lazy('create-funding-source-with-identifier', args=[identifier])
+            else:
+                endpoint = reverse_lazy('create-funding-source')
 
+            return HttpResponseRedirect(endpoint + popup)
 
 class PublicationCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     model = Publication
