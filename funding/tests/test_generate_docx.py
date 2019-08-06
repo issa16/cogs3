@@ -10,8 +10,7 @@ class create_funding_documentTest(TestCase):
         self.fixture = {
             'funding_body': 'FUNDINGBODY',
             'title': '"TITLE"',
-            'pi_firstname': 'PINAME',
-            'pi_lastname': 'PILASTNAME',
+            'pi_fullname': 'PINAME',
             'pi_department': 'PIDEPARTMENT',
             'receiver': 'RECEIVER',
         }
