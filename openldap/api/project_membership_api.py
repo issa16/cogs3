@@ -12,7 +12,7 @@ from openldap.schemas.project_membership.delete_project_membership import \
 from openldap.schemas.project_membership.list_project_memberships import \
     list_project_memberships_json
 from openldap.util import decode_response, raise_for_data_error
-from users.notifications import email_user
+from common.util import email_user
 
 
 @job
