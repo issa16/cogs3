@@ -76,7 +76,7 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
                 'REMOTE_USER': account.get('email'),
             }
 
-            ## test endpoint with no identifier
+            ## funding source endpoint with no identifier
             response = self.client.get(
                 reverse('create-funding-source'),
                 **headers
@@ -87,7 +87,7 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
             # Check that initial value for identifier form field has not been set
             self.assertEqual(response.context_data.get('form').initial, {})
 
-            ## test endpoint with identifier
+            ## test funding source endpoint with identifier
             test_identifier = 'my-identifier-for-testing-123$'
 
             response = self.client.get(
