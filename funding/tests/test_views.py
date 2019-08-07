@@ -801,3 +801,31 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
                 args=[funding_source.id]
             )
         )
+
+
+class ListFundingSourceMembershipTests(FundingViewTests, TestCase):
+    def test_access_as_unauthorised_user(self):
+        """
+        Ensure that users not logged in get booted out of this page
+        """
+        self.access_view_as_unauthorised_user(
+            reverse('list-funding_source_memberships')
+        )
+
+    def test_access_as_authorised_user(self):
+        """
+        Check that logged in users can see this page.
+        """
+        user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
+        institution = Institution.objects.get(name="Example University")
+        headers = {
+            'Shib-Identity-Provider': institution.identity_provider,
+            'REMOTE_USER': user.email,
+        }
+
+        response = self.client.get(
+            reverse('list-funding_source_memberships'),
+            **headers
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test funding source")
