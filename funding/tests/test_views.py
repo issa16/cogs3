@@ -23,6 +23,7 @@ from funding.models import FundingSourceMembership
 from funding.models import Publication
 from institution.models import Institution
 from project.models import Project
+from funding.models import FundingSourceMembership
 
 
 class FundingViewTests(TestCase):
@@ -846,6 +847,68 @@ class FundingsourceDetailViewTest(FundingViewTests, TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('list-attributions'))
 
+
+class ToggleFundingSourceMembershipApprovedTests(FundingViewTests, TestCase):
+    def test_view_as_different_users(self):
+
+        funding_source = FundingSource.objects.first()
+
+        # user which is member of funding source
+        funding_source_user = CustomUser.objects.get(email="test.user@example2.ac.uk")
+        membership = FundingSourceMembership.objects.create(user=funding_source_user,
+                                               fundingsource=funding_source,
+                                               approved=True)
+
+        # double check that this user isn't the funding source pi
+        self.assertNotEqual (funding_source.pi.id, funding_source_user.id)
+
+
+        # user which is pi of (same) funding source
+        funding_source_pi = funding_source.pi
+        membership2 = FundingSourceMembership.objects.create(user=funding_source_pi,
+                                               fundingsource=funding_source,
+                                               approved=True)
+
+        # user which isn't member of funding source
+        non_funding_source_user = CustomUser.objects.get(email="test.user@example2.ac.uk")
+
+
+        accounts = [
+            {
+                'email': funding_source_pi.email,
+                'expected_status_code': 200,
+                'institution': funding_source_pi.profile.institution,
+                'membership' : membership2,
+            }, {
+                'email': funding_source_user.email,
+                'expected_status_code': 302,
+                'institution': funding_source_user.profile.institution,
+                'membership' : membership,
+            }, {
+                'email': non_funding_source_user.email,
+                'expected_status_code': 302,
+                'institution': non_funding_source_user.profile.institution,
+                'membership' : membership,
+            }
+        ]
+
+        for account in accounts:
+            membership_id = account['membership'].id
+            url = reverse('toggle-funding_source_membership-approved', args=[membership_id])
+
+            headers = {
+                'Shib-Identity-Provider': account['institution'].identity_provider,
+                'REMOTE_USER': account['email'],
+            }
+
+            response = self.client.get(url, **headers)
+            import pdb; pdb.set_trace()
+
+            self.assertEqual(response.status_code, account['expected_status_code'])
+
+            # Check that the page at least contains titles for all funding source objects
+            if response.status_code == 200:
+                [self.assertTrue(f.title in str(response.content)) for f in FundingSource.objects.all()]
 
 class ListUnapprovedFundingSourcesTest(FundingViewTests, TestCase):
     def test_view_as_different_users(self):
