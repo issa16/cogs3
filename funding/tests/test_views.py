@@ -76,7 +76,7 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
                 'REMOTE_USER': account.get('email'),
             }
 
-            ## test endpoint with no identifier
+            ## funding source endpoint with no identifier
             response = self.client.get(
                 reverse('create-funding-source'),
                 **headers
@@ -87,7 +87,7 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
             # Check that initial value for identifier form field has not been set
             self.assertEqual(response.context_data.get('form').initial, {})
 
-            ## test endpoint with identifier
+            ## test funding source endpoint with identifier
             test_identifier = 'my-identifier-for-testing-123$'
 
             response = self.client.get(
@@ -99,6 +99,45 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
             self.assertTrue(isinstance(response.context_data.get('form'), FundingSourceForm))
             self.assertTrue(isinstance(response.context_data.get('view'), FundingSourceCreateView))
             self.assertEqual(response.context_data.get('form').initial['identifier'], test_identifier)
+    def test_publication_create_view_without_popup(self):
+        """
+        """
+        user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
+        institution = Institution.objects.get(name="Example University")
+
+        headers = {
+            'Shib-Identity-Provider': institution.identity_provider,
+            'REMOTE_USER': user.email
+        }
+
+        post_data = {
+            'title' : 'My publication title',
+            'url' : f'https://{institution.local_repository_domain}'
+            }
+
+        url_appends = { '?_popup=1' : 200,
+                        '' : 302}
+
+        for url_append, status_code in url_appends.items():
+            # Grab publication count
+            pub_count = Publication.objects.count()
+
+            # Fire post request
+            response = self.client.post(reverse('create-publication')+url_append, data=post_data, **headers)
+
+            # Check that the publication count is incremented with correct data publication
+            pub = Publication.objects.last()
+            self.assertEqual(pub.title, post_data['title'])
+            self.assertEqual(pub.url, post_data['url'])
+            self.assertEqual(pub.owner, user)
+
+            # Check that the expected status code is returned
+            expected_redirect_url = reverse('list-attributions')
+            self.assertEqual(response.status_code, status_code)
+
+            # check redirect URL only for 302
+            if status_code == 302:
+                self.assertEqual(response.url, expected_redirect_url)
 
     def test_view_as_an_unauthorised_user(self):
         """
@@ -414,6 +453,153 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
             )
         )
 
+
+class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
+
+    def test_view_as_an_authorised_user(self):
+        """
+        Ensure the correct account types can access the delete view.
+        """
+        user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
+        institution = Institution.objects.get(name="Example University")
+        funding_source = FundingSource.objects.get(title="Test funding source")
+
+        accounts = [
+            {
+                'email': user.email,
+                'expected_status_code': 200,
+            },
+        ]
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': account.get('email'),
+            }
+            response = self.client.get(
+                reverse(
+                    'delete-attribution',
+                    args=[funding_source.id]
+                ),
+                **headers
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
+            self.assertTrue(
+                isinstance(
+                    response.context_data.get('view'),
+                    AttributioneDeleteView
+                )
+            )
+
+    def test_view_as_an_unauthorised_user(self):
+        """
+        Ensure unauthorised users can not access the delete view.
+        """
+        user = CustomUser.objects.get(email="guest.user@external.ac.uk")
+        user2 = CustomUser.objects.get(email="test.user@example2.ac.uk")
+        institution = Institution.objects.get(name="Example University")
+        funding_source = FundingSource.objects.get(title="Test funding source")
+
+        accounts = [
+            {
+                'email': user.email,
+                'expected_status_code': 302,
+            },
+            {
+                'email': user2.email,
+                'expected_status_code': 302,
+            },
+        ]
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': account.get('email'),
+            }
+            response = self.client.get(
+                reverse(
+                    'delete-attribution',
+                    args=[funding_source.id]
+                ),
+                **headers
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
+
+        self.access_view_as_unauthorised_user(
+            reverse(
+                'delete-attribution',
+                args=[funding_source.id]
+            )
+        )
+
+    def test_view_without_user_approval(self):
+        """
+        Ensure unauthorised users can not access the delete view.
+        """
+        user = CustomUser.objects.get(email="test.user@example2.ac.uk")
+        institution = Institution.objects.get(name="Example University")
+        funding_source = FundingSource.objects.get(title="Test funding source")
+
+        accounts = [
+            {
+                'email': user.email,
+                'expected_status_code': 302,
+            },
+        ]
+        for account in accounts:
+            funding_source.pi_email = account.get('email')
+            funding_source.save()
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': account.get('email'),
+            }
+            response = self.client.get(
+                reverse(
+                    'delete-attribution',
+                    args=[funding_source.id]
+                ),
+                **headers
+            )
+            self.assertEqual(response.status_code, account.get('expected_status_code'))
+
+        self.access_view_as_unauthorised_user(
+            reverse(
+                'delete-attribution',
+                args=[funding_source.id]
+            )
+        )
+
+class ListUnapprovedFundingSourcesTest(FundingViewTests, TestCase):
+    def test_view_as_different_users(self):
+
+        url = reverse('list-unapproved-funding_sources')
+
+        user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
+        admin_user = CustomUser.objects.get(email="admin.user@example.ac.uk")
+
+        accounts = [
+            {
+                'email': user.email,
+                'expected_status_code': 403,
+            }, {
+                'email': admin_user.email,
+                'expected_status_code': 200,
+            }
+        ]
+
+        for account in accounts:
+            institution = Institution.objects.get(name="Example University")
+
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': account['email'],
+            }
+
+            response = self.client.get(url, **headers)
+
+            self.assertEqual(response.status_code, account['expected_status_code'])
+
+            # Check that the page at least contains titles for all funding source objects
+            if response.status_code == 200:
+                [self.assertTrue(f.title in str(response.content)) for f in FundingSource.objects.all()]
 
 class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
 

@@ -148,16 +148,6 @@ class CustomUserTests(TestCase):
         self.shibboleth_user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
         self.guest_user = CustomUser.objects.get(email='guest.user@external.ac.uk')
 
-    def test_get_full_name(self):
-        expected = self.shibboleth_user.email
-        actual = self.shibboleth_user.get_full_name()
-        self.assertEqual(actual, expected)
-
-    def test_get_short_name(self):
-        expected = self.shibboleth_user.email
-        actual = self.shibboleth_user.get_short_name()
-        self.assertEqual(actual, expected)
-
     def test_save_for_user_accounts(self):
         user_accounts = [
             self.shibboleth_user,

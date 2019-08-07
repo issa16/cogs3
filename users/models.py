@@ -321,12 +321,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    def get_full_name(self):
-        return self.email
-
-    def get_short_name(self):
-        return self.email
-
     def save(self, *args, **kwargs):
         super(CustomUser, self).save(*args, **kwargs)
         if self.is_shibboleth_login_required:
