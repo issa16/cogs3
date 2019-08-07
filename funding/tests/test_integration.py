@@ -131,8 +131,13 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         """
         Try creating a funding source with an institution that requires appproval
         """
-        self.user.profile.institution.needs_funding_approval = True
-        self.user.profile.institution.save()
+
+        # set up the institution to need funding approval and have appropriate templates
+        inst = self.user.profile.institution
+        inst.needs_funding_approval = True
+        inst.funding_document_template = 'Swansea.docx' # requires an existing document
+        inst.funding_document_receiver = 'someone@swan.ac.uk'
+        inst.save()
 
         self.sign_in(self.user)
 
