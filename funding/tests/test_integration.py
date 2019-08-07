@@ -122,8 +122,8 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Get the object
         funding_source = matching_sources.get()
-        if funding_source.pi_email is not None:
-            raise AssertionError('pi_email should be None')
+        if funding_source.pi_email != email:
+            raise AssertionError('pi_email should be equal to funding source email')
         if funding_source.pi is None or funding_source.pi.email != email:
             raise AssertionError()
 
@@ -131,8 +131,13 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         """
         Try creating a funding source with an institution that requires appproval
         """
-        self.user.profile.institution.needs_funding_approval = True
-        self.user.profile.institution.save()
+
+        # set up the institution to need funding approval and have appropriate templates
+        inst = self.user.profile.institution
+        inst.needs_funding_approval = True
+        inst.funding_document_template = 'Swansea.docx' # requires an existing document
+        inst.funding_document_receiver = 'someone@swan.ac.uk'
+        inst.save()
 
         self.sign_in(self.user)
 
@@ -166,19 +171,19 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
         if matching_sources.count() != 1:
             raise AssertionError()
-        
+
         # Get the object
         funding_source = matching_sources.get()
 
         # Check the pi was identified correctly
-        if funding_source.pi_email is not None:
-            raise AssertionError('funding_source.pi_email is not None')
+        if funding_source.pi_email != self.user.email:
+            raise AssertionError('funding_source.pi_email is not the same as user email')
         if funding_source.pi != self.user:
             raise AssertionError('funding_source.pi is not a user')
 
         # Should be redirected to the list view
         if reverse('list-attributions') not in self.selenium.current_url:
-            raise AssertionError()
+            raise AssertionError('current url is not the list-attributions page')
         if second_form_fields['id_title'] not in self.selenium.page_source:
             raise AssertionError()
 
@@ -246,8 +251,9 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Get the object
         funding_source = matching_sources.get()
-        if funding_source.pi_email is not None:
-            raise AssertionError('pi_email should be None')
+
+        if funding_source.pi_email != email:
+            raise AssertionError('pi_email should be equal to current user email')
         if funding_source.pi is None or funding_source.pi.email != email:
             raise AssertionError()
 
@@ -296,8 +302,8 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         funding_source = matching_sources.get()
 
         # Check the pi was identified correctly
-        if funding_source.pi_email is not None:
-            raise AssertionError('funding_source.pi_email is not None')
+        if funding_source.pi_email != funding_source.pi.email:
+            raise AssertionError(f'funding_source.pi_email ({funding_source.pi_email}) is not the same as the pi email ({funding_source.pi.email})')
         if funding_source.pi != self.user:
             raise AssertionError('funding_source.pi is not the current user')
 
