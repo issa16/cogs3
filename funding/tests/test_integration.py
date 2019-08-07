@@ -116,14 +116,18 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Check that the funding source was created
-        matching_sources = FundingSource.objects.filter(identifier=id_form_fields['id_identifier'])
+        matching_sources = FundingSource.objects.filter(
+            identifier=id_form_fields['id_identifier']
+        )
         if matching_sources.count() != 1:
             raise AssertionError()
 
         # Get the object
         funding_source = matching_sources.get()
         if funding_source.pi_email != email:
-            raise AssertionError('pi_email should be equal to funding source email')
+            raise AssertionError(
+                'pi_email should be equal to funding source email'
+            )
         if funding_source.pi is None or funding_source.pi.email != email:
             raise AssertionError()
 
@@ -135,7 +139,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         # set up the institution to need funding approval and have appropriate templates
         inst = self.user.profile.institution
         inst.needs_funding_approval = True
-        inst.funding_document_template = 'Swansea.docx' # requires an existing document
+        inst.funding_document_template = 'Swansea.docx'  # requires an existing document
         inst.funding_document_receiver = 'someone@swan.ac.uk'
         inst.save()
 
@@ -168,7 +172,9 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Check that the funding source was created
-        matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
+        matching_sources = FundingSource.objects.filter(
+            identifier=first_form_fields['id_identifier']
+        )
         if matching_sources.count() != 1:
             raise AssertionError()
 
@@ -177,13 +183,17 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Check the pi was identified correctly
         if funding_source.pi_email != self.user.email:
-            raise AssertionError('funding_source.pi_email is not the same as user email')
+            raise AssertionError(
+                'funding_source.pi_email is not the same as user email'
+            )
         if funding_source.pi != self.user:
             raise AssertionError('funding_source.pi is not a user')
 
         # Should be redirected to the list view
         if reverse('list-attributions') not in self.selenium.current_url:
-            raise AssertionError('current url is not the list-attributions page')
+            raise AssertionError(
+                'current url is not the list-attributions page'
+            )
         if second_form_fields['id_title'] not in self.selenium.page_source:
             raise AssertionError()
 
@@ -193,19 +203,13 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.user.profile.institution.needs_funding_approval = True
         self.user.profile.institution.save()
 
-        url = reverse(
-            'update-attribution',
-            args=[funding_source.id]
-        )
+        url = reverse('update-attribution', args=[funding_source.id])
         self.click_link_by_url(url)
         if "url" in self.selenium.current_url:
             raise AssertionError()
-        
+
         # Should be redirected to detail view
-        url = reverse(
-            'funding_source-detail-view',
-            args=[funding_source.id]
-        )
+        url = reverse('funding_source-detail-view', args=[funding_source.id])
         if url not in self.selenium.current_url:
             raise AssertionError()
 
@@ -213,10 +217,24 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         """
         Create a funding source using someone else as the pi
         """
+        from users.models import CustomUser
+        email = '@'.join(['pi', self.user.email.split('@')[1]])
+        test_pi = CustomUser(
+            username=email,
+            email=email,
+            first_name='test',
+            last_name='pi',
+            is_staff=False,
+            is_shibboleth_login_required=True,
+            accepted_terms_and_conditions=True,
+        )
+        self.create_test_user(test_pi)
+
         self.sign_in(self.user)
 
-        institution = Institution.objects.get(base_domain="example2.ac.uk")
-        email = '@'.join(['test', institution.base_domain])
+        institution_pi = Institution.objects.get(base_domain="example2.ac.uk")
+        #email = '@'.join(['test', institution.base_domain])
+        email = test_pi.email
 
         id_form_fields = {
             'id_identifier': 'Id',
@@ -245,7 +263,9 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Check that the funding source was created
-        matching_sources = FundingSource.objects.filter(identifier=id_form_fields['id_identifier'])
+        matching_sources = FundingSource.objects.filter(
+            identifier=id_form_fields['id_identifier']
+        )
         if matching_sources.count() != 1:
             raise AssertionError()
 
@@ -253,9 +273,20 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         funding_source = matching_sources.get()
 
         if funding_source.pi_email != email:
-            raise AssertionError('pi_email should be equal to current user email')
+            raise AssertionError(
+                'pi_email should be equal to current user email'
+            )
         if funding_source.pi is None or funding_source.pi.email != email:
             raise AssertionError()
+
+        self.log_out()
+        self.sign_in(test_pi)
+        self.get_url(reverse('list-attributions'))
+        attrlist_url = self.selenium.current_url
+        self.selenium.find_element_by_link_text(form_fields['id_title']).click()
+        assert self.selenium.current_url != attrlist_url,\
+                "Pi was redirected to attribution list page "\
+                "instead of the attribution update view."
 
     def test_create_and_update_funding_source(self):
         """
@@ -294,7 +325,9 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Check that the funding source was created
-        matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
+        matching_sources = FundingSource.objects.filter(
+            identifier=first_form_fields['id_identifier']
+        )
         if matching_sources.count() != 1:
             raise AssertionError()
 
@@ -303,7 +336,9 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Check the pi was identified correctly
         if funding_source.pi_email != funding_source.pi.email:
-            raise AssertionError(f'funding_source.pi_email ({funding_source.pi_email}) is not the same as the pi email ({funding_source.pi.email})')
+            raise AssertionError(
+                f'funding_source.pi_email ({funding_source.pi_email}) is not the same as the pi email ({funding_source.pi.email})'
+            )
         if funding_source.pi != self.user:
             raise AssertionError('funding_source.pi is not the current user')
 
@@ -316,10 +351,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Click the update link and edit the title
         self.click_link_by_url(
-            reverse(
-                'update-attribution',
-                args=[funding_source.id]
-            )
+            reverse('update-attribution', args=[funding_source.id])
         )
         self.fill_form_by_id({'id_title': 'New Title'})
         self.submit_form({'id_title': 'New Title'})
@@ -334,10 +366,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Now delete the funding source
         self.click_link_by_url(
-            reverse(
-                'delete-attribution',
-                args=[funding_source.id]
-            )
+            reverse('delete-attribution', args=[funding_source.id])
         )
         # click 'Delete'
         selector = "//input[@value='Delete']"
@@ -349,6 +378,12 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         # Check that the funding source was removed
-        matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
+        matching_sources = FundingSource.objects.filter(
+            identifier=first_form_fields['id_identifier']
+        )
         if matching_sources.count() != 0:
             raise AssertionError()
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+    ]
