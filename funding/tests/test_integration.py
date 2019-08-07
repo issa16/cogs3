@@ -166,7 +166,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         matching_sources = FundingSource.objects.filter(identifier=first_form_fields['id_identifier'])
         if matching_sources.count() != 1:
             raise AssertionError()
-        
+
         # Get the object
         funding_source = matching_sources.get()
 
@@ -178,7 +178,7 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Should be redirected to the list view
         if reverse('list-attributions') not in self.selenium.current_url:
-            raise AssertionError()
+            raise AssertionError('current url is not the list-attributions page')
         if second_form_fields['id_title'] not in self.selenium.page_source:
             raise AssertionError()
 
