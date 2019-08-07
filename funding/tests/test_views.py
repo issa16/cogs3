@@ -8,6 +8,8 @@ from funding.views import FundingSourceAddView
 from funding.views import FundingSourceCreateView
 from funding.views import PublicationCreateView
 from funding.views import AttributionListView
+from funding.views import FundingSourceListView
+from funding.views import PublicationListView
 from funding.views import AttributionUpdateView
 from funding.views import AttributioneDeleteView
 from users.models import CustomUser
@@ -265,6 +267,8 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
 
 
 class AttributionListViewTests(FundingViewTests, TestCase):
+    view = AttributionListView
+    view_name = 'list-attributions'
 
     def test_view_as_an_authorised_user(self):
         """
@@ -290,19 +294,29 @@ class AttributionListViewTests(FundingViewTests, TestCase):
                 'REMOTE_USER': account.get('email'),
             }
             response = self.client.get(
-                reverse('list-attributions'),
+                reverse(self.view_name),
                 **headers
             )
             self.assertEqual(response.status_code,
                              account.get('expected_status_code'))
             self.assertTrue(isinstance(response.context_data.get('view'),
-                                       AttributionListView))
+                                       self.view))
 
     def test_view_as_an_unauthorised_user(self):
         """
-        Ensure unauthorised users can not access the project create view.
+        Ensure unauthorised users can not access the attribution list view.
         """
-        self.access_view_as_unauthorised_user(reverse('list-attributions'))
+        self.access_view_as_unauthorised_user(reverse(self.view_name))
+
+
+class FundingSourceListViewTests(AttributionListViewTests):
+    view = FundingSourceListView
+    view_name = 'list-funding_sources'
+
+
+class PublicationListViewTests(AttributionListViewTests):
+    view = PublicationListView
+    view_name = 'list-publications'
 
 
 class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
