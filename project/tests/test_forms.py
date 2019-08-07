@@ -171,8 +171,12 @@ class ProjectManageAttributionFormTests(TestCase):
         }
 
     def test_project_allocation_form_validation(self):
-        self.form = ProjectManageAttributionForm(self.user, data=self.data)
-        self.assertTrue( self.form.is_valid() )
+        self.form = ProjectManageAttributionForm(
+            self.user,
+            data=self.data,
+            instance=self.project
+        )
+        self.assertTrue(self.form.is_valid())
 
 
 class ProjectSupervisorApproveFormTests(TestCase):
