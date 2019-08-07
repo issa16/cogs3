@@ -363,7 +363,7 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
 
         try:
             # TODO: use regexp instead?
-            strtofind = "New RSE time Request"
+            strtofind = "Request RSE support"
             el = self.selenium.find_element_by_link_text(strtofind)
             if not allows_rse_requests:
                 raise AssertionError(
