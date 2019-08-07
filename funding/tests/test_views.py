@@ -99,6 +99,45 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
             self.assertTrue(isinstance(response.context_data.get('form'), FundingSourceForm))
             self.assertTrue(isinstance(response.context_data.get('view'), FundingSourceCreateView))
             self.assertEqual(response.context_data.get('form').initial['identifier'], test_identifier)
+    def test_publication_create_view_without_popup(self):
+        """
+        """
+        user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
+        institution = Institution.objects.get(name="Example University")
+
+        headers = {
+            'Shib-Identity-Provider': institution.identity_provider,
+            'REMOTE_USER': user.email
+        }
+
+        post_data = {
+            'title' : 'My publication title',
+            'url' : f'https://{institution.local_repository_domain}'
+            }
+
+        url_appends = { '?_popup=1' : 200,
+                        '' : 302}
+
+        for url_append, status_code in url_appends.items():
+            # Grab publication count
+            pub_count = Publication.objects.count()
+
+            # Fire post request
+            response = self.client.post(reverse('create-publication')+url_append, data=post_data, **headers)
+
+            # Check that the publication count is incremented with correct data publication
+            pub = Publication.objects.last()
+            self.assertEqual(pub.title, post_data['title'])
+            self.assertEqual(pub.url, post_data['url'])
+            self.assertEqual(pub.owner, user)
+
+            # Check that the expected status code is returned
+            expected_redirect_url = reverse('list-attributions')
+            self.assertEqual(response.status_code, status_code)
+
+            # check redirect URL only for 302
+            if status_code == 302:
+                self.assertEqual(response.url, expected_redirect_url)
 
     def test_view_as_an_unauthorised_user(self):
         """
