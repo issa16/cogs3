@@ -222,8 +222,10 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
 
         # this brings us in different places depending on
         # There should be no allocation request section here:
-        if "allocation requests" in self.selenium.page_source and not separate_allocation_requests:
-            raise AssertionError('"allocation request" string in page source.')
+        access_request_text = "Supercomputer access requests"
+
+        if access_request_text in self.selenium.page_source and not separate_allocation_requests:
+            raise AssertionError(f'"{access_request_text}" string in page source.')
 
         self._go_to_dashboard()
         self._go_to_project_list_from_dashboard()
@@ -232,15 +234,15 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
 
         if separate_allocation_requests:
             # There should be an allocation request section here:
-            if "allocation requests" not in self.selenium.page_source:
+            if access_request_text not in self.selenium.page_source:
                 raise AssertionError(
-                    '"allocation request" string not in page source.'
+                    f'"{access_equest_text}" string not in page source.'
                 )
         else:
             # There should be no allocation request section here:
-            if "allocation requests" in self.selenium.page_source:
+            if access_request_text in self.selenium.page_source:
                 raise AssertionError(
-                    '"allocation request" string in page source.'
+                    f'"{access_request_text}" string in page source.'
                 )
 
         self.log_out()
