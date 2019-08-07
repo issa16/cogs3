@@ -12,6 +12,7 @@ class ProjectNotificationTests(TestCase):
 
     def setUp(self):
         settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+        settings.DEFAULT_SUPPORT_EMAIL = 'someone@somewhere.ac.uk'
         self.user = CustomUser.objects.create(
             username='user@aber.ac.uk', email='user@aber.ac.uk'
         )
