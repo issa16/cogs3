@@ -122,8 +122,8 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
 
         # Get the object
         funding_source = matching_sources.get()
-        if funding_source.pi_email is not None:
-            raise AssertionError('pi_email should be None')
+        if funding_source.pi_email != email:
+            raise AssertionError('pi_email should be equal to funding source email')
         if funding_source.pi is None or funding_source.pi.email != email:
             raise AssertionError()
 
