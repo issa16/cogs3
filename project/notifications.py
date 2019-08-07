@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django_rq import job
 
 from institution.models import Institution
-from users.notifications import email_user
+from common.util import email_user
 
 
 @job

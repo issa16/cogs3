@@ -19,11 +19,12 @@ This is an end-to-end test that checks also the fixtures.
 from selenium_base import SeleniumTestsBase
 from institution.models import Institution
 from project.models import Project, SystemAllocationRequest
+import project  # TENTATIVE
 from system.models import System
 from users.models import CustomUser
 
-from unittest import skipIf  # DEBUG
-from time import sleep  # DEBUG
+from unittest import skipIf
+from mock import Mock, patch
 
 from django.urls import reverse
 from django.test import tag
@@ -66,7 +67,7 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         self.aberystwyth_user_aa = self._createuser(
             instname='Aberystwyth', username='user_tid_aa'
         )
-        self._create_test_user_unapproved(self.aberystwyth_user_aa)  # DEBUG
+        self._create_test_user_unapproved(self.aberystwyth_user_aa)
 
         # Create user for Bangor
         self.bangor_user_aa = self._createuser(
@@ -445,14 +446,12 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         self.selenium.find_element_by_css_selector('button.btn.btn-primary'
                                                   ).click()
 
-    #@skipIf(True, 'Workflow must be understood first')
     @tag("funding_approval")
     def test_aberystwyth_user_sees_funding_approval_YES(self):
         self._check_funding_approval_availability(
             user=self.aberystwyth_user, needs_funding_approval=True
         )
 
-    #@skipIf(True, 'Workflow must be understood first')
     @skipIf(
         True, 'Bangor users do not need funding workflow in the first place.'
     )
@@ -460,7 +459,6 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
     def test_bangor_user_sees_funding_approval_NO(self):
         pass
 
-    #@skipIf(True, 'Workflow must be understood first')
     @skipIf(
         True, 'Cardiff users do not need funding workflow in the first place'
     )
@@ -475,21 +473,52 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         )
 
     # supervisor approval
-    @skipIf(True, 'Not implemented yet')
-    def test_aberystwyth_user_sees_supervisor_approval_NO(self):
-        pass
+    def _check_supervisor_approval_workflow(
+        self, user, needs_supervisor_approval, separate_allocation_requests
+    ):
+        with patch('project.views.email_user') as mocked_function:
+            self.sign_in(user)
+            self._create_fake_project_via_ui(
+                separate_allocation_requests, project_owner=user
+            )
+            if needs_supervisor_approval:
+                mocked_function.assert_called_once()
+            else:
+                mocked_function.assert_not_called()
 
-    @skipIf(True, 'Not implemented yet')
-    def test_bangor_user_sees_supervisor_approval_NO(self):
-        pass
+    @tag('supervisor_approval')
+    def test_aberystwyth_user_supervisor_approval_workflow_YES(self):
+        self._check_supervisor_approval_workflow(
+            user=self.aberystwyth_user,
+            needs_supervisor_approval=True,
+            separate_allocation_requests=False
+        )
 
-    @skipIf(True, 'Not implemented yet')
-    def test_cardiff_user_sees_supervisor_approval_NO(self):
-        pass
+    @skipIf(True, 'debug')
+    @tag('supervisor_approval')
+    def test_bangor_user_supervisor_approval_workflow_NO(self):
+        self._check_supervisor_approval_workflow(
+            user=self.bangor_user,
+            needs_supervisor_approval=False,
+            separate_allocation_requests=False
+        )
 
-    @skipIf(True, 'Not implemented yet')
-    def test_swansea_user_sees_supervisor_approval_YES(self):
-        pass
+    @skipIf(True, 'debug')
+    @tag('supervisor_approval')
+    def test_cardiff_user_supervisor_approval_workflow_NO(self):
+        self._check_supervisor_approval_workflow(
+            user=self.cardiff_user,
+            needs_supervisor_approval=False,
+            separate_allocation_requests=False
+        )
+
+    @tag('supervisor_approval')
+    def test_swansea_user_supervisor_approval_workflow_YES(self):
+        self._check_supervisor_approval_workflow(
+            user=self.swansea_user,
+            needs_supervisor_approval=True,
+            separate_allocation_requests=True
+        )
 
     # user approval
     def _check_user_approval_in_dashboard(
@@ -529,8 +558,7 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         self._create_fake_project_approved(project_owner=project_owner_user)
         self.sign_in(project_owner_user)
         self._go_to_project_list_from_dashboard()
-        self.selenium.find_element_by_link_text(self.fake_project_title
-                                               ).click()
+        self.selenium.find_element_by_link_text(self.fake_project_title).click()
         self.selenium.find_element_by_link_text('Invite User').click()
 
         fields = {'email': unapproved_user.email}
@@ -538,7 +566,7 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         self.fill_form_by_id(fields)
         self.submit_form(fields)
 
-        # compare with /project/forms.py, 
+        # compare with /project/forms.py,
 
         if needs_user_approval:
             assert 'User is still awaiting authorisation' in self.selenium.page_source, 'User awaiting authorisation should not be eligible for invitation'
