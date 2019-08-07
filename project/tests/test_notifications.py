@@ -11,14 +11,16 @@ class ProjectNotificationTests(TestCase):
     fixtures = ['institution/fixtures/institutions.json']
 
     def setUp(self):
+        self.base_domain = 'aber.ac.uk'
         settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
-        settings.DEFAULT_SUPPORT_EMAIL = 'someone@somewhere.ac.uk'
         self.user = CustomUser.objects.create(
-            username='user@aber.ac.uk', email='user@aber.ac.uk'
+            username=f'user@{self.base_domain}',
+            email=f'user@{self.base_domain}'
         )
         self.user.save()
         self.user2 = CustomUser.objects.create(
-            username='user2@aber.ac.uk', email='user2@aber.ac.uk'
+            username=f'user2@{self.base_domain}',
+            email=f'user2@{self.base_domain}'
         )
         self.user2.save()
         self.project = Project(
@@ -35,10 +37,31 @@ class ProjectNotificationTests(TestCase):
 
         self.membership.save()
 
-    def test_project_created_notification(self):
+    def test_project_created_notification_default_email(self):
+        settings.DEFAULT_SUPPORT_EMAIL = 'someone@somewhere.ac.uk'
         notifications.project_created_notification(self.project)
         assert len(mail.outbox) > 0, "An email must be sent"
         assert len(mail.outbox) == 1, "Only one email must be sent"
+
+        assert len(mail.outbox[0].to) == 1,\
+                'Mail should be sent to  one recipient'
+        assert mail.outbox[0].to[0] == settings.DEFAULT_SUPPORT_EMAIL,\
+                f'Wrong recipient: {mail.outbox[0].to}'
+
+    def test_project_created_notification_institution_email(self):
+        from institution.models import Institution
+        uni = Institution.objects.get(base_domain=self.base_domain)
+        uni.support_email = f'support@{self.base_domain}'
+        uni.save()
+
+        notifications.project_created_notification(self.project)
+        assert len(mail.outbox) > 0, "An email must be sent"
+        assert len(mail.outbox) == 1, "Only one email must be sent"
+
+        assert len(mail.outbox[0].to) == 1,\
+                'Mail should be sent to  one recipient'
+        assert mail.outbox[0].to[ 0 ] == uni.support_email, \
+                f'Wrong recipient: {mail.outbox[0].to}'
 
     def test_project_membership_created(self):
         membership = ProjectUserMembership.objects.get(pk=1)
