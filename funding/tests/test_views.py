@@ -12,6 +12,7 @@ from funding.views import AttributionUpdateView
 from funding.views import AttributionDeleteView
 from users.models import CustomUser
 from funding.models import FundingSource
+from funding.models import FundingSourceMembership
 from funding.models import Publication
 from institution.models import Institution
 
@@ -159,6 +160,8 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
         'funding/fixtures/tests/attributions.json',
     ]
 
+    url_append_str = '?_popup=1'
+
     def test_add_fundingsource_view_as_an_authorised_user(self):
         """
         Ensure the correct account types can access the funding source create view.
@@ -195,14 +198,14 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
             # Test post with new id. Redirects to create form
             new_identifier = 'n53c7'
             response = self.client.post(
-                reverse('add-funding-source'),
+                reverse('add-funding-source') + self.url_append_str,
                 data={
                     'identifier': new_identifier,
                 },
                 **headers
             )
             self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.url, "/en-gb/funding/create-funding-source/" + new_identifier)
+            self.assertEqual(response.url, "/en-gb/funding/create-funding-source/" + new_identifier + self.url_append_str)
 
     def test_add_fundingsource_view_as_authorised_with_approval_required(self):
         """
@@ -224,7 +227,7 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
 
             # Test get. Response is a form
             response = self.client.get(
-                reverse('add-funding-source'),
+                reverse('add-funding-source') + self.url_append_str,
                 **headers
             )
             self.assertEqual(response.status_code, account.get('expected_status_code'))
@@ -260,7 +263,11 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
         """
         Ensure unauthorised users can not access the project create view.
         """
-        self.access_view_as_unauthorised_user(reverse('add-funding-source'))
+        self.access_view_as_unauthorised_user(reverse('add-funding-source') + self.url_append_str)
+
+
+class FundingSourceAddViewWithPopupTests(FundingSourceAddViewTests, TestCase):
+    url_append_str = '?_popup=1'
 
 
 class FundingSourceAddViewWithFundingApprovalTests(FundingSourceAddViewTests, TestCase):
