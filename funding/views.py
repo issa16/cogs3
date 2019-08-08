@@ -152,7 +152,7 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                 if user_is_member:
                     messages.add_message(self.request, messages.INFO,
                         "You already are a member of this funding source. It will become visible in attributions once the PI approves your membership")
-                    return HttpResponseRedirect(reverse_lazy('add-funding-source')+popup)
+                    return HttpResponseRedirect(reverse_lazy('list-attributions')+popup)
                 else:
                     messages.add_message(self.request, messages.INFO,
                         "A funding source with this identifier has been found on the system. "
