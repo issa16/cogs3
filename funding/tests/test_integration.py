@@ -280,6 +280,11 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
             raise AssertionError()
 
         self.log_out()
+
+        # Manual Approval Step
+        funding_source.approved = True
+        funding_source.save()
+
         self.sign_in(test_pi)
         self.get_url(reverse('list-attributions'))
         attrlist_url = self.selenium.current_url
