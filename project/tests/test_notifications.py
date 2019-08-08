@@ -1,11 +1,11 @@
 from project import notifications
-from django.test import TestCase
+from django.test import TestCase,override_settings
 from django.conf import settings
 from project.models import Project, ProjectUserMembership, ProjectCategory
 from users.models import CustomUser
 from django.core import mail
 
-
+@override_settings(DEFAULT_SUPPORT_EMAIL='support@another-example.ac.uk')
 class ProjectNotificationTests(TestCase):
 
     fixtures = ['institution/fixtures/institutions.json']
@@ -38,7 +38,6 @@ class ProjectNotificationTests(TestCase):
         self.membership.save()
 
     def test_project_created_notification_default_email(self):
-        settings.DEFAULT_SUPPORT_EMAIL = 'someone@somewhere.ac.uk'
         notifications.project_created_notification(self.project)
         assert len(mail.outbox) > 0, "An email must be sent"
         assert len(mail.outbox) == 1, "Only one email must be sent"
