@@ -270,6 +270,29 @@ class FundingSourceAddViewWithFundingApprovalTests(FundingSourceAddViewTests, Te
         institution.needs_funding_approval = True
         institution.save()
 
+
+class FundingSourceAddViewWithUserAsMember(FundingSourceAddViewTests, TestCase):
+
+    def setUp(self):
+        # Set funding approval to true
+        institution = Institution.objects.get(name="Example University")
+        institution.needs_funding_approval = True
+        institution.save()
+
+        # fetch test user
+        user = CustomUser.objects.get(email="test.user@example2.ac.uk")
+
+        # add user to existing funding source
+        existing_identifier = 'scw0001'
+
+        fundingsource = FundingSource.objects.get(identifier=existing_identifier)
+
+        fundingsource_membership = FundingSourceMembership.objects.create(
+            fundingsource=fundingsource,
+            user=user,
+            approved=True)
+
+
 class AttributionListViewTests(FundingViewTests, TestCase):
 
     def test_view_as_an_authorised_user(self):
