@@ -8,6 +8,8 @@ from funding.views import FundingSourceAddView
 from funding.views import FundingSourceCreateView
 from funding.views import PublicationCreateView
 from funding.views import AttributionListView
+from funding.views import FundingSourceListView
+from funding.views import PublicationListView
 from funding.views import AttributionUpdateView
 from funding.views import AttributionDeleteView
 from users.models import CustomUser
@@ -24,6 +26,7 @@ class FundingViewTests(TestCase):
         'users/fixtures/tests/users.json',
         'funding/fixtures/tests/funding_bodies.json',
         'funding/fixtures/tests/attributions.json',
+        'funding/fixtures/tests/funding_source_memberships.json',
         'project/fixtures/tests/categories.json',
         'project/fixtures/tests/projects.json',
         'project/fixtures/tests/memberships.json',
@@ -301,6 +304,8 @@ class FundingSourceAddViewWithUserAsMember(FundingSourceAddViewTests, TestCase):
 
 
 class AttributionListViewTests(FundingViewTests, TestCase):
+    view = AttributionListView
+    view_name = 'list-attributions'
 
     def test_view_as_an_authorised_user(self):
         """
@@ -326,19 +331,29 @@ class AttributionListViewTests(FundingViewTests, TestCase):
                 'REMOTE_USER': account.get('email'),
             }
             response = self.client.get(
-                reverse('list-attributions'),
+                reverse(self.view_name),
                 **headers
             )
             self.assertEqual(response.status_code,
                              account.get('expected_status_code'))
             self.assertTrue(isinstance(response.context_data.get('view'),
-                                       AttributionListView))
+                                       self.view))
 
     def test_view_as_an_unauthorised_user(self):
         """
-        Ensure unauthorised users can not access the project create view.
+        Ensure unauthorised users can not access the attribution list view.
         """
-        self.access_view_as_unauthorised_user(reverse('list-attributions'))
+        self.access_view_as_unauthorised_user(reverse(self.view_name))
+
+
+class FundingSourceListViewTests(AttributionListViewTests):
+    view = FundingSourceListView
+    view_name = 'list-funding_sources'
+
+
+class PublicationListViewTests(AttributionListViewTests):
+    view = PublicationListView
+    view_name = 'list-publications'
 
 
 class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
@@ -604,6 +619,79 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             )
         )
 
+
+class FundingsourceDetailViewTest(FundingViewTests, TestCase):
+    def test_view_as_pending_user(self):
+        """
+        Ensure an unapproved user can not view detail on a funding source.
+        """
+        fundingsource = FundingSource.objects.get(
+            title='Test funding source'
+        )
+        user = CustomUser.objects.get(email="norman.gordon@example.ac.uk")
+        institution = user.profile.institution
+        path = reverse('funding_source-detail-view', args=[fundingsource.id])
+        headers = {
+            'Shib-Identity-Provider': institution.identity_provider,
+            'REMOTE_USER': user.email,
+        }
+        response = self.client.get(path, **headers)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('list-attributions'))
+
+    def test_view_as_owner(self):
+        """
+        Ensure an unapproved user can not view detail on a funding source.
+        """
+        fundingsource = FundingSource.objects.get(
+            title='Test funding source'
+        )
+        user = fundingsource.owner
+        institution = user.profile.institution
+        path = reverse('funding_source-detail-view', args=[fundingsource.id])
+        headers = {
+            'Shib-Identity-Provider': institution.identity_provider,
+            'REMOTE_USER': user.email,
+        }
+        response = self.client.get(path, **headers)
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_as_other_institution_user(self):
+        """
+        Ensure an unapproved user can not view detail on a funding source.
+        """
+        fundingsource = FundingSource.objects.get(
+            title='Test funding source'
+        )
+        user = CustomUser.objects.get(email='test.user@example2.ac.uk')
+        institution = user.profile.institution
+        path = reverse('funding_source-detail-view', args=[fundingsource.id])
+        headers = {
+            'Shib-Identity-Provider': institution.identity_provider,
+            'REMOTE_USER': user.email,
+        }
+        response = self.client.get(path, **headers)
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_as_unrelated_user(self):
+        """
+        Ensure an unapproved user can not view detail on a funding source.
+        """
+        fundingsource = FundingSource.objects.get(
+            title='Test funding source'
+        )
+        user = CustomUser.objects.get(email="test.user@example3.ac.uk")
+        institution = user.profile.institution
+        path = reverse('funding_source-detail-view', args=[fundingsource.id])
+        headers = {
+            'Shib-Identity-Provider': institution.identity_provider,
+            'REMOTE_USER': user.email,
+        }
+        response = self.client.get(path, **headers)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('list-attributions'))
+
+
 class ListUnapprovedFundingSourcesTest(FundingViewTests, TestCase):
     def test_view_as_different_users(self):
 
@@ -751,3 +839,31 @@ class PublicationDeleteViewTests(FundingViewTests, TestCase):
                 args=[publication.id]
             )
         )
+
+
+class ListFundingSourceMembershipTests(FundingViewTests, TestCase):
+    def test_access_as_unauthorised_user(self):
+        """
+        Ensure that users not logged in get booted out of this page
+        """
+        self.access_view_as_unauthorised_user(
+            reverse('list-funding_source_memberships')
+        )
+
+    def test_access_as_authorised_user(self):
+        """
+        Check that logged in users can see this page.
+        """
+        user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
+        institution = Institution.objects.get(name="Example University")
+        headers = {
+            'Shib-Identity-Provider': institution.identity_provider,
+            'REMOTE_USER': user.email,
+        }
+
+        response = self.client.get(
+            reverse('list-funding_source_memberships'),
+            **headers
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test funding source")

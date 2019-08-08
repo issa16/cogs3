@@ -1,0 +1,46 @@
+[
+   {
+      "fields" : {
+         "created_time" : "2018-04-16T12:00:28Z",
+         "modified_time" : "2018-04-16T12:00:28Z",
+         "fundingsource" : 1,
+         "user" : 1,
+         "approved" : true
+      },
+      "model" : "funding.fundingsourcemembership",
+      "pk" : 1
+   },
+   {
+      "fields" : {
+         "created_time" : "2018-04-16T12:00:28Z",
+         "modified_time" : "2018-04-16T12:00:28Z",
+         "fundingsource" : 1,
+         "user" : 5,
+         "approved" : true
+      },
+      "model" : "funding.fundingsourcemembership",
+      "pk" : 2
+   },
+   {
+      "fields" : {
+         "created_time" : "2018-04-16T12:00:28Z",
+         "modified_time" : "2018-04-16T12:00:28Z",
+         "fundingsource" : 1,
+         "user" : 4,
+         "approved" : false
+      },
+      "model" : "funding.fundingsourcemembership",
+      "pk" : 3
+   },
+   {
+      "fields" : {
+         "created_time" : "2018-04-16T12:00:28Z",
+         "modified_time" : "2018-04-16T12:00:28Z",
+         "fundingsource" : 1,
+         "user" : 7,
+         "approved" : true
+      },
+      "model" : "funding.fundingsourcemembership",
+      "pk" : 4
+   }
+]
