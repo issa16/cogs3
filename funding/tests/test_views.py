@@ -601,7 +601,7 @@ class ListUnapprovedFundingSourcesTest(FundingViewTests, TestCase):
             if response.status_code == 200:
                 [self.assertTrue(f.title in str(response.content)) for f in FundingSource.objects.all()]
 
-class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
+class PublicationDeleteViewTests(FundingViewTests, TestCase):
 
     def test_view_as_an_authorised_user(self):
         """
@@ -609,7 +609,8 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
         """
         user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
         institution = Institution.objects.get(name="Example University")
-        funding_source = FundingSource.objects.get(title="Test funding source")
+
+        publication = Publication.objects.get(title="Test publication")
 
         accounts = [
             {
@@ -625,7 +626,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             response = self.client.get(
                 reverse(
                     'delete-attribution',
-                    args=[funding_source.id]
+                    args=[publication.id]
                 ),
                 **headers
             )
@@ -644,7 +645,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
         user = CustomUser.objects.get(email="guest.user@external.ac.uk")
         user2 = CustomUser.objects.get(email="test.user@example2.ac.uk")
         institution = Institution.objects.get(name="Example University")
-        funding_source = FundingSource.objects.get(title="Test funding source")
+        publication = Publication.objects.get(title="Test publication")
 
         accounts = [
             {
@@ -664,7 +665,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             response = self.client.get(
                 reverse(
                     'delete-attribution',
-                    args=[funding_source.id]
+                    args=[publication.id]
                 ),
                 **headers
             )
@@ -673,7 +674,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
         self.access_view_as_unauthorised_user(
             reverse(
                 'delete-attribution',
-                args=[funding_source.id]
+                args=[publication.id]
             )
         )
 
@@ -683,7 +684,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
         """
         user = CustomUser.objects.get(email="test.user@example2.ac.uk")
         institution = Institution.objects.get(name="Example University")
-        funding_source = FundingSource.objects.get(title="Test funding source")
+        publication = Publication.objects.get(title="Test publication")
 
         accounts = [
             {
@@ -692,8 +693,8 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             },
         ]
         for account in accounts:
-            funding_source.pi_email = account.get('email')
-            funding_source.save()
+            publication.pi_email = account.get('email')
+            publication.save()
             headers = {
                 'Shib-Identity-Provider': institution.identity_provider,
                 'REMOTE_USER': account.get('email'),
@@ -701,7 +702,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             response = self.client.get(
                 reverse(
                     'delete-attribution',
-                    args=[funding_source.id]
+                    args=[publication.id]
                 ),
                 **headers
             )
@@ -710,6 +711,6 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
         self.access_view_as_unauthorised_user(
             reverse(
                 'delete-attribution',
-                args=[funding_source.id]
+                args=[publication.id]
             )
         )
