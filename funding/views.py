@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.http import JsonResponse
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.conf import settings
@@ -335,6 +336,7 @@ class ToggleFundingSourceMembershipApproved(LoginRequiredMixin, generic.UpdateVi
     context_object_name = 'memberships'
     model = FundingSourceMembership
     fields = ['approved']
+    template_name = 'includes/generic_form.html'
 
     def request_allowed(self, request):
         try:
