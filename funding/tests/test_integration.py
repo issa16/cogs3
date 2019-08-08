@@ -383,7 +383,3 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         )
         if matching_sources.count() != 0:
             raise AssertionError()
-
-    fixtures = [
-        'institution/fixtures/tests/institutions.json',
-    ]
