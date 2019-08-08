@@ -161,7 +161,7 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                     user_name = self.request.user.first_name + ' ' + self.request.user.last_name
                     self.notify_pi(fundingsource, user_name)
 
-                    return HttpResponseRedirect(reverse_lazy('add-funding-source', confirm)+popup)
+                    return HttpResponseRedirect(reverse_lazy('list-attributions')+popup)
 
             else:
                 if self.request.GET.get('_popup'):
