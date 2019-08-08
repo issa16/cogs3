@@ -225,6 +225,8 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if matching_allocations.count() != 1:
             raise AssertionError()
 
+        allocation = matching_allocations.first()
+
         # Check the project status
         self.get_url(reverse('project-application-list'))
         self.click_link_by_url(reverse('project-application-detail', kwargs={'pk': project.id}))
@@ -254,6 +256,15 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
             raise AssertionError()
         if 'Project Owner' not in self.selenium.page_source:
+            raise AssertionError()
+
+        # Check that the file was uploaded
+        rootpath = os.path.join(os.path.dirname(self.test_file), os.pardir, os.pardir, 'tmp')
+        uploadpath = os.path.join(rootpath, allocation.document.name)
+        uploadpath = os.path.normpath(uploadpath)
+        if not os.path.isfile(uploadpath):
+            raise AssertionError()
+        if not filecmp.cmp(uploadpath, self.test_file):
             raise AssertionError()
 
         # Login with a different user (student) and add the project
@@ -417,6 +428,8 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if matching_allocations.count() != 1:
             raise AssertionError()
 
+        allocation = matching_allocations.first()
+
         #Aprove the system alocation
         SystemAllocationRequest.objects.filter(project=project).update(status=1)
         
@@ -453,6 +466,15 @@ class ProjectIntegrationTests(SeleniumTestsBase):
         if self.default_project_form_fields["id_title"] not in self.selenium.page_source:
             raise AssertionError()
         if 'Project Owner' not in self.selenium.page_source:
+            raise AssertionError()
+
+        # Check that the file was uploaded
+        rootpath = os.path.join(os.path.dirname(self.test_file), os.pardir, os.pardir, 'tmp')
+        uploadpath = os.path.join(rootpath, allocation.document.name)
+        uploadpath = os.path.normpath(uploadpath)
+        if not os.path.isfile(uploadpath):
+            raise AssertionError()
+        if not filecmp.cmp(uploadpath, self.test_file):
             raise AssertionError()
 
         # Login with a different user (student) and add the project

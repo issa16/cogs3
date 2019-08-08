@@ -115,14 +115,13 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
     success_message = _("Successfully added funding source.")
     template_name = 'funding/fundingsource_form.html'
 
-    def notify_pi(self, membership):
-        user_name = membership.user.first_name + ' ' + membership.user.last_name
+    def notify_pi(self, fundingsource, user_name):
         subject = _('{company_name} Attribution Request by {user}'.format(company_name=settings.COMPANY_NAME, user=user_name))
         context = {
-            'first_name': membership.fundingsource.pi.first_name,
-            'to': membership.fundingsource.pi.email,
-            'identifier': membership.fundingsource.identifier,
-            'title': membership.fundingsource.title,
+            'first_name': fundingsource.pi.first_name,
+            'to': fundingsource.pi.email,
+            'identifier': fundingsource.identifier,
+            'title': fundingsource.title,
             'user': user_name,
         }
         email_user(
@@ -153,16 +152,16 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                 if user_is_member:
                     messages.add_message(self.request, messages.INFO,
                         "You already are a member of this funding source. It will become visible in attributions once the PI approves your membership")
-                    return HttpResponseRedirect(reverse_lazy('add-funding-source')+popup)
+                    return HttpResponseRedirect(reverse_lazy('list-attributions')+popup)
                 else:
                     messages.add_message(self.request, messages.INFO,
                         "A funding source with this identifier has been found on the system. "
-                        "An email will be sent to the PI to verify your ability to attibute the funding. "
-                        "Are you sure you wish to submit your request? Click save again to confirm.")
+                       "An email has been sent to the PI provided ({fundingsource.pi_email}) to request that you are added to this funding. ")
 
-                    self.notify_pi(fundingsource)
+                    user_name = self.request.user.first_name + ' ' + self.request.user.last_name
+                    self.notify_pi(fundingsource, user_name)
 
-                    return HttpResponseRedirect(reverse_lazy('add-funding-source', confirm)+popup)
+                    return HttpResponseRedirect(reverse_lazy('list-attributions')+popup)
 
             else:
                 if self.request.GET.get('_popup'):
@@ -285,7 +284,11 @@ class FundingsourceDetailView(LoginRequiredMixin, generic.DetailView):
     model = FundingSource
 
     def user_passes_test(self, request):
-        return FundingSource.objects.filter(id=self.kwargs['pk'], users=self.request.user).exists()
+        return FundingSourceMembership.objects.filter(
+            fundingsource=FundingSource.objects.get(id=self.kwargs['pk']),
+            user=self.request.user,
+            approved=True
+        ).exists()
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
@@ -293,7 +296,7 @@ class FundingsourceDetailView(LoginRequiredMixin, generic.DetailView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class AttributioneDeleteView(LoginRequiredMixin, generic.DeleteView):
+class AttributionDeleteView(LoginRequiredMixin, generic.DeleteView):
     ''' Delete an attribution. This will also delete the child. '''
     model = Attribution
     success_message = _("Funding source deleted.")

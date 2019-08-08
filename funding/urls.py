@@ -50,7 +50,7 @@ urlpatterns = [
     ),
     path(
         '<int:pk>/delete/',
-        views.AttributioneDeleteView.as_view(),
+        views.AttributionDeleteView.as_view(),
         name='delete-attribution',
     ),
     path(
