@@ -263,6 +263,13 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
         self.access_view_as_unauthorised_user(reverse('add-funding-source'))
 
 
+class FundingSourceAddViewWithFundingApprovalTests(FundingSourceAddViewTests, TestCase):
+    def setUp(self):
+        # Set funding approval to true
+        institution = Institution.objects.get(name="Example University")
+        institution.needs_funding_approval = True
+        institution.save()
+
 class AttributionListViewTests(FundingViewTests, TestCase):
 
     def test_view_as_an_authorised_user(self):
