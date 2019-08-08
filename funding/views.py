@@ -115,14 +115,13 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
     success_message = _("Successfully added funding source.")
     template_name = 'funding/fundingsource_form.html'
 
-    def notify_pi(self, membership):
-        user_name = membership.user.first_name + ' ' + membership.user.last_name
+    def notify_pi(self, fundingsource, user_name):
         subject = _('{company_name} Attribution Request by {user}'.format(company_name=settings.COMPANY_NAME, user=user_name))
         context = {
-            'first_name': membership.fundingsource.pi.first_name,
-            'to': membership.fundingsource.pi.email,
-            'identifier': membership.fundingsource.identifier,
-            'title': membership.fundingsource.title,
+            'first_name': fundingsource.pi.first_name,
+            'to': fundingsource.pi.email,
+            'identifier': fundingsource.identifier,
+            'title': fundingsource.title,
             'user': user_name,
         }
         email_user(
@@ -160,7 +159,8 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                         "An email will be sent to the PI to verify your ability to attibute the funding. "
                         "Are you sure you wish to submit your request? Click save again to confirm.")
 
-                    self.notify_pi(fundingsource)
+                    user_name = self.request.user.first_name + ' ' + self.request.user.last_name
+                    self.notify_pi(fundingsource, user_name)
 
                     return HttpResponseRedirect(reverse_lazy('add-funding-source', confirm)+popup)
 
