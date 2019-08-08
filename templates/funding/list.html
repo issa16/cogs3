@@ -51,7 +51,11 @@
 					{% for attribution in attributions %}
 						<tr>
 							<td>{{attribution.verbose_type}}</td>
+							{% if attribution.is_fundingsource and attribution.owner != request.user or attribution.is_fundingsource and attribution.owner.profile.institution.needs_funding_approval %}
+							<td>{{attribution.title}}</td>
+							{% else %}
 							<td><a href="{% url 'update-attribution' attribution.pk %}">{{attribution.title}}</a></td>
+							{% endif %}
 							<td>
 								{% if attribution.owner == request.user and not attribution.fundingsource.approved %}
 								<a class="btn btn-danger" href="{% url 'delete-attribution' attribution.pk %}">{% trans "Delete" %}</a>
