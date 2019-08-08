@@ -268,7 +268,11 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
             )
 
     def user_passes_test(self, request):
-        return Attribution.objects.filter(id=self.kwargs['pk'], owner=self.request.user).exists()
+        return (
+            Attribution.objects.filter(id=self.kwargs['pk'],
+                                       owner=self.request.user).exists()
+            or self.request.user.has_perm('funding.approve_funding_sources')
+        )
 
     def dispatch(self, request, *args, **kwargs):
         obj = self.get_object()

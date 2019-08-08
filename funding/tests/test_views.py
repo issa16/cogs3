@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth.models import Permission
 
 from funding.forms import FundingSourceForm
 from funding.forms import PublicationForm
@@ -436,6 +437,7 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
         """
         user = CustomUser.objects.get(email="shibboleth.user@example.ac.uk")
         user2 = CustomUser.objects.get(email="test.user@example2.ac.uk")
+        attr_user = CustomUser.objects.get(email="attr.user@example.ac.uk")
         institution = Institution.objects.get(name="Example University")
         publication = Publication.objects.get(title="Test publication")
 
@@ -448,10 +450,16 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
                 'user': user2,
                 'expected_status_code': 200,
             },
+            {
+                'user': attr_user,
+                'expected_status_code': 200,
+            },
         ]
         for account in accounts:
-            publication.created_by = account.get('user')
-            publication.save()
+            # Attr users should always be able to see details
+            if account['user'] != attr_user:
+                publication.created_by = account.get('user')
+                publication.save()
             headers = {
                 'Shib-Identity-Provider': institution.identity_provider,
                 'REMOTE_USER': account.get('user').email,
