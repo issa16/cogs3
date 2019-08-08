@@ -293,7 +293,7 @@ class FundingsourceDetailView(LoginRequiredMixin, generic.DetailView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class AttributioneDeleteView(LoginRequiredMixin, generic.DeleteView):
+class AttributionDeleteView(LoginRequiredMixin, generic.DeleteView):
     ''' Delete an attribution. This will also delete the child. '''
     model = Attribution
     success_message = _("Funding source deleted.")

@@ -9,7 +9,7 @@ from funding.views import FundingSourceCreateView
 from funding.views import PublicationCreateView
 from funding.views import AttributionListView
 from funding.views import AttributionUpdateView
-from funding.views import AttributioneDeleteView
+from funding.views import AttributionDeleteView
 from users.models import CustomUser
 from funding.models import FundingSource
 from funding.models import Publication
@@ -486,7 +486,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             self.assertTrue(
                 isinstance(
                     response.context_data.get('view'),
-                    AttributioneDeleteView
+                    AttributionDeleteView
                 )
             )
 
@@ -633,7 +633,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             self.assertTrue(
                 isinstance(
                     response.context_data.get('view'),
-                    AttributioneDeleteView
+                    AttributionDeleteView
                 )
             )
 
