@@ -182,6 +182,9 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
             if identifier:
                 endpoint = reverse_lazy('create-funding-source-with-identifier', args=[identifier])
             else:
+                # this code is currently inaccessible due to validation on
+                # identfier in FundingSource, but redirecting in case of identifier
+                # somehow not being truthy
                 endpoint = reverse_lazy('create-funding-source')
 
             return HttpResponseRedirect(endpoint + popup)

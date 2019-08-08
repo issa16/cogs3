@@ -184,12 +184,6 @@ class SystemAllocationRequestAdminForm(forms.ModelForm):
         return allocation
 
 
-class LocalizeModelChoiceField(forms.ModelChoiceField):
-
-    def label_from_instance(self, obj):
-        return _(obj.__str__())
-
-
 class ProjectCreationForm(forms.ModelForm):
 
     class Meta:

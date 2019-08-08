@@ -342,7 +342,7 @@ class FundingSourceTests(FundingTests):
         self.assertEqual(funding_source.funding_body, fundingbody)
         self.assertEqual(funding_source.approved, False)
         self.assertEqual(funding_source.pi.email, pi_email)
-        self.assertEqual(funding_source.owner, user)
+        self.assertEqual(funding_source.owner, funding_source.pi)
 
     def test_project_funding_source_creation_new_pi_can_log_in(self):
         """
