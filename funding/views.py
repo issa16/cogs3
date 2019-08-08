@@ -156,8 +156,7 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                 else:
                     messages.add_message(self.request, messages.INFO,
                         "A funding source with this identifier has been found on the system. "
-                        "An email will be sent to the PI to verify your ability to attibute the funding. "
-                        "Are you sure you wish to submit your request? Click save again to confirm.")
+                       "An email has been sent to the PI provided ({fundingsource.pi_email}) to request that you are added to this funding. ")
 
                     user_name = self.request.user.first_name + ' ' + self.request.user.last_name
                     self.notify_pi(fundingsource, user_name)
