@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import Permission
 
 from funding.forms import FundingSourceForm
 from funding.forms import PublicationForm
