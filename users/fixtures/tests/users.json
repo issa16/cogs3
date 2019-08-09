@@ -182,6 +182,30 @@
     }
   },
   {
+    "model": "users.customuser",
+    "pk": 9,
+    "fields": {
+      "password": "pbkdf2_sha256$100000$pDsB4aYMG1pK$Llfae4PRrAiNzFhsuWWWyb758Mjxvzsb2jW1B2ebpgU=",
+      "last_login": "2018-06-26T12:16:52.434Z",
+      "username": "attr.user@example.ac.uk",
+      "email": "attr.user@example.ac.uk",
+      "is_shibboleth_login_required": true,
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "created_at": "2018-06-26T10:50:45.805Z",
+      "updated_at": "2018-06-26T12:16:34.736Z",
+      "first_name": "Attr",
+      "last_name": "User",
+      "reason_for_account": "testing",
+      "accepted_terms_and_conditions": true,
+      "groups": [
+        1
+      ],
+      "user_permissions": [ 133 ]
+    }
+  },
+  {
     "model": "users.shibbolethprofile",
     "pk": 1,
     "fields": {
@@ -253,6 +277,19 @@
       "shibboleth_id": "test.user@example3.ac.uk",
       "institution": 3,
       "department": "Departmental Studies",
+      "orcid": "xxxxxxxxxxxxxxxx",
+      "scopus": "http://example3.ac.uk/scopus",
+      "homepage": "http://example3.ac.uk/homepage",
+      "cronfa": "http://example3.ac.uk/cronfa"
+    }
+  },
+  {
+    "model": "users.shibbolethprofile",
+    "pk": 9,
+    "fields": {
+      "shibboleth_id": "attr.user@example.ac.uk",
+      "institution": 1,
+      "department": "Administration",
       "orcid": "xxxxxxxxxxxxxxxx",
       "scopus": "http://example3.ac.uk/scopus",
       "homepage": "http://example3.ac.uk/homepage",
@@ -384,6 +421,23 @@
     "fields": {
       "user": 8,
       "scw_username": "test.user",
+      "hpcw_username": "",
+      "hpcw_email": "",
+      "raven_username": "",
+      "raven_email": "",
+      "uid_number": null,
+      "description": "",
+      "phone": "00000-000-000",
+      "account_status": 0,
+      "previous_account_status": 0
+    }
+  },
+  {
+    "model": "users.profile",
+    "pk": 9,
+    "fields": {
+      "user": 9,
+      "scw_username": "attr.user",
       "hpcw_username": "",
       "hpcw_email": "",
       "raven_username": "",
