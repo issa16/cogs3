@@ -169,7 +169,7 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
         'funding/fixtures/tests/attributions.json',
     ]
 
-    url_append_str = '?_popup=1'
+    url_append_str = ''
 
     def test_add_fundingsource_view_as_an_authorised_user(self):
         """
@@ -197,7 +197,7 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
 
             # Test get. Response is a form
             response = self.client.get(
-                reverse('add-funding-source'),
+                reverse('add-funding-source') + self.url_append_str,
                 **headers
             )
             self.assertEqual(response.status_code, account.get('expected_status_code'))
@@ -246,7 +246,7 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
             # Test post with new id. Redirects to create form
             new_identifier = 'n53c7'
             response = self.client.post(
-                reverse('add-funding-source'),
+                reverse('add-funding-source') + self.url_append_str,
                 data={
                     'identifier': new_identifier
                 },
@@ -259,7 +259,7 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
             existing_identifier = 'scw0001'
 
             response = self.client.post(
-                reverse('add-funding-source'),
+                reverse('add-funding-source') + self.url_append_str,
                 data={
                     'identifier': existing_identifier,
                 },
