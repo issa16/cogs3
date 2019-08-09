@@ -1,4 +1,6 @@
 from selenium_base import SeleniumTestsBase
+from selenium.common.exceptions import NoSuchElementException
+
 from funding.models import FundingSource
 from institution.models import Institution
 

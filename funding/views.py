@@ -268,7 +268,11 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
             )
 
     def user_passes_test(self, request):
-        return Attribution.objects.filter(id=self.kwargs['pk'], owner=self.request.user).exists()
+        return (
+            Attribution.objects.filter(id=self.kwargs['pk'],
+                                       owner=self.request.user).exists()
+            or self.request.user.has_perm('funding.approve_funding_sources')
+        )
 
     def dispatch(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -310,7 +314,10 @@ class AttributionDeleteView(LoginRequiredMixin, generic.DeleteView):
         attribution = self.get_object()
         if attribution.is_fundingsource:
             fundingsource = attribution.child
-            if fundingsource.pi.profile.institution.needs_funding_approval:
+            if (
+                    fundingsource.approved and
+                    fundingsource.pi.profile.institution.needs_funding_approval
+            ):
                 return False
             else:
                 return fundingsource.owner == self.request.user
