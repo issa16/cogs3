@@ -168,6 +168,11 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
 
                     user_name = self.request.user.first_name + ' ' + self.request.user.last_name
                     self.notify_pi(fundingsource, user_name)
+                    FundingSourceMembership.objects.get_or_create(
+                        user=self.request.user,
+                        fundingsource=fundingsource,
+                        defaults={'approved': False}
+                    )
 
                     return HttpResponseRedirect(reverse_lazy('list-attributions')+popup)
 
