@@ -154,9 +154,17 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                         "You already are a member of this funding source. It will become visible in attributions once the PI approves your membership")
                     return HttpResponseRedirect(reverse_lazy('list-attributions')+popup)
                 else:
-                    messages.add_message(self.request, messages.INFO,
-                        "A funding source with this identifier has been found on the system. "
-                       "An email has been sent to the PI provided ({fundingsource.pi_email}) to request that you are added to this funding. ")
+                    messages.add_message(
+                        self.request, messages.INFO,
+                        "A funding source with this identifier has been found "
+                        "on the system. "
+                        "An email has been sent to the PI provided " +
+                        (f"({fundingsource.pi_email}) "
+                         if fundingsource.pi_email
+                         else '') +
+                        "to request that you "
+                        "are added to this funding. "
+                    )
 
                     user_name = self.request.user.first_name + ' ' + self.request.user.last_name
                     self.notify_pi(fundingsource, user_name)
