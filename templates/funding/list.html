@@ -52,7 +52,11 @@
 						<tr>
 							<td>{{attribution.verbose_type}}</td>
 							{% if attribution.is_fundingsource and attribution.owner != request.user or attribution.is_fundingsource and attribution.owner.profile.institution.needs_funding_approval %}
-							<td>{{attribution.title}}</td>
+                                                        {% if attribution.owner != request.user %}
+                                                        <td>{{attribution.title}}</td>
+                                                        {% else %}
+                                                        <td><a href="{% url 'funding_source-detail-view' attribution.pk %}">{{attribution.title}}</a></td>
+                                                        {% endif %}
 							{% else %}
 							<td><a href="{% url 'update-attribution' attribution.pk %}">{{attribution.title}}</a></td>
 							{% endif %}
