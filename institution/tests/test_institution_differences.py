@@ -19,7 +19,6 @@ This is an end-to-end test that checks also the fixtures.
 from selenium_base import SeleniumTestsBase
 from institution.models import Institution
 from project.models import Project, SystemAllocationRequest
-import project  # TENTATIVE
 from system.models import System
 from users.models import CustomUser
 
@@ -225,7 +224,9 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
         access_request_text = "Supercomputer access requests"
 
         if access_request_text in self.selenium.page_source and not separate_allocation_requests:
-            raise AssertionError(f'"{access_request_text}" string in page source.')
+            raise AssertionError(
+                f'"{access_request_text}" string in page source.'
+            )
 
         self._go_to_dashboard()
         self._go_to_project_list_from_dashboard()

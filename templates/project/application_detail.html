@@ -84,7 +84,7 @@
 							{% comment  %}
 							This has been changed to assume that funding workflow applies to institutions who have opted in and external users for testing purposes.
 							{% endcomment %}
-							{% if project.tech_lead.institution.needs_funding_workflow or project.tech_lead.institution == None %}
+							{% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
 							<tr>
 								<th scope="row">{% trans "Attributions" %}</th>
 								<td>
