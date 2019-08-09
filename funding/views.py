@@ -293,8 +293,7 @@ class FundingsourceDetailView(LoginRequiredMixin, generic.DetailView):
     def user_passes_test(self, request):
         return FundingSourceMembership.objects.filter(
             fundingsource=FundingSource.objects.get(id=self.kwargs['pk']),
-            user=self.request.user,
-            approved=True
+            user=self.request.user
         ).exists()
 
     def dispatch(self, request, *args, **kwargs):
