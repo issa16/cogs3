@@ -1,3 +1,4 @@
+{% load i18n %}
 User Account Update
 
 Dear {{first_name}},
