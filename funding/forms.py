@@ -11,7 +11,7 @@ class FundingSourceForm(forms.ModelForm):
         model = FundingSource
         fields = ['title', 'identifier', 'amount', 'funding_body', 'pi_email']
 
-    def __init__(self, user, *args, identifier=None, **kwargs):
+    def __init__(self, user, *args, identifier=None, view='create', **kwargs):
         super(FundingSourceForm, self).__init__(*args, **kwargs)
 
         if user.profile.institution is not None:
@@ -24,6 +24,9 @@ class FundingSourceForm(forms.ModelForm):
                 self.fields['identifier'].label = _(
                     user.profile.institution.funding_database_entry_name
                 )
+        if view == 'update':
+            self.fields['pi_email'].help_text = None
+            self.fields['pi_email'].disabled = True
         # Set the initial email if pi is a user
         self.user = user
         self.user_email = user.email
