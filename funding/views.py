@@ -259,6 +259,7 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
         if self.type == 'fundingsource':
             return FundingSourceForm(
                 self.request.user,
+                view='update',
                 **self.get_form_kwargs()
             )
         if self.type == 'publication':

@@ -6,6 +6,9 @@ class email_checkbox_handler {
 
 	  /* Add the checkbox and label */
 		this.textbox = document.getElementById(id);
+		if(this.textbox.disabled) {
+			return;
+		}
 		this.label = document.createElement('label');
 		this.label.style.display = 'block';
 		this.checkbox = document.createElement('input');
