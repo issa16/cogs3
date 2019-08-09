@@ -57,7 +57,7 @@
                             <tr>
                                 <th scope="col">{% trans "User" %}</th>
                                 <th scope="col">{% trans "Approved" %}</th>
-                                <th scope="col"></th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -65,13 +65,15 @@
                                 <tr>
                                     <td>{{membership.user}}</td>
                                     <td>{% if membership.approved %} Approved {% else %} Awaiting Approval {% endif %} </td>
-                                    <td>
+                                    <td style="width: 1%">
+				    {% if membership.user != grant.pi and membership.user != grant.owner %}
                                         <form method="post" action="{% url 'toggle-funding_source_membership-approved' membership.pk %}">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-primary">
                                             {% if membership.approved %} Retract {% else %} Approve {% endif %}
                                         </button>
                                         </form>
+					{% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
