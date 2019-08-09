@@ -314,7 +314,10 @@ class AttributionDeleteView(LoginRequiredMixin, generic.DeleteView):
         attribution = self.get_object()
         if attribution.is_fundingsource:
             fundingsource = attribution.child
-            if fundingsource.pi.profile.institution.needs_funding_approval:
+            if (
+                    fundingsource.approved and
+                    fundingsource.pi.profile.institution.needs_funding_approval
+            ):
                 return False
             else:
                 return fundingsource.owner == self.request.user
