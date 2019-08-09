@@ -1,4 +1,6 @@
 from selenium_base import SeleniumTestsBase
+from selenium.common.exceptions import NoSuchElementException
+
 from funding.models import FundingSource
 from institution.models import Institution
 
@@ -204,13 +206,11 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.user.profile.institution.save()
 
         url = reverse('update-attribution', args=[funding_source.id])
-        self.click_link_by_url(url)
-        if "url" in self.selenium.current_url:
-            raise AssertionError()
-
-        # Should be redirected to detail view
-        url = reverse('funding_source-detail-view', args=[funding_source.id])
-        if url not in self.selenium.current_url:
+        try:
+            self.click_link_by_url(url)
+        except NoSuchElementException:
+            pass
+        else:
             raise AssertionError()
 
     def test_create_funding_source_requiring_approval_with_other_pi(self):
