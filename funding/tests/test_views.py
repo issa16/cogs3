@@ -6,6 +6,7 @@ from django.urls import reverse
 from funding.forms import FundingSourceForm
 from funding.forms import PublicationForm
 from funding.forms import AddFundingSourceForm
+from funding.forms import FundingSourceApprovalForm
 from funding.views import FundingSourceAddView
 from funding.views import FundingSourceCreateView
 from funding.views import PublicationCreateView
@@ -14,7 +15,9 @@ from funding.views import FundingSourceListView
 from funding.views import PublicationListView
 from funding.views import AttributionUpdateView
 from funding.views import AttributionDeleteView
+from funding.views import ApproveFundingSource
 from users.models import CustomUser
+from funding.models import FundingBody
 from funding.models import FundingSource
 from funding.models import FundingSourceMembership
 from funding.models import Publication
@@ -423,7 +426,7 @@ class ListAttributionsTests(FundingViewTests, TestCase):
                 description='Project description',
                 legacy_hpcw_id='HPCW-12345',
                 legacy_arcca_id='ARCCA-12345',
-                code=f'scw{1000 + user.id}',
+                code=f'scw{2000 + user.id}',
                 institution_reference='BW-12345',
                 department='School of Chemistry',
                 supervisor_name="Joe Bloggs",
@@ -976,3 +979,54 @@ class ListFundingSourceMembershipTests(FundingViewTests, TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test funding source")
+
+
+class ApproveFundingSourceTests(FundingViewTests, TestCase):
+    
+    def setUp(self):
+        self.project = Project.objects.get(code='scw0000')
+
+        self.funding_source = FundingSource.objects.create(
+            title='A grant for testing with',
+            identifier='1234',
+            funding_body=FundingBody.objects.get(name='Test'),
+            created_by=self.project.tech_lead,
+            pi_email='norman.gordon@example.ac.uk',
+            amount=1000,
+        )
+
+    def test_view_as_attr(self):
+        accounts = [
+            {
+                'user': CustomUser.objects.get(
+                    email="attr.user@example.ac.uk"
+                ),
+                'expected_status_code': 200
+            },
+            {
+                'user': CustomUser.objects.get(
+                    email="shibboleth.user@example.ac.uk"
+                ),
+                'expected_status_code': 403
+            }
+        ]
+
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': (account.get('user').profile
+                                           .institution.identity_provider),
+                'REMOTE_USER': account.get('user').email,
+            }
+
+            response = self.client.get(
+                reverse('approve-funding_source',
+                        args=[self.funding_source.id]),
+                **headers
+            )
+            self.assertEqual(response.status_code,
+                             account.get('expected_status_code'))
+            if response.status_code == 200:
+                self.assertTrue(isinstance(response.context_data.get('form'),
+                                           FundingSourceApprovalForm))
+                self.assertTrue(isinstance(response.context_data.get('view'),
+                                           ApproveFundingSource))
