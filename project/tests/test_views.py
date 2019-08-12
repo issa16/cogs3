@@ -46,6 +46,7 @@ class ProjectViewTests(TestCase):
         'project/fixtures/tests/categories.json',
         'project/fixtures/tests/projects.json',
         'project/fixtures/tests/memberships.json',
+        'funding/fixtures/tests/attributions.json'
     ]
 
     def setUp(self):
