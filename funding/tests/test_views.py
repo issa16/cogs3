@@ -1,3 +1,5 @@
+import json
+
 from django.test import TestCase
 from django.urls import reverse
 
@@ -17,6 +19,7 @@ from funding.models import FundingSource
 from funding.models import FundingSourceMembership
 from funding.models import Publication
 from institution.models import Institution
+from project.models import Project
 
 
 class FundingViewTests(TestCase):
@@ -344,6 +347,105 @@ class AttributionListViewTests(FundingViewTests, TestCase):
         Ensure unauthorised users can not access the attribution list view.
         """
         self.access_view_as_unauthorised_user(reverse(self.view_name))
+
+
+class ListAttributionsTests(FundingViewTests, TestCase):
+    view_name = 'project-list-attributions-with-pk'
+
+    def test_view_with_project_with_attributions(self):
+        project_accounts = [
+            {
+                'user': CustomUser.objects.get(
+                    email="shibboleth.user@example.ac.uk"
+                ),
+                'project': Project.objects.get(pk=1),
+                'expected titles': [
+                    'Test funding source (awaiting approval)',
+                    'Test publication'
+                ]
+            },
+            {
+                'user': CustomUser.objects.get(
+                    email="test.user@example2.ac.uk"
+                ),
+                'project': Project.objects.get(pk=2),
+                'expected titles': [
+                    'Test funding source 2 (awaiting approval)'
+                ]
+            }
+        ]
+
+        for project_account in project_accounts:
+            user = project_account['user']
+            institution = user.profile.institution
+            project = project_account['project']
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': user.email,
+            }
+            response = self.client.get(
+                reverse(self.view_name, args=[project.pk]),
+                **headers
+            )
+            response_content = json.loads(response.content)
+            titles = [result['title']
+                      for result in response_content['results']]
+            for title in project_account['expected titles']:
+                self.assertIn(title, titles)
+            for title in titles:
+                self.assertIn(title, project_account['expected titles'])
+
+    def test_view_with_project_without_attributions_already_attributed(self):
+        project_accounts = [
+            {
+                'user': CustomUser.objects.get(
+                    email="shibboleth.user@example.ac.uk"
+                ),
+                'expected titles': [
+                    'Test publication'
+                ]
+            },
+            {
+                'user': CustomUser.objects.get(
+                    email="test.user@example2.ac.uk"
+                ),
+                'expected titles': [
+                    'Test funding source 2 (awaiting approval)'
+                ]
+            }
+        ]
+
+        for project_account in project_accounts:
+            user = project_account['user']
+            institution = user.profile.institution
+            project = Project.objects.create(
+                title=f'Temporary test project for {user.email}',
+                description='Project description',
+                legacy_hpcw_id='HPCW-12345',
+                legacy_arcca_id='ARCCA-12345',
+                code=f'scw{1000 + user.id}',
+                institution_reference='BW-12345',
+                department='School of Chemistry',
+                supervisor_name="Joe Bloggs",
+                supervisor_position="RSE",
+                supervisor_email="joe.bloggs@swansea.ac.uk",
+                tech_lead=user,
+            )
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': user.email,
+            }
+            response = self.client.get(
+                reverse(self.view_name, args=[project.pk]),
+                **headers
+            )
+            response_content = json.loads(response.content)
+            titles = [result['title']
+                      for result in response_content['results']]
+            for title in project_account['expected titles']:
+                self.assertIn(title, titles)
+            for title in titles:
+                self.assertIn(title, project_account['expected titles'])
 
 
 class FundingSourceListViewTests(AttributionListViewTests):
