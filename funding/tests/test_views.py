@@ -691,6 +691,49 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
             )
         )
 
+    def test_view_as_unauthorised_user_with_approved_attribution(self):
+        """
+        Ensure unauthorised users can not access the delete view.
+        """
+        user = CustomUser.objects.get(email="guest.user@external.ac.uk")
+        user2 = CustomUser.objects.get(email="test.user@example2.ac.uk")
+        institution = Institution.objects.get(name="Example University")
+        institution.needs_funding_approval = True
+        funding_source = FundingSource.objects.get(title="Test funding source")
+        funding_source.approved = True
+
+        accounts = [
+            {
+                'email': user.email,
+                'expected_status_code': 302,
+            },
+            {
+                'email': user2.email,
+                'expected_status_code': 302,
+            },
+        ]
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': institution.identity_provider,
+                'REMOTE_USER': account.get('email'),
+            }
+            response = self.client.get(
+                reverse(
+                    'delete-attribution',
+                    args=[funding_source.id]
+                ),
+                **headers
+            )
+            self.assertEqual(response.status_code,
+                             account.get('expected_status_code'))
+
+        self.access_view_as_unauthorised_user(
+            reverse(
+                'delete-attribution',
+                args=[funding_source.id]
+            )
+        )
+
     def test_view_without_user_approval(self):
         """
         Ensure unauthorised users can not access the delete view.
