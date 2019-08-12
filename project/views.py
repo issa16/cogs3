@@ -224,6 +224,25 @@ class RSEAllocationCreateView(AllocationCreateView):
     template_name = 'project/rse_time.html'
     permission_required = 'project.add_project'
 
+    def request_allowed(self, request):
+        try:
+            return (request.user.profile.institution.allows_rse_requests
+                    and ProjectUserMembership.objects.filter(
+                        user=self.request.user, project=self.kwargs['project']
+                    ).exists())
+        except Exception:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_not_logged_in()
+        if not self.request_allowed(request):
+            return HttpResponseRedirect(
+                reverse('project-application-detail',
+                        args=[self.kwargs['project']])
+            )
+        return super().dispatch(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['project'] = self.kwargs.get('project', None)

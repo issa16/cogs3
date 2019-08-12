@@ -9,6 +9,7 @@ from django.urls import reverse
 from institution.models import Institution
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
+from project.forms import RSEAllocationRequestCreationForm
 from project.forms import SystemAllocationRequestCreationForm
 from project.tests.test_models import ProjectCategoryTests
 from project.tests.test_models import ProjectTests
@@ -25,6 +26,7 @@ from project.views import ProjectListView
 from project.views import ProjectUserMembershipFormView
 from project.views import ProjectUserMembershipListView
 from project.views import ProjectUserRequestMembershipListView
+from project.views import RSEAllocationCreateView
 from project.views import SystemAllocationCreateView
 from project.views import ProjectAndAllocationCreateView
 from project.views import SystemAllocationRequestDetailView
@@ -50,6 +52,7 @@ class ProjectViewTests(TestCase):
         self.project_applicant = CustomUser.objects.get(email='norman.gordon@example.ac.uk')
         
         # Applicant from an institution that does not verify users
+        # and doesn't permit RSE time requests
         self.inst2_applicant = CustomUser.objects.get(email='test.user@example2.ac.uk')
 
         self.project = Project.objects.get(code='scw0000')
@@ -178,6 +181,61 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
         self._access_view_as_unauthorised_application_user(
             reverse('create-project'),
             '/en-gb/accounts/login/?next=/en-gb/projects/create/',
+        )
+
+
+class RSEAllocationCreateViewTests(ProjectViewTests, TestCase):
+    def test_view_as_user_at_institution_without_rse_requests(self):
+        """
+        Ensure the RSE allocation create view is not accessible to an
+        authorised application user at an institution that doesn't allow
+        RSE time requests.
+        """
+        project = Project.objects.get(code='scw0001')
+        headers = {
+            'Shib-Identity-Provider': (self.inst2_applicant
+                                       .profile.institution.identity_provider),
+            'REMOTE_USER': self.inst2_applicant.email,
+        }
+        response = self.client.get(
+            reverse('request-project-rse-time', args=[project.id]),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url,
+                         reverse('project-application-detail',
+                                 args=[project.id]))
+
+    def test_view_as_project_owner(self):
+        """
+        Ensure the RSE allocation create view is accessible to an authorised
+        application user, who does have the required permissions.
+        """
+        headers = {
+            'Shib-Identity-Provider': (self.project_owner.profile
+                                       .institution.identity_provider),
+            'REMOTE_USER': self.project_owner.email,
+        }
+        response = self.client.get(
+            reverse('request-project-rse-time', args=[self.project.id]),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response.context_data.get('form'),
+                                   RSEAllocationRequestCreationForm))
+        self.assertTrue(isinstance(response.context_data.get('view'),
+                                   RSEAllocationCreateView))
+
+    def test_view_as_unauthorised_application_user(self):
+        """
+        Ensure the RSE allocation request create view is not accessible to an
+        unauthorised application user.
+        """
+        self._access_view_as_unauthorised_application_user(
+            reverse('request-project-rse-time', args=[self.project.id]),
+            '/en-gb/accounts/login/?next=/en-gb/projects/applications/'
+            f'{self.project.id}'
+            '/rse-time-application/',
         )
 
 
