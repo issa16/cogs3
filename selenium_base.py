@@ -105,11 +105,11 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
     def scroll_bottom(self):
         self.selenium.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-    def create_test_user(self, user):
+    def create_test_user(self, user, status=Profile.APPROVED):
         user.set_password(self.user_password)
         domain = user.email.split('@')[1]
         user.save()
-        user.profile.account_status = user.profile.APPROVED
+        user.profile.account_status = status
         user.save()
 
     def tearDown(self):
@@ -189,6 +189,20 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
             accepted_terms_and_conditions=True,
         )
         self.create_test_user(self.admin)
+
+        email = '@'.join(['unapproved', institution.base_domain])
+        self.unapproved_user = CustomUser(
+            username=email,
+            email=email,
+            first_name='Unapproved',
+            last_name='User',
+            is_staff=False,
+            is_superuser=False,
+            is_shibboleth_login_required=True,
+            accepted_terms_and_conditions=True
+        )
+        self.create_test_user(self.unapproved_user,
+                              status=Profile.AWAITING_APPROVAL)
 
         # Setup selenium
         activate(LANGUAGE_CODE)
