@@ -335,14 +335,6 @@ class ProjectDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):
 
         return super().get(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        if not self.object.can_view_project(request.user):
-            raise PermissionDenied
-
-        return super().post(request, *args, **kwargs)
-
 
 class SystemAllocationRequestDetailView(
     PermissionAndLoginRequiredMixin, generic.DetailView
