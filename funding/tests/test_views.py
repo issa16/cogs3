@@ -857,7 +857,7 @@ class ToggleFundingSourceMembershipApprovedTests(FundingViewTests, TestCase):
         funding_source_user = CustomUser.objects.get(
             email="test.user@example2.ac.uk"
         )
-        membership = FundingSourceMembership.objects.create(
+        membership = FundingSourceMembership.objects.get(
             user=funding_source_user,
             fundingsource=funding_source,
             approved=True
@@ -868,7 +868,7 @@ class ToggleFundingSourceMembershipApprovedTests(FundingViewTests, TestCase):
 
         # user which is pi of (same) funding source
         funding_source_pi = funding_source.pi
-        membership2 = FundingSourceMembership.objects.create(
+        membership2 = FundingSourceMembership.objects.get(
             user=funding_source_pi,
             fundingsource=funding_source,
             approved=True
