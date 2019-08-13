@@ -33,6 +33,7 @@ from project.views import RSEAllocationCreateView
 from project.views import SystemAllocationCreateView
 from project.views import ProjectAndAllocationCreateView
 from project.views import SystemAllocationRequestDetailView
+from project.views import ProjectAddAttributionView
 from system.models import System
 from users.models import CustomUser
 
@@ -732,6 +733,37 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
         )
 
 
+class ProjectAddAttributionViewTests(ProjectViewTests, TestCase):
+    def test_view_as_authorised_application_user(self):
+        """
+        Ensure the project add attribution view is accessible to an authorised
+        application user.
+        """
+        headers = {
+            'Shib-Identity-Provider': (self.project_owner.profile
+                                       .institution.identity_provider),
+            'REMOTE_USER': self.project_owner.email,
+        }
+        response = self.client.get(
+            reverse('project-add-attributions', args=[self.project.id]),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response.context_data.get('view'),
+                                   ProjectAddAttributionView))
+
+    def test_view_as_unauthorised_application_user(self):
+        """
+        Ensure the project add attribution view is not accessible to an
+        unauthorised application user.
+        """
+        self._access_view_as_unauthorised_application_user(
+            reverse('project-add-attributions', args=[self.project.id]),
+            '/en-gb/accounts/login/?next=/en-gb/projects/applications/'
+            f'{self.project.id}/attributions/',
+        )
+
+        
 class ProjectDocumentViewTests(ProjectViewTests, TestCase):
     def setUp(self):
         self.test_file = os.path.join(
