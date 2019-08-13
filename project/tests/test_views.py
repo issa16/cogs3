@@ -837,6 +837,7 @@ class ProjectDocumentViewTests(ProjectViewTests, TestCase):
             reverse('project-application-document',
                     args=[self.system_allocation_request.id]),
             '/en-gb/projects/applications/',
+            )
 
 
 class ProjectMembershipInviteViewTests(ProjectViewTests, TestCase):

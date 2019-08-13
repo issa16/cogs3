@@ -22,7 +22,6 @@ from project.models import Project, SystemAllocationRequest
 from system.models import System
 from users.models import CustomUser
 
-from unittest import skipIf
 from mock import Mock, patch
 
 from django.urls import reverse
@@ -455,18 +454,14 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
             user=self.aberystwyth_user, needs_funding_approval=True
         )
 
-    @skipIf(
-        True, 'Bangor users do not need funding workflow in the first place.'
-    )
     @tag("funding_approval")
     def test_bangor_user_sees_funding_approval_NO(self):
+        #Bangor users do not need funding workflow in the first place.
         pass
 
-    @skipIf(
-        True, 'Cardiff users do not need funding workflow in the first place'
-    )
     @tag("funding_approval")
     def test_cardiff_user_sees_funding_approval_NO(self):
+        # Cardiff users do not need funding workflow in the first place
         pass
 
     @tag("funding_approval")
@@ -497,7 +492,6 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
             separate_allocation_requests=False
         )
 
-    @skipIf(True, 'debug')
     @tag('supervisor_approval')
     def test_bangor_user_supervisor_approval_workflow_NO(self):
         self._check_supervisor_approval_workflow(
@@ -506,7 +500,6 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
             separate_allocation_requests=False
         )
 
-    @skipIf(True, 'debug')
     @tag('supervisor_approval')
     def test_cardiff_user_supervisor_approval_workflow_NO(self):
         self._check_supervisor_approval_workflow(
