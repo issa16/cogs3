@@ -22,7 +22,11 @@
       "funding_database_entry_name": "AMS identifier",
       "default_project_user_cap": 10,
       "needs_user_approval": false,
-      "logo_path": "/static/img/swansea_logo.png"
+      "logo_path": "/static/img/swansea_logo.png",
+      "AP_base": 50000,
+      "AP_per_publication": 10000,
+      "AP_per_CPU_hour": 1,
+      "AP_per_GPU_hour": 40
     }
   },
   {
@@ -87,7 +91,11 @@
       "funding_database_entry_name": "Work Order Code",
       "default_project_user_cap": 10,
       "needs_user_approval": false,
-      "logo_path": "/static/img/aberystwyth_logo.png"
+      "logo_path": "/static/img/aberystwyth_logo.png",
+      "AP_base": 50000,
+      "AP_per_publication": 10000,
+      "AP_per_CPU_hour": 1,
+      "AP_per_GPU_hour": 40
     }
   }
 ]
