@@ -896,3 +896,66 @@ class ProjectMembershipInviteViewTests(ProjectViewTests, TestCase):
             reverse('project-membership-invite', args=[self.project.id]),
             reverse('project-application-detail', args=[self.project.id]),
         )
+
+
+class ProjectSupervisorApproveViewTests(ProjectViewTests, TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.get(email='norman.gordon@example.ac.uk')
+        self.project = Project.objects.create(
+            title=f'Temporary test project for {self.user.email}',
+            description='Project description',
+            legacy_hpcw_id='HPCW-12345',
+            legacy_arcca_id='ARCCA-12345',
+            code=f'scw1004',
+            institution_reference='BW-12345',
+            department='School of Chemistry',
+            supervisor_name="Joe Bloggs",
+            supervisor_position="RSE",
+            supervisor_email="shibboleth.user@example.ac.uk",
+            tech_lead=self.user,
+        )
+
+    def test_view_as_logged_in_user(self):
+        """
+        Ensure the project supervisor approval view is not accessible to
+        logged in users who are not the supervisor.
+        """
+        accounts = [
+            {
+                'user': CustomUser.objects.get(
+                    email='norman.gordon@example.ac.uk'
+                ),
+                'expected_status_code': 302,
+                'expected_url': reverse('home')
+            },
+            {
+                'user': CustomUser.objects.get(
+                    email='shibboleth.user@example.ac.uk'
+                ),
+                'expected_status_code': 200
+            }
+        ]
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': (account['user'].profile.institution
+                                           .identity_provider),
+                'REMOTE_USER': account['user'].email,
+            }
+            response = self.client.get(
+                reverse('project-supervisor-approval', args=[self.project.id]),
+                **headers,
+            )
+            self.assertEqual(response.status_code,
+                             account['expected_status_code'])
+            if 'expected_url' in account:
+                self.assertEqual(response.url, account['expected_url'])
+
+    def test_view_as_unauthorised_application_user(self):
+        """
+        Ensure the project supervisor approval view is not accessible to an
+        unauthorised application user.
+        """
+        self._access_view_as_unauthorised_application_user(
+            reverse('project-supervisor-approval', args=[self.project.id]),
+            '/en-gb/',
+        )
