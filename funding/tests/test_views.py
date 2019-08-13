@@ -169,6 +169,7 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
         'funding/fixtures/tests/attributions.json',
     ]
 
+    # This is overriden this child classes for extension
     url_append_str = ''
 
     def test_add_fundingsource_view_as_an_authorised_user(self):
@@ -252,6 +253,7 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
                 },
                 **headers
             )
+
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/en-gb/funding/create-funding-source/" + new_identifier)
 
