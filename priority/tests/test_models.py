@@ -1,10 +1,7 @@
 from django.test import TestCase
-from django.urls import reverse
 
 from project.models import Project
-from funding.models import Attribution, FundingBody, FundingSource, Publication
-from institution.models import Institution
-from users.models import CustomUser
+from funding.models import Attribution
 
 
 class PriorityTests(TestCase):
