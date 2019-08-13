@@ -1,5 +1,6 @@
 import datetime
 import logging
+from warnings import warn
 
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -296,40 +297,27 @@ class Project(models.Model):
 
     def __str__(self):
         return self.code
-# Function added to projet model to allow calculation of Ap outside of calculate-priority script.      
-    def calculate_AP():
-        import logging
-        from cogs3.settings import BASE_DIR
-        # setup for error logging
-        logger = logging.getLogger('calculate_prioity')
-        hdlr = logging.FileHandler(BASE_DIR + '/logs/calculate_prioity.log')
-        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-        hdlr.setFormatter(formatter)
-        logger.addHandler(hdlr)
-        logger.setLevel(logging.WARNING)
-    # list all projects that are subject to the prioritized workflow.
-        prioritised_project_list = []
-        are_prioritised = ProjectSystemAllocation.objects.filter(system_id=2)
-        for I in are_prioritised:
-            prioritised_project_list.append(I.project.code)
-        prioritised_projects = Project.objects.filter(code__in=prioritised_project_list)
-        priorities = {}
-    # query the Database for attributions associted to each project and
-    # calculate Ap based on the type of attribution
-        for Projects in prioritised_projects:
-            Ap = 50000
-            if Projects.attributions:
-                for Att in Projects.attributions.all():
-                    if Att.is_fundingsource:
-                        Ap = Ap + Att.fundingsource.amount
-                    elif Att.is_publication:
-                        Ap = Ap + 10000
-                    else:
-                        # Unknown Attribution type so send a warning to the log don't update the Ap.
-                        logger.warning(
-                        'Attribution type not recognised and hence was not included in the Ap calculations.')
-            priorities.update({Projects.code: Ap})
-        return priorities
+
+    def AP(self):
+        institution = self.tech_lead.profile.institution
+        total_points = institution.AP_base
+
+        if self.attributions:
+            for attribution in self.attributions.all():
+                if attribution.is_fundingsource:
+                    if (
+                            attribution.fundingsource.approved
+                            or not institution.needs_funding_approval
+                    ):
+                        total_points += attribution.fundingsource.amount
+                elif attribution.is_publication:
+                    total_points += institution.AP_per_publication
+                else:
+                    warn(f'Attribution {attribution} has no AP implemented.',
+                         RuntimeWarning)
+
+        return total_points
+
 
 class SystemAllocationRequest(models.Model):
 
