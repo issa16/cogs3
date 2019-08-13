@@ -255,7 +255,7 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
             )
 
             self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.url, "/en-gb/funding/create-funding-source/" + new_identifier)
+            self.assertEqual(response.url, "/en-gb/funding/create-funding-source/" + new_identifier + self.url_append_str)
 
             # Test post with existing id
             existing_identifier = 'scw0001'
