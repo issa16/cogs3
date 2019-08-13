@@ -1111,7 +1111,7 @@ class ListFundingSourceMembershipTests(FundingViewTests, TestCase):
 
 
 class ApproveFundingSourceTests(FundingViewTests, TestCase):
-    
+
     def setUp(self):
         self.project = Project.objects.get(code='scw0000')
 
@@ -1130,13 +1130,16 @@ class ApproveFundingSourceTests(FundingViewTests, TestCase):
                 'user': CustomUser.objects.get(
                     email="attr.user@example.ac.uk"
                 ),
-                'expected_status_code': 200
+                'expected_status_code_get': 200,
+                'expected_status_code_post': 302,
+                'expected_status_code_post_redirect_url': '/en-gb/funding/admin/unapproved_fundingsources/'
             },
             {
                 'user': CustomUser.objects.get(
                     email="shibboleth.user@example.ac.uk"
                 ),
-                'expected_status_code': 403
+                'expected_status_code_get': 403,
+                'expected_status_code_post': 403,
             }
         ]
 
@@ -1147,15 +1150,45 @@ class ApproveFundingSourceTests(FundingViewTests, TestCase):
                 'REMOTE_USER': account.get('user').email,
             }
 
+            # test viewing the form
             response = self.client.get(
                 reverse('approve-funding_source',
                         args=[self.funding_source.id]),
                 **headers
             )
             self.assertEqual(response.status_code,
-                             account.get('expected_status_code'))
+                             account.get('expected_status_code_get'))
             if response.status_code == 200:
                 self.assertTrue(isinstance(response.context_data.get('form'),
                                            FundingSourceApprovalForm))
                 self.assertTrue(isinstance(response.context_data.get('view'),
                                            ApproveFundingSource))
+
+
+            # Funding source should not be approved before post self.assertFalse(self.funding_source.approved)
+
+            # Construct dict
+            form_values = {
+                'title': 'A grant for testing with',
+                'identifier': '1234',
+                'amount': 1000,
+                'funding_body': 1,
+                'pi_email': 'norman.gordon@example.ac.uk',
+            'approved': True }
+
+            response = self.client.post(
+                reverse('approve-funding_source',
+                        args=[self.funding_source.id]),
+                data=form_values,
+                **headers
+            )
+
+            self.assertEqual(response.status_code, account['expected_status_code_post'])
+
+            if response.status_code == 302:
+                self.assertEqual(response.url, account['expected_status_code_post_redirect_url'])
+                funding_source = FundingSource.objects.get(id=self.funding_source.id)
+
+                self.assertTrue(funding_source.approved)
+            else:
+                self.assertFalse(funding_source.approved)
