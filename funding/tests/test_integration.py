@@ -288,16 +288,12 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         self.sign_in(test_pi)
         self.get_url(reverse('list-attributions'))
         attrlist_url = self.selenium.current_url
-        try:
-            self.selenium.find_element_by_link_text(form_fields['id_title']
-                                                   ).click()
-            assert self.selenium.current_url != attrlist_url,\
+
+        self.selenium.find_element_by_link_text(form_fields['id_title']).click()
+
+        assert self.selenium.current_url != attrlist_url,\
                     "Pi was redirected to attribution list page "\
                     "instead of the attribution update view."
-        except NoSuchElementException:
-            pass
-        else:
-            raise AssertionError()
 
     def test_create_and_update_funding_source(self):
         """
