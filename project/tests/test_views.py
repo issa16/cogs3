@@ -1,6 +1,8 @@
 import random
 import string
 import uuid
+import os
+from datetime import datetime, timedelta, date
 
 from django.contrib.auth.models import Group
 from django.test import TestCase
@@ -20,6 +22,7 @@ from project.models import SystemAllocationRequest
 from funding.models import FundingBody
 from funding.models import FundingSource
 from project.models import ProjectUserMembership
+from project.models import SystemAllocationRequest
 from project.views import ProjectCreateView
 from project.views import ProjectDetailView
 from project.views import ProjectListView
@@ -30,6 +33,7 @@ from project.views import RSEAllocationCreateView
 from project.views import SystemAllocationCreateView
 from project.views import ProjectAndAllocationCreateView
 from project.views import SystemAllocationRequestDetailView
+from system.models import System
 from users.models import CustomUser
 
 from django.contrib.auth.models import Group
@@ -46,7 +50,8 @@ class ProjectViewTests(TestCase):
         'project/fixtures/tests/categories.json',
         'project/fixtures/tests/projects.json',
         'project/fixtures/tests/memberships.json',
-        'funding/fixtures/tests/attributions.json'
+        'funding/fixtures/tests/attributions.json',
+        'system/fixtures/tests/systems.json'
     ]
 
     def setUp(self):
@@ -725,6 +730,81 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
             reverse('project-membership-list'),
             '/en-gb/accounts/login/?next=/en-gb/projects/memberships/',
         )
+
+
+class ProjectDocumentViewTests(ProjectViewTests, TestCase):
+    def setUp(self):
+        self.test_file = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'test_file.txt'
+        )
+        self.project = Project.objects.get(code='scw0000')
+        self.institution = self.project.tech_lead.profile.institution
+        self.system_allocation_request = (
+            SystemAllocationRequest(
+                project_id=self.project.id,
+                start_date=date(2018, 8, 17),
+                end_date=date(2019, 9, 17),
+                requirements_software="none",
+                requirements_training="none",
+                requirements_onboarding="none",
+                allocation_cputime=87695464,
+                allocation_memory=1,
+                allocation_storage_home=200,
+                allocation_storage_scratch=1,
+                document=self.test_file,
+            )
+        )
+        self.system_allocation_request.save()
+
+    def test_view_as_logged_in_users(self):
+        accounts = [
+            {
+                'user': self.project.tech_lead,
+                'code': 200,
+                'content-type': 'text/plain'
+            },
+            {
+                'user': CustomUser.objects.get(
+                    email='admin.user@example.ac.uk'
+                ),
+                'code': 200,
+                'content-type': 'text/plain'
+            },
+            {
+                'user': CustomUser.objects.get(
+                    email='norman.gordon@example.ac.uk'
+                ),
+                'code': 302,
+                'url': '/en-gb/projects/applications/'
+            }
+        ]
+
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': self.institution.identity_provider,
+                'REMOTE_USER': account['user'].email,
+            }
+            response = self.client.get(
+                reverse('project-application-document',
+                        args=[self.system_allocation_request.id]),
+                **headers,
+            )
+            if 'content-type' in account:
+                self.assertEqual(response['content-type'],
+                                 account['content-type'])
+            if 'url' in account:
+                self.assertEqual(response.url, account['url'])
+
+    def test_view_as_unauthorised_application_user(self):
+        """
+        Ensure the project document view is not accessible to an unauthorised
+        application user.
+        """
+        self._access_view_as_unauthorised_application_user(
+            reverse('project-application-document',
+                    args=[self.system_allocation_request.id]),
+            '/en-gb/projects/applications/',
 
 
 class ProjectMembershipInviteViewTests(ProjectViewTests, TestCase):

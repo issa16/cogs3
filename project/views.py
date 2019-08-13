@@ -365,6 +365,8 @@ class RSEAllocationRequestDetailView(
 class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
 
     def user_passes_test(self, request):
+        if self.request.user.is_anonymous:
+            return False
         if SystemAllocationRequest.objects.filter(
             id=self.kwargs['pk'], project__tech_lead=self.request.user
         ).exists():
