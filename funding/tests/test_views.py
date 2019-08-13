@@ -914,15 +914,11 @@ class ToggleFundingSourceMembershipApprovedTests(FundingViewTests, TestCase):
             self.assertEqual(response.status_code,
                              account['expected_status_code'])
 
-            # Check that the page at least contains titles for all funding
-            # source objects
-            ###
-            # Why would we expect ALL funding source objects to appear here?
-            # TODO: work out a better test here
-            ###
-            # if response.status_code == 200:
-            #     [self.assertContains(response, f.title)
-            #      for f in FundingSource.objects.all()]
+            # Can't check a huge amount of the content as the form only
+            # returns the boolean approved status of the membership
+            if response.status_code == 200:
+                self.assertContains(response,
+                                    'id="id_approved" checked')
 
 
 class ListUnapprovedFundingSourcesTest(FundingViewTests, TestCase):
