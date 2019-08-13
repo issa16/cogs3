@@ -758,7 +758,7 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
         accounts = [
             {
                 'email': user.email,
-                'expected_status_code': 302,
+                'expected_status_code': 200,
             },
         ]
         for account in accounts:
@@ -775,7 +775,9 @@ class FundingSourceDeleteViewTests(FundingViewTests, TestCase):
                 ),
                 **headers
             )
+
             self.assertEqual(response.status_code, account.get('expected_status_code'))
+            self.assertContains(response, 'Are you sure you want to delete this funding source?')
 
         self.access_view_as_unauthorised_user(
             reverse(
