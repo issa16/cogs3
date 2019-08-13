@@ -267,8 +267,16 @@ class FundingSourceAddViewTests(FundingViewTests, TestCase):
                 },
                 **headers
             )
-            self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.url, "/en-gb/funding/list/")
+
+
+            if 'popup' in self.url_append_str:
+                # when this it not a popup we should return a 302
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, "window.close()")
+            else:
+                # when it is a popup, the popup returns a 200 with the javascript to close the popup
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response.url, "/en-gb/funding/list/")
 
     def test_view_as_an_unauthorised_user(self):
         """
