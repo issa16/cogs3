@@ -44,6 +44,11 @@ class Institution(models.Model):
     support_email = models.EmailField(blank=True)
     logo_path = models.CharField(max_length=255, blank=True)
 
+    AP_base = models.PositiveIntegerField(default=0)
+    AP_per_publication = models.PositiveIntegerField(default=0)
+    AP_per_CPU_hour = models.PositiveIntegerField(default=0)
+    AP_per_GPU_hour = models.PositiveIntegerField(default=0)
+
     @classmethod
     def parse_support_email_from_user_email(cls, email):
         """
