@@ -140,6 +140,46 @@ class ProjectIntegrationTests(SeleniumTestsBase):
             if "This field is required." not in self.selenium.page_source:
                 raise AssertionError()
 
+    def test_create_project_as_unapproved_user(self):
+        """
+        Test attempting to create a project as an unapproved user.
+        They should not be able to.
+        """
+
+        institution = self.unapproved_user.profile.institution
+        institution.needs_user_approval = True
+        institution.separate_allocation_requests = False
+        institution.save()
+
+        self.sign_in(self.unapproved_user)
+
+        # Check the project we're going to create isn't already there
+        matching_projects = Project.objects.filter(
+            title=self.default_project_form_fields['id_title']
+        )
+        self.assertEqual(matching_projects.count(), 0)
+
+        # Fill out and submit project and system allocation creation form
+        self.get_url('')
+        self.click_link_by_url(reverse('create-project-and-allocation'))
+        self.fill_form_by_id(self.default_project_form_fields)
+        self.fill_form_by_id(self.default_allocation_form_fields)
+        self.submit_form(self.default_project_form_fields)
+
+        # Check that a project was created
+        matching_projects = Project.objects.filter(
+            title=self.default_project_form_fields['id_title']
+        )
+        self.assertEqual(matching_projects.count(), 1)
+        project = matching_projects.first()
+
+        # Check that user can see it
+        self.get_url(reverse('project-application-list'))
+        self.click_link_by_url(reverse('project-application-detail',
+                                       kwargs={'pk': project.id}))
+        self.assertIn(self.default_project_form_fields["id_title"],
+                      self.selenium.page_source)
+
     def test_create_project_with_authorised_user(self):
         # Test the workflow for project creation when separate allocations
         # are enabled

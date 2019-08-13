@@ -805,4 +805,62 @@ class ProjectDocumentViewTests(ProjectViewTests, TestCase):
             reverse('project-application-document',
                     args=[self.system_allocation_request.id]),
             '/en-gb/projects/applications/',
+
+
+class ProjectMembershipInviteViewTests(ProjectViewTests, TestCase):
+    def test_view_as_authorised_application_user(self):
+        """
+        Ensure the project membership invite view is accessible to a authorised
+        application users only.
+        """
+        accounts = [
+            # User not member of the project should be rejected
+            {
+                'user': CustomUser.objects.get(
+                    email='project.member@example.ac.uk'
+                ),
+                'expected_status_code': 302,
+                'expected_url': reverse('project-application-detail',
+                                        args=[self.project.id])
+            },
+            # Member but not tech lead of the project should be rejected
+            {
+                'user': CustomUser.objects.get(
+                    email='norman.gordon@example.ac.uk'
+                ),
+                'expected_status_code': 302,
+                'expected_url': reverse('project-application-detail',
+                                        args=[self.project.id])
+            },
+            # Tech lead of the project should be accepted
+            {
+                'user': CustomUser.objects.get(
+                    email='shibboleth.user@example.ac.uk'
+                ),
+                'expected_status_code': 200
+            }
+        ]
+        for account in accounts:
+            headers = {
+                'Shib-Identity-Provider': (account['user'].profile.institution
+                                           .identity_provider),
+                'REMOTE_USER': account['user'].email,
+            }
+            response = self.client.get(
+                reverse('project-membership-invite', args=[self.project.id]),
+                **headers,
+            )
+            self.assertEqual(response.status_code,
+                             account['expected_status_code'])
+            if 'expected_url' in account:
+                self.assertEqual(response.url, account['expected_url'])
+
+    def test_view_as_unauthorised_application_user(self):
+        """
+        Ensure the project user membership list view is not accessible to an
+        unauthorised application user.
+        """
+        self._access_view_as_unauthorised_application_user(
+            reverse('project-membership-invite', args=[self.project.id]),
+            reverse('project-application-detail', args=[self.project.id]),
         )
