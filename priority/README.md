@@ -16,11 +16,11 @@ The calculator is implemented as a `manage.py` command, accepting
 two arguments: the filename of a pipe-delimited text file giving
 output from `sacct` which will be used to calculate the priority, 
 and the filename of a file in which to place the output, which
-will be a comma-delimited text file containing project (Slurm Account)
+will be a pipe-delimited text file containing project (Slurm Account)
 codes and new Quality of Service values.
 
 ```shell
-$ python manage.py calculate-priority slurm_dump.dat new_qoses.csv
+$ python manage.py calculate_priority -i slurm_dump.dat -o new_qoses.csv
 ```
 
 This must then be integrated with Slurm. This can be done by creating
@@ -36,7 +36,7 @@ The remaining job must be set up on the Cogs server:
 
 * At 12:30 every night:
   * SCP the generated `sacct` dump to a staging directory on the Cogs server.
-  * Call `calculate-priority` to act on the `sacct` dump and output
+  * Call `calculate_priority` to act on the `sacct` dump and output
     to a CSV file in the staging area.
   * SCP the generated CSV file back to the cluster.
 

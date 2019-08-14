@@ -165,14 +165,14 @@ class Project(models.Model):
         (SUSPENDED, _('Suspended')),
         (CLOSED, _('Closed')),
     )
-# added for priority calculations
-    Ap = models.PositiveIntegerField(
-        verbose_name=_('Current attribution points'),
+    # added for priority calculations
+    active_attribution_points = models.PositiveIntegerField(
+        verbose_name=_('Attribution points at last update'),
         null=True,
         default=None,
     )
-    Qos = models.PositiveIntegerField(
-        verbose_name=_('Current Qualitty of service level'),
+    quality_of_service = models.PositiveIntegerField(
+        verbose_name=_('Quality of Service level at last update'),
         null=True,
         default=None,
     )
