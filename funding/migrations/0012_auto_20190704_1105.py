@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attribution',
             name='associated_to',
-            field=models.CharField(default=None, editable=False, max_length=20),
+            field=models.CharField(default=0, editable=False, max_length=20),
         ),
         migrations.AddField(
             model_name='historicalattribution',
