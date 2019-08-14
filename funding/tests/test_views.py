@@ -1174,7 +1174,8 @@ class ApproveFundingSourceTests(FundingViewTests, TestCase):
                 'amount': 1000,
                 'funding_body': 1,
                 'pi_email': 'norman.gordon@example.ac.uk',
-            'approved': True }
+                'approved': True
+            }
 
             response = self.client.post(
                 reverse('approve-funding_source',
