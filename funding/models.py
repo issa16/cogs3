@@ -188,7 +188,7 @@ class FundingSource(Attribution):
             pi_group = Group.objects.get(name='funding_source_pi')
             pi_group.user_set.add(self.pi)
 
-        if self.pi.profile.institution.needs_funding_approval:
+        if self.created_by.profile.institution.needs_funding_approval:
             self.owner = self.pi
         else:
             self.owner = self.created_by
@@ -199,26 +199,15 @@ class FundingSource(Attribution):
         FundingSourceMembership.objects.get_or_create(
             user=self.created_by,
             fundingsource=self,
-            defaults=dict(approved=False,)
+            defaults=dict(approved=True,)
         )
 
-        # When a funding source is approved, the PI and the creator are automatically approved as members
-        if matching.exists():
-            if self.approved:
-                if self.approved != old.approved:
-                    creatormembership = FundingSourceMembership.objects.get(
-                        user=self.created_by,
-                        fundingsource=self,
-                    )
-                    creatormembership.approved = True
-                    creatormembership.save()
-
-                if self.pi.profile.institution.needs_funding_approval:
-                    FundingSourceMembership.objects.get_or_create(
-                        user=self.pi,
-                        fundingsource=self,
-                        defaults=dict(approved=True,)
-                    )
+        if self.created_by.profile.institution.needs_funding_approval:
+            FundingSourceMembership.objects.get_or_create(
+                user=self.pi,
+                fundingsource=self,
+                defaults=dict(approved=True,)
+            )
 
     def __str__(self):
         return self.title
