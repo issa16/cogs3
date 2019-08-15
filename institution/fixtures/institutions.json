@@ -21,6 +21,10 @@
       "needs_priority_workflow": true,
       "needs_supervisor_approval": true,
       "needs_user_approval": false,
+      "AP_base": 50000,
+      "AP_per_publication": 10000,
+      "AP_per_CPU_hour": 1,
+      "AP_per_GPU_hour": 40,
       "rse_notify_email": "sa2c-support@swansea.ac.uk",
       "separate_allocation_requests": true,
       "support_email": "support@supercomputingwales.ac.uk"
@@ -105,6 +109,10 @@
       "needs_priority_workflow": true,
       "needs_supervisor_approval": true,
       "needs_user_approval": false,
+      "AP_base": 50000,
+      "AP_per_publication": 10000,
+      "AP_per_CPU_hour": 1,
+      "AP_per_GPU_hour": 40,
       "rse_notify_email": null,
       "separate_allocation_requests": false,
       "support_email": "support@supercomputingwales.ac.uk"

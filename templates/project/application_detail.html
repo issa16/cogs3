@@ -81,9 +81,6 @@
 									{{project.supervisor_position}} <br>
 									{{project.supervisor_email}}</td>
 							</tr>
-							{% comment  %}
-							This has been changed to assume that funding workflow applies to institutions who have opted in and external users for testing purposes.
-							{% endcomment %}
 							{% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
 							<tr>
 								<th scope="row">{% trans "Attributions" %}</th>
@@ -110,28 +107,27 @@
 								</td>
 							</tr>
 							{% endif %}
-							{% comment %}
-							For priority workflow. This currently will only be displayed for projects run on Sunbird since the default values for Ap and Qos are Null and are set by the calculate-priority script. This checks the system each project is run on and only updates the database for those that are run on Sunbird, leaving all the values for projects on Hawk as Null.
-							This has been changed to assume that priority workflow applies to institutions who have opted in and external users for testing purposes.
-							{% endcomment %}
 							{% if project.tech_lead.institution.needs_priority_workflow or project.tech_lead.institution == None %}
 							<tr>
 								<th scope="row">{% trans "Priority Information" %}</th>
 								<td>
-								{% trans "Current Ap" %}: {{project.Ap}}
-                                <br>
-                                {% trans "Priority Level" %}: {{project.Qos}}
-                                <br>
+									{% trans "Current Attribution Points" %}: {{project.active_AP}}
+									<br>
+									{% trans "Priority Level" %}: {{project.QOS}}
+									<br>
 
-                                {% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
-                                <small class="text-muted">
-                                    {% trans "Note: These may take up to 24hrs to update if new Attributions have been added."%} 
-                                </small>
-                                {%endif%}
-                            </td>
-                            {% endif %}
-                    </tbody>
-                </table>
+									{% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
+									<small class="text-muted">
+										{% blocktrans  %}
+										Your project's priority level is calculated based on its number of Attribution Points. Attributions are gained by attributing grants and publications to Supercomputing Wales.
+										You can attribute grants (or other funding sources) and publications to Supercomputing Wales using the options below.
+										Note that it takes up to a day to process new attributions after they are added{% if project.tech_lead.profile.institution.needs_funding_approval %} and approved{% endif %}.
+									</small>
+									{% endif %}
+								</td>
+								{% endif %}
+						</tbody>
+					</table>
 
                 {% if request.user.profile.institution.separate_allocation_requests %}
                 <h5> {% trans "Supercomputer access requests" %}: </h5>
