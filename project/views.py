@@ -123,7 +123,7 @@ class AllocationCreateView(
 class ProjectCreateView(AllocationCreateView):
     form_class = ProjectCreationForm
     success_message = _('Successfully submitted a project application. ' +
-                        'You may now want to create a system allocation request or RSE time request below. Once the project has been approved, you will be able to add users to your project using the invite button.')
+                        'You may now want to request supercomputer access or RSE time using the buttons below. Once the project has been approved, you will be able to add users to your project using the invite button.')
     template_name = 'project/create.html'
     permission_required = 'project.add_project'
 
