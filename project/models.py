@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext_lazy
 from simple_history.models import HistoricalRecords
 
-from funding.models import Attribution
+from funding.models import Attribution, FundingBody
 from openldap.api import project_membership_api
 from project.notifications import project_created_notification
 from system.models import System
@@ -63,6 +63,14 @@ class Project(models.Model):
         blank=True,
         verbose_name=_('Legacy ARCCA ID'),
         help_text=_('If the project has previously made use of ARCCA resources and has an ARCCA ID, enter it here'),
+    )
+    # funding body selected in project on legacy project creation form
+    legacy_funding_body = models.ForeignKey(
+        FundingBody,
+        related_name='legacy_funding_body',
+        verbose_name=_('Legacy Funding Body'),
+        on_delete=models.SET_NULL,
+        null=True
     )
     code = models.CharField(
         max_length=20,

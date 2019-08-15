@@ -2,6 +2,41 @@
 
 from django.db import migrations, models
 
+def forwards(apps, schema_editor):
+    # copy the funding source body to FundingSource
+    Project = apps.get_model('project', 'Project')
+    FundingBody = apps.get_model('funding', 'FundingBody')
+    FundingSource = apps.get_model('funding', 'FundingSource')
+    FundingSourceMembership = apps.get_model('funding', 'FundingSourceMembership')
+
+    for project in Project.objects.all():
+        # Create a funding source matching the old funding source
+        attributions = project.attributions.all()
+
+        # something wrong with the data we've got more than one attribution
+        if attributions.count() == 1:
+            attribution = attributions.first()
+            # at least try to ensure we're an empty/auto-created attribution
+            # we're also assuming here that all attributions are funding sources
+            if not attribution.title:
+                fundingbody = attribution.fundingsource.funding_body
+                project.legacy_funding_body = fundingbody
+                project.save()
+        elif attributions.count() == 0:
+            # I assume this case is when funding source was None
+            # but shouldn't this be a valid choice?
+            pass
+        else:
+            raise Exception('Multiple attributions found')
+
+        # Start with a blank slate, nothing auto-created
+        FundingSource.objects.all().delete()
+        FundingSourceMembership.objects.all().delete()
+
+def backwards(apps, schema_editor):
+    pass
+
+
 
 class Migration(migrations.Migration):
 
@@ -15,4 +50,15 @@ class Migration(migrations.Migration):
             name='attributions',
             field=models.ManyToManyField(blank=True, limit_choices_to={'attributions': None}, to='funding.Attribution'),
         ),
+       migrations.AddField(
+           model_name='historicalproject',
+           name='legacy_funding_body',
+           field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=models.deletion.DO_NOTHING, related_name='+', to='funding.FundingBody'),
+       ),
+       migrations.AddField(
+           model_name='project',
+           name='legacy_funding_body',
+           field=models.ForeignKey(null=True, on_delete=models.deletion.SET_NULL, related_name='legacy_funding_body', to='funding.FundingBody', verbose_name='Legacy Funding Body'),
+       ),
+       migrations.RunPython(forwards, backwards),
     ]
