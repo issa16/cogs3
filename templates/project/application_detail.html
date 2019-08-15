@@ -111,9 +111,9 @@
 							<tr>
 								<th scope="row">{% trans "Priority Information" %}</th>
 								<td>
-									{% trans "Current Attribution Points" %}: {{project.active_AP}}
+									{% trans "Current Attribution Points" %}: {{project.active_attribution_points}}
 									<br>
-									{% trans "Priority Level" %}: {{project.QOS}}
+									{% trans "Priority Level" %}: {{project.quality_of_service}}
 									<br>
 
 									{% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
@@ -121,7 +121,8 @@
 										{% blocktrans  %}
 										Your project's priority level is calculated based on its number of Attribution Points. Attributions are gained by attributing grants and publications to Supercomputing Wales.
 										You can attribute grants (or other funding sources) and publications to Supercomputing Wales using the options below.
-										Note that it takes up to a day to process new attributions after they are added{% if project.tech_lead.profile.institution.needs_funding_approval %} and approved{% endif %}.
+										Note that it takes up to a day to process new attributions after they are added and approved.
+										{% endblocktrans  %}
 									</small>
 									{% endif %}
 								</td>
