@@ -95,6 +95,11 @@ class Profile(models.Model):
         default=AWAITING_APPROVAL,
         verbose_name=_('Previous Status'),
     )
+    institution = models.ForeignKey(
+        Institution,
+        on_delete=models.CASCADE,
+        help_text=_('Institution user is based'),
+    )
 
     def activate(self):
         self.status = self.APPROVED
@@ -131,16 +136,6 @@ class Profile(models.Model):
     def has_system_account(self):
         return True if self.scw_username else False
 
-    @property
-    def institution(self):
-        """
-        Return institution if shibboleth user, otherwise return None
-        """
-        if hasattr(self, 'shibbolethprofile'):
-            return self.shibbolethprofile.institution
-        else:
-            return None
-
     def reset_account_status(self):
         """
         Reset the current account status to the previous account status.
@@ -157,11 +152,6 @@ class ShibbolethProfile(Profile):
         max_length=254,
         blank=True,
         help_text=_('Institutional address'),
-    )
-    institution = models.ForeignKey(
-        Institution,
-        on_delete=models.CASCADE,
-        help_text=_('Institution user is based'),
     )
     department = models.CharField(
         max_length=128,

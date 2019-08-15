@@ -210,7 +210,6 @@
     "pk": 1,
     "fields": {
       "shibboleth_id": "shibboleth.user@example.ac.uk",
-      "institution": 1,
       "department": "Chemistry",
       "orcid": "xxxxxxxxxxxxxxxx",
       "scopus": "http://example.ac.uk/scopus",
@@ -223,7 +222,6 @@
     "pk": 4,
     "fields": {
       "shibboleth_id": "norman.gordon@example.ac.uk",
-      "institution": 1,
       "department": "Physics",
       "orcid": "xxxxxxxxxxxxxxxx",
       "scopus": "http://example.ac.uk/scopus",
@@ -236,7 +234,6 @@
     "pk": 5,
     "fields": {
       "shibboleth_id": "project.member@example.ac.uk",
-      "institution": 1,
       "department": "Chemistry",
       "orcid": "xxxxxxxxxxxxxxxx",
       "scopus": "http://example.ac.uk/scopus",
@@ -249,7 +246,6 @@
     "pk": 6,
     "fields": {
       "shibboleth_id": "preregistered.user@example.ac.uk",
-      "institution": 1,
       "department": "Departmental Studies",
       "orcid": "xxxxxxxxxxxxxxxx",
       "scopus": "http://example.ac.uk/scopus",
@@ -262,7 +258,6 @@
     "pk": 7,
     "fields": {
       "shibboleth_id": "test.user@example2.ac.uk",
-      "institution": 2,
       "department": "Departmental Studies",
       "orcid": "xxxxxxxxxxxxxxxx",
       "scopus": "http://example2.ac.uk/scopus",
@@ -275,7 +270,6 @@
     "pk": 8,
     "fields": {
       "shibboleth_id": "test.user@example3.ac.uk",
-      "institution": 3,
       "department": "Departmental Studies",
       "orcid": "xxxxxxxxxxxxxxxx",
       "scopus": "http://example3.ac.uk/scopus",
@@ -288,7 +282,6 @@
     "pk": 9,
     "fields": {
       "shibboleth_id": "attr.user@example.ac.uk",
-      "institution": 1,
       "department": "Administration",
       "orcid": "xxxxxxxxxxxxxxxx",
       "scopus": "http://example3.ac.uk/scopus",
@@ -310,7 +303,8 @@
       "description": "",
       "phone": "00000-000-000",
       "account_status": 1,
-      "previous_account_status": 0
+      "previous_account_status": 0,
+      "institution": 1
     }
   },
   {
@@ -327,7 +321,8 @@
       "description": "",
       "phone": "00000-000-000",
       "account_status": 1,
-      "previous_account_status": 0
+      "previous_account_status": 0,
+      "institution" : 4
     }
   },
   {
@@ -344,7 +339,8 @@
       "description": "",
       "phone": "00000-000-000",
       "account_status": 1,
-      "previous_account_status": 0
+      "previous_account_status": 0,
+      "institution" : 4
     }
   },
   {
@@ -361,7 +357,8 @@
       "description": "",
       "phone": "00000-000-000",
       "account_status": 1,
-      "previous_account_status": 0
+      "previous_account_status": 0,
+      "institution": 1
     }
   },
   {
@@ -378,7 +375,8 @@
       "description": "",
       "phone": "00000-000-000",
       "account_status": 1,
-      "previous_account_status": 0
+      "previous_account_status": 0,
+      "institution": 1
     }
   },
   {
@@ -395,7 +393,8 @@
       "description": "",
       "phone": "00000-000-000",
       "account_status": 1,
-      "previous_account_status": 0
+      "previous_account_status": 0,
+      "institution": 1
     }
   },
   {
@@ -412,7 +411,8 @@
       "description": "",
       "phone": "00000-000-000",
       "account_status": 0,
-      "previous_account_status": 0
+      "previous_account_status": 0,
+      "institution": 2
     }
   },
   {
@@ -429,7 +429,8 @@
       "description": "",
       "phone": "00000-000-000",
       "account_status": 0,
-      "previous_account_status": 0
+      "previous_account_status": 0,
+      "institution": 3
     }
   },
   {
@@ -446,7 +447,8 @@
       "description": "",
       "phone": "00000-000-000",
       "account_status": 0,
-      "previous_account_status": 0
+      "previous_account_status": 0,
+      "institution": 1
     }
   }
 ]
