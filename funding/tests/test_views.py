@@ -1124,7 +1124,7 @@ class ApproveFundingSourceTests(FundingViewTests, TestCase):
             amount=1000,
         )
 
-    def test_view_as_attr(self):
+    def test_view_permissions(self):
         accounts = [
             {
                 'user': CustomUser.objects.get(
@@ -1132,7 +1132,8 @@ class ApproveFundingSourceTests(FundingViewTests, TestCase):
                 ),
                 'expected_status_code_get': 200,
                 'expected_status_code_post': 302,
-                'expected_status_code_post_redirect_url': '/en-gb/funding/admin/unapproved_fundingsources/'
+                'expected_status_code_post_redirect_url': '/en-gb/funding/admin/unapproved_fundingsources/',
+                'should_approve' : True
             },
             {
                 'user': CustomUser.objects.get(
@@ -1140,6 +1141,7 @@ class ApproveFundingSourceTests(FundingViewTests, TestCase):
                 ),
                 'expected_status_code_get': 403,
                 'expected_status_code_post': 403,
+                'should_approve' : False
             }
         ]
 
@@ -1166,6 +1168,11 @@ class ApproveFundingSourceTests(FundingViewTests, TestCase):
 
 
             # Funding source should not be approved before post self.assertFalse(self.funding_source.approved)
+            funding_source = FundingSource.objects.get(id=self.funding_source.id)
+            funding_source.approved = False
+            funding_source.save()
+
+            self.assertFalse(funding_source.approved)
 
             # Construct dict
             form_values = {
@@ -1186,10 +1193,12 @@ class ApproveFundingSourceTests(FundingViewTests, TestCase):
 
             self.assertEqual(response.status_code, account['expected_status_code_post'])
 
+            funding_source.refresh_from_db()
+
             if response.status_code == 302:
                 self.assertEqual(response.url, account['expected_status_code_post_redirect_url'])
-                funding_source = FundingSource.objects.get(id=self.funding_source.id)
 
+            if account['should_approve']:
                 self.assertTrue(funding_source.approved)
             else:
                 self.assertFalse(funding_source.approved)

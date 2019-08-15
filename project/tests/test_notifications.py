@@ -43,8 +43,11 @@ class ProjectNotificationTests(TestCase):
     def test_project_created_notification_default_email(self):
         # update the institution support email to be empty
         institution = self.project.tech_lead.profile.institution
-        institution.support_email = ''
+        institution.support_email = ""
         institution.save()
+
+        # reload project
+        self.project = Project.objects.get(id=self.project.id)
 
         notifications.project_created_notification(self.project)
         assert len(mail.outbox) > 0, "An email must be sent"
