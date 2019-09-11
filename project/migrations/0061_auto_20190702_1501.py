@@ -25,6 +25,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='attributions',
-            field=models.ForeignKey(blank=True, default=0, limit_choices_to=models.Q(('attributions', None), ('attributions', funding.models.Attribution), _connector='OR'), on_delete=django.db.models.deletion.CASCADE, to='funding.Attribution'),
+            field=models.ForeignKey(blank=True, default=None, limit_choices_to=models.Q(('attributions', None), ('attributions', funding.models.Attribution), _connector='OR'), on_delete=django.db.models.deletion.CASCADE, to='funding.Attribution'),
         ),
     ]
