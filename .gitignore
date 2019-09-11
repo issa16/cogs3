@@ -119,7 +119,7 @@ tmp
 *.csv
 
 # sqlite
-db.sqlite*
+*sqlite*
 
 # Ignore redis binary dump (dump.rdb) files
 *.rdb
