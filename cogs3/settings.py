@@ -42,15 +42,25 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = ast.literal_eval(os.environ.get('DEBUG', 'False'))
 
 MAINTENANCE_MODE = ast.literal_eval(os.environ.get('MAINTENANCE_MODE', 'False'))
-MAINTENANCE_MODE_IGNORE_ADMIN_SITE = ast.literal_eval(os.environ.get('MAINTENANCE_MODE_IGNORE_ADMIN_SITE', 'False'))
+MAINTENANCE_MODE_IGNORE_ADMIN_SITE = ast.literal_eval(
+    os.environ.get('MAINTENANCE_MODE_IGNORE_ADMIN_SITE', 'False')
+)
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-SECURE_CONTENT_TYPE_NOSNIFF = ast.literal_eval(os.environ.get('SECURE_CONTENT_TYPE_NOSNIFF', 'True'))
-SECURE_BROWSER_XSS_FILTER = ast.literal_eval(os.environ.get('SECURE_BROWSER_XSS_FILTER', 'True'))
-SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get('SESSION_COOKIE_SECURE', 'True'))
-CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get('CSRF_COOKIE_SECURE', 'True'))
+SECURE_CONTENT_TYPE_NOSNIFF = ast.literal_eval(
+    os.environ.get('SECURE_CONTENT_TYPE_NOSNIFF', 'True')
+)
+SECURE_BROWSER_XSS_FILTER = ast.literal_eval(
+    os.environ.get('SECURE_BROWSER_XSS_FILTER', 'True')
+)
+SESSION_COOKIE_SECURE = ast.literal_eval(
+    os.environ.get('SESSION_COOKIE_SECURE', 'True')
+)
+CSRF_COOKIE_SECURE = ast.literal_eval(
+    os.environ.get('CSRF_COOKIE_SECURE', 'True')
+)
 X_FRAME_OPTIONS = os.environ.get('X_FRAME_OPTIONS')
 
 # Allow all host headers
@@ -110,7 +120,8 @@ ROOT_URLCONF = 'cogs3.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Use project level template directory
+        'DIRS': [os.path.join(BASE_DIR, 'templates')
+                ],  # Use project level template directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -130,41 +141,46 @@ WSGI_APPLICATION = 'cogs3.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-        conn_max_age=500,
-    ),
+    'default':
+        dj_database_url.config(
+            default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+            conn_max_age=os.environ.get('CONN_MAX_AGE'),
+        ),
 }
 
 if 'test' in sys.argv and '--keepdb' in sys.argv:
     # Persist test db to disk to avoid reapplying migrations every time
     DATABASES['default']['TEST'] = dj_database_url.config(
         default='sqlite:///' + os.path.join(BASE_DIR, 'test_db.sqlite3'),
-        conn_max_age=500,
+        conn_max_age=os.environ.get('CONN_MAX_AGE'),
     )
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 LANGUAGE_CODE = 'en-gb'
-LOCALE_PATHS = ('locale', )
-TEMPLATE_CONTEXT_PROCESSORS = ('django.template.context_processors.i18n', )
+LOCALE_PATHS = ('locale',)
+TEMPLATE_CONTEXT_PROCESSORS = ('django.template.context_processors.i18n',)
 
 TIME_ZONE = 'Europe/London'
 
@@ -180,7 +196,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
@@ -213,8 +229,12 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = ast.literal_eval(os.environ.get('EMAIL_USE_TLS', 'False'))
 
 # Shibboleth
-SHIBBOLETH_IDENTITY_PROVIDER_LOGIN = os.environ.get('SHIBBOLETH_IDENTITY_PROVIDER_LOGIN')
-SHIBBOLETH_IDENTITY_PROVIDER_LOGOUT = os.environ.get('SHIBBOLETH_IDENTITY_PROVIDER_LOGOUT')
+SHIBBOLETH_IDENTITY_PROVIDER_LOGIN = os.environ.get(
+    'SHIBBOLETH_IDENTITY_PROVIDER_LOGIN'
+)
+SHIBBOLETH_IDENTITY_PROVIDER_LOGOUT = os.environ.get(
+    'SHIBBOLETH_IDENTITY_PROVIDER_LOGOUT'
+)
 SHIBBOLETH_ATTRIBUTE_MAP = {
     'REMOTE_USER': (True, 'username'),
 }
@@ -257,24 +277,21 @@ LOGGING = {
     'formatters': {
         'general': {
             'format':
-            '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
-            '(EXCEPTION: %(exc_info)s)',
-            'datefmt':
-            '%d/%b/%Y %H:%M:%S'
+                '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
+                '(EXCEPTION: %(exc_info)s)',
+            'datefmt': '%d/%b/%Y %H:%M:%S'
         },
         'request': {
             'format':
-            '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
-            '(STATUS: %(status_code)s; REQUEST: %(request)s; EXCEPTION: %(exc_info)s)',
-            'datefmt':
-            '%d/%b/%Y %H:%M:%S'
+                '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
+                '(STATUS: %(status_code)s; REQUEST: %(request)s; EXCEPTION: %(exc_info)s)',
+            'datefmt': '%d/%b/%Y %H:%M:%S'
         },
         'db': {
             'format':
-            '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
-            '(DURATION: %(duration)s; SQL: %(sql)s; PARAMS: %(params)s; EXCEPTION: %(exc_info)s)',
-            'datefmt':
-            '%d/%b/%Y %H:%M:%S'
+                '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
+                '(DURATION: %(duration)s; SQL: %(sql)s; PARAMS: %(params)s; EXCEPTION: %(exc_info)s)',
+            'datefmt': '%d/%b/%Y %H:%M:%S'
         },
     },
     'handlers': {
@@ -398,16 +415,18 @@ LOGGING = {
     }
 }
 
+
 # Selenium testing
 def selenium_firefox_client():
     options = webdriver.firefox.options.Options()
-    options.headless = (int(os.getenv('SELENIUM_HEADLESS','1')) == 1)
+    options.headless = (int(os.getenv('SELENIUM_HEADLESS', '1')) == 1)
 
     profile = webdriver.FirefoxProfile()
     profile.set_preference('intl.accept_languages', 'en-gb')
 
-    client = webdriver.Firefox(firefox_profile = profile, firefox_options = options)
+    client = webdriver.Firefox(firefox_profile=profile, firefox_options=options)
 
     return client
 
-SELENIUM_GET_WEBDRIVER=selenium_firefox_client
+
+SELENIUM_GET_WEBDRIVER = selenium_firefox_client
