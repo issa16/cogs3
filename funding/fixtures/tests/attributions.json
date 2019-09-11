@@ -1,0 +1,68 @@
+[{
+    "model": "funding.Attribution",
+    "pk": 1,
+    "fields": {
+      "title": "Test funding source",
+      "created_by": 1,
+      "owner_id": 1,
+      "created_time": "2018-04-16T12:00:28Z",
+      "modified_time": "2018-04-16T12:00:28Z"
+    }
+  },
+  {
+    "model": "funding.FundingSource",
+    "pk": 1,
+    "fields": {
+      "owner_id": 1,
+      "pi_id": 1,
+      "attribution_ptr": 1,
+      "identifier": "scw0001",
+      "pi_email": "john.doe@example.ac.uk",
+      "amount": 12000
+    }
+  },
+  {
+    "model": "funding.Attribution",
+    "pk": 2,
+    "fields": {
+      "title": "Test funding source 2",
+      "created_by": 7,
+      "owner_id": 7,
+      "created_time": "2018-04-16T12:00:28Z",
+      "modified_time": "2018-04-16T12:00:28Z"
+    }
+  },
+  {
+    "model": "funding.FundingSource",
+    "pk": 2,
+    "fields": {
+      "owner_id": 7,
+      "pi_id": 7,
+      "attribution_ptr": 2,
+      "identifier": "scw0002",
+      "pi_email": "test.user@example2.ac.uk",
+      "amount": 10000
+    }
+  },
+  {
+    "model": "funding.Attribution",
+    "pk": 3,
+    "fields": {
+      "owner_id": 1,
+      "title": "Test publication",
+      "created_by": 1,
+      "created_time": "2018-04-16T12:00:28Z",
+      "modified_time": "2018-04-16T12:00:28Z"
+    }
+  },
+  {
+    "model": "funding.Publication",
+    "pk": 1,
+    "fields": {
+      "owner_id": 1,
+      "attribution_ptr": 3,
+      "title": "Test Publication 2",
+      "url": "https://cronfa.swansea.ac.uk/publication2"
+    }
+  }
+]

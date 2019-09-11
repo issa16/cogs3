@@ -2,58 +2,213 @@ import datetime
 import random
 import string
 
-from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from institution.models import Institution
-from institution.tests.test_models import InstitutionTests
 from project.forms import ProjectCreationForm
 from project.forms import ProjectUserMembershipCreationForm
+from project.forms import ProjectUserInviteForm
+from project.forms import RSEAllocationRequestCreationForm
+from project.forms import SystemAllocationRequestCreationForm
+from project.forms import ProjectManageAttributionForm
+from project.forms import ProjectSupervisorApproveForm
 from project.models import Project
-from project.models import ProjectCategory
-from project.models import ProjectFundingSource
 from project.models import ProjectUserMembership
-from project.tests.test_models import ProjectCategoryTests
-from project.tests.test_models import ProjectFundingSourceTests
-from project.tests.test_models import ProjectTests
 from users.models import CustomUser
 from users.tests.test_models import CustomUserTests
 
 
-class ProjectFormTests(TestCase):
+class ProjectFormTestCase(TestCase):
 
     fixtures = [
         'institution/fixtures/tests/institutions.json',
         'users/fixtures/tests/users.json',
-        'project/fixtures/tests/funding_sources.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
         'project/fixtures/tests/categories.json',
         'project/fixtures/tests/projects.json',
         'project/fixtures/tests/memberships.json',
     ]
 
     def setUp(self):
+        self.title = "Example project title"
         self.institution = Institution.objects.get(name='Example University')
-        self.category = ProjectCategory.objects.get(name='Test')
-        self.funding_source = ProjectFundingSource.objects.get(name='Test')
         self.project_code = 'scw0000'
         self.project = Project.objects.get(code=self.project_code)
         self.project_owner = self.project.tech_lead
-        self.project_applicant = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.project_applicant = CustomUser.objects.get(email='admin.user@example.ac.uk')
 
         # Create users for each institution
         self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+
+
+class ProjectFormTests(ProjectFormTestCase):
+    def setUp(self):
+        super().setUp()
+        institution = self.institution_names[0]
+        self.user = self.institution_users[institution]
+        self.data = {
+            'title': 'Test Project',
+            'description': 'A test project',
+            'institution_reference': 'X',
+            'department': 'Testing Department',
+            'supervisor_name': 'supervisor',
+            'supervisor_position': 'Researcher',
+            'supervisor_email': 'supervisor@example.ac.uk',
+        }
+        self.form = ProjectCreationForm(self.user,self.data)
+
 
     def test_project_form_arcca_field(self):
         for i in self.institution_names:
             user = self.institution_users[i]
             form = ProjectCreationForm(user)
-            if user.profile.institution.is_cardiff:
+            if user.profile.institution.base_domain == 'cardiff.ac.uk':
                 self.assertTrue('legacy_arcca_id' in form.fields)
             else:
                 self.assertFalse('legacy_arcca_id' in form.fields)
 
+    def test_project_form_valid(self):
+        self.assertTrue( self.form.is_valid() )
 
-class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
+    def test_project_form_bad_supervisor_email(self):
+        self.form.data['supervisor_email'] = 'supervisor at gmail.com'
+        self.assertFalse( self.form.is_valid() )
+
+    def test_project_form_bad_supervisor_domain(self):
+        self.form.data['supervisor_email'] = 'supervisor@gmail.com'
+        self.assertFalse( self.form.is_valid() )
+
+    def test_project_form_external_user(self):
+        self.user.profile.institution = None
+        self.user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.form = ProjectCreationForm(self.user,self.data)
+        self.assertFalse( self.form.is_valid() )
+
+
+class AllocationRequestFormTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
+
+    def setUp(self):
+        self.title = "Example project title"
+        # Create users for each institution
+        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+
+        self.project_code = 'scw0000'
+        self.project = Project.objects.get(code=self.project_code)
+        self.user = self.project.tech_lead
+        self.data = {
+            'information': 'A test allocation',
+            'start_date': '01/09/1985',
+            'end_date': '01/09/1985',
+            'allocation_cputime': '5',
+            'allocation_memory': '1',
+            'allocation_storage_home': '23',
+            'allocation_storage_scratch': '65',
+            'requirements_software': '',
+            'requirements_training': '',
+            'requirements_onboarding': '',
+            'document': None,
+            'attributions': [],
+            'project': self.project.id,
+        }
+
+    def test_project_allocation_form_arcca_field(self):
+        for i in self.institution_names:
+            user = self.institution_users[i]
+            form = SystemAllocationRequestCreationForm(user)
+            if user.profile.institution.base_domain == 'cardiff.ac.uk':
+                self.assertTrue('legacy_arcca_id' in form.fields)
+            else:
+                self.assertFalse('legacy_arcca_id' in form.fields)
+
+    def test_project_allocation_form_validation(self):
+        self.form = SystemAllocationRequestCreationForm(self.user, data=self.data)
+        self.assertTrue( self.form.is_valid() )
+
+    def test_project_allocation_form_without_project(self):
+        self.form = SystemAllocationRequestCreationForm(self.user, include_project=False, data=self.data)
+        self.assertFalse( 'project' in self.form.fields )
+
+    def test_project_allocation_form_other_project(self):
+        self.project = Project.objects.get(code='scw0001')
+        self.data['project'] = self.project.id
+        self.form = SystemAllocationRequestCreationForm(self.user, project=self.project, data=self.data)
+        self.assertFalse( self.form.is_valid() )
+
+
+class ProjectManageAttributionFormTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
+
+    def setUp(self):
+        self.title = "Example project title"
+        # Create users for each institution
+        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+
+        self.project_code = 'scw0000'
+        self.project = Project.objects.get(code=self.project_code)
+        self.user = self.project.tech_lead
+        self.data = {
+            'attributions': [],
+        }
+
+    def test_project_allocation_form_validation(self):
+        self.form = ProjectManageAttributionForm(
+            self.user,
+            data=self.data,
+            instance=self.project
+        )
+        self.assertTrue(self.form.is_valid())
+
+
+class ProjectSupervisorApproveFormTests(TestCase):
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
+
+    def setUp(self):
+        self.project = Project.objects.get(code='scw0000')
+        self.user = CustomUser.objects.get(email=self.project.supervisor_email)
+        self.data = {
+            'approved_by_supervisor': True,
+        }
+
+    def test_project_supervisor_form_validation(self):
+        self.form = ProjectSupervisorApproveForm(self.user, instance=self.project, data = self.data)
+        self.assertTrue( self.form.is_valid() )
+
+    def test_project_supervisor_form_incorrect_email(self):
+        user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.form = ProjectSupervisorApproveForm(user, instance=self.project, data = self.data)
+        self.assertFalse( self.form.is_valid() )
+
+
+class ProjectUserRequestMembershipFormTests(ProjectFormTestCase):
 
     def test_request_membership_form_with_valid_data(self):
         pass
@@ -71,44 +226,49 @@ class ProjectUserRequestMembershipFormTests(ProjectFormTests, TestCase):
         pass
 
 
-class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
+class ProjectUserMembershipCreationFormTests(ProjectFormTestCase):
 
-    @classmethod
-    def approve_project(cls, project):
-        """
-        The approval process will trigger the creation of a project user membership for the
-        technical lead user see project/signals.py.
-
-        Args:
-            project (Project): Project to approve.
-        """
-        project.status = Project.APPROVED
-        project.save()
+    # Project are no longer approved, allocations are. Members can be added immediately
+    # when a project is created.
+    # @classmethod
+    # def approve_project(cls, project):
+    #     """
+    #     The approval process will trigger the creation of a project user membership for the
+    #     technical lead user see project/signals.py.
+    #     Args:
+    #         project (Project): Project to approve.
+    #     """
+    #     project.status = Project.APPROVED
+    #     project.save()
 
     def test_form_when_project_is_awaiting_approval(self):
         """
+        Project are no longer approved, allocations are. Members can be added immediately
+        when a project is created.
+
         Ensure it is not possible to create a project user membership whilst the project is
         currently awaiting approval.
         """
-        form = ProjectUserMembershipCreationForm(
-            initial={
-                'user': self.project_applicant,
-            },
-            data={
-                'project_code': self.project_code,
-            },
-        )
-        self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors['project_code'],
-            ['The project is currently awaiting approval.'],
-        )
+        pass
+        # form = ProjectUserMembershipCreationForm(
+        #     initial={
+        #         'user': self.project_applicant,
+        #     },
+        #     data={
+        #         'project_code': self.project_code,
+        #     },
+        # )
+        # self.assertFalse(form.is_valid())
+        # self.assertEqual(
+        #     form.errors['project_code'],
+        #     ['The project is currently awaiting approval.'],
+        # )
 
-    def test_form_after_the_project_has_been_approved(self):
+    def test_form(self):
         """
-        Ensure it is possible to create a project user membership after the project has been approved.
+        Ensure it is possible to create a project user membership.
         """
-        self.approve_project(self.project)
+        # self.approve_project(self.project)
 
         form = ProjectUserMembershipCreationForm(
             initial={
@@ -124,7 +284,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         """
         Ensure it is not possible to create a project user membership using an invalid project code.
         """
-        self.approve_project(self.project)
+        # self.approve_project(self.project)
 
         form = ProjectUserMembershipCreationForm(
             initial={
@@ -161,7 +321,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         )
 
         for account in accounts:
-            self.approve_project(self.project)
+            # self.approve_project(self.project)
             # A request to create a project user membership should be rejected.
             form = ProjectUserMembershipCreationForm(
                 initial={
@@ -186,7 +346,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         Ensure it is not possible to create a project user membership when a user has a
         membership request awaiting authorisation.
         """
-        self.approve_project(self.project)
+        # self.approve_project(self.project)
 
         # Create a project user membership.
         ProjectUserMembership.objects.create(
@@ -224,7 +384,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
         Ensure the user is returned the correct error message when the project code is greater
         than the fields maximum length (20 chars).
         """
-        self.approve_project(self.project)
+        # self.approve_project(self.project)
 
         invalid_project_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=21))
         form = ProjectUserMembershipCreationForm(
@@ -240,3 +400,230 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTests, TestCase):
             form.errors['project_code'],
             ['Ensure this value has at most 20 characters (it has 21).'],
         )
+
+
+class ProjectUserInviteFormTests(ProjectFormTestCase):
+
+    # Project are no longer approved, allocations are. Members can be added immediately
+    # when a project is created.
+    # @classmethod
+    # def approve_project(cls, project):
+    #     """
+    #     The approval process will trigger the creation of a project user membership for the
+    #     technical lead user see project/signals.py.
+    #     Args:
+    #         project (Project): Project to approve.
+    #     """
+    #     project.status = Project.APPROVED
+    #     project.save()
+
+    def test_form_when_project_is_awaiting_approval(self):
+        """
+        Project are no longer approved, allocations are. Members can be added immediately
+        when a project is created.
+
+        Ensure it is not possible to create a project user membership whilst the project is
+        currently awaiting approval.
+        """
+        pass
+        # form = ProjectUserInviteForm(
+        #     initial={
+        #         'project_id': 1,
+        #     },
+        #     data={
+        #         'email': self.project_applicant.email,
+        #     },
+        # )
+        # self.assertFalse(form.is_valid())
+
+    def test_form(self):
+        """
+        Ensure it is possible to create a project user membership.
+        """
+        # self.approve_project(self.project)
+
+        form = ProjectUserInviteForm(
+            initial={
+                'project_id': 1,
+            },
+            data={
+                'email': self.project_applicant.email,
+            },
+        )
+        self.assertTrue(form.is_valid())
+
+    def test_form_with_an_authorised_project_member(self):
+        """
+        Ensure it is not possible to create a project user membership when a user is an
+        authorised member of the project. By default, when the project is approved, a project user
+        membership will be created for the technical lead.
+        """
+        accounts = [
+            self.project_owner,
+        ]
+
+        for account in accounts:
+            # Create a project.
+            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            project = Project.objects.get(code="scw0000")
+            # self.approve_project(project)
+
+            # A request to create a project user membership should be rejected.
+            form = ProjectUserInviteForm(
+                initial={
+                    'project_id': project.id,
+                },
+                data={
+                    'email': account.email,
+                },
+            )
+            self.assertFalse(form.is_valid())
+
+            # Ensure the project user membership status is currently set authorised.
+            membership = ProjectUserMembership.objects.get(user=account, project=project)
+            self.assertTrue(membership.is_authorised())
+
+    def test_form_when_a_user_has_a_request_awaiting_authorisation(self):
+        """
+        Ensure it is not possible to create a project user membership when a user has a
+        membership request awaiting authorisation.
+        """
+        # Create a project.
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        project = Project.objects.get(code="scw0000")
+        # self.approve_project(project)
+
+        # Create a project user membership.
+        ProjectUserMembership.objects.create(
+            project=project,
+            user=self.project_applicant,
+            status=ProjectUserMembership.AWAITING_AUTHORISATION,
+            date_joined=datetime.datetime.now(),
+            date_left=datetime.datetime.now() + datetime.timedelta(days=10),
+        )
+
+        # Ensure the project user membership status is currently set to awaiting authorisation.
+        membership = ProjectUserMembership.objects.get(
+            user=self.project_applicant,
+            project=project,
+        )
+        self.assertTrue(membership.is_awaiting_authorisation())
+
+        # A request to create a project user membership should be rejected.
+        form = ProjectUserInviteForm(
+            initial={
+                'project_id': 1,
+            },
+            data={
+                'email': self.project_applicant.email,
+            },
+        )
+        self.assertFalse(form.is_valid())
+
+    def test_form_when_user_is_not_found(self):
+        """
+        Ensure it is not possible to create a project user membership when the use does
+        not exist.
+        """
+        # Create a project.
+        project = Project.objects.get(code="scw0000")
+
+        # A request to create a project user membership should be rejected.
+        form = ProjectUserInviteForm(
+            initial={
+                'project_id': project.id,
+            },
+            data={
+                'email': 'user_does_not_exist@example.ac.uk',
+            },
+        )
+        self.assertFalse(form.is_valid())
+
+
+class SystemAllocationRequestCreationFormTests(ProjectFormTestCase):
+
+    def test_form_with_unauthorized_project(self):
+        """
+        Ensure it is not possible to create a project user membership whilst the project is
+        currently awaiting approval.
+        """
+        form = SystemAllocationRequestCreationForm(
+            self.project_applicant,
+            data={
+                'project': 1,
+                'information': '',
+                'start_date': datetime.datetime.now(),
+                'end_date': datetime.datetime.now(),
+                'allocation_cputime': 1,
+                'allocation_memory': 1,
+                'allocation_storage_home': 1,
+                'allocation_storage_scratch': 1,
+                'requirements_software': '',
+                'requirements_training': '',
+                'requirements_onboarding': '',
+                'document': '',
+            },
+        )
+        self.assertFalse(form.is_valid())
+
+
+class RSEAllocationRequestCreationFormTests(ProjectFormTestCase):
+    default_data = {
+        'title': 'Project to implement a management system',
+        'duration': 1,
+        'information': 'Supercomputing Wales is a programme',
+        'goals': 'Allow users to sign up for the service.',
+        'software': 'A Django-based website.',
+        'outcomes': 'We get more users.',
+        'confidentiality': 'Secret keys must be kept private.',
+        'project': 1
+    }
+    
+    def test_valid_form(self):
+        user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
+        form = RSEAllocationRequestCreationForm(
+            user,
+            data=self.default_data
+        )
+        form.is_valid()
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_durations(self):
+        for duration in (0, -0.5, 0.00001, float('NaN')):
+            form = RSEAllocationRequestCreationForm(
+                CustomUser.objects.get(email='shibboleth.user@example.ac.uk'),
+                data={**self.default_data, 'duration': duration}
+            )
+            self.assertFalse(form.is_valid())
+
+    def test_unauthorised(self):
+        form = RSEAllocationRequestCreationForm(
+            self.project_applicant,
+            data=self.default_data
+        )
+        self.assertFalse(form.is_valid())
+
+    def test_save_no_email(self):
+        user = CustomUser.objects.get(email='test.user@example3.ac.uk')
+        data = dict(self.default_data)
+        data['project'] = 3
+        form = RSEAllocationRequestCreationForm(
+            user,
+            data=data
+        )
+        self.assertTrue(form.is_valid())
+        instance = form.save()
+        self.assertTrue(instance.project.id == 3)
+        instance.delete()
+        
+    def test_save_with_email(self):
+        form = RSEAllocationRequestCreationForm(
+            CustomUser.objects.get(email='shibboleth.user@example.ac.uk'),
+            data=self.default_data
+        )
+        self.assertTrue(form.is_valid())
+        instance = form.save()
+        self.assertTrue(instance.project.id == 1)
+        instance.delete()
+
+        

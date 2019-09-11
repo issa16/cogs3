@@ -1,0 +1,29 @@
+<!-- templates/project/membership/invite.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% block title %}{% trans "Invite User" %}{% endblock %}
+{% block content %}
+	<div class="my-3 p-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4>{% trans "Invite User" %}</h4>
+				</div>
+				<div class="row">
+					<div class="col">
+						{% include 'includes/errors.html'%}
+					</div>
+				</div>
+				<form method="post" novalidate>
+					{% csrf_token %}
+					<div class="form-group">
+						<input type="text" class="form-control" name="email" id="email" placeholder="{% trans "Email" %}">
+					</div>
+					<button type="submit" class="btn btn-primary">{% trans "Invite" %}</button>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}

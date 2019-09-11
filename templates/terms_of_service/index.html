@@ -24,7 +24,7 @@
 						{% csrf_token %}
 						<div class="form-check form-check-inline">
 							<input class="form-check-input mr-3" type="checkbox" id="accepted-terms-and-conditions" name="accepted_terms_and_conditions" required>
-							<input type="submit" class="btn btn-primary" value="I agree to the terms and conditions" />
+							<input type="submit" class="btn btn-primary" value="{% trans 'I agree to the terms and conditions' %}" />
 						</div>
 					</form>
 				{% endif %}

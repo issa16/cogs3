@@ -1,0 +1,8 @@
+New attribution has been added by {{user}}
+
+Dear {{first_name}},
+
+A new funding source with the title "{{title}}" and identifier "{{identifier}}" has been added to the Supercomputing Wales system by {{user}}. Before the funding can be attributed to SCW projects, the PI must formally ackowledge the contribution of SCW to the research.
+
+Please fill in the included template document, including a paragraph explaining how Supercomputing Wales has enabled the research funded by the grant. Send the signed letter to {{scw_email}}.
+

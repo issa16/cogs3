@@ -4,7 +4,6 @@ from django.http import JsonResponse
 from django.utils.translation import gettext as _
 
 from openldap.api import user_api
-from users.models import Profile
 
 
 def reset_openldap_password(request):
@@ -44,11 +43,11 @@ def update_openldap_user(profile):
     Ensure account status updates are propagated to the user's OpenLDAP account.
     """
     deactivate_user_states = [
-        Profile.REVOKED,
-        Profile.SUSPENDED,
-        Profile.CLOSED,
+        profile.REVOKED,
+        profile.SUSPENDED,
+        profile.CLOSED,
     ]
-    if profile.account_status == Profile.APPROVED:
+    if profile.account_status == profile.APPROVED:
         if profile.scw_username:
             user_api.activate_user_account.delay(user=profile.user)
         else:

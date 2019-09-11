@@ -1,0 +1,28 @@
+<!-- templates/funding/publication_form.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}{% trans "Publication" %}{% endblock %}
+{% block content %}
+	<div class="my-3 p-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4>{% trans "Publication" %}</h4>
+				</div>
+				<form method="post" enctype="multipart/form-data" novalidate>
+					{% csrf_token %}
+					{% include 'includes/generic_form.html' with form=form %}
+					<button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+					<button type="button" onclick="window.close();" class="btn btn-secondary" id="close_button" style="display: none;">{% trans "Cancel" %}</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script>
+	  if (window.name == 'cogs_popup') {
+	      document.getElementById('close_button').style='';
+	  };
+	</script>
+{% endblock %}

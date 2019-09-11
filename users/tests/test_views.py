@@ -4,7 +4,7 @@ from django.urls import reverse
 from institution.models import Institution
 from users.models import CustomUser
 from users.models import Profile
-from users.views import RegisterView
+from users.views import RegisterView, CompleteRegistrationView
 
 
 class UserViewTests(TestCase):
@@ -18,6 +18,7 @@ class UserViewTests(TestCase):
         self.institution = Institution.objects.get(name='Example University')
         self.shibboleth_user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
         self.guest_user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.preregistered_user = CustomUser.objects.get(email='preregistered.user@example.ac.uk')
 
 
 class RegisterViewTests(UserViewTests, TestCase):
@@ -52,9 +53,10 @@ class RegisterViewTests(UserViewTests, TestCase):
 
     def test_register_view_as_unregistered_application_user(self):
         """
-        Ensure the register view is accessible to an unregistred application user.
+        Ensure the register view is accessible to an unregistered
+        application user.
         """
-        email = '@'.join(['unregistred-user', self.institution.base_domain])
+        email = '@'.join(['unregistered.user', self.institution.base_domain])
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
             'REMOTE_USER': email,
@@ -65,6 +67,22 @@ class RegisterViewTests(UserViewTests, TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data['view'], RegisterView))
+
+    def test_register_view_as_preregistered_application_user(self):
+        """
+        Ensure a preregistered application user is redirected to the 
+        complete registration form.
+        """
+        headers = {
+            'Shib-Identity-Provider': self.shibboleth_user.profile.institution.identity_provider,
+            'REMOTE_USER': self.preregistered_user.email,
+        }
+        response = self.client.get(
+            reverse('register'),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('complete-registration'))
 
     def test_register_view_as_authorised_application_user(self):
         """
@@ -80,6 +98,26 @@ class RegisterViewTests(UserViewTests, TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
+
+
+class CompleteRegistrationViewTests(UserViewTests, TestCase):
+
+    def test_complete_registration_view_as_preregistered_application_user(self):
+        """
+        Ensure the complete registration view is accessible to a 
+        preregistered application user.
+        """
+        headers = {
+            'Shib-Identity-Provider': self.institution.identity_provider,
+            'REMOTE_USER': self.preregistered_user.email,
+        }
+        response = self.client.get(
+            reverse('complete-registration'),
+            **headers,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response.context_data['view'],
+                                   CompleteRegistrationView))
 
 
 class LoginViewTests(UserViewTests, TestCase):

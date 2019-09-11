@@ -1,0 +1,72 @@
+<!-- templates/project/allocation_detail.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}{% trans "RSE support request details" %}{% endblock %}
+{% block content %}
+	<div class="my-3 px-3 pt-3 bg-white rounded box-shadow">
+		<div class="row">
+			<div class="col">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					<h4>{% trans "RSE support request details" %}</h4>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+	  	  <div class="col">
+	  	  	{% include 'includes/messages.html'%}
+	  	  </div>
+	    </div>
+		<div class="row">
+			<div class="col">
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<tbody>
+							<tr>
+								<th scope="row">{% trans "Title" %}</th>
+								<td>{{allocation.title}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Estimated duration" %}</th>
+								<td>{% blocktrans count duration=allocation.duration %}1 week{% plural %}{{duration}} weeks{% endblocktrans %}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Status" %}</th>
+								<td>{{allocation.get_status_display}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Date applied" %}</th>
+								<td>{{allocation.created_time|date}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Date started" %}</th>
+								<td>{{allocation.start_date|default_if_none:"&mdash;"}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Date completed" %}</th>
+								<td>{{allocation.completed_date|default_if_none:"&mdash;"}}</td>
+							</tr>							<tr>
+								<th scope="row">{% trans "Project goals" %}</th>
+								<td>{{allocation.goals}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Software description" %}</th>
+								<td>{{allocation.software}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Project outcomes" %}</th>
+								<td>{{allocation.outcomes}}</td>
+							</tr>
+							<tr>
+								<th scope="row">{% trans "Confidentiality constraints" %}</th>
+								<td>{{allocation.confidentiality|default:"&mdash;"}}</td>
+							</tr>
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

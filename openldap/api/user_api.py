@@ -5,6 +5,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django_rq import job
 
+from common.util import email_user
 from openldap.schemas.user.activate_user import activate_user_json
 from openldap.schemas.user.create_user import create_user_json
 from openldap.schemas.user.get_user import get_user_json
@@ -13,7 +14,7 @@ from openldap.schemas.user.reset_user_password import reset_user_password_json
 from openldap.util import decode_response
 from openldap.util import raise_for_data_error
 from openldap.util import verify_payload_data
-from users.notifications import email_user
+from common.util import email_user
 
 
 @job

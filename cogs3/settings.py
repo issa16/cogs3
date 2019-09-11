@@ -12,10 +12,10 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import ast
 import os
+import sys
 
 import dj_database_url
 from django.contrib.messages import constants as messages
-
 from dotenv import load_dotenv
 from selenium import webdriver
 
@@ -68,17 +68,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django.forms',
+    'institution.apps.InstitutionConfig',
+    'funding.apps.FundingConfig',
+    'project.apps.ProjectConfig',
     'django_rq',
     'hreflang',
-    'institution.apps.InstitutionConfig',
     'openldap',
-    'project.apps.ProjectConfig',
     'security',
     'shibboleth',
     'stats',
     'system.apps.SystemConfig',
     'users.apps.UsersConfig',
     'widget_tweaks',
+    'simple_history',
+    'priority',
 ]
 
 MIDDLEWARE = [
@@ -92,6 +96,7 @@ MIDDLEWARE = [
     'users.middleware.SCWRemoteUserMiddleware',
     'users.middleware.TermsOfServiceMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
     'maintenance_mode.middleware.MaintenanceModeMiddleware',
 ]
 
@@ -118,6 +123,8 @@ TEMPLATES = [
     },
 ]
 
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
 WSGI_APPLICATION = 'cogs3.wsgi.application'
 
 # Database
@@ -126,8 +133,15 @@ DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
         conn_max_age=500,
-    )
+    ),
 }
+
+if 'test' in sys.argv and '--keepdb' in sys.argv:
+    # Persist test db to disk to avoid reapplying migrations every time
+    DATABASES['default']['TEST'] = dj_database_url.config(
+        default='sqlite:///' + os.path.join(BASE_DIR, 'test_db.sqlite3'),
+        conn_max_age=500,
+    )
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -385,5 +399,15 @@ LOGGING = {
 }
 
 # Selenium testing
-SELENIUM_WEBDRIVER = webdriver.Firefox
-SELENIUM_WEBDRIVER_PROFILE = webdriver.FirefoxProfile
+def selenium_firefox_client():
+    options = webdriver.firefox.options.Options()
+    options.headless = (int(os.getenv('SELENIUM_HEADLESS','1')) == 1)
+
+    profile = webdriver.FirefoxProfile()
+    profile.set_preference('intl.accept_languages', 'en-gb')
+
+    client = webdriver.Firefox(firefox_profile = profile, firefox_options = options)
+
+    return client
+
+SELENIUM_GET_WEBDRIVER=selenium_firefox_client

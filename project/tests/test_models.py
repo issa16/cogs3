@@ -4,9 +4,10 @@ from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from institution.models import Institution
+from funding.tests.test_models import FundingBodyTests
+from funding.tests.test_models import FundingSourceTests
 from project.models import Project
 from project.models import ProjectCategory
-from project.models import ProjectFundingSource
 from project.models import ProjectSystemAllocation
 from project.models import ProjectUserMembership
 from system.models import System
@@ -45,39 +46,6 @@ class ProjectCategoryTests(TestCase):
         self.assertEqual(project_category.description, description)
 
 
-class ProjectFundingSourceTests(TestCase):
-
-    @classmethod
-    def create_project_funding_source(cls, name, description):
-        """
-        Create a ProjectFundingSource instance.
-
-        Args:
-            name (str): Project funding source name.
-            description (str): Project funding source description.
-        """
-        project_funding_source = ProjectFundingSource.objects.create(
-            name=name,
-            description=description,
-        )
-        return project_funding_source
-
-    def test_project_funding_source_creation(self):
-        """
-        Ensure we can create a ProjectFundingSource instance.
-        """
-        name = 'A project function source name'
-        description = 'A project funding source description'
-        project_funding_source = self.create_project_funding_source(
-            name=name,
-            description=description,
-        )
-        self.assertTrue(isinstance(project_funding_source, ProjectFundingSource))
-        self.assertEqual(project_funding_source.__str__(), project_funding_source.name)
-        self.assertEqual(project_funding_source.name, name)
-        self.assertEqual(project_funding_source.description, description)
-
-
 class ProjectModelTests(TestCase):
 
     fixtures = [
@@ -107,12 +75,25 @@ class ProjectModelTests(TestCase):
             description=description,
         )
 
-        # Create a funding source
-        name = 'A project function source name'
-        description = 'A project funding source description'
-        self.funding_source = ProjectFundingSourceTests.create_project_funding_source(
+        # Create a funding body
+        name = 'A funding source name'
+        description = 'A funding source description'
+        self.funding_body = FundingBodyTests.create_funding_body(
             name=name,
             description=description,
+        )
+
+        # Create a funding source
+        title = 'A funding source title'
+        identifier = 'A funding source identifier'
+        pi_email = '@'.join(['pi', self.institution.base_domain])
+        self.funding_source = FundingSourceTests.create_funding_source(
+            title=title,
+            identifier=identifier,
+            funding_body=self.funding_body,
+            owner=self.project_owner,
+            pi_email=pi_email,
+            amount=1000,
         )
 
 
@@ -129,7 +110,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             institution (Institution): Institution project is based.
             tech_lead (settings.AUTH_USER_MODEL): Project technical lead user.
             category (ProjectCategory): Project category.
-            funding_source (ProjectFundingSource): Project funding source.
+            funding_source (FundingSource): Project funding source.
         """
         project = Project.objects.create(
             title=title,
@@ -139,24 +120,26 @@ class ProjectTests(ProjectModelTests, TestCase):
             code=code,
             institution_reference='BW-12345',
             department='School of Chemistry',
-            pi='Project Principal Investigator',
+            supervisor_name="Joe Bloggs",
+            supervisor_position="RSE",
+            supervisor_email="joe.bloggs@swansea.ac.uk",
             tech_lead=tech_lead,
             category=category,
-            funding_source=funding_source,
-            start_date=datetime.datetime.now(),
-            end_date=datetime.datetime.now() + datetime.timedelta(days=10),
             economic_user=True,
-            requirements_software='None',
-            requirements_gateways='None',
-            requirements_training='None',
-            requirements_onboarding='None',
-            allocation_rse=True,
-            allocation_cputime='1000000',
-            allocation_memory='100',
-            allocation_storage_home='5000',
-            allocation_storage_scratch='1000',
-            notes='Project notes',
+            #start_date=datetime.datetime.now(),
+            #end_date=datetime.datetime.now() + datetime.timedelta(days=10),
+            #requirements_software='None',
+            #requirements_gateways='None',
+            #requirements_training='None',
+            #requirements_onboarding='None',
+            #allocation_rse=True,
+            #allocation_cputime='1000000',
+            #allocation_memory='100',
+            #allocation_storage_home='5000',
+            #allocation_storage_scratch='1000',
+            #notes='Project notes',
         )
+        project.attributions.set([funding_source.attribution_ptr])
         return project
 
     def _verify_project_details(self, project, title, code):
@@ -165,10 +148,10 @@ class ProjectTests(ProjectModelTests, TestCase):
         """
         self.assertTrue(isinstance(project, Project))
         self.assertEqual(project.__str__(), code)
-        self.assertEqual(project.status, Project.AWAITING_APPROVAL)
         self.assertEqual(project.title, title)
         self.assertEqual(project.code, code)
-        self.assertTrue(project.is_awaiting_approval())
+        #self.assertEqual(project.status, Project.AWAITING_APPROVAL)
+        #self.assertTrue(project.is_awaiting_approval())
 
     def test_project_creation(self):
         """
@@ -189,7 +172,7 @@ class ProjectTests(ProjectModelTests, TestCase):
         """
         A test to ensure a project can be created when the title exists in the database.
 
-        Issues: 
+        Issues:
             - https://github.com/tystakartografen/cogs3/issues/30
             - https://github.com/tystakartografen/cogs3/issues/31
         """
@@ -215,6 +198,31 @@ class ProjectTests(ProjectModelTests, TestCase):
         self._verify_project_details(project_1, title_1, code_1)
         self._verify_project_details(project_2, title_2, code_2)
         self.assertEqual(Project.objects.count(), 2)
+
+    def test_project_tech_lead_membership(self):
+        """
+        Check that the a membership is correctly created when a project is saved
+        """
+        title = 'Project title'
+        code = 'SCW-12345'
+        project = self.create_project(
+            title=title,
+            code=code,
+            tech_lead=self.project_owner,
+            category=self.category,
+            funding_source=self.funding_source,
+        )
+        project.save()
+
+        # The tech lead should have been added to project_owner
+        group = self.project_owner.groups.filter(name='project_owner')
+        if not group.exists():
+            raise AssertionError()
+
+        # And a membership should have been created
+        membership = ProjectUserMembership.objects.filter(user=self.project_owner, project=project)
+        if not membership.exists():
+            raise AssertionError()
 
 
 class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
@@ -330,6 +338,58 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
         for status in unauthorised_states:
             self.membership.status = status
             self.assertTrue(self.membership.is_unauthorised())
+
+    def test_project_user_membership_owner_editable(self):
+        """
+        Ensure the unauthorised() method returns the correct response.
+        """
+        disallowed_states = [
+            ProjectUserMembership.AWAITING_AUTHORISATION,
+            ProjectUserMembership.DECLINED,
+        ]
+        allowed_states = [
+            ProjectUserMembership.AUTHORISED,
+            ProjectUserMembership.REVOKED,
+            ProjectUserMembership.SUSPENDED,
+        ]
+        self.membership.initiated_by_user = False
+        for status in disallowed_states:
+            self.membership.status = status
+            self.assertFalse(self.membership.is_owner_editable())
+        for status in allowed_states:
+            self.membership.status = status
+            self.assertTrue(self.membership.is_owner_editable())
+
+        self.membership.initiated_by_user = True
+        for status in disallowed_states+allowed_states:
+            self.membership.status = status
+            self.assertTrue(self.membership.is_owner_editable())
+
+    def test_project_user_membership_user_editable(self):
+        """
+        Ensure the unauthorised() method returns the correct response.
+        """
+        disallowed_states = [
+            ProjectUserMembership.REVOKED,
+            ProjectUserMembership.SUSPENDED,
+        ]
+        allowed_states = [
+            ProjectUserMembership.AWAITING_AUTHORISATION,
+            ProjectUserMembership.AUTHORISED,
+            ProjectUserMembership.DECLINED,
+        ]
+        self.membership.initiated_by_user = False
+        for status in disallowed_states:
+            self.membership.status = status
+            self.assertFalse(self.membership.is_user_editable())
+        for status in allowed_states:
+            self.membership.status = status
+            self.assertTrue(self.membership.is_user_editable())
+
+        self.membership.initiated_by_user = True
+        for status in disallowed_states+allowed_states:
+            self.membership.status = status
+            self.assertFalse(self.membership.is_user_editable())
 
     def test_project_user_membership_str_representation(self):
         data = {

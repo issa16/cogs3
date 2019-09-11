@@ -1,0 +1,42 @@
+{% extends 'notifications/email_base.html' %}
+{% load i18n %}
+{% block title %}
+	{% blocktrans %}New RSE time request from {{user}}{% endblocktrans %}
+{% endblock %}
+{% block content %}
+	<p>
+		{% blocktrans %}Dear RSE team{% endblocktrans %},
+	</p>
+	<p>
+		{% blocktrans %}A request for RSE time has been received from {{user}}. Details:{% endblocktrans %}
+	</p>
+	<table>
+	  <tbody>
+	    <tr>
+	      <th scope="row">{% trans "Title" %}</th>
+	      <td>{{title}}</td>
+	    </tr>
+	    <tr>
+	      <th scope="row">{% trans "Estimated duration" %}</th>
+	      <td>{% blocktrans with duration=duration %}{{duration}} weeks{% endblocktrans %}</td>
+	    </tr>
+	    <tr>
+	      <th scope="row">{% trans "Project goals" %}</th>
+	      <td>{{goals}}</td>
+	    </tr>
+	    <tr>
+	      <th scope="row">{% trans "Software description" %}</th>
+	      <td>{{software}}</td>
+	    </tr>
+	    <tr>
+	      <th scope="row">{% trans "Project outcomes" %}</th>
+	      <td>{{outcomes}}</td>
+	    </tr>
+	    <tr>
+	      <th scope="row">{% trans "Confidentiality constraints" %}</th>
+	      <td>{{confidentiality|default:"&mdash;"}}</td>
+	    </tr>
+	    
+	  </tbody>
+	</table>
+{% endblock %}

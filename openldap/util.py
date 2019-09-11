@@ -11,6 +11,7 @@ def decode_response(response):
         algorithms=[settings.OPENLDAP_JWT_ALGORITHM],
     )
 
+
 def verify_payload_data(payload, data, mapping):
     """
     Ensure data values match in both the payload and data dict's.

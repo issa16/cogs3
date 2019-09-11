@@ -5,14 +5,37 @@
 {% load widget_tweaks %}
 {% block title %}{% trans "Project details" %}{% endblock %}
 {% block content %}
-	<div class="my-3 px-3 pt-3 bg-white rounded box-shadow">
+	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+					{% if project.is_approved %}
+					<h4>{% trans "Project" %}</h4>
+						{% if project.can_have_more_users %}
+							<a class="btn btn-primary" href="{% url 'project-membership-invite' project.pk %}" role="button">{% trans "Invite User" %}</a>
+						{% else %}
+							<a class="btn btn-gray" onclick="alert('{% trans "This project has reached its membership cap. If you require more members, please contact support." %}')"}>{% trans "Invite User" %}</a>
+						{% endif %}
+					{% else %}
 					<h4>{% trans "Project Application" %}</h4>
+						{% if project.has_allocation_request %}
+							{% if request.user.profile.institution.separate_allocation_requests %}
+								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a system allocation request has been approved" %}')">{% trans "Invite User" %}</button>
+							{% else %}
+								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after the project has been approved" %}')">{% trans "Invite User" %}</button>
+							{% endif %}
+						{% else %}
+							<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a system allocation request has been created and approved" %}')">{% trans "Invite User" %}</button>
+						{% endif %}
+					{% endif %}
 				</div>
 			</div>
 		</div>
+		<div class="row">
+	  	<div class="col">
+	  		{% include 'includes/messages.html'%}
+	  	</div>
+	  </div>
 		<div class="row">
 			<div class="col">
 				<div class="table-responsive">
@@ -31,10 +54,6 @@
 							<tr>
 								<th scope="row">{% trans "Description" %}</th>
 								<td>{{project.description}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Status" %}</th>
-								<td>{{project.get_status_display}}</td>
 							</tr>
 							{% if project.legacy_hpcw_id %}
 								<tr>
@@ -57,57 +76,112 @@
 								<td>{{project.institution_reference}}</td>
 							</tr>
 							<tr>
-								<th scope="row">{% trans "Principal Investigator" %}</th>
-								<td>{{project.pi}}</td>
+								<th scope="row">{% trans "Project Leader" %}</th>
+								<td>{{project.supervisor_name}} <br>
+									{{project.supervisor_position}} <br>
+									{{project.supervisor_email}}</td>
 							</tr>
+							{% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
 							<tr>
-								<th scope="row">{% trans "Funding source" %}</th>
-								<td>{{project.funding_source}}</td>
+								<th scope="row">{% trans "Attributions" %}</th>
+								<td>
+									{% if project.attributions.all %}
+										{% trans "Funding Sources and Grants" %}
+										{% for source in project.attributions.get_fundingsources %}
+											<li>{{source.title}}</li>
+										{% empty %}
+											<li>{% trans "None yet" %}</li>
+										{% endfor %}
+										<br />
+										{% trans "Publications" %}
+										{% for source in project.attributions.get_publications %}
+											<li>{{source.title}}</li>
+										{% empty %}
+											<li>{% trans "None yet" %}</li>
+										{% endfor %}
+									{% else %}
+										{% trans "None yet" %}
+									{% endif %}
+									<br />
+									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Manage attributions" %}</a>
+								</td>
 							</tr>
+							{% endif %}
+							{% if project.tech_lead.institution.needs_priority_workflow or project.tech_lead.institution == None %}
 							<tr>
-								<th scope="row">{% trans "Start date" %}</th>
-								<td>{{project.start_date}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "End date" %}</th>
-								<td>{{project.end_date}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements software" %}</th>
-								<td>{{project.requirements_software}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements gateways" %}</th>
-								<td>{{project.requirements_gateways}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements training" %}</th>
-								<td>{{project.requirements_training}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements onboarding" %}</th>
-								<td>{{project.requirements_onboarding}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "CPU time allocation in hours" %}</th>
-								<td>{{project.allocation_cputime}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "RAM allocation in GB" %}</th>
-								<td>{{project.allocation_memory}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Home storage in GB" %}</th>
-								<td>{{project.allocation_storage_home}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Scratch storage in GB" %}</th>
-								<td>{{project.allocation_storage_scratch}}</td>
-							</tr>
+								<th scope="row">{% trans "Priority Information" %}</th>
+								<td>
+									{% trans "Current Attribution Points" %}: {{project.active_attribution_points}}
+									<br>
+									{% trans "Priority Level" %}: {{project.quality_of_service}}
+									<br>
+
+									{% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
+									<small class="text-muted">
+										{% blocktrans  %}
+										Your project's priority level is calculated based on its number of Attribution Points. Attributions are gained by attributing grants and publications to Supercomputing Wales.
+										You can attribute grants (or other funding sources) and publications to Supercomputing Wales using the manage attributions button.
+										Note that it takes up to a day to process new attributions after they are added and approved.
+										{% endblocktrans  %}
+									</small>
+									{% endif %}
+								</td>
+								{% endif %}
 						</tbody>
 					</table>
-				</div>
-			</div>
-		</div>
-	</div>
+
+                {% if request.user.profile.institution.separate_allocation_requests %}
+                <h5> {% trans "Supercomputer access requests" %}: </h5>
+                {% endif %}
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>{% trans "Start Date" %}</th>
+                            <th>{% trans "Request Status" %}</th>
+                            <th></th>
+                        </tr>
+                        {% for allocation in project.get_allocation_requests %}
+                        <tr>
+                            <td> {{allocation.start_date}} </td>
+                            <td> {{allocation.get_status_display}} </td>
+                            <td>
+                                <a href="{% url 'allocation-request-detail' allocation.pk %}"> {% trans "Show details" %} </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if request.user.profile.institution.allows_rse_requests %}
+                <h5> {% trans "RSE support requests" %}: </h5>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>{% trans "Date requested" %}</th>
+                            <th>{% trans "Title" %}</th>
+                            <th>{% trans "Request Status" %}</th>
+                            <th></th>
+                        </tr>
+                        {% for allocation in project.get_rse_requests %}
+                        <tr>
+                            <td> {{allocation.created_time|date}} </td>
+                            <td> {{allocation.title}} </td>
+                            <td> {{allocation.get_status_display}} </td>
+                            <td>
+                                <a href="{% url 'rse-allocation-detail' allocation.pk %}"> {% trans "Show details" %} </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+            {% if request.user.profile.institution.separate_allocation_requests %}
+            <a class='btn btn-primary' href="{% url 'create-allocation' project.pk %}">{% trans "Request supercomputer usage" %}</a>
+            {% endif %}
+            {% if request.user.profile.institution.allows_rse_requests %}
+            <a class='btn btn-primary' href="{% url 'request-project-rse-time' project.pk %}">{% trans "Request RSE support" %}</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

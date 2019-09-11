@@ -53,7 +53,23 @@
 								{% if project_membership.project.tech_lead == user %}
 									{% trans "Project Owner" %}
 								{% else %}
-									{{project_membership.get_status_display}}
+									{% if project_membership.is_user_editable %}
+										<select class="membership-status form-control form-control-sm">
+											<option value="0" selected>{{project_membership.get_status_display}}</option>
+											{% if not project_membership.is_authorised %}
+												<option value="{{project_membership.AUTHORISED}}">{% trans "Authorise" %}</option>
+											{% endif %}
+											{% if not project_membership.is_unauthorised %}
+												<option value="{{project_membership.DECLINED}}">{% trans "Decline" %}</option>
+											{% endif %}
+										</select>
+
+										<input name="request" type="hidden" value="{{project_membership.id}}">
+										<input name="project" type="hidden" value="{{project_membership.project.id}}">
+										<input name="approved_time" type="hidden" value="{% now "SHORT_DATETIME_FORMAT" %}">
+									{% else %}
+										{{project_membership.get_status_display}}
+									{% endif %}
 								{% endif %}
 							</td>
 						</tr>
@@ -61,6 +77,7 @@
 				</tbody>
 			</table>
 		</div>
+		<input type="hidden" id="csrf_token" value="{{csrf_token}}">
 		<div class="row">
 			<div class="col">
 				{% include 'includes/pagination.html'%}

@@ -1,0 +1,296 @@
+[
+  {
+    "model": "users.customuser",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$t3snmkIh1Wlo$VMvVEcPKr4fS/ZWcAX4I1bl3l04rVbczB5XxID7CFJ8=",
+      "last_login": "2018-06-26T12:16:52.434Z",
+      "username": "user@cardiff.ac.uk",
+      "email": "user@cardiff.ac.uk",
+      "is_shibboleth_login_required": true,
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "created_at": "2018-06-26T10:50:45.805Z",
+      "updated_at": "2018-06-26T12:16:34.736Z",
+      "first_name": "Cardiff",
+      "last_name": "User",
+      "reason_for_account": "test Cardiff users",
+      "accepted_terms_and_conditions": true,
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.customuser",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$t3snmkIh1Wlo$VMvVEcPKr4fS/ZWcAX4I1bl3l04rVbczB5XxID7CFJ8=",
+      "last_login": "2018-06-26T12:16:52.434Z",
+      "username": "user@swan.ac.uk",
+      "email": "user@swan.ac.uk",
+      "is_shibboleth_login_required": true,
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "created_at": "2018-06-26T10:50:45.805Z",
+      "updated_at": "2018-06-26T12:16:34.736Z",
+      "first_name": "Swansea",
+      "last_name": "User",
+      "reason_for_account": "test Swansea users",
+      "accepted_terms_and_conditions": true,
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.customuser",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$t3snmkIh1Wlo$VMvVEcPKr4fS/ZWcAX4I1bl3l04rVbczB5XxID7CFJ8=",
+      "last_login": "2018-06-26T12:16:52.434Z",
+      "username": "user@aber.ac.uk",
+      "email": "user@aber.ac.uk",
+      "is_shibboleth_login_required": true,
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "created_at": "2018-06-26T10:50:45.805Z",
+      "updated_at": "2018-06-26T12:16:34.736Z",
+      "first_name": "Aber",
+      "last_name": "User",
+      "reason_for_account": "test Aber users",
+      "accepted_terms_and_conditions": true,
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.customuser",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$t3snmkIh1Wlo$VMvVEcPKr4fS/ZWcAX4I1bl3l04rVbczB5XxID7CFJ8=",
+      "last_login": "2018-06-26T12:16:52.434Z",
+      "username": "user@bangor.ac.uk",
+      "email": "user@bangor.ac.uk",
+      "is_shibboleth_login_required": true,
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "created_at": "2018-06-26T10:50:45.805Z",
+      "updated_at": "2018-06-26T12:16:34.736Z",
+      "first_name": "Bangor",
+      "last_name": "User",
+      "reason_for_account": "test Bangor users",
+      "accepted_terms_and_conditions": true,
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.customuser",
+    "pk": 5,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$t3snmkIh1Wlo$VMvVEcPKr4fS/ZWcAX4I1bl3l04rVbczB5XxID7CFJ8=",
+      "last_login": "2018-06-26T12:16:52.434Z",
+      "username": "attr@swan.ac.uk",
+      "email": "attr@swan.ac.uk",
+      "is_shibboleth_login_required": true,
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "created_at": "2018-06-26T10:50:45.805Z",
+      "updated_at": "2018-06-26T12:16:34.736Z",
+      "first_name": "Attr",
+      "last_name": "User",
+      "reason_for_account": "test attr users",
+      "accepted_terms_and_conditions": true,
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.customuser",
+    "pk": 6,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$t3snmkIh1Wlo$VMvVEcPKr4fS/ZWcAX4I1bl3l04rVbczB5XxID7CFJ8=",
+      "last_login": "2018-06-26T12:16:52.434Z",
+      "username": "superuser",
+      "email": "super@user.com",
+      "is_shibboleth_login_required": false,
+      "is_staff": true,
+      "is_active": true,
+      "is_superuser": true,
+      "created_at": "2018-06-26T10:50:45.805Z",
+      "updated_at": "2018-06-26T12:16:34.736Z",
+      "first_name": "Super",
+      "last_name": "User",
+      "reason_for_account": "test super user",
+      "accepted_terms_and_conditions": true,
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+      "model": "users.profile",
+      "pk": 1,
+      "fields": {
+          "user": 1,
+          "scw_username": "",
+          "hpcw_username": "",
+          "hpcw_email": "",
+          "raven_username": "",
+          "raven_email": "",
+          "uid_number": null,
+          "description": "",
+          "phone": "",
+          "account_status": 0,
+          "previous_account_status": 0
+      }
+  },
+  {
+      "model": "users.shibbolethprofile",
+      "pk": 1,
+      "fields": {
+          "shibboleth_id": "user@cardiff.ac.uk",
+          "institution": 3,
+          "department": "",
+          "orcid": "",
+          "scopus": "",
+          "homepage": "",
+          "cronfa": ""
+      }
+  },
+  {
+      "model": "users.profile",
+      "pk": 2,
+      "fields": {
+          "user": 2,
+          "scw_username": "",
+          "hpcw_username": "",
+          "hpcw_email": "",
+          "raven_username": "",
+          "raven_email": "",
+          "uid_number": null,
+          "description": "",
+          "phone": "",
+          "account_status": 0,
+          "previous_account_status": 0
+      }
+  },
+  {
+      "model": "users.shibbolethprofile",
+      "pk": 2,
+      "fields": {
+          "shibboleth_id": "user@swan.ac.uk",
+          "institution": 1,
+          "department": "",
+          "orcid": "",
+          "scopus": "",
+          "homepage": "",
+          "cronfa": ""
+      }
+  },
+  {
+      "model": "users.profile",
+      "pk": 3,
+      "fields": {
+          "user": 3,
+          "scw_username": "",
+          "hpcw_username": "",
+          "hpcw_email": "",
+          "raven_username": "",
+          "raven_email": "",
+          "uid_number": null,
+          "description": "",
+          "phone": "",
+          "account_status": 0,
+          "previous_account_status": 0
+      }
+  },
+  {
+      "model": "users.shibbolethprofile",
+      "pk": 3,
+      "fields": {
+          "shibboleth_id": "user@aber.ac.uk",
+          "institution": 4,
+          "department": "",
+          "orcid": "",
+          "scopus": "",
+          "homepage": "",
+          "cronfa": ""
+      }
+  },
+  {
+      "model": "users.profile",
+      "pk": 4,
+      "fields": {
+          "user": 4,
+          "scw_username": "",
+          "hpcw_username": "",
+          "hpcw_email": "",
+          "raven_username": "",
+          "raven_email": "",
+          "uid_number": null,
+          "description": "",
+          "phone": "",
+          "account_status": 0,
+          "previous_account_status": 0
+      }
+  },
+  {
+      "model": "users.shibbolethprofile",
+      "pk": 4,
+      "fields": {
+          "shibboleth_id": "user@bangor.ac.uk",
+          "institution": 2,
+          "department": "",
+          "orcid": "",
+          "scopus": "",
+          "homepage": "",
+          "cronfa": ""
+      }
+  },
+  {
+      "model": "users.profile",
+      "pk": 5,
+      "fields": {
+          "user": 5,
+          "scw_username": "",
+          "hpcw_username": "",
+          "hpcw_email": "",
+          "raven_username": "",
+          "raven_email": "",
+          "uid_number": null,
+          "description": "",
+          "phone": "",
+          "account_status": 0,
+          "previous_account_status": 0
+      }
+  },
+  {
+      "model": "users.shibbolethprofile",
+      "pk": 5,
+      "fields": {
+          "shibboleth_id": "attr@swan.ac.uk",
+          "institution": 1,
+          "department": "",
+          "orcid": "",
+          "scopus": "",
+          "homepage": "",
+          "cronfa": ""
+      }
+  }
+]

@@ -18,8 +18,22 @@
     "pk": 2,
     "fields": {
       "project": 1,
-      "user": 4,
+      "user": 5,
       "status": 0,
+      "previous_status": 0,
+      "date_joined": "2018-06-26",
+      "date_left": "9999-12-31",
+      "created_time": "2018-06-26T20:46:10.473Z",
+      "modified_time": "2018-06-26T20:46:10.473Z"
+    }
+  },
+  {
+    "model": "project.projectusermembership",
+    "pk": 3,
+    "fields": {
+      "project": 2,
+      "user": 7,
+      "status": 1,
       "previous_status": 0,
       "date_joined": "2018-06-26",
       "date_left": "9999-12-31",

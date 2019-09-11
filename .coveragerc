@@ -6,3 +6,5 @@ omit =
 	*/wsgi.py
 	*/migrations/*
 	*/__init__.py
+	*tests*
+  *.pyenv*

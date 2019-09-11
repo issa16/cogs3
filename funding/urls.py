@@ -1,0 +1,76 @@
+from . import views
+
+from django.urls import path
+
+urlpatterns = [
+    path(
+        'add-funding-source/',
+        views.FundingSourceAddView.as_view(),
+        name='add-funding-source',
+    ),
+    path(
+        'create-funding-source',
+        views.FundingSourceCreateView.as_view(),
+        name='create-funding-source',
+    ),
+    path(
+        'create-funding-source/<str:identifier>',
+        views.FundingSourceCreateView.as_view(),
+        name='create-funding-source-with-identifier',
+    ),
+    path(
+        'create-publication/',
+        views.PublicationCreateView.as_view(),
+        name='create-publication',
+    ),
+    path(
+        'list/',
+        views.AttributionListView.as_view(),
+        name='list-attributions',
+    ),
+    path(
+        'list/publications/',
+        views.PublicationListView.as_view(),
+        name='list-publications',
+    ),
+    path(
+        'list/fundingsources/',
+        views.FundingSourceListView.as_view(),
+        name='list-funding_sources',
+    ),
+    path(
+        '<int:pk>/update/',
+        views.AttributionUpdateView.as_view(),
+        name='update-attribution',
+    ),
+    path(
+        '<int:pk>/view/',
+        views.FundingsourceDetailView.as_view(),
+        name='funding_source-detail-view',
+    ),
+    path(
+        '<int:pk>/delete/',
+        views.AttributionDeleteView.as_view(),
+        name='delete-attribution',
+    ),
+    path(
+        'list/memberships/',
+        views.ListFundingSourceMembership.as_view(),
+        name='list-funding_source_memberships',
+    ),
+    path(
+        'togglefundingsourcemembershipapproved/<int:pk>/',
+        views.ToggleFundingSourceMembershipApproved.as_view(),
+        name='toggle-funding_source_membership-approved',
+    ),
+    path(
+        'admin/unapproved_fundingsources/',
+        views.ListUnapprovedFundingSources.as_view(),
+        name='list-unapproved-funding_sources',
+    ),
+    path(
+        'admin/<int:pk>/approve_fundingsource/',
+        views.ApproveFundingSource.as_view(),
+        name='approve-funding_source',
+    ),
+]

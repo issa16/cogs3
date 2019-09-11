@@ -5,6 +5,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django_rq import job
 
+from common.util import email_user
 from openldap.schemas.project.activate_project import activate_project_json
 from openldap.schemas.project.create_project import create_project_json
 from openldap.schemas.project.get_project import get_project_json
@@ -12,7 +13,7 @@ from openldap.schemas.project.list_projects import list_projects_json
 from openldap.util import decode_response
 from openldap.util import raise_for_data_error
 from openldap.util import verify_payload_data
-from users.notifications import email_user
+from common.util import email_user
 
 
 @job
@@ -76,8 +77,8 @@ def create_project(project, notify_user=True):
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cache-Control': 'no-cache',
     }
-    title = '{title} (Principal Investigator = {pi}, Technical Lead = {tech_lead})'.format(
-        pi=project.pi,
+    title = '{title} (Project Leader = {supervisor}, Technical Lead = {tech_lead})'.format(
+        supervisor=project.supervisor_name,
         tech_lead=project.tech_lead.email,
         title=project.title,
     )
