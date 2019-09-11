@@ -29,8 +29,8 @@ addons:
   firefox: "60.0"
 
 before_script:
-  - psql -c 'DROP DATABASE IF EXISTS `cogs3`'; -U postgres
-  - psql -c 'CREATE DATABASE `cogs3`'; -U postgres
+  - psql -c 'DROP DATABASE IF EXISTS cogs3'; -U postgres
+  - psql -c 'CREATE DATABASE cogs3'; -U postgres
   
 script:
   - pip install mysqlclient
