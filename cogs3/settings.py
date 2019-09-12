@@ -144,7 +144,7 @@ DATABASES = {
     'default':
         dj_database_url.config(
             default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-            conn_max_age=os.environ.get('CONN_MAX_AGE'),
+            conn_max_age=500
         ),
 }
 
@@ -152,7 +152,7 @@ if 'test' in sys.argv and '--keepdb' in sys.argv:
     # Persist test db to disk to avoid reapplying migrations every time
     DATABASES['default']['TEST'] = dj_database_url.config(
         default='sqlite:///' + os.path.join(BASE_DIR, 'test_db.sqlite3'),
-        conn_max_age=os.environ.get('CONN_MAX_AGE'),
+        conn_max_age=500
     )
 
 # Password validation
