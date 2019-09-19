@@ -234,7 +234,7 @@ class FundingSourceMembership(models.Model):
             user=self.user,
             fundingsource=self.fundingsource,
         )[1:]
-        self.__class__._default_manager.filter(pk__in=extras).delete()
+        self.__class__._default_manager.filter(pk__in=list(extras)).delete()
 
 
 class Publication(Attribution):
