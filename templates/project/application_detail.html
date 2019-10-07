@@ -107,7 +107,7 @@
 								</td>
 							</tr>
 							{% endif %}
-							{% if project.tech_lead.institution.needs_priority_workflow or project.tech_lead.institution == None %}
+							{% if project.tech_lead.profile.institution.needs_priority_workflow or project.tech_lead.profile.institution == None %}
 							<tr>
 								<th scope="row">{% trans "Priority Information" %}</th>
 								<td>
@@ -115,8 +115,6 @@
 									<br>
 									{% trans "Priority Level" %}: {{project.quality_of_service}}
 									<br>
-
-									{% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
 									<small class="text-muted">
 										{% blocktrans  %}
 										Your project's priority level is calculated based on its number of Attribution Points. Attributions are gained by attributing grants and publications to Supercomputing Wales.
@@ -124,7 +122,6 @@
 										Note that it takes up to a day to process new attributions after they are added and approved.
 										{% endblocktrans  %}
 									</small>
-									{% endif %}
 								</td>
 								{% endif %}
 						</tbody>
