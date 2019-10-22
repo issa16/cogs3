@@ -252,6 +252,11 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': os.environ.get('RQ_DEFAULT_TIMEOUT'),
     }
 }
+# This will cause jobs to execute immediately and on the same thread as they
+# are dispatched, which is useful for testing and debugging.
+if DEBUG:
+    RQ_QUEUES['default']['ASYNC'] = False
+
 RQ_SHOW_ADMIN_LINK = True
 
 # OpenLDAP
