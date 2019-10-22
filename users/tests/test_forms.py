@@ -1,16 +1,17 @@
 import datetime
 
 from django import forms
-from django.test import TestCase
+from django.conf import settings
+from django.core import mail
+from django.test import TestCase, override_settings
 from django.utils.translation import activate
 
 from institution.models import Institution
-from users.forms import CustomUserChangeForm
-from users.forms import CustomUserCreationForm
-from users.forms import ProfileUpdateForm
-from users.forms import RegisterForm
-from users.models import CustomUser
-from users.models import Profile
+from users.forms import (
+    CustomUserChangeForm, CustomUserCreationForm, ProfileUpdateForm,
+    RegisterForm
+)
+from users.models import CustomUser, Profile
 
 
 class ProfileUpdateFormTests(TestCase):
@@ -110,6 +111,10 @@ class ProfileUpdateFormTests(TestCase):
         self.assertEqual(actual_choices, expected_choices)
 
 
+@override_settings(
+    EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
+    DEFAULT_SUPPORT_EMAIL='admin_team@example.ac.uk'
+)
 class CustomUserCreationFormTests(TestCase):
 
     fixtures = [
@@ -128,15 +133,25 @@ class CustomUserCreationFormTests(TestCase):
             'guest.user@external.ac.uk': False,
         }
         for email, shibboleth_required in test_cases.items():
-            form = CustomUserCreationForm(
-                data={
-                    'email': email,
-                    'first_name': 'Joe',
-                    'last_name': 'Bloggs',
-                    'is_shibboleth_login_required': shibboleth_required,
-                }
-            )
+            data = {
+                'email': email,
+                'first_name': 'Joe',
+                'last_name': 'Bloggs',
+                'is_shibboleth_login_required': shibboleth_required,
+            }
+            form = CustomUserCreationForm(data=data)
             self.assertTrue(form.is_valid())
+            form.save()
+
+            # Ensure an email notification was created.
+            self.assertEqual(len(mail.outbox), 1)
+            self.assertEqual(
+                mail.outbox[0].subject,
+                f'{settings.COMPANY_NAME} User Account Created'
+            )
+            self.assertIn(
+                f"{data['first_name']} {data['last_name']}", mail.outbox[0].body
+            )
 
     def test_invalid_institutional_email(self):
         """
