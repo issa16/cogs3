@@ -216,13 +216,12 @@ class ProjectTests(ProjectModelTests, TestCase):
 
         # The tech lead should have been added to project_owner
         group = self.project_owner.groups.filter(name='project_owner')
-        if not group.exists():
-            raise AssertionError()
+        self.assertTrue(group.exists())
 
         # And a membership should have been created
         membership = ProjectUserMembership.objects.filter(user=self.project_owner, project=project)
-        if not membership.exists():
-            raise AssertionError()
+
+        self.assertTrue(membership.exists())
 
 
 class ProjectSystemAllocationTests(ProjectModelTests, TestCase):

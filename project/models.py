@@ -247,12 +247,21 @@ class Project(models.Model):
                     status=ProjectUserMembership.AUTHORISED,
                     previous_status=ProjectUserMembership.AUTHORISED,
                     initiated_by_user=False,
+                    in_ldap=False,
                 )
             )
 
             # Propagate the changes to LDAP
-            if created:
-                project_membership_api.create_project_membership(project_membership=project_membership)
+            if not project_membership.in_ldap:
+                if SystemAllocationRequest.objects.filter(
+                        project=self.id,
+                        status=SystemAllocationRequest.APPROVED
+                ).count():
+                    project_membership_api.create_project_membership(
+                        project_membership=project_membership
+                    )
+                    project_membership.in_ldap = True
+                    project_membership.save()
         except Exception:
             logger.exception('Failed assign project owner membership to the project\'s technical lead.')
 
@@ -689,6 +698,7 @@ class ProjectUserMembership(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     approved_time = models.DateField(default=datetime.date.max)
     modified_time = models.DateTimeField(auto_now=True)
+    in_ldap = models.BooleanField(default=True)
 
     objects = ProjectUserMembershipManager()
 
