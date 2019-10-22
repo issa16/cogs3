@@ -22,8 +22,12 @@ class ProfileUpdateFormTests(TestCase):
 
     def setUp(self):
         self.institution = Institution.objects.get(name='Example University')
-        self.shibboleth_user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
-        self.guest_user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.shibboleth_user = CustomUser.objects.get(
+            email='shibboleth.user@example.ac.uk'
+        )
+        self.guest_user = CustomUser.objects.get(
+            email='guest.user@external.ac.uk'
+        )
 
     def test_profile_update(self):
         """
@@ -63,7 +67,10 @@ class ProfileUpdateFormTests(TestCase):
         """
         self.shibboleth_user.profile.account_status = Profile.AWAITING_APPROVAL
         self.shibboleth_user.profile.save()
-        self.assertEqual(self.shibboleth_user.profile.account_status, Profile.AWAITING_APPROVAL)
+        self.assertEqual(
+            self.shibboleth_user.profile.account_status,
+            Profile.AWAITING_APPROVAL
+        )
 
         form = ProfileUpdateForm(
             data={
@@ -85,7 +92,9 @@ class ProfileUpdateFormTests(TestCase):
         """
         self.shibboleth_user.profile.account_status = Profile.APPROVED
         self.shibboleth_user.profile.save()
-        self.assertEqual(self.shibboleth_user.profile.account_status, Profile.APPROVED)
+        self.assertEqual(
+            self.shibboleth_user.profile.account_status, Profile.APPROVED
+        )
 
         form = ProfileUpdateForm(
             data={
@@ -125,7 +134,8 @@ class CustomUserCreationFormTests(TestCase):
                     'first_name': 'Joe',
                     'last_name': 'Bloggs',
                     'is_shibboleth_login_required': shibboleth_required,
-                })
+                }
+            )
             self.assertTrue(form.is_valid())
 
     def test_invalid_institutional_email(self):
@@ -139,7 +149,8 @@ class CustomUserCreationFormTests(TestCase):
                 'first_name': 'Joe',
                 'last_name': 'Bloggs',
                 'is_shibboleth_login_required': True,
-            })
+            }
+        )
         self.assertFalse(form.is_valid())
 
     def test_without_required_fields(self):
@@ -168,7 +179,8 @@ class CustomUserCreationFormTests(TestCase):
                     'first_name': 'Joe',
                     'last_name': 'Bloggs',
                     'is_shibboleth_login_required': shibboleth_required,
-                })
+                }
+            )
             self.assertTrue(form.is_valid())
             form.save()
 
@@ -192,7 +204,8 @@ class RegisterFormTests(TestCase):
                 'last_name': 'Bloggs',
                 'reason_for_account': 'HPC',
                 'accepted_terms_and_conditions': True,
-            })
+            }
+        )
         self.assertTrue(form.is_valid())
 
     def test_without_required_fields(self):
@@ -203,8 +216,13 @@ class RegisterFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['first_name'], ['This field is required.'])
         self.assertEqual(form.errors['last_name'], ['This field is required.'])
-        self.assertEqual(form.errors['reason_for_account'], ['This field is required.'])
-        self.assertEqual(form.errors['accepted_terms_and_conditions'], ['This field is required.'])
+        self.assertEqual(
+            form.errors['reason_for_account'], ['This field is required.']
+        )
+        self.assertEqual(
+            form.errors['accepted_terms_and_conditions'],
+            ['This field is required.']
+        )
 
 
 class CustomUserChangeFormTests(TestCase):
@@ -216,7 +234,9 @@ class CustomUserChangeFormTests(TestCase):
 
     def setUp(self):
         self.institution = Institution.objects.get(name='Example University')
-        self.shibboleth_user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
+        self.shibboleth_user = CustomUser.objects.get(
+            email='shibboleth.user@example.ac.uk'
+        )
 
     def test_user_update(self):
         """
