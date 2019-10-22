@@ -47,7 +47,12 @@ class CustomUserAdmin(UserAdmin):
             rows_updated += 1
             update_openldap_user(user.profile)
         message = self._account_action_message(rows_updated)
-        self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
+        self.message_user(
+            request,
+            '{message} successfully submitted for activation.'.format(
+                message=message
+            )
+        )
 
     activate_users.short_description = 'Activate selected users account in LDAP'
 
@@ -59,7 +64,12 @@ class CustomUserAdmin(UserAdmin):
             rows_updated += 1
             update_openldap_user(user.profile)
         message = self._account_action_message(rows_updated)
-        self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
+        self.message_user(
+            request,
+            '{message} successfully submitted for deactivation.'.format(
+                message=message
+            )
+        )
 
     deactivate_users.short_description = 'Deactivate selected users account in LDAP'
 
@@ -97,12 +107,14 @@ class CustomUserAdmin(UserAdmin):
                 'last_name',
             )
         }),
-        ('Account', {
-            'fields': (
-                'reason_for_account',
-                'accepted_terms_and_conditions',
-            )
-        }),
+        (
+            'Account', {
+                'fields': (
+                    'reason_for_account',
+                    'accepted_terms_and_conditions',
+                )
+            }
+        ),
         (
             'Permissions', {
                 'fields': (
@@ -115,30 +127,30 @@ class CustomUserAdmin(UserAdmin):
                 )
             }
         ),
-        ('Important dates', {
-            'fields': (
-                'last_login',
-                'created_at',
-                'updated_at',
-            )
-        }),
-    )
-
-    # Fields to be displayed when creating a CustomUser instance.
-    add_fieldsets = (
         (
-            None, {
-                'classes': ('wide', ),
+            'Important dates', {
                 'fields': (
-                    'email',
-                    'first_name',
-                    'last_name',
-                    'is_shibboleth_login_required',
-                    'reason_for_account',
-                ),
+                    'last_login',
+                    'created_at',
+                    'updated_at',
+                )
             }
         ),
     )
+
+    # Fields to be displayed when creating a CustomUser instance.
+    add_fieldsets = ((
+        None, {
+            'classes': ('wide',),
+            'fields': (
+                'email',
+                'first_name',
+                'last_name',
+                'is_shibboleth_login_required',
+                'reason_for_account',
+            ),
+        }
+    ),)
     search_fields = (
         'email',
         'first_name',
@@ -147,7 +159,7 @@ class CustomUserAdmin(UserAdmin):
         'profile__hpcw_username',
         'profile__raven_username',
     )
-    ordering = ('created_at', )
+    ordering = ('created_at',)
     list_filter = (
         'is_shibboleth_login_required',
         'is_staff',
