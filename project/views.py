@@ -226,10 +226,12 @@ class RSEAllocationCreateView(AllocationCreateView):
 
     def request_allowed(self, request):
         try:
-            return (request.user.profile.institution.allows_rse_requests
-                    and ProjectUserMembership.objects.filter(
-                        user=self.request.user, project=self.kwargs['project']
-                    ).exists())
+            return (
+                request.user.profile.institution.allows_rse_requests and
+                ProjectUserMembership.objects.filter(
+                    user=self.request.user, project=self.kwargs['project']
+                ).exists()
+            )
         except Exception:
             return False
 
@@ -238,8 +240,9 @@ class RSEAllocationCreateView(AllocationCreateView):
             return self.handle_not_logged_in()
         if not self.request_allowed(request):
             return HttpResponseRedirect(
-                reverse('project-application-detail',
-                        args=[self.kwargs['project']])
+                reverse(
+                    'project-application-detail', args=[self.kwargs['project']]
+                )
             )
         return super().dispatch(request, *args, **kwargs)
 
