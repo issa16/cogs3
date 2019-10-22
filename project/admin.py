@@ -1,18 +1,22 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
-from project.forms import (ProjectAdminForm, ProjectUserMembershipAdminForm,
-                           SystemAllocationRequestAdminForm)
-from project.models import (Project, ProjectCategory, ProjectSystemAllocation,
-                            ProjectUserMembership, RSEAllocation,
-                            SystemAllocationRequest)
-from project.openldap import (update_openldap_project,
-                              update_openldap_project_membership)
+from project.forms import (
+    ProjectAdminForm, ProjectUserMembershipAdminForm,
+    SystemAllocationRequestAdminForm
+)
+from project.models import (
+    Project, ProjectCategory, ProjectSystemAllocation, ProjectUserMembership,
+    RSEAllocation, SystemAllocationRequest
+)
+from project.openldap import (
+    update_openldap_project, update_openldap_project_membership
+)
 
 
 @admin.register(ProjectCategory)
 class ProjectCategoryAdmin(SimpleHistoryAdmin):
-    list_display = ('name', )
+    list_display = ('name',)
 
 
 @admin.register(ProjectSystemAllocation)
@@ -22,12 +26,14 @@ class ProjectSystemAllocationAdmin(SimpleHistoryAdmin):
         'system',
     )
 
+
 @admin.register(RSEAllocation)
 class RSEAllocationAdmin(SimpleHistoryAdmin):
     list_display = (
         'project',
         'title',
     )
+
 
 @admin.register(ProjectUserMembership)
 class ProjectUserMembershipAdmin(SimpleHistoryAdmin):
@@ -36,7 +42,9 @@ class ProjectUserMembershipAdmin(SimpleHistoryAdmin):
         if rows_updated == 1:
             message = '1 project membership was'
         else:
-            message = '{rows} project memberships were'.format(rows=rows_updated)
+            message = '{rows} project memberships were'.format(
+                rows=rows_updated
+            )
         return message
 
     def activate_project_memberships(self, request, queryset):
@@ -47,7 +55,12 @@ class ProjectUserMembershipAdmin(SimpleHistoryAdmin):
             update_openldap_project_membership(membership)
             rows_updated += 1
         message = self._project_membership_action_message(rows_updated)
-        self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
+        self.message_user(
+            request,
+            '{message} successfully submitted for activation.'.format(
+                message=message
+            )
+        )
 
     activate_project_memberships.short_description = 'Activate selected project memberships in LDAP'
 
@@ -59,7 +72,12 @@ class ProjectUserMembershipAdmin(SimpleHistoryAdmin):
             update_openldap_project_membership(membership)
             rows_updated += 1
         message = self._project_membership_action_message(rows_updated)
-        self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
+        self.message_user(
+            request,
+            '{message} successfully submitted for deactivation.'.format(
+                message=message
+            )
+        )
 
     deactivate_project_memberships.short_description = 'Deactivate selected project memberships in LDAP'
 
@@ -113,7 +131,9 @@ class SystemAllocationRequestAdmin(SimpleHistoryAdmin):
         if rows_updated == 1:
             message = '1 allocation request was'
         else:
-            message = '{rows} allocation requests were'.format(rows=rows_updated)
+            message = '{rows} allocation requests were'.format(
+                rows=rows_updated
+            )
         return message
 
     def activate_allocations(self, request, queryset):
@@ -124,7 +144,12 @@ class SystemAllocationRequestAdmin(SimpleHistoryAdmin):
             update_openldap_project(allocation)
             rows_updated += 1
         message = self._allocation_action_message(rows_updated)
-        self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
+        self.message_user(
+            request,
+            '{message} successfully submitted for activation.'.format(
+                message=message
+            )
+        )
 
     activate_allocations.short_description = 'Activate selected allocations in LDAP'
 
@@ -136,7 +161,12 @@ class SystemAllocationRequestAdmin(SimpleHistoryAdmin):
             update_openldap_project(allocation)
             rows_updated += 1
         message = self._allocation_action_message(rows_updated)
-        self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
+        self.message_user(
+            request,
+            '{message} successfully submitted for deactivation.'.format(
+                message=message
+            )
+        )
 
     deactivate_allocations.short_description = 'Deactivate selected allocations in LDAP'
 
