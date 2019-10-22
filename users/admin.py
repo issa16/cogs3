@@ -170,10 +170,7 @@ class CustomUserAdmin(UserAdmin):
 
     @classmethod
     def get_account_status(cls, instance):
-        if instance.profile.institution and instance.profile.institution.needs_user_approval:
-            return instance.profile.get_account_status_display()
-        else:
-            return ""
+        return instance.profile.get_account_status_display()
 
     get_account_status.short_description = 'SCW Account Status'
 
