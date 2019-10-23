@@ -17,13 +17,15 @@ class ProfileUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        exclude = ('previous_account_status', )
+        exclude = ('previous_account_status',)
 
     def __init__(self, *args, **kwargs):
         super(ProfileUpdateForm, self).__init__(*args, **kwargs)
         if self.instance.user_id:
             self.initial_account_status = self.instance.account_status
-            self.fields['account_status'] = forms.ChoiceField(choices=self.instance.get_account_status_choices())
+            self.fields['account_status'] = forms.ChoiceField(
+                choices=self.instance.get_account_status_choices()
+            )
 
     def save(self, commit=True):
         profile = super(ProfileUpdateForm, self).save(commit=False)
@@ -72,7 +74,9 @@ class CustomUserCreationForm(forms.ModelForm):
     def clean(self):
         if self.cleaned_data.get('is_shibboleth_login_required'):
             try:
-                Institution.is_valid_email_address(self.cleaned_data.get('email'))
+                Institution.is_valid_email_address(
+                    self.cleaned_data.get('email')
+                )
             except InvalidInstitutionalEmailAddress as e:
                 raise forms.ValidationError(str(e))
 
@@ -109,7 +113,9 @@ class CustomUserChangeForm(UserChangeForm):
     def clean(self):
         if self.cleaned_data.get('is_shibboleth_login_required'):
             try:
-                Institution.is_valid_email_address(self.cleaned_data.get('email'))
+                Institution.is_valid_email_address(
+                    self.cleaned_data.get('email')
+                )
             except InvalidInstitutionalEmailAddress as e:
                 raise forms.ValidationError(str(e))
 
@@ -121,7 +127,7 @@ class TermsOfServiceForm(forms.ModelForm):
 
     class Meta:
         model = CustomUser
-        fields = ('accepted_terms_and_conditions', )
+        fields = ('accepted_terms_and_conditions',)
 
     def clean(self):
         if not self.cleaned_data.get('accepted_terms_and_conditions'):
