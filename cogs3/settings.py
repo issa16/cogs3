@@ -252,10 +252,13 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': os.environ.get('RQ_DEFAULT_TIMEOUT'),
     }
 }
-# This will cause jobs to execute immediately and on the same thread as they
-# are dispatched, which is useful for testing and debugging.
+
 if DEBUG:
+    # This will cause jobs to execute immediately and on the same thread as they
+    # are dispatched, which is useful for testing and debugging.
     RQ_QUEUES['default']['ASYNC'] = False
+    # locmem.EmailBacken is not intended for use in production
+    EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend',
 
 RQ_SHOW_ADMIN_LINK = True
 
