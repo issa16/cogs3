@@ -36,13 +36,17 @@ class ProjectFormTestCase(TestCase):
         self.project_code = 'scw0000'
         self.project = Project.objects.get(code=self.project_code)
         self.project_owner = self.project.tech_lead
-        self.project_applicant = CustomUser.objects.get(email='admin.user@example.ac.uk')
+        self.project_applicant = CustomUser.objects.get(
+            email='admin.user@example.ac.uk'
+        )
 
         # Create users for each institution
-        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users(
+        )
 
 
 class ProjectFormTests(ProjectFormTestCase):
+
     def setUp(self):
         super().setUp()
         institution = self.institution_names[0]
@@ -56,8 +60,7 @@ class ProjectFormTests(ProjectFormTestCase):
             'supervisor_position': 'Researcher',
             'supervisor_email': 'supervisor@example.ac.uk',
         }
-        self.form = ProjectCreationForm(self.user,self.data)
-
+        self.form = ProjectCreationForm(self.user, self.data)
 
     def test_project_form_arcca_field(self):
         for i in self.institution_names:
@@ -69,21 +72,21 @@ class ProjectFormTests(ProjectFormTestCase):
                 self.assertFalse('legacy_arcca_id' in form.fields)
 
     def test_project_form_valid(self):
-        self.assertTrue( self.form.is_valid() )
+        self.assertTrue(self.form.is_valid())
 
     def test_project_form_bad_supervisor_email(self):
         self.form.data['supervisor_email'] = 'supervisor at gmail.com'
-        self.assertFalse( self.form.is_valid() )
+        self.assertFalse(self.form.is_valid())
 
     def test_project_form_bad_supervisor_domain(self):
         self.form.data['supervisor_email'] = 'supervisor@gmail.com'
-        self.assertFalse( self.form.is_valid() )
+        self.assertFalse(self.form.is_valid())
 
     def test_project_form_external_user(self):
         self.user.profile.institution = None
         self.user = CustomUser.objects.get(email='guest.user@external.ac.uk')
-        self.form = ProjectCreationForm(self.user,self.data)
-        self.assertFalse( self.form.is_valid() )
+        self.form = ProjectCreationForm(self.user, self.data)
+        self.assertFalse(self.form.is_valid())
 
 
 class AllocationRequestFormTests(TestCase):
@@ -101,7 +104,8 @@ class AllocationRequestFormTests(TestCase):
     def setUp(self):
         self.title = "Example project title"
         # Create users for each institution
-        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users(
+        )
 
         self.project_code = 'scw0000'
         self.project = Project.objects.get(code=self.project_code)
@@ -132,18 +136,24 @@ class AllocationRequestFormTests(TestCase):
                 self.assertFalse('legacy_arcca_id' in form.fields)
 
     def test_project_allocation_form_validation(self):
-        self.form = SystemAllocationRequestCreationForm(self.user, data=self.data)
-        self.assertTrue( self.form.is_valid() )
+        self.form = SystemAllocationRequestCreationForm(
+            self.user, data=self.data
+        )
+        self.assertTrue(self.form.is_valid())
 
     def test_project_allocation_form_without_project(self):
-        self.form = SystemAllocationRequestCreationForm(self.user, include_project=False, data=self.data)
-        self.assertFalse( 'project' in self.form.fields )
+        self.form = SystemAllocationRequestCreationForm(
+            self.user, include_project=False, data=self.data
+        )
+        self.assertFalse('project' in self.form.fields)
 
     def test_project_allocation_form_other_project(self):
         self.project = Project.objects.get(code='scw0001')
         self.data['project'] = self.project.id
-        self.form = SystemAllocationRequestCreationForm(self.user, project=self.project, data=self.data)
-        self.assertFalse( self.form.is_valid() )
+        self.form = SystemAllocationRequestCreationForm(
+            self.user, project=self.project, data=self.data
+        )
+        self.assertFalse(self.form.is_valid())
 
 
 class ProjectManageAttributionFormTests(TestCase):
@@ -161,7 +171,8 @@ class ProjectManageAttributionFormTests(TestCase):
     def setUp(self):
         self.title = "Example project title"
         # Create users for each institution
-        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users()
+        self.institution_names, self.institution_users = CustomUserTests.create_institutional_users(
+        )
 
         self.project_code = 'scw0000'
         self.project = Project.objects.get(code=self.project_code)
@@ -172,9 +183,7 @@ class ProjectManageAttributionFormTests(TestCase):
 
     def test_project_allocation_form_validation(self):
         self.form = ProjectManageAttributionForm(
-            self.user,
-            data=self.data,
-            instance=self.project
+            self.user, data=self.data, instance=self.project
         )
         self.assertTrue(self.form.is_valid())
 
@@ -199,13 +208,17 @@ class ProjectSupervisorApproveFormTests(TestCase):
         }
 
     def test_project_supervisor_form_validation(self):
-        self.form = ProjectSupervisorApproveForm(self.user, instance=self.project, data = self.data)
-        self.assertTrue( self.form.is_valid() )
+        self.form = ProjectSupervisorApproveForm(
+            self.user, instance=self.project, data=self.data
+        )
+        self.assertTrue(self.form.is_valid())
 
     def test_project_supervisor_form_incorrect_email(self):
         user = CustomUser.objects.get(email='guest.user@external.ac.uk')
-        self.form = ProjectSupervisorApproveForm(user, instance=self.project, data = self.data)
-        self.assertFalse( self.form.is_valid() )
+        self.form = ProjectSupervisorApproveForm(
+            user, instance=self.project, data=self.data
+        )
+        self.assertFalse(self.form.is_valid())
 
 
 class ProjectUserRequestMembershipFormTests(ProjectFormTestCase):
@@ -386,7 +399,9 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTestCase):
         """
         # self.approve_project(self.project)
 
-        invalid_project_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=21))
+        invalid_project_code = ''.join(
+            random.choices(string.ascii_uppercase + string.digits, k=21)
+        )
         form = ProjectUserMembershipCreationForm(
             initial={
                 'user': self.project_applicant,
@@ -464,7 +479,9 @@ class ProjectUserInviteFormTests(ProjectFormTestCase):
 
         for account in accounts:
             # Create a project.
-            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            code = ''.join(
+                random.choices(string.ascii_uppercase + string.digits, k=10)
+            )
             project = Project.objects.get(code="scw0000")
             # self.approve_project(project)
 
@@ -480,7 +497,9 @@ class ProjectUserInviteFormTests(ProjectFormTestCase):
             self.assertFalse(form.is_valid())
 
             # Ensure the project user membership status is currently set authorised.
-            membership = ProjectUserMembership.objects.get(user=account, project=project)
+            membership = ProjectUserMembership.objects.get(
+                user=account, project=project
+            )
             self.assertTrue(membership.is_authorised())
 
     def test_form_when_a_user_has_a_request_awaiting_authorisation(self):
@@ -489,7 +508,9 @@ class ProjectUserInviteFormTests(ProjectFormTestCase):
         membership request awaiting authorisation.
         """
         # Create a project.
-        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        code = ''.join(
+            random.choices(string.ascii_uppercase + string.digits, k=10)
+        )
         project = Project.objects.get(code="scw0000")
         # self.approve_project(project)
 
@@ -578,13 +599,10 @@ class RSEAllocationRequestCreationFormTests(ProjectFormTestCase):
         'confidentiality': 'Secret keys must be kept private.',
         'project': 1
     }
-    
+
     def test_valid_form(self):
         user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
-        form = RSEAllocationRequestCreationForm(
-            user,
-            data=self.default_data
-        )
+        form = RSEAllocationRequestCreationForm(user, data=self.default_data)
         form.is_valid()
         self.assertTrue(form.is_valid())
 
@@ -592,14 +610,15 @@ class RSEAllocationRequestCreationFormTests(ProjectFormTestCase):
         for duration in (0, -0.5, 0.00001, float('NaN')):
             form = RSEAllocationRequestCreationForm(
                 CustomUser.objects.get(email='shibboleth.user@example.ac.uk'),
-                data={**self.default_data, 'duration': duration}
+                data={
+                    **self.default_data, 'duration': duration
+                }
             )
             self.assertFalse(form.is_valid())
 
     def test_unauthorised(self):
         form = RSEAllocationRequestCreationForm(
-            self.project_applicant,
-            data=self.default_data
+            self.project_applicant, data=self.default_data
         )
         self.assertFalse(form.is_valid())
 
@@ -607,15 +626,12 @@ class RSEAllocationRequestCreationFormTests(ProjectFormTestCase):
         user = CustomUser.objects.get(email='test.user@example3.ac.uk')
         data = dict(self.default_data)
         data['project'] = 3
-        form = RSEAllocationRequestCreationForm(
-            user,
-            data=data
-        )
+        form = RSEAllocationRequestCreationForm(user, data=data)
         self.assertTrue(form.is_valid())
         instance = form.save()
         self.assertTrue(instance.project.id == 3)
         instance.delete()
-        
+
     def test_save_with_email(self):
         form = RSEAllocationRequestCreationForm(
             CustomUser.objects.get(email='shibboleth.user@example.ac.uk'),
@@ -625,5 +641,3 @@ class RSEAllocationRequestCreationFormTests(ProjectFormTestCase):
         instance = form.save()
         self.assertTrue(instance.project.id == 1)
         instance.delete()
-
-        
