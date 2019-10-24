@@ -57,15 +57,21 @@ class ProjectModelTests(TestCase):
 
         # Create a project owner.
         group = Group.objects.get(name='project_owner')
-        project_owner_email = '@'.join(['project_owner', self.institution.base_domain])
+        project_owner_email = '@'.join([
+            'project_owner', self.institution.base_domain
+        ])
         self.project_owner = CustomUserTests.create_custom_user(
             email=project_owner_email,
             group=group,
         )
 
         # Create a project applicant.
-        project_applicant_email = '@'.join(['project_applicant', self.institution.base_domain])
-        self.project_applicant = CustomUserTests.create_custom_user(email=project_applicant_email)
+        project_applicant_email = '@'.join([
+            'project_applicant', self.institution.base_domain
+        ])
+        self.project_applicant = CustomUserTests.create_custom_user(
+            email=project_applicant_email
+        )
 
         # Create a project category
         name = 'A project category name'
@@ -125,19 +131,7 @@ class ProjectTests(ProjectModelTests, TestCase):
             supervisor_email="joe.bloggs@swansea.ac.uk",
             tech_lead=tech_lead,
             category=category,
-            economic_user=True,
-            #start_date=datetime.datetime.now(),
-            #end_date=datetime.datetime.now() + datetime.timedelta(days=10),
-            #requirements_software='None',
-            #requirements_gateways='None',
-            #requirements_training='None',
-            #requirements_onboarding='None',
-            #allocation_rse=True,
-            #allocation_cputime='1000000',
-            #allocation_memory='100',
-            #allocation_storage_home='5000',
-            #allocation_storage_scratch='1000',
-            #notes='Project notes',
+            economic_user=True
         )
         project.attributions.set([funding_source.attribution_ptr])
         return project
@@ -219,7 +213,9 @@ class ProjectTests(ProjectModelTests, TestCase):
         self.assertTrue(group.exists())
 
         # And a membership should have been created
-        membership = ProjectUserMembership.objects.filter(user=self.project_owner, project=project)
+        membership = ProjectUserMembership.objects.filter(
+            user=self.project_owner, project=project
+        )
 
         self.assertTrue(membership.exists())
 
@@ -252,16 +248,21 @@ class ProjectSystemAllocationTests(ProjectModelTests, TestCase):
             project=self.project,
             system=self.system,
             date_allocated=datetime.datetime.now(),
-            date_unallocated=datetime.datetime.now() + datetime.timedelta(days=10),
+            date_unallocated=datetime.datetime.now() +
+            datetime.timedelta(days=10),
         )
-        self.assertTrue(isinstance(project_system_allocation, ProjectSystemAllocation))
+        self.assertTrue(
+            isinstance(project_system_allocation, ProjectSystemAllocation)
+        )
         data = {
             'project': self.project,
             'system': self.system,
             'date_allocated': project_system_allocation.date_allocated,
             'date_unallocated': project_system_allocation.date_unallocated
         }
-        expected = '{project} on {system} from {date_allocated} to {date_unallocated}'.format(**data)
+        expected = '{project} on {system} from {date_allocated} to {date_unallocated}'.format(
+            **data
+        )
         self.assertEqual(project_system_allocation.__str__(), expected)
 
 
@@ -285,7 +286,11 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
             project=self.project,
         )
 
-        self.assertEqual(ProjectUserMembership.objects.filter(user=self.project_applicant).count(), 1)
+        self.assertEqual(
+            ProjectUserMembership.objects.filter(user=self.project_applicant
+                                                ).count(),
+            1
+        )
 
     @classmethod
     def create_project_user_membership(cls, user, project):
@@ -360,7 +365,7 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
             self.assertTrue(self.membership.is_owner_editable())
 
         self.membership.initiated_by_user = True
-        for status in disallowed_states+allowed_states:
+        for status in disallowed_states + allowed_states:
             self.membership.status = status
             self.assertTrue(self.membership.is_owner_editable())
 
@@ -386,7 +391,7 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
             self.assertTrue(self.membership.is_user_editable())
 
         self.membership.initiated_by_user = True
-        for status in disallowed_states+allowed_states:
+        for status in disallowed_states + allowed_states:
             self.membership.status = status
             self.assertFalse(self.membership.is_user_editable())
 
@@ -397,5 +402,7 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
             'date_joined': self.membership.date_joined,
             'date_left': self.membership.date_left
         }
-        expected = '{user} on {project} from {date_joined} to {date_left}'.format(**data)
+        expected = '{user} on {project} from {date_joined} to {date_left}'.format(
+            **data
+        )
         self.assertEqual(self.membership.__str__(), expected)
