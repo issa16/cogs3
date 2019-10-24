@@ -22,7 +22,7 @@ class ProjectCategory(models.Model):
 
     class Meta:
         verbose_name_plural = _('Project Categories')
-        ordering = ('name', )
+        ordering = ('name',)
 
     name = models.CharField(
         max_length=128,
@@ -147,7 +147,7 @@ class Project(models.Model):
         through='ProjectSystemAllocation',
         verbose_name=_('Allocation systems'),
     )
-    
+
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='ProjectUserMembership',
@@ -158,7 +158,7 @@ class Project(models.Model):
         verbose_name=_('Custom user cap'),
         default=0,
     )
-    
+
     AWAITING_APPROVAL = 0
     APPROVED = 1
     DECLINED = 2
@@ -184,36 +184,39 @@ class Project(models.Model):
         null=True,
         default=None,
     )
-    
+
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('Created time'))
     modified_time = models.DateTimeField(auto_now=True, verbose_name=_('Modified time'))
+
     def can_have_more_users(self):
         if not self.custom_user_cap:
             if not self.tech_lead.profile.institution:
                 return True
             elif not self.tech_lead.profile.institution.default_project_user_cap:
                 return True
-            elif (self.tech_lead.profile.institution.default_project_user_cap >=
-                  ProjectUserMembership.objects.filter(
-                      project=self,
-                      status=ProjectUserMembership.AUTHORISED,
-                  ).count() + 1):
+            elif (
+                self.tech_lead.profile.institution.default_project_user_cap >=
+                ProjectUserMembership.objects.filter(
+                    project=self,
+                    status=ProjectUserMembership.AUTHORISED,
+                ).count() + 1
+            ):
                 return True
             else:
                 return False
-        elif (self.custom_user_cap >= ProjectUserMembership.objects.filter(
+        elif (
+            self.custom_user_cap >= ProjectUserMembership.objects.filter(
                 project=Project.objects.last(),
                 status=ProjectUserMembership.AUTHORISED,
-        ).count() + 1):
+            ).count() + 1
+        ):
             return True
         else:
             return False
 
     def can_view_project(self, user):
         if ProjectUserMembership.objects.filter(
-                project=self,
-                status=ProjectUserMembership.AUTHORISED,
-                user=user
+            project=self, status=ProjectUserMembership.AUTHORISED, user=user
         ).count() > 0:
             return True
         else:
@@ -230,10 +233,12 @@ class Project(models.Model):
         return len(self.get_allocation_requests()) > 0
 
     def get_allocation_requests(self):
-        return SystemAllocationRequest.objects.filter(project=self.id).order_by('-start_date')
+        return SystemAllocationRequest.objects.filter(project=self.id
+                                                     ).order_by('-start_date')
 
     def get_rse_requests(self):
-        return RSEAllocation.objects.filter(project=self.id).order_by('-created_time')
+        return RSEAllocation.objects.filter(project=self.id
+                                           ).order_by('-created_time')
 
     # objects = ProjectManager()
 
@@ -254,8 +259,7 @@ class Project(models.Model):
             # Propagate the changes to LDAP
             if not project_membership.in_ldap:
                 if SystemAllocationRequest.objects.filter(
-                        project=self.id,
-                        status=SystemAllocationRequest.APPROVED
+                    project=self.id, status=SystemAllocationRequest.APPROVED
                 ).count():
                     project_membership_api.create_project_membership(
                         project_membership=project_membership
@@ -263,20 +267,22 @@ class Project(models.Model):
                     project_membership.in_ldap = True
                     project_membership.save()
         except Exception:
-            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
+            logger.exception(
+                'Failed assign project owner membership to the project\'s technical lead.'
+            )
 
     def _remove_from_project_owner(self, old_techlead):
         try:
             # If the old tech lead no longer has any projects,
             # remove them from the project_owner group
-            techlead_projects = Project.objects.filter(
-                tech_lead=old_techlead,
-            )
+            techlead_projects = Project.objects.filter(tech_lead=old_techlead,)
             if techlead_projects.count() == 1:
                 group = Group.objects.get(name='project_owner')
                 old_techlead.groups.remove(group)
         except Exception:
-            logger.exception('Failed assign project owner membership to the project\'s technical lead.')
+            logger.exception(
+                'Failed assign project owner membership to the project\'s technical lead.'
+            )
 
     def _generate_project_code(self):
         prefix = 'scw'
@@ -305,7 +311,7 @@ class Project(models.Model):
             self.tech_lead.groups.add(group)
 
         # If the project already exists check for changes
-        if(Project.objects.filter(pk=self.id).exists()):
+        if (Project.objects.filter(pk=self.id).exists()):
             current = Project.objects.get(pk=self.id)
             if self.tech_lead != current.tech_lead:
                 self._remove_from_project_owner(current.tech_lead)
@@ -323,15 +329,17 @@ class Project(models.Model):
             for attribution in self.attributions.all():
                 if attribution.is_fundingsource:
                     if (
-                            attribution.fundingsource.approved
-                            or not institution.needs_funding_approval
+                        attribution.fundingsource.approved or
+                        not institution.needs_funding_approval
                     ):
                         total_points += attribution.fundingsource.amount
                 elif attribution.is_publication:
                     total_points += institution.AP_per_publication
                 else:
-                    warn(f'Attribution {attribution} has no AP implemented.',
-                         RuntimeWarning)
+                    warn(
+                        f'Attribution {attribution} has no AP implemented.',
+                        RuntimeWarning
+                    )
 
         return total_points
 
@@ -388,7 +396,7 @@ class SystemAllocationRequest(models.Model):
     requirements_software = models.TextField(
         max_length=512,
         blank=True,
- #       help_text=_('Software name and versions'),
+        #       help_text=_('Software name and versions'),
         verbose_name=_('Software Requirements'),
         help_text=('Enter details of any software you require to be installed on the system to be able to use it for your research. Examples include compilers (Intel and GNU C, C++, and Fortran compilers are available already), interpreters (Python and R are available already), open-source libraries, and commercial software (e.g. Stata, Matlab, Molpro). In addition if you require a specific version of the software then please specify this.'),
     )
@@ -490,7 +498,7 @@ class ProjectSystemAllocation(models.Model):
 
     class Meta:
         verbose_name_plural = _('Project System Allocations')
-        unique_together = (('project', 'system'), )
+        unique_together = (('project', 'system'),)
 
     project = models.ForeignKey(
         Project,
@@ -529,6 +537,7 @@ class ProjectSystemAllocation(models.Model):
 
 
 class RSEAllocation(models.Model):
+
     class meta:
         verbose_name_plural = _('Project RSE Allocations')
 
@@ -634,10 +643,7 @@ class RSEAllocation(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        data = {
-            'title': self.title,
-            'duration': self.duration
-        }
+        data = {'title': self.title, 'duration': self.duration}
         return _("Project to '{title}' in {duration} weeks").format(**data)
 
 
