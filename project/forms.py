@@ -5,11 +5,13 @@ from django.utils.translation import gettext_lazy as _
 from common.util import email_user
 from funding.models import Attribution, FundingSource
 from institution.models import Institution
-from project.models import (Project, ProjectUserMembership, RSEAllocation,
-                            SystemAllocationRequest)
-from project.openldap import (update_openldap_project,
-                              update_openldap_project_membership)
-from users.models import CustomUser,Profile
+from project.models import (
+    Project, ProjectUserMembership, RSEAllocation, SystemAllocationRequest
+)
+from project.openldap import (
+    update_openldap_project, update_openldap_project_membership
+)
+from users.models import CustomUser, Profile
 
 PROJECT_CODE_PREFIX = "scw"
 
@@ -208,9 +210,7 @@ class ProjectCreationForm(forms.ModelForm):
             self.fields['attributions'] = forms.ModelMultipleChoiceField(
                 label='',
                 widget=SelectMultipleTickbox(),
-                queryset=Attribution.objects.filter(
-                    created_by=self.user
-                ),
+                queryset=Attribution.objects.filter(created_by=self.user),
                 required=False,
             )
             del self.fields['institution_reference']
