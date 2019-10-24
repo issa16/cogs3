@@ -5,15 +5,15 @@ import string
 from django.test import TestCase
 
 from institution.models import Institution
-from project.forms import ProjectCreationForm
-from project.forms import ProjectUserMembershipCreationForm
-from project.forms import ProjectUserInviteForm
-from project.forms import RSEAllocationRequestCreationForm
-from project.forms import SystemAllocationRequestCreationForm
-from project.forms import ProjectManageAttributionForm
-from project.forms import ProjectSupervisorApproveForm
-from project.models import Project
-from project.models import ProjectUserMembership
+from project.forms import (
+    ProjectCreationForm, ProjectManageAttributionForm,
+    ProjectSupervisorApproveForm, ProjectUserInviteForm,
+    ProjectUserMembershipCreationForm, RSEAllocationRequestCreationForm,
+    SystemAllocationRequestAdminForm
+)
+from project.models import (
+    Project, ProjectUserMembership, SystemAllocationRequest
+)
 from users.models import CustomUser
 from users.tests.test_models import CustomUserTests
 
