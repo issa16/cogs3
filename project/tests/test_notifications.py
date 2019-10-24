@@ -6,10 +6,7 @@ from users.models import CustomUser
 from django.core import mail
 
 
-@override_settings(
-    EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
-    DEFAULT_SUPPORT_EMAIL='admin_team@example.ac.uk'
-)
+@override_settings(DEFAULT_SUPPORT_EMAIL='admin_team@example.ac.uk')
 class ProjectNotificationTests(TestCase):
 
     fixtures = ['institution/fixtures/institutions.json']
