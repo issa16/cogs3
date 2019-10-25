@@ -78,7 +78,6 @@ class SystemAllocationRequestAdminFormTests(TestCase):
                 'status': SystemAllocationRequest.AWAITING_APPROVAL
             }
         )
-        mail.outbox = []  # Clear mail outbox
         self.assertTrue(form.is_valid())
 
         # Approve the system allocation request and trigger LDAP API calls
@@ -146,12 +145,67 @@ class SystemAllocationRequestAdminFormTests(TestCase):
         )
         self.assertNotEqual(email.body.find(self.tech_lead.first_name), -1)
 
-    def test_system_allocation_request_ldap_deactivation(self):
+    # yapf: disable
+    @mock.patch(
+        'requests.delete',
+        side_effect=[OpenLDAPProjectAPITests.mock_deactivate_project_response()]
+    )
+    # yapf: enable
+    def test_system_allocation_request_ldap_deactivation(self, delete_mock):
         """
         Ensure the correct LDAP API url is called and email notification is 
         issued when de-activating a system allocation request.
         """
-        pass
+        system_allocation_request = SystemAllocationRequest(
+            project=self.project,
+            start_date='2019-07-30',
+            end_date='2019-09-30',
+            status=SystemAllocationRequest.APPROVED
+        )
+        system_allocation_request.save()
+
+        form = SystemAllocationRequestAdminForm(
+            data={
+                'project': self.project.id,
+                'start_date': '2019-07-30',
+                'end_date': '2019-09-30',
+                'status': SystemAllocationRequest.SUSPENDED
+            },
+            instance=system_allocation_request
+        )
+        self.assertTrue(form.is_valid())
+
+        # Suspend the system allocation request and trigger LDAP API calls
+        form.save()
+
+        # Ensure the args passed to LDAP to deactivate a project are correct
+        call_args, call_kwargs = delete_mock.call_args_list[0]
+        call_url = call_args[0]
+        expected_call_url = f'{settings.OPENLDAP_HOST}project/scw0000/'
+        self.assertEqual(call_url, expected_call_url)
+        # yapf: disable
+        expected_call_kwargs = {
+            'headers': {
+                'Cache-Control': 'no-cache'
+            },
+            'timeout': 5
+        }
+        # yapf: enable
+        self.assertEqual(call_kwargs, expected_call_kwargs)
+
+        # Ensure system allocation email notification is correct
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.to, [self.tech_lead.email])
+        self.assertNotEqual(
+            email.subject.find('Project scw0000 Deactivated'), -1
+        )
+        self.assertNotEqual(
+            email.body.find(
+                'Your Supercomputing Wales project scw0000 has been suspended.'
+            ), -1
+        )
+        self.assertNotEqual(email.body.find(self.tech_lead.first_name), -1)
 
     def test_system_allocation_request_ldap_reactivation(self):
         """

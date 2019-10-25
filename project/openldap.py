@@ -1,7 +1,9 @@
-from openldap.api import project_api
-from openldap.api import project_membership_api
-from project.models import SystemAllocationRequest
-from project.models import ProjectUserMembership
+import logging
+
+from openldap.api import project_api, project_membership_api
+from project.models import ProjectUserMembership, SystemAllocationRequest
+
+logger = logging.getLogger('apps')
 
 
 def update_openldap_project(allocation):
@@ -24,10 +26,17 @@ def update_openldap_project(allocation):
             activate_existing_users(project)
     elif allocation.status in deactivate_project_states:
         # Check for other approved allocations before deactivating
-        if not SystemAllocationRequest.objects.filter(
-            project=project, status=SystemAllocationRequest.APPROVED
-        ).exists:
-            project_api.deactivate_project.delay(project=project)
+        num_approved_allocations = SystemAllocationRequest.objects.filter(
+            project=project,
+            status=SystemAllocationRequest.APPROVED,
+        ).count()
+
+        if num_approved_allocations == 1:
+            project_api.deactivate_project.delay(allocation=allocation)
+        else:
+            logger.warning(
+                'Failed to deactivate project system allocation request.'
+            )
 
 
 def update_openldap_project_membership(project_membership):

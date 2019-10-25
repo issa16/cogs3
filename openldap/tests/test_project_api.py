@@ -33,6 +33,14 @@ class OpenLDAPProjectAPITests(OpenLDAPBaseAPITests):
             status=201, content=jwt.encode()
         )
 
+    @staticmethod
+    def mock_deactivate_project_response():
+        """
+        Mock the JWT response returned from the LDAP API when de-activating a
+        project.
+        """
+        return OpenLDAPBaseAPITests.mock_response(status=204, content='')
+
     @mock.patch('requests.get')
     def test_list_projects_query(self, get_mock):
         """

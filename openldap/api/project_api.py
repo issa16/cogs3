@@ -123,7 +123,7 @@ def create_project(allocation, notify_user=True):
                 'first_name': project.tech_lead.first_name,
                 'to': project.tech_lead.email,
                 'code': project.code,
-                'status': 'created'
+                'status': allocation.get_status_display().lower()
             }
             text_template_path = 'notifications/project/update.txt'
             html_template_path = 'notifications/project/update.html'
@@ -136,13 +136,14 @@ def create_project(allocation, notify_user=True):
 
 
 @job
-def deactivate_project(project, notify_user=True):
+def deactivate_project(allocation, notify_user=True):
     """
     Deactivate an OpenLDAP project.
 
     Args:
         code (str): Project code - required
     """
+    project = allocation.project
     url = ''.join([settings.OPENLDAP_HOST, 'project/', project.code, '/'])
     headers = {'Cache-Control': 'no-cache'}
     try:
@@ -164,14 +165,14 @@ def deactivate_project(project, notify_user=True):
                 'first_name': project.tech_lead.first_name,
                 'to': project.tech_lead.email,
                 'code': project.code,
-                'status': project.get_status_display().lower(),
+                'status': allocation.get_status_display().lower(),
             }
             text_template_path = 'notifications/project/update.txt'
             html_template_path = 'notifications/project/update.html'
             email_user(subject, context, text_template_path, html_template_path)
         return response
     except Exception as e:
-        project.reset_status()
+        allocation.reset_status()
         raise e
 
 

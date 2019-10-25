@@ -155,25 +155,30 @@ class SystemAllocationRequestAdminForm(forms.ModelForm):
         )
         if self.instance.id is None:
             self.fields['status'] = forms.ChoiceField(
-                choices=[Project.STATUS_CHOICES[Project.AWAITING_APPROVAL]]
+                choices=[
+                    SystemAllocationRequest.
+                    STATUS_CHOICES[SystemAllocationRequest.AWAITING_APPROVAL]
+                ]
             )
 
     def _get_status_choices(self, status):
+        # yapf: disable
         pre_approved_options = [
-            Project.STATUS_CHOICES[Project.AWAITING_APPROVAL],
-            Project.STATUS_CHOICES[Project.APPROVED],
-            Project.STATUS_CHOICES[Project.DECLINED],
+            SystemAllocationRequest.STATUS_CHOICES[SystemAllocationRequest.AWAITING_APPROVAL],
+            SystemAllocationRequest.STATUS_CHOICES[SystemAllocationRequest.APPROVED],
+            SystemAllocationRequest.STATUS_CHOICES[SystemAllocationRequest.DECLINED],
         ]
         post_approved_options = [
-            Project.STATUS_CHOICES[Project.APPROVED],
-            Project.STATUS_CHOICES[Project.REVOKED],
-            Project.STATUS_CHOICES[Project.SUSPENDED],
-            Project.STATUS_CHOICES[Project.CLOSED],
+            SystemAllocationRequest.STATUS_CHOICES[SystemAllocationRequest.APPROVED],
+            SystemAllocationRequest.STATUS_CHOICES[SystemAllocationRequest.REVOKED],
+            SystemAllocationRequest.STATUS_CHOICES[SystemAllocationRequest.SUSPENDED],
+            SystemAllocationRequest.STATUS_CHOICES[SystemAllocationRequest.CLOSED],
         ]
-        if Project.STATUS_CHOICES[status] in post_approved_options:
+        if SystemAllocationRequest.STATUS_CHOICES[status] in post_approved_options:
             return post_approved_options
         else:
             return pre_approved_options
+        # yapf: enable
 
     def save(self, commit=True):
         allocation = super(SystemAllocationRequestAdminForm,
