@@ -131,7 +131,7 @@ class SystemAllocationRequestAdminFormTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(email.to, [self.tech_lead.email])
         self.assertNotEqual(email.subject.find('Project scw0000 Created'), -1)
-        self.assertNotEqual(email.body.find('scw0000 has been created'), -1)
+        self.assertNotEqual(email.body.find('scw0000 has been approved'), -1)
         self.assertNotEqual(email.body.find(self.tech_lead.first_name), -1)
 
         # Ensure project user membership email notification is correct
