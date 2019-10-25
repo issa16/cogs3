@@ -460,15 +460,16 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
         # yapf: enable
 
     def clean_status(self):
-        if (
-            self.initial_status != ProjectUserMembership.AWAITING_AUTHORISED and
-            self.cleaned_data['status'] == ProjectUserMembership.AUTHORISED
-        ):
+        current_status = self.initial_status
+        updated_status = self.cleaned_data['status']
+        if current_status != updated_status:
+            # Check for project user limit
             if not self.cleaned_data['project'].can_have_more_users():
                 raise forms.ValidationError(_(
                     "This project has reached its membership cap. "
                     "If you require more members, please contact support."
                 ))
+        return updated_status
 
     def save(self, commit=True):
         project_user_membership = super(ProjectUserMembershipAdminForm,

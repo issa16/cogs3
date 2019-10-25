@@ -86,6 +86,7 @@ class ProjectUserMembershipAdmin(SimpleHistoryAdmin):
     list_display = (
         'project',
         'user',
+        str('created_time'),
         'status',
         'date_joined',
     )
@@ -176,6 +177,8 @@ class SystemAllocationRequestAdmin(SimpleHistoryAdmin):
     # Fields to be used when displaying a SystemAllocationRequestAdminForm instance.
     list_display = (
         'project',
+        str('created_time'),
+        'status',
         'start_date',
         'end_date',
         'allocation_cputime',
