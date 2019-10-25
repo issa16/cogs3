@@ -19,11 +19,13 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Retrieve a list of all users.
         """
-        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUu'
-               'Y29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4ODY4L'
-               'CJuYmYiOjE1MjcwOTgyNjgsImRhdGEiOnsiMCI6ImUuam9lLmJsb2dncyIsImVycm9yIjoiIiwiY291bn'
-               'QiOjF9fQ.36rdXQHItN-McM2SvtyWmyZgPdhJTerl1fDTH79QLB0')
-        get_mock.return_value = self._mock_response(
+        jwt = (
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUu'
+            'Y29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4ODY4L'
+            'CJuYmYiOjE1MjcwOTgyNjgsImRhdGEiOnsiMCI6ImUuam9lLmJsb2dncyIsImVycm9yIjoiIiwiY291bn'
+            'QiOjF9fQ.36rdXQHItN-McM2SvtyWmyZgPdhJTerl1fDTH79QLB0'
+        )
+        get_mock.return_value = OpenLDAPBaseAPITests.mock_response(
             status=200,
             content=jwt.encode(),
         )
@@ -46,16 +48,18 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Create a User.
         """
-        jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUu'
-               'Y29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwMTQxL'
-               'CJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOnsiY24iOiJlLmpvZS5ibG9nZ3MiLCJzbiI6IkJsb2dncyIsIm'
-               'dpZE51bWJlciI6IjUwMDAwMDEiLCJnaXZlbm5hbWUiOiJKb2UiLCJkaXNwbGF5TmFtZSI6Ik1yIEpvZSB'
-               'CbG9nZ3MiLCJ0aXRsZSI6Ik1yIiwiaG9tZWRpcmVjdG9yeSI6Ii9ob21lL2Uuam9lLmJsb2dncyIsImxv'
-               'Z2luc2hlbGwiOiIvYmluL2Jhc2giLCJvYmplY3RjbGFzcyI6WyJpbmV0T3JnUGVyc29uIiwicG9zaXhBY'
-               '2NvdW50IiwidG9wIl0sInRlbGVwaG9uZW51bWJlciI6IjAwMDAwLTAwMC0wMDAiLCJtYWlsIjoic2hpYm'
-               'JvbGV0aC51c2VyQGV4YW1wbGUuYWMudWsiLCJ1aWQiOiJlLmpvZS5ibG9nZ3MiLCJ1aWRudW1iZXIiOiI'
-               '1MDAwMDAxIn19.-fgHQj_NkS97MQ2yAWACRPTdWOS00fMy8hSsQjj6JJM')
-        post_mock.return_value = self._mock_response(
+        jwt = (
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUu'
+            'Y29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwMTQxL'
+            'CJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOnsiY24iOiJlLmpvZS5ibG9nZ3MiLCJzbiI6IkJsb2dncyIsIm'
+            'dpZE51bWJlciI6IjUwMDAwMDEiLCJnaXZlbm5hbWUiOiJKb2UiLCJkaXNwbGF5TmFtZSI6Ik1yIEpvZSB'
+            'CbG9nZ3MiLCJ0aXRsZSI6Ik1yIiwiaG9tZWRpcmVjdG9yeSI6Ii9ob21lL2Uuam9lLmJsb2dncyIsImxv'
+            'Z2luc2hlbGwiOiIvYmluL2Jhc2giLCJvYmplY3RjbGFzcyI6WyJpbmV0T3JnUGVyc29uIiwicG9zaXhBY'
+            '2NvdW50IiwidG9wIl0sInRlbGVwaG9uZW51bWJlciI6IjAwMDAwLTAwMC0wMDAiLCJtYWlsIjoic2hpYm'
+            'JvbGV0aC51c2VyQGV4YW1wbGUuYWMudWsiLCJ1aWQiOiJlLmpvZS5ibG9nZ3MiLCJ1aWRudW1iZXIiOiI'
+            '1MDAwMDAxIn19.-fgHQj_NkS97MQ2yAWACRPTdWOS00fMy8hSsQjj6JJM'
+        )
+        post_mock.return_value = OpenLDAPBaseAPITests.mock_response(
             status=201,
             content=jwt.encode(),
         )
@@ -96,15 +100,17 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Get an existing user by id.
         """
-        jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUuY'
-               '29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4OTIwLCJ'
-               'uYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6ImUuam9lLmJsb2dncyIsImNvdW50I'
-               'joxfSwibWFpbCI6eyIwIjoic2hpYmJvbGV0aC51c2VyQGV4YW1wbGUuYWMudWsiLCJjb3VudCI6MX0sImR'
-               'pc3BsYXluYW1lIjp7IjAiOiJNciBKb2UgQmxvZ2dzIiwiY291bnQiOjF9LCJnaWROdW1iZXIiOnsiMCI6I'
-               'jk5OTk5OTkiLCJjb3VudCI6MX0sInVpZG51bWJlciI6eyIwIjoiOTk5OTk5OSIsImNvdW50IjoxfSwidGV'
-               'sZXBob25lIjoiMDAwMDAtMDAwLTAwMCJ9LCJlcnJvciI6IiIsImNvdW50IjoxfX0.sKa989E6cfZMTwHNL'
-               'oGJTGpFx4KvC3fwQ6f-xVCImAg')
-        get_mock.return_value = self._mock_response(
+        jwt = (
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUuY'
+            '29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4OTIwLCJ'
+            'uYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6ImUuam9lLmJsb2dncyIsImNvdW50I'
+            'joxfSwibWFpbCI6eyIwIjoic2hpYmJvbGV0aC51c2VyQGV4YW1wbGUuYWMudWsiLCJjb3VudCI6MX0sImR'
+            'pc3BsYXluYW1lIjp7IjAiOiJNciBKb2UgQmxvZ2dzIiwiY291bnQiOjF9LCJnaWROdW1iZXIiOnsiMCI6I'
+            'jk5OTk5OTkiLCJjb3VudCI6MX0sInVpZG51bWJlciI6eyIwIjoiOTk5OTk5OSIsImNvdW50IjoxfSwidGV'
+            'sZXBob25lIjoiMDAwMDAtMDAwLTAwMCJ9LCJlcnJvciI6IiIsImNvdW50IjoxfX0.sKa989E6cfZMTwHNL'
+            'oGJTGpFx4KvC3fwQ6f-xVCImAg'
+        )
+        get_mock.return_value = OpenLDAPBaseAPITests.mock_response(
             status=200,
             content=jwt.encode(),
         )
@@ -149,15 +155,17 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Get an existing user by email address.
         """
-        jwt = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUu'
-               'Y29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4OTIwL'
-               'CJuYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6ImUuam9lLmJsb2dncyIsImNvdW'
-               '50IjoxfSwibWFpbCI6eyIwIjoic2hpYmJvbGV0aC51c2VyQGV4YW1wbGUuYWMudWsiLCJjb3VudCI6MX0'
-               'sImRpc3BsYXluYW1lIjp7IjAiOiJNciBKb2UgQmxvZ2dzIiwiY291bnQiOjF9LCJnaWROdW1iZXIiOnsi'
-               'MCI6Ijk5OTk5OTkiLCJjb3VudCI6MX0sInVpZG51bWJlciI6eyIwIjoiOTk5OTk5OSIsImNvdW50Ijoxf'
-               'SwidGVsZXBob25lIjoiMDAwMDAtMDAwLTAwMCJ9LCJlcnJvciI6IiIsImNvdW50IjoxfX0.sKa989E6cf'
-               'ZMTwHNLoGJTGpFx4KvC3fwQ6f-xVCImAg')
-        get_mock.return_value = self._mock_response(
+        jwt = (
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUu'
+            'Y29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MDk4OTIwL'
+            'CJuYmYiOjE1MjcwOTgzMjAsImRhdGEiOnsiMCI6eyJ1aWQiOnsiMCI6ImUuam9lLmJsb2dncyIsImNvdW'
+            '50IjoxfSwibWFpbCI6eyIwIjoic2hpYmJvbGV0aC51c2VyQGV4YW1wbGUuYWMudWsiLCJjb3VudCI6MX0'
+            'sImRpc3BsYXluYW1lIjp7IjAiOiJNciBKb2UgQmxvZ2dzIiwiY291bnQiOjF9LCJnaWROdW1iZXIiOnsi'
+            'MCI6Ijk5OTk5OTkiLCJjb3VudCI6MX0sInVpZG51bWJlciI6eyIwIjoiOTk5OTk5OSIsImNvdW50Ijoxf'
+            'SwidGVsZXBob25lIjoiMDAwMDAtMDAwLTAwMCJ9LCJlcnJvciI6IiIsImNvdW50IjoxfX0.sKa989E6cf'
+            'ZMTwHNLoGJTGpFx4KvC3fwQ6f-xVCImAg'
+        )
+        get_mock.return_value = OpenLDAPBaseAPITests.mock_response(
             status=200,
             content=jwt.encode(),
         )
@@ -194,7 +202,9 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
                 "count": 1
             }
         }
-        result = user_api.get_user_by_email_address(email_address='shibboleth.user@example.ac.uk')
+        result = user_api.get_user_by_email_address(
+            email_address='shibboleth.user@example.ac.uk'
+        )
         self.assertEqual(result, expected_response)
 
     @skip("Pending OpenLDAP fix")
@@ -203,12 +213,14 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Deactivate an existing user's OpenDLAP account
         """
-        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wb'
-               'GUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTA'
-               'wNTk3LCJuYmYiOjE1MjcwOTk5OTcsImRhdGEiOnsiZGVsZXRlIjoibW92ZWQgdG8gY249eC5qb2UuY'
-               'mxvZ2dzLG91PVVzZXJzLG91PUluYWN0aXZlLGRjPWV4YW1wbGUsZGM9YWMsZGM9dWsifX0.KIac7dO'
-               'JHfhPGPFJrSkKAtd5bIIOKBQaO9_82rB1pkA')
-        delete_mock.return_value = self._mock_response(
+        jwt = (
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wb'
+            'GUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTA'
+            'wNTk3LCJuYmYiOjE1MjcwOTk5OTcsImRhdGEiOnsiZGVsZXRlIjoibW92ZWQgdG8gY249eC5qb2UuY'
+            'mxvZ2dzLG91PVVzZXJzLG91PUluYWN0aXZlLGRjPWV4YW1wbGUsZGM9YWMsZGM9dWsifX0.KIac7dO'
+            'JHfhPGPFJrSkKAtd5bIIOKBQaO9_82rB1pkA'
+        )
+        delete_mock.return_value = OpenLDAPBaseAPITests.mock_response(
             status=204,
             content=jwt.encode(),
         )
@@ -218,7 +230,8 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
             "iat": 1527100597,
             "nbf": 1527099997,
             "data": {
-                "delete": "moved to cn=e.joe.bloggs,ou=Users,ou=Inactive,dc=example,dc=ac,dc=uk"
+                "delete":
+                    "moved to cn=e.joe.bloggs,ou=Users,ou=Inactive,dc=example,dc=ac,dc=uk"
             }
         }
         result = user_api.deactivate_user_account(user=self.user)
@@ -229,11 +242,13 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Reset a user's password.
         """
-        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGU'
-               'uY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI5MjQ5MjM'
-               'zLCJuYmYiOjE1MjkyNDg2MzMsImRhdGEiOnsicGFzc3dvcmQiOiJTdWNjZXNzZnVsbHkgcmVzZXQgcGF'
-               'zc3dvcmQifX0.ZC9yWYpDwszRs3TIt1naWmg0BSbl3U5SiW1LJ_hVEwM')
-        post_mock.return_value = self._mock_response(
+        jwt = (
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGU'
+            'uY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI5MjQ5MjM'
+            'zLCJuYmYiOjE1MjkyNDg2MzMsImRhdGEiOnsicGFzc3dvcmQiOiJTdWNjZXNzZnVsbHkgcmVzZXQgcGF'
+            'zc3dvcmQifX0.ZC9yWYpDwszRs3TIt1naWmg0BSbl3U5SiW1LJ_hVEwM'
+        )
+        post_mock.return_value = OpenLDAPBaseAPITests.mock_response(
             status=201,
             content=jwt.encode(),
         )
@@ -254,12 +269,14 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
         """
         Activate an existing user's OpenLDAP account.
         """
-        jwt = ('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUu'
-               'Y29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwNTE0L'
-               'CJuYmYiOjE1MjcwOTk5MTQsImRhdGEiOnsiZW5hYmxlIjoibW92ZWQgdG8gY249ZS5qb2UuYmxvZ2dzLG'
-               '91PUV4YW1wbGVVbml2ZXJzaXR5LG91PUluc3RpdHV0aW9ucyxvdT1Vc2VycyxkYz1leGFtcGxlLGRjPWF'
-               'jLGRjPXVrIn19.VkuQvx8sF1FJ4JnBSemr6BVKFvmBBpI6QsW2_piLqZA')
-        put_mock.return_value = self._mock_response(
+        jwt = (
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29wZW5sZGFwLmV4YW1wbGUu'
+            'Y29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwNTE0L'
+            'CJuYmYiOjE1MjcwOTk5MTQsImRhdGEiOnsiZW5hYmxlIjoibW92ZWQgdG8gY249ZS5qb2UuYmxvZ2dzLG'
+            '91PUV4YW1wbGVVbml2ZXJzaXR5LG91PUluc3RpdHV0aW9ucyxvdT1Vc2VycyxkYz1leGFtcGxlLGRjPWF'
+            'jLGRjPXVrIn19.VkuQvx8sF1FJ4JnBSemr6BVKFvmBBpI6QsW2_piLqZA'
+        )
+        put_mock.return_value = OpenLDAPBaseAPITests.mock_response(
             status=200,
             content=jwt.encode(),
         )
@@ -270,7 +287,7 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
             "nbf": 1527099914,
             "data": {
                 "enable":
-                "moved to cn=e.joe.bloggs,ou=ExampleUniversity,ou=Institutions,ou=Users,dc=example,dc=ac,dc=uk"
+                    "moved to cn=e.joe.bloggs,ou=ExampleUniversity,ou=Institutions,ou=Users,dc=example,dc=ac,dc=uk"
             }
         }
         result = user_api.activate_user_account(user=self.user)
@@ -288,13 +305,17 @@ class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
             (user_api.get_user_by_id, {
                 'user_id': 'e.joe.bloggs'
             }),
-            (user_api.get_user_by_email_address, {
-                'email_address': 'shibboleth.user@example.ac.uk'
-            }),
-            (user_api.reset_user_password, {
-                'user': self.user,
-                'password': '1234567',
-            }),
+            (
+                user_api.get_user_by_email_address, {
+                    'email_address': 'shibboleth.user@example.ac.uk'
+                }
+            ),
+            (
+                user_api.reset_user_password, {
+                    'user': self.user,
+                    'password': '1234567',
+                }
+            ),
             #(user_api.deactivate_user_account, {
             #    'user': self.user,
             #}),

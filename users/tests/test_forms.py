@@ -74,7 +74,7 @@ class ProfileUpdateFormTests(TestCase):
             'JlLmpvZS5ibG9nZ3MiLCJ1aWRudW1iZXIiOiI1MDAwMDAxIn19.d_KDASWxtR'
             'z6rBbgaHWqpR-XvUtdl22BB9QNYUz2-Ko'
         )
-        post_mock.return_value = OpenLDAPBaseAPITests._mock_response(
+        post_mock.return_value = OpenLDAPBaseAPITests.mock_response(
             self, status=201, content=jwt.encode()
         )
         form.save()  # Trigger LDAP API call
@@ -142,7 +142,7 @@ class ProfileUpdateFormTests(TestCase):
             self.assertTrue(form.is_valid())
 
             # Mock the LDAP API delete request
-            delete_mock.return_value = OpenLDAPBaseAPITests._mock_response(
+            delete_mock.return_value = OpenLDAPBaseAPITests.mock_response(
                 self, status=204
             )
             form.save()  # Trigger the LDAP API call
