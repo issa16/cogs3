@@ -2,20 +2,143 @@ import datetime
 import random
 import string
 
+import mock
+from django.conf import settings
+from django.core import mail
 from django.test import TestCase
 
 from institution.models import Institution
+from openldap.tests.test_api import OpenLDAPBaseAPITests
+from openldap.tests.test_project_api import OpenLDAPProjectAPITests
+from openldap.tests.test_project_membership_api import \
+    OpenLDAPProjectMembershipAPITests
 from project.forms import (
     ProjectCreationForm, ProjectManageAttributionForm,
     ProjectSupervisorApproveForm, ProjectUserInviteForm,
     ProjectUserMembershipCreationForm, RSEAllocationRequestCreationForm,
-    SystemAllocationRequestAdminForm
+    SystemAllocationRequestAdminForm, SystemAllocationRequestCreationForm
 )
 from project.models import (
     Project, ProjectUserMembership, SystemAllocationRequest
 )
 from users.models import CustomUser
 from users.tests.test_models import CustomUserTests
+
+
+class SystemAllocationRequestAdminFormTests(TestCase):
+    """
+    Ensure the System Allocation Request Admin form works correctly.
+    """
+
+    fixtures = [
+        'institution/fixtures/tests/institutions.json',
+        'users/fixtures/tests/users.json',
+        'funding/fixtures/tests/funding_bodies.json',
+        'funding/fixtures/tests/attributions.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+    ]
+
+    def setUp(self):
+        self.project = Project.objects.get(code='scw0000')
+        self.tech_lead = self.project.tech_lead
+
+        mail.outbox = []  # Clear mail outbox
+
+    # yapf: disable
+    @mock.patch(
+        'requests.post',
+        side_effect=[
+            OpenLDAPProjectAPITests.mock_create_project_response(),
+            OpenLDAPProjectMembershipAPITests.mock_create_project_membership_response()
+        ]
+    )
+    # yapf: enable
+    def test_system_allocation_request_activation(self, post_mock):
+        """
+        Ensure the correct LDAP API url is called and email notification is 
+        issued when approving a system allocation request.
+        """
+        form = SystemAllocationRequestAdminForm(
+            data={
+                'information': 'A test allocation',
+                'start_date': '01/09/1985',
+                'end_date': '01/09/1985',
+                'allocation_cputime': '99999',
+                'allocation_memory': '99999',
+                'allocation_storage_home': '99999',
+                'allocation_storage_scratch': '99999',
+                'requirements_software': 'N/A',
+                'requirements_training': 'N/A',
+                'requirements_onboarding': 'N/A',
+                'document': None,
+                'attributions': [],
+                'project': self.project.id,
+                'status': SystemAllocationRequest.AWAITING_APPROVAL
+            }
+        )
+        self.assertTrue(form.is_valid())
+
+        # Approve the system allocation request and trigger LDAP API calls
+        form.instance.status = SystemAllocationRequest.APPROVED
+        form.save()
+
+        # Ensure the args passed to LDAP to create a project were correct
+        call_args, call_kwargs = post_mock.call_args_list[0]
+        call_url = call_args[0]
+        expected_call_url = f'{settings.OPENLDAP_HOST}project/'
+        self.assertEqual(call_url, expected_call_url)
+        # yapf: disable
+        expected_call_kwargs = {
+            'headers': {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cache-Control': 'no-cache'
+            },
+            'data': {
+                'code': 'scw0000',
+                'category': 1,
+                'title': 'Project title (Project Leader = John Doe, Technical Lead = shibboleth.user@example.ac.uk)',
+                'technical_lead': 'e.shibboleth.user'
+            },
+            'timeout': 5
+        }
+        # yapf: enable
+        self.assertEqual(call_kwargs, expected_call_kwargs)
+
+        self.assertEqual(len(mail.outbox), 2)
+
+        # Ensure system allocation email notification is correct
+        email = mail.outbox[0]
+        self.assertEqual(email.to, [self.tech_lead.email])
+        self.assertNotEqual(email.subject.find('Project scw0000 Created'), -1)
+        self.assertNotEqual(email.body.find('scw0000 has been created'), -1)
+        self.assertNotEqual(email.body.find(self.tech_lead.first_name), -1)
+
+        # Ensure project user membership email notification is correct
+        email = mail.outbox[1]
+        self.assertEqual(email.to, [self.tech_lead.email])
+        self.assertNotEqual(
+            email.subject.find('Project Membership Created'), -1
+        )
+        self.assertNotEqual(
+            email.body.find('Project scw0000 Membership Update'), -1
+        )
+        self.assertNotEqual(email.body.find(self.tech_lead.first_name), -1)
+
+    def test_system_allocation_request_ldap_deactivation(self):
+        """
+        Ensure the correct LDAP API url is called and email notification is 
+        issued when de-activating a system allocation request.
+        """
+        pass
+
+    def test_system_allocation_request_ldap_reactivation(self):
+        """
+        Ensure the correct LDAP API url is called and email notification is 
+        issued when re-activating a system allocation request.
+        """
+        pass
 
 
 class ProjectFormTestCase(TestCase):

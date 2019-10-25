@@ -64,14 +64,16 @@ def get_project(project_code):
 
 
 @job
-def create_project(project, notify_user=True):
+def create_project(allocation, notify_user=True):
     """
     Create an OpenLDAP project.
 
     Args:
         project (Project): Project instance - required
+        allocation(SystemAllocationRequest): Project's system allocation request - required
         notify_user (bool): Issue a notification email to the project technical lead? - optional
     """
+    project = allocation.project
     url = ''.join([settings.OPENLDAP_HOST, 'project/'])
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -121,7 +123,7 @@ def create_project(project, notify_user=True):
                 'first_name': project.tech_lead.first_name,
                 'to': project.tech_lead.email,
                 'code': project.code,
-                'status': project.get_status_display().lower(),
+                'status': 'created'
             }
             text_template_path = 'notifications/project/update.txt'
             html_template_path = 'notifications/project/update.html'
@@ -129,7 +131,7 @@ def create_project(project, notify_user=True):
         return response
     except Exception as e:
         if 'Existing Project' not in str(e):
-            project.reset_status()
+            allocation.reset_status()
         raise e
 
 
@@ -181,7 +183,9 @@ def activate_project(project, notify_user=True):
     Args:
         code (str): Project code - required
     """
-    url = ''.join([settings.OPENLDAP_HOST, 'project/enable/', project.code, '/'])
+    url = ''.join([
+        settings.OPENLDAP_HOST, 'project/enable/', project.code, '/'
+    ])
     headers = {'Cache-Control': 'no-cache'}
     try:
         response = requests.put(

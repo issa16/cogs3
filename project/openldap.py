@@ -20,13 +20,12 @@ def update_openldap_project(allocation):
         if project.gid_number:
             project_api.activate_project.delay(project=project)
         else:
-            project_api.create_project.delay(project=project)
+            project_api.create_project.delay(allocation=allocation)
             activate_existing_users(project)
     elif allocation.status in deactivate_project_states:
         # Check for other approved allocations before deactivating
         if not SystemAllocationRequest.objects.filter(
-            project=project,
-            status=SystemAllocationRequest.APPROVED
+            project=project, status=SystemAllocationRequest.APPROVED
         ).exists:
             project_api.deactivate_project.delay(project=project)
 
@@ -41,12 +40,20 @@ def update_openldap_project_membership(project_membership):
     ]
     if not project_membership.project.gid_number:
         if project_membership.status == ProjectUserMembership.AUTHORISED:
-            project_membership_api.create_project_membership.delay(project_membership=project_membership)
+            project_membership_api.create_project_membership.delay(
+                project_membership=project_membership
+            )
         elif project_membership.status in delete_project_membership_states:
-            project_membership_api.delete_project_membership.delay(project_membership=project_membership)
+            project_membership_api.delete_project_membership.delay(
+                project_membership=project_membership
+            )
 
 
 def activate_existing_users(project):
-    memberships = ProjectUserMembership.objects.filter(project=project, status=ProjectUserMembership.AUTHORISED)
+    memberships = ProjectUserMembership.objects.filter(
+        project=project, status=ProjectUserMembership.AUTHORISED
+    )
     for membership in memberships:
-        project_membership_api.create_project_membership.delay(project_membership=membership)
+        project_membership_api.create_project_membership.delay(
+            project_membership=membership
+        )
