@@ -78,13 +78,14 @@ class SystemAllocationRequestAdminFormTests(TestCase):
                 'status': SystemAllocationRequest.AWAITING_APPROVAL
             }
         )
+        mail.outbox = []  # Clear mail outbox
         self.assertTrue(form.is_valid())
 
         # Approve the system allocation request and trigger LDAP API calls
         form.instance.status = SystemAllocationRequest.APPROVED
         form.save()
 
-        # Ensure the args passed to LDAP to create a project were correct
+        # Ensure the args passed to LDAP to create a project are correct
         call_args, call_kwargs = post_mock.call_args_list[0]
         call_url = call_args[0]
         expected_call_url = f'{settings.OPENLDAP_HOST}project/'
@@ -100,6 +101,25 @@ class SystemAllocationRequestAdminFormTests(TestCase):
                 'category': 1,
                 'title': 'Project title (Project Leader = John Doe, Technical Lead = shibboleth.user@example.ac.uk)',
                 'technical_lead': 'e.shibboleth.user'
+            },
+            'timeout': 5
+        }
+        # yapf: enable
+        self.assertEqual(call_kwargs, expected_call_kwargs)
+
+        # Ensure the args passed to LDAP to create a project membership are correct
+        call_args, call_kwargs = post_mock.call_args_list[1]
+        call_url = call_args[0]
+        expected_call_url = f'{settings.OPENLDAP_HOST}project/member/scw0000/'
+        self.assertEqual(call_url, expected_call_url)
+        # yapf: disable
+        expected_call_kwargs = {
+            'headers': {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cache-Control': 'no-cache'
+            },
+            'data': {
+                'email': 'shibboleth.user@example.ac.uk'
             },
             'timeout': 5
         }
