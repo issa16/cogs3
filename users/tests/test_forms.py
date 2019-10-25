@@ -10,6 +10,7 @@ from django.utils.translation import activate
 
 from institution.models import Institution
 from openldap.tests.test_api import OpenLDAPBaseAPITests
+from openldap.tests.test_user_api import OpenLDAPUserAPITests
 from users.forms import (
     CustomUserChangeForm, CustomUserCreationForm, ProfileUpdateForm,
     RegisterForm
@@ -34,7 +35,10 @@ class ProfileUpdateFormTests(TestCase):
             email='guest.user@external.ac.uk'
         )
 
-    @mock.patch('requests.post')
+    @mock.patch(
+        'requests.post',
+        side_effect=[OpenLDAPUserAPITests.mock_profile_activation_response()]
+    )
     def test_profile_activation(self, post_mock):
         """
         Ensure the profile update form works for institutional and external
@@ -58,25 +62,6 @@ class ProfileUpdateFormTests(TestCase):
             instance=user.profile,
         )
         self.assertTrue(form.is_valid())
-
-        # Mock the LDAP API post request
-        jwt = (
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZ'
-            'W5sZGFwLmV4YW1wbGUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZX'
-            'hhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwMTQxLCJuYmYiOjE1MjcwOTk1NDE'
-            'sImRhdGEiOnsiY24iOiJlLmpvZS5ibG9nZ3MiLCJzbiI6IkJsb2dncyIsImdp'
-            'ZE51bWJlciI6IjUwMDAwMDEiLCJnaXZlbm5hbWUiOiJKb2UiLCJkaXNwbGF5T'
-            'mFtZSI6Ik1yIEpvZSBCbG9nZ3MiLCJ0aXRsZSI6Ik1yIiwiaG9tZWRpcmVjdG'
-            '9yeSI6Ii9ob21lL2Uuam9lLmJsb2dncyIsImxvZ2luc2hlbGwiOiIvYmluL2J'
-            'hc2giLCJvYmplY3RjbGFzcyI6WyJpbmV0T3JnUGVyc29uIiwicG9zaXhBY2Nv'
-            'dW50IiwidG9wIl0sInRlbGVwaG9uZW51bWJlciI6IjAwMDAwLTAwMC0wMDAiL'
-            'CJtYWlsIjoiYWN0aXZhdGlvbi10ZXN0QGV4YW1wbGUuYWMudWsiLCJ1aWQiOi'
-            'JlLmpvZS5ibG9nZ3MiLCJ1aWRudW1iZXIiOiI1MDAwMDAxIn19.d_KDASWxtR'
-            'z6rBbgaHWqpR-XvUtdl22BB9QNYUz2-Ko'
-        )
-        post_mock.return_value = OpenLDAPBaseAPITests.mock_response(
-            self, status=201, content=jwt.encode()
-        )
         form.save()  # Trigger LDAP API call
 
         self.assertEqual(user.profile.scw_username, 'e.joe.bloggs')
@@ -115,7 +100,13 @@ class ProfileUpdateFormTests(TestCase):
         # Clear call list
         post_mock.call_args_list = []
 
-    @mock.patch('requests.delete')
+    @mock.patch(
+        'requests.delete',
+        side_effect=[
+            OpenLDAPUserAPITests.mock_profile_deactivation_response(),
+            OpenLDAPUserAPITests.mock_profile_deactivation_response()
+        ]
+    )
     def test_profile_deactivation(self, delete_mock):
         """
         Ensure the profile update form works for institutional and external
@@ -140,11 +131,6 @@ class ProfileUpdateFormTests(TestCase):
                 instance=user.profile,
             )
             self.assertTrue(form.is_valid())
-
-            # Mock the LDAP API delete request
-            delete_mock.return_value = OpenLDAPBaseAPITests.mock_response(
-                self, status=204
-            )
             form.save()  # Trigger the LDAP API call
 
             self.assertEqual(user.profile.scw_username, scw_username)

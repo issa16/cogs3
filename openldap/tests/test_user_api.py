@@ -14,6 +14,38 @@ from users.tests.test_models import CustomUserTests
 
 class OpenLDAPUserAPITests(OpenLDAPBaseAPITests):
 
+    @staticmethod
+    def mock_profile_activation_response():
+        """
+        Mock the JWT response returned from the LDAP API when activating a
+        user's profile.
+        """
+        jwt = (
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZ'
+            'W5sZGFwLmV4YW1wbGUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZX'
+            'hhbXBsZS5jb20vIiwiaWF0IjoxNTI3MTAwMTQxLCJuYmYiOjE1MjcwOTk1NDE'
+            'sImRhdGEiOnsiY24iOiJlLmpvZS5ibG9nZ3MiLCJzbiI6IkJsb2dncyIsImdp'
+            'ZE51bWJlciI6IjUwMDAwMDEiLCJnaXZlbm5hbWUiOiJKb2UiLCJkaXNwbGF5T'
+            'mFtZSI6Ik1yIEpvZSBCbG9nZ3MiLCJ0aXRsZSI6Ik1yIiwiaG9tZWRpcmVjdG'
+            '9yeSI6Ii9ob21lL2Uuam9lLmJsb2dncyIsImxvZ2luc2hlbGwiOiIvYmluL2J'
+            'hc2giLCJvYmplY3RjbGFzcyI6WyJpbmV0T3JnUGVyc29uIiwicG9zaXhBY2Nv'
+            'dW50IiwidG9wIl0sInRlbGVwaG9uZW51bWJlciI6IjAwMDAwLTAwMC0wMDAiL'
+            'CJtYWlsIjoiYWN0aXZhdGlvbi10ZXN0QGV4YW1wbGUuYWMudWsiLCJ1aWQiOi'
+            'JlLmpvZS5ibG9nZ3MiLCJ1aWRudW1iZXIiOiI1MDAwMDAxIn19.d_KDASWxtR'
+            'z6rBbgaHWqpR-XvUtdl22BB9QNYUz2-Ko'
+        )
+        return OpenLDAPBaseAPITests.mock_response(
+            status=201, content=jwt.encode()
+        )
+
+    @staticmethod
+    def mock_profile_deactivation_response():
+        """
+        Mock the JWT response returned from the LDAP API when deactivating a
+        user's profile.
+        """
+        return OpenLDAPBaseAPITests.mock_response(status=204, content='')
+
     @mock.patch('requests.get')
     def test_list_users_query(self, get_mock):
         """
