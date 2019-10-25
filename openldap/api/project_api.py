@@ -69,8 +69,7 @@ def create_project(allocation, notify_user=True):
     Create an OpenLDAP project.
 
     Args:
-        project (Project): Project instance - required
-        allocation(SystemAllocationRequest): Project's system allocation request - required
+        allocation (SystemAllocationRequest): Project's system allocation request - required
         notify_user (bool): Issue a notification email to the project technical lead? - optional
     """
     project = allocation.project
@@ -141,7 +140,8 @@ def deactivate_project(allocation, notify_user=True):
     Deactivate an OpenLDAP project.
 
     Args:
-        code (str): Project code - required
+        allocation (SystemAllocationRequest): Project's system allocation request - required
+        notify_user (bool): Issue a notification email to the project technical lead? - optional
     """
     project = allocation.project
     url = ''.join([settings.OPENLDAP_HOST, 'project/', project.code, '/'])
@@ -177,13 +177,15 @@ def deactivate_project(allocation, notify_user=True):
 
 
 @job
-def activate_project(project, notify_user=True):
+def activate_project(allocation, notify_user=True):
     """
     Activate an OpenLDAP project.
 
     Args:
-        code (str): Project code - required
+        allocation (SystemAllocationRequest): Project's system allocation request - required
+        notify_user (bool): Issue a notification email to the project technical lead? - optional
     """
+    project = allocation.project
     url = ''.join([
         settings.OPENLDAP_HOST, 'project/enable/', project.code, '/'
     ])
@@ -210,12 +212,12 @@ def activate_project(project, notify_user=True):
                 'first_name': project.tech_lead.first_name,
                 'to': project.tech_lead.email,
                 'code': project.code,
-                'status': project.get_status_display().lower(),
+                'status': allocation.get_status_display().lower(),
             }
             text_template_path = 'notifications/project/update.txt'
             html_template_path = 'notifications/project/update.html'
             email_user(subject, context, text_template_path, html_template_path)
         return response
     except Exception as e:
-        project.reset_status()
+        allocation.reset_status()
         raise e

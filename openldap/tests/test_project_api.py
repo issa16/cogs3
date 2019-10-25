@@ -41,6 +41,22 @@ class OpenLDAPProjectAPITests(OpenLDAPBaseAPITests):
         """
         return OpenLDAPBaseAPITests.mock_response(status=204, content='')
 
+    @staticmethod
+    def mock_reactivate_project_response():
+        """
+        Mock the JWT response returned from the LDAP API when re-activating a
+        project.
+        """
+        jwt = (
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZ'
+            'GFwLmV4YW1wbGUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5'
+            'jb20vIiwiaWF0IjoxNTI3MTAwMTQxLCJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOnsiZ'
+            'GVsZXRlIjoiIn19.Dv8hUlVrj02ARagb1QW8XQbCU4w2kOuwasmtC0t5OjE'
+        )
+        return OpenLDAPBaseAPITests.mock_response(
+            status=200, content=jwt.encode()
+        )
+
     @mock.patch('requests.get')
     def test_list_projects_query(self, get_mock):
         """

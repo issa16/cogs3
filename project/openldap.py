@@ -20,7 +20,7 @@ def update_openldap_project(allocation):
 
     if allocation.status == SystemAllocationRequest.APPROVED:
         if project.gid_number:
-            project_api.activate_project.delay(project=project)
+            project_api.activate_project.delay(allocation=allocation)
         else:
             project_api.create_project.delay(allocation=allocation)
             activate_existing_users(project)

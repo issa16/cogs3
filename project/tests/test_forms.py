@@ -175,10 +175,10 @@ class SystemAllocationRequestAdminFormTests(TestCase):
         )
         self.assertTrue(form.is_valid())
 
-        # Suspend the system allocation request and trigger LDAP API calls
+        # Suspend system allocation request and trigger LDAP API calls
         form.save()
 
-        # Ensure the args passed to LDAP to deactivate a project are correct
+        # Ensure args passed to LDAP to deactivate a project are correct
         call_args, call_kwargs = delete_mock.call_args_list[0]
         call_url = call_args[0]
         expected_call_url = f'{settings.OPENLDAP_HOST}project/scw0000/'
@@ -207,12 +207,54 @@ class SystemAllocationRequestAdminFormTests(TestCase):
         )
         self.assertNotEqual(email.body.find(self.tech_lead.first_name), -1)
 
-    def test_system_allocation_request_ldap_reactivation(self):
+    # yapf: disable
+    @mock.patch(
+        'requests.put',
+        side_effect=[OpenLDAPProjectAPITests.mock_reactivate_project_response()]
+    )
+    # yapf: enable
+    def test_system_allocation_request_ldap_reactivation(self, post_mock):
         """
         Ensure the correct LDAP API url is called and email notification is 
         issued when re-activating a system allocation request.
         """
-        pass
+        # Approved projects must have a gid_number
+        self.project.gid_number = 111111
+        self.project.save()
+
+        system_allocation_request = SystemAllocationRequest(
+            project=self.project,
+            start_date='2019-07-30',
+            end_date='2019-09-30',
+            status=SystemAllocationRequest.SUSPENDED
+        )
+        system_allocation_request.save()
+
+        form = SystemAllocationRequestAdminForm(
+            data={
+                'project': self.project.id,
+                'start_date': '2019-07-30',
+                'end_date': '2019-09-30',
+                'status': SystemAllocationRequest.APPROVED
+            },
+            instance=system_allocation_request
+        )
+        self.assertTrue(form.is_valid())
+
+        # Approve system allocation request and trigger LDAP API calls
+        form.save()
+
+        # Ensure system allocation email notification is correct
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.to, [self.tech_lead.email])
+        self.assertNotEqual(email.subject.find('Project scw0000 Activated'), -1)
+        self.assertNotEqual(
+            email.body.find(
+                'Your Supercomputing Wales project scw0000 has been approved.'
+            ), -1
+        )
+        self.assertNotEqual(email.body.find(self.tech_lead.first_name), -1)
 
 
 class ProjectFormTestCase(TestCase):
