@@ -244,6 +244,21 @@ class SystemAllocationRequestAdminFormTests(TestCase):
         # Approve system allocation request and trigger LDAP API calls
         form.save()
 
+        # Ensure args passed to LDAP to re-activate a project are correct
+        call_args, call_kwargs = post_mock.call_args_list[0]
+        call_url = call_args[0]
+        expected_call_url = f'{settings.OPENLDAP_HOST}project/enable/scw0000/'
+        self.assertEqual(call_url, expected_call_url)
+        # yapf: disable
+        expected_call_kwargs = {
+            'headers': {
+                'Cache-Control': 'no-cache'
+            },
+            'timeout': 5
+        }
+        # yapf: enable
+        self.assertEqual(call_kwargs, expected_call_kwargs)
+
         # Ensure system allocation email notification is correct
         self.assertEqual(len(mail.outbox), 1)
         email = mail.outbox[0]
