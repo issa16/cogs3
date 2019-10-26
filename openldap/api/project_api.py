@@ -1,6 +1,5 @@
 import jsonschema
 import requests
-
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django_rq import job
@@ -10,10 +9,9 @@ from openldap.schemas.project.activate_project import activate_project_json
 from openldap.schemas.project.create_project import create_project_json
 from openldap.schemas.project.get_project import get_project_json
 from openldap.schemas.project.list_projects import list_projects_json
-from openldap.util import decode_response
-from openldap.util import raise_for_data_error
-from openldap.util import verify_payload_data
-from common.util import email_user
+from openldap.util import (
+    decode_response, raise_for_data_error, verify_payload_data
+)
 
 
 @job
@@ -129,6 +127,7 @@ def create_project(allocation, notify_user=True):
             email_user(subject, context, text_template_path, html_template_path)
         return response
     except Exception as e:
+        print(e)
         if 'Existing Project' not in str(e):
             allocation.reset_status()
         raise e
@@ -172,6 +171,7 @@ def deactivate_project(allocation, notify_user=True):
             email_user(subject, context, text_template_path, html_template_path)
         return response
     except Exception as e:
+        print(e)
         allocation.reset_status()
         raise e
 
@@ -219,5 +219,6 @@ def activate_project(allocation, notify_user=True):
             email_user(subject, context, text_template_path, html_template_path)
         return response
     except Exception as e:
+        print(e)
         allocation.reset_status()
         raise e
