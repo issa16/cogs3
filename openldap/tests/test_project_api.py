@@ -1,9 +1,8 @@
+from unittest import skip
+
 import jsonschema
 import mock
 import requests
-
-from unittest import skip
-
 from django.conf import settings
 from django.test import TestCase
 
@@ -19,19 +18,22 @@ class OpenLDAPProjectAPITests(OpenLDAPBaseAPITests):
         Mock the JWT response returned from the LDAP API when creating a
         project.
         """
-        jwt = (
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5s'
-            'ZGFwLmV4YW1wbGUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZ'
-            'S5jb20vIiwiaWF0IjoxNTI3MTAwMTQxLCJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOn'
-            'siY24iOiJzY3cwMDAwIiwibWVtYmVyVWlkIjoiZS5zaGliYm9sZXRoLnVzZXIiLCJ'
-            'kZXNjcmlwdGlvbiI6InRlc3Rfc3lzdGVtX2FsbG9jYXRpb25fcmVxdWVzdF9hcHBy'
-            'b3ZhbCIsImdpZE51bWJlciI6IjUwMDAwMDEiLCJvYmplY3RDbGFzcyI6WyJpbmV0T'
-            '3JnUGVyc29uIiwicG9zaXhBY2NvdW50IiwidG9wIl19fQ.U_xkdgeQFPnEMQOaDKC'
-            'uquDsj1mXJZKV8jMj9maWvzE'
-        )
-        return OpenLDAPBaseAPITests.mock_response(
-            status=201, content=jwt.encode()
-        )
+        try:
+            jwt = (
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5s'
+                'ZGFwLmV4YW1wbGUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZ'
+                'S5jb20vIiwiaWF0IjoxNTI3MTAwMTQxLCJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOn'
+                'siY24iOiJzY3cwMDAwIiwibWVtYmVyVWlkIjoiZS5zaGliYm9sZXRoLnVzZXIiLCJ'
+                'kZXNjcmlwdGlvbiI6InRlc3Rfc3lzdGVtX2FsbG9jYXRpb25fcmVxdWVzdF9hcHBy'
+                'b3ZhbCIsImdpZE51bWJlciI6IjUwMDAwMDEiLCJvYmplY3RDbGFzcyI6WyJpbmV0T'
+                '3JnUGVyc29uIiwicG9zaXhBY2NvdW50IiwidG9wIl19fQ.U_xkdgeQFPnEMQOaDKC'
+                'uquDsj1mXJZKV8jMj9maWvzE'
+            )
+            return OpenLDAPBaseAPITests.mock_response(
+                status=201, content=jwt.encode()
+            )
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def mock_deactivate_project_response():
@@ -39,7 +41,10 @@ class OpenLDAPProjectAPITests(OpenLDAPBaseAPITests):
         Mock the JWT response returned from the LDAP API when de-activating a
         project.
         """
-        return OpenLDAPBaseAPITests.mock_response(status=204, content='')
+        try:
+            return OpenLDAPBaseAPITests.mock_response(status=204, content='')
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def mock_reactivate_project_response():
@@ -47,15 +52,18 @@ class OpenLDAPProjectAPITests(OpenLDAPBaseAPITests):
         Mock the JWT response returned from the LDAP API when re-activating a
         project.
         """
-        jwt = (
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZ'
-            'GFwLmV4YW1wbGUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5'
-            'jb20vIiwiaWF0IjoxNTI3MTAwMTQxLCJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOnsiZ'
-            'GVsZXRlIjoiIn19.Dv8hUlVrj02ARagb1QW8XQbCU4w2kOuwasmtC0t5OjE'
-        )
-        return OpenLDAPBaseAPITests.mock_response(
-            status=200, content=jwt.encode()
-        )
+        try:
+            jwt = (
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL29wZW5sZ'
+                'GFwLmV4YW1wbGUuY29tLyIsImF1ZCI6Imh0dHBzOi8vb3BlbmxkYXAuZXhhbXBsZS5'
+                'jb20vIiwiaWF0IjoxNTI3MTAwMTQxLCJuYmYiOjE1MjcwOTk1NDEsImRhdGEiOnsiZ'
+                'GVsZXRlIjoiIn19.Dv8hUlVrj02ARagb1QW8XQbCU4w2kOuwasmtC0t5OjE'
+            )
+            return OpenLDAPBaseAPITests.mock_response(
+                status=200, content=jwt.encode()
+            )
+        except Exception as e:
+            print(e)
 
     @mock.patch('requests.get')
     def test_list_projects_query(self, get_mock):
