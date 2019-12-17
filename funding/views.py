@@ -1,27 +1,21 @@
-from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib import messages
-from django.urls import reverse
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
-from django.http import JsonResponse
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
 from django.conf import settings
-from common.util import email_user
+from django.contrib import messages
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
+from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.urls import reverse, reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from django.views import generic
 
-from .generate_docx import create_funding_document
-from .forms import FundingSourceForm
-from .forms import AddFundingSourceForm
-from .forms import PublicationForm
-from .forms import FundingSourceApprovalForm
-from .models import FundingSource
-from .models import Publication
-from .models import Attribution
-from .models import FundingSourceMembership
+from common.util import email_user
 from institution.models import Institution
 
+from .forms import (AddFundingSourceForm, FundingSourceApprovalForm,
+                    FundingSourceForm, PublicationForm)
+from .generate_docx import create_funding_document
+from .models import (Attribution, FundingSource, FundingSourceMembership,
+                     Publication)
 
 # Create your views here.
 
@@ -240,7 +234,7 @@ class AttributionListView(LoginRequiredMixin, generic.ListView):
         user = self.request.user
         query_filter = {}
         if self.model_filter:
-            query_filter[f'{self.model_filter}__isnull'] = False
+            query_filter['{}__isnull'.format(self.model_filter)] = False
         queryset = super().get_queryset().filter(**query_filter)
         owned_set = queryset.filter(owner=user)
         user_set = queryset.filter(fundingsource__in=FundingSource.objects.filter(

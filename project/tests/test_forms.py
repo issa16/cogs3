@@ -87,7 +87,7 @@ class SystemAllocationRequestAdminFormTests(TestCase):
         # Ensure the args passed to LDAP to create a project are correct
         call_args, call_kwargs = post_mock.call_args_list[0]
         call_url = call_args[0]
-        expected_call_url = f'{settings.OPENLDAP_HOST}project/'
+        expected_call_url = '{}project/'.format(settings.OPENLDAP_HOST)
         self.assertEqual(call_url, expected_call_url)
         # yapf: disable
         expected_call_kwargs = {
@@ -109,7 +109,9 @@ class SystemAllocationRequestAdminFormTests(TestCase):
         # Ensure the args passed to LDAP to create a project membership are correct
         call_args, call_kwargs = post_mock.call_args_list[1]
         call_url = call_args[0]
-        expected_call_url = f'{settings.OPENLDAP_HOST}project/member/scw0000/'
+        expected_call_url = '{}project/member/scw0000/'.format(
+            settings.OPENLDAP_HOST
+        )
         self.assertEqual(call_url, expected_call_url)
         # yapf: disable
         expected_call_kwargs = {
@@ -181,7 +183,9 @@ class SystemAllocationRequestAdminFormTests(TestCase):
         # Ensure args passed to LDAP to deactivate a project are correct
         call_args, call_kwargs = delete_mock.call_args_list[0]
         call_url = call_args[0]
-        expected_call_url = f'{settings.OPENLDAP_HOST}project/scw0000/'
+        expected_call_url = '{}project/scw0000/'.format(
+            'settings.OPENLDAP_HOST'
+        )
         self.assertEqual(call_url, expected_call_url)
         # yapf: disable
         expected_call_kwargs = {
@@ -247,7 +251,9 @@ class SystemAllocationRequestAdminFormTests(TestCase):
         # Ensure args passed to LDAP to re-activate a project are correct
         call_args, call_kwargs = post_mock.call_args_list[0]
         call_url = call_args[0]
-        expected_call_url = f'{settings.OPENLDAP_HOST}project/enable/scw0000/'
+        expected_call_url = '{}project/enable/scw0000/'.format(
+            settings.OPENLDAP_HOST
+        )
         self.assertEqual(call_url, expected_call_url)
         # yapf: disable
         expected_call_kwargs = {

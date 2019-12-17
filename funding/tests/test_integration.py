@@ -1,10 +1,9 @@
-from selenium_base import SeleniumTestsBase
+from django.urls import reverse
 from selenium.common.exceptions import NoSuchElementException
 
 from funding.models import FundingSource
 from institution.models import Institution
-
-from django.urls import reverse
+from selenium_base import SeleniumTestsBase
 
 
 class FundingSourceIntegrationTests(SeleniumTestsBase):
@@ -344,7 +343,8 @@ class FundingSourceIntegrationTests(SeleniumTestsBase):
         # Check the pi was identified correctly
         if funding_source.pi_email != funding_source.pi.email:
             raise AssertionError(
-                f'funding_source.pi_email ({funding_source.pi_email}) is not the same as the pi email ({funding_source.pi.email})'
+                'funding_source.pi_email ({}) is not the same as the pi email ({})'.
+                format(funding_source.pi_email, funding_source.pi.email)
             )
         if funding_source.pi != self.user:
             raise AssertionError('funding_source.pi is not the current user')

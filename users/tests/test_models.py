@@ -1,14 +1,11 @@
-from django.contrib.auth.models import Group
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group, Permission
 from django.test import TestCase
 
 from institution.models import Institution
-from institution.models import Institution
 from users.admin import CustomUserAdmin
-from users.models import CustomUser
-from users.models import CustomUserManager
-from users.models import Profile
-from users.models import ShibbolethProfile
+from users.models import (
+    CustomUser, CustomUserManager, Profile, ShibbolethProfile
+)
 
 
 class ProfileTests(TestCase):
@@ -20,8 +17,12 @@ class ProfileTests(TestCase):
 
     def setUp(self):
         self.institution = Institution.objects.get(name='Example University')
-        self.shibboleth_user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
-        self.guest_user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.shibboleth_user = CustomUser.objects.get(
+            email='shibboleth.user@example.ac.uk'
+        )
+        self.guest_user = CustomUser.objects.get(
+            email='guest.user@external.ac.uk'
+        )
 
     def test_is_awaiting_approval_status(self):
         self.shibboleth_user.profile.account_status = Profile.AWAITING_APPROVAL
@@ -50,13 +51,15 @@ class ProfileTests(TestCase):
     def test_get_pre_approved_account_status_choices(self):
         self.shibboleth_user.profile.account_status = Profile.AWAITING_APPROVAL
         expected_choices = Profile.PRE_APPROVED_OPTIONS
-        actual_choices = self.shibboleth_user.profile.get_account_status_choices()
+        actual_choices = self.shibboleth_user.profile.get_account_status_choices(
+        )
         self.assertEqual(actual_choices, expected_choices)
 
     def test_get_post_account_status_choices(self):
         self.shibboleth_user.profile.account_status = Profile.APPROVED
         expected_choices = Profile.POST_APPROVED_OPTIONS
-        actual_choices = self.shibboleth_user.profile.get_account_status_choices()
+        actual_choices = self.shibboleth_user.profile.get_account_status_choices(
+        )
         self.assertEqual(actual_choices, expected_choices)
 
     def test_institution_property_for_shibboleth_user(self):
@@ -70,10 +73,18 @@ class ProfileTests(TestCase):
     def test_reset_account_status(self):
         self.shibboleth_user.profile.previous_account_status = Profile.AWAITING_APPROVAL
         self.shibboleth_user.profile.account_status = Profile.APPROVED
-        self.assertEqual(self.shibboleth_user.profile.previous_account_status, Profile.AWAITING_APPROVAL)
-        self.assertEqual(self.shibboleth_user.profile.account_status, Profile.APPROVED)
+        self.assertEqual(
+            self.shibboleth_user.profile.previous_account_status,
+            Profile.AWAITING_APPROVAL
+        )
+        self.assertEqual(
+            self.shibboleth_user.profile.account_status, Profile.APPROVED
+        )
         self.shibboleth_user.profile.reset_account_status()
-        self.assertEqual(self.shibboleth_user.profile.account_status, Profile.AWAITING_APPROVAL)
+        self.assertEqual(
+            self.shibboleth_user.profile.account_status,
+            Profile.AWAITING_APPROVAL
+        )
 
     def test_str(self):
         expected = str(self.shibboleth_user.email)
@@ -124,7 +135,9 @@ class CustomUserManagerTests(TestCase):
                 password=CustomUser.objects.make_random_password(length=30),
                 is_superuser=False,
             )
-        self.assertEqual(str(e.exception), 'Superuser must have is_superuser=True.')
+        self.assertEqual(
+            str(e.exception), 'Superuser must have is_superuser=True.'
+        )
 
     def test_is_shibboleth_login_required_validation_error(self):
         with self.assertRaises(ValueError) as e:
@@ -133,7 +146,10 @@ class CustomUserManagerTests(TestCase):
                 password=CustomUser.objects.make_random_password(length=30),
                 is_shibboleth_login_required=True,
             )
-        self.assertEqual(str(e.exception), 'Superuser must have is_shibboleth_login_required=False.')
+        self.assertEqual(
+            str(e.exception),
+            'Superuser must have is_shibboleth_login_required=False.'
+        )
 
 
 class CustomUserTests(TestCase):
@@ -145,8 +161,12 @@ class CustomUserTests(TestCase):
 
     def setUp(self):
         self.institution = Institution.objects.get(name='Example University')
-        self.shibboleth_user = CustomUser.objects.get(email='shibboleth.user@example.ac.uk')
-        self.guest_user = CustomUser.objects.get(email='guest.user@external.ac.uk')
+        self.shibboleth_user = CustomUser.objects.get(
+            email='shibboleth.user@example.ac.uk'
+        )
+        self.guest_user = CustomUser.objects.get(
+            email='guest.user@external.ac.uk'
+        )
 
     def test_save_for_user_accounts(self):
         user_accounts = [
@@ -172,7 +192,9 @@ class CustomUserTests(TestCase):
         self.assertEqual(actual, expected)
 
     @classmethod
-    def create_custom_user(cls, email, group=None, is_shibboleth_login_required=True):
+    def create_custom_user(
+        cls, email, group=None, is_shibboleth_login_required=True
+    ):
         """
         Create a CustomUser instance.
 
@@ -227,8 +249,8 @@ class CustomUserTests(TestCase):
         users = {}
 
         for i in names:
-            username = f'{i}_user'
-            email = f'{i}@{i}.ac.uk'
+            username = '{}_user'.format(i)
+            email = '{}@{}.ac.uk'.format(i, i)
 
             users[i] = CustomUserTests.create_custom_user(email=email)
 

@@ -335,8 +335,8 @@ class Project(models.Model):
                     total_points += institution.AP_per_publication
                 else:
                     warn(
-                        f'Attribution {attribution} has no AP implemented.',
-                        RuntimeWarning
+                        'Attribution {} has no AP implemented.'.
+                        format(attribution), RuntimeWarning
                     )
 
         return total_points

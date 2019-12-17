@@ -72,7 +72,7 @@ class ProfileUpdateFormTests(TestCase):
         # Ensure account status change was propagated to LDAP
         call_args, call_kwargs = post_mock.call_args_list[0]
         call_url = call_args[0]
-        expected_call_url = f'{settings.OPENLDAP_HOST}user/'
+        expected_call_url = '{}user/'.format(settings.OPENLDAP_HOST)
         self.assertEqual(call_url, expected_call_url)
         expected_call_kwargs = {
             'data': {
@@ -141,7 +141,9 @@ class ProfileUpdateFormTests(TestCase):
             # Ensure account status change was propagated to LDAP
             call_args, call_kwargs = delete_mock.call_args_list[0]
             call_url = call_args[0]
-            expected_call_url = f'{settings.OPENLDAP_HOST}user/{user.email}/'
+            expected_call_url = '{}user/{user.email}/'.format(
+                settings.OPENLDAP_HOST
+            )
             self.assertEqual(call_url, expected_call_url)
             expected_call_kwargs = {
                 'headers': {
@@ -247,10 +249,11 @@ class CustomUserCreationFormTests(TestCase):
             self.assertEqual(len(mail.outbox), 1)
             self.assertEqual(
                 mail.outbox[0].subject,
-                f'{settings.COMPANY_NAME} User Account Created'
+                '{} User Account Created'.format(settings.COMPANY_NAME)
             )
             self.assertIn(
-                f"{data['first_name']} {data['last_name']}", mail.outbox[0].body
+                "{} {}".format(data['first_name'], data['last_name']),
+                mail.outbox[0].body
             )
 
     def test_invalid_institutional_email(self):

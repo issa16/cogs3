@@ -1,7 +1,9 @@
-from django.test import TestCase
-from funding.generate_docx import create_funding_document
 from io import BytesIO
+
+from django.test import TestCase
 from docx import Document
+
+from funding.generate_docx import create_funding_document
 
 
 class create_funding_documentTest(TestCase):
@@ -26,6 +28,7 @@ class create_funding_documentTest(TestCase):
         for text in self.texts.values():
             for key in self.fixture.keys():
                 with self.subTest():
-                    assert self.fixture[
-                        key
-                    ] in text, f'{key}=({self.fixture[key]}) Not present'
+                    assert self.fixture[key
+                                       ] in text, '{}=({}) Not present'.format(
+                                           key, self.fixture[key]
+                                       )

@@ -16,19 +16,19 @@ Outcomes:
 This is an end-to-end test that checks also the fixtures. 
 '''
 
-from selenium_base import SeleniumTestsBase
+import re
+
+from django.test import tag
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
+from mock import Mock, patch
+from selenium.common.exceptions import NoSuchElementException
+
 from institution.models import Institution
 from project.models import Project, SystemAllocationRequest
+from selenium_base import SeleniumTestsBase
 from system.models import System
 from users.models import CustomUser
-
-from mock import Mock, patch
-
-from django.urls import reverse
-from django.test import tag
-from selenium.common.exceptions import NoSuchElementException
-from django.utils.translation import gettext_lazy as _
-import re
 
 
 class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
@@ -224,7 +224,7 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
 
         if access_request_text in self.selenium.page_source and not separate_allocation_requests:
             raise AssertionError(
-                f'"{access_request_text}" string in page source.'
+                '"{}" string in page source.'.format(access_request_text)
             )
 
         self._go_to_dashboard()
@@ -236,13 +236,13 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
             # There should be an allocation request section here:
             if access_request_text not in self.selenium.page_source:
                 raise AssertionError(
-                    f'"{access_equest_text}" string not in page source.'
+                    '"{}" string not in page source.'.format(access_equest_text)
                 )
         else:
             # There should be no allocation request section here:
             if access_request_text in self.selenium.page_source:
                 raise AssertionError(
-                    f'"{access_request_text}" string in page source.'
+                    '"{}" string in page source.'.format(access_request_text)
                 )
 
         self.log_out()
@@ -369,11 +369,11 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
             el = self.selenium.find_element_by_link_text(strtofind)
             if not allows_rse_requests:
                 raise AssertionError(
-                    f'A "{strtofind}" link should not be present'
+                    'A "{}" link should not be present'.format(strtofind)
                 )
         except NoSuchElementException:
             if allows_rse_requests:
-                raise AssertionError(f'A "{strtofind}" link should be present')
+                raise AssertionError('A "{strtofind}" link should be present'.format(strtofind))
 
     @tag("RSE_reqs")
     def test_aberystwyth_user_sees_rse_requests_NO(self):

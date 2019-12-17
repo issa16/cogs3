@@ -18,7 +18,9 @@ class UserCreatedNotificationTests(TestCase):
         user_created_notification(user)
 
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject,
-                         f'{settings.COMPANY_NAME} User Account Created')
+        self.assertEqual(
+            mail.outbox[0].subject,
+            '{} User Account Created'.format(settings.COMPANY_NAME)
+        )
         self.assertIn('Joe Bloggs', mail.outbox[0].body)
         self.assertIn(user.reason_for_account, mail.outbox[0].body)

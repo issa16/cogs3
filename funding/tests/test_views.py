@@ -3,27 +3,18 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 
-from funding.forms import FundingSourceForm
-from funding.forms import PublicationForm
-from funding.forms import AddFundingSourceForm
-from funding.forms import FundingSourceApprovalForm
-from funding.views import FundingSourceAddView
-from funding.views import FundingSourceCreateView
-from funding.views import PublicationCreateView
-from funding.views import AttributionListView
-from funding.views import FundingSourceListView
-from funding.views import PublicationListView
-from funding.views import AttributionUpdateView
-from funding.views import AttributionDeleteView
-from funding.views import ApproveFundingSource
-from users.models import CustomUser
-from funding.models import FundingBody
-from funding.models import FundingSource
-from funding.models import FundingSourceMembership
-from funding.models import Publication
+from funding.forms import (AddFundingSourceForm, FundingSourceApprovalForm,
+                           FundingSourceForm, PublicationForm)
+from funding.models import (FundingBody, FundingSource,
+                            FundingSourceMembership, Publication)
+from funding.views import (ApproveFundingSource, AttributionDeleteView,
+                           AttributionListView, AttributionUpdateView,
+                           FundingSourceAddView, FundingSourceCreateView,
+                           FundingSourceListView, PublicationCreateView,
+                           PublicationListView)
 from institution.models import Institution
 from project.models import Project
-from funding.models import FundingSourceMembership
+from users.models import CustomUser
 
 
 class FundingViewTests(TestCase):
@@ -123,7 +114,7 @@ class FundingSourceCreateViewTests(FundingViewTests, TestCase):
 
         post_data = {
             'title' : 'My publication title',
-            'url' : f'https://{institution.local_repository_domain}'
+            'url' : 'https://{}'.format(institution.local_repository_domain)
             }
 
         url_appends = { '?_popup=1' : 200,
@@ -433,11 +424,11 @@ class ListAttributionsTests(FundingViewTests, TestCase):
             user = project_account['user']
             institution = user.profile.institution
             project = Project.objects.create(
-                title=f'Temporary test project for {user.email}',
+                title='Temporary test project for {}'.format(user.email),
                 description='Project description',
                 legacy_hpcw_id='HPCW-12345',
                 legacy_arcca_id='ARCCA-12345',
-                code=f'scw{2000 + user.id}',
+                code='scw{}'.format(2000 + user.id),
                 institution_reference='BW-12345',
                 department='School of Chemistry',
                 supervisor_name="Joe Bloggs",
@@ -516,7 +507,7 @@ class FundingSourceUpdateViewTests(FundingViewTests, TestCase):
                                        FundingSourceForm))
                 self.assertTrue(isinstance(response.context_data.get('view'),
                                        AttributionUpdateView))
-                            
+
     def test_fundingource_view_as_an_authorised_user(self):
         """
         Ensure the correct account types can access the funding source list view.

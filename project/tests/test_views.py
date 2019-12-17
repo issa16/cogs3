@@ -1,46 +1,34 @@
+import os
 import random
 import string
 import uuid
-import os
-from datetime import datetime, timedelta, date
+from datetime import date, datetime, timedelta
+from unittest.mock import patch
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.test import TestCase
 from django.urls import reverse
 
+from funding.models import FundingBody, FundingSource
 from institution.models import Institution
-from project.forms import ProjectCreationForm
-from project.forms import ProjectUserMembershipCreationForm
-from project.forms import RSEAllocationRequestCreationForm
-from project.forms import SystemAllocationRequestCreationForm
-from project.tests.test_models import ProjectCategoryTests
-from project.tests.test_models import ProjectTests
-from project.tests.test_models import ProjectUserMembershipTests
-from project.models import Project
-from project.models import ProjectCategory
-from project.models import SystemAllocationRequest
-from funding.models import FundingBody
-from funding.models import FundingSource
-from project.models import ProjectUserMembership
-from project.models import SystemAllocationRequest
-from project.views import ProjectCreateView
-from project.views import ProjectDetailView
-from project.views import ProjectListView
-from project.views import ProjectUserMembershipFormView
-from project.views import ProjectUserMembershipListView
-from project.views import ProjectUserRequestMembershipListView
-from project.views import RSEAllocationCreateView
-from project.views import SystemAllocationCreateView
-from project.views import ProjectAndAllocationCreateView
-from project.views import SystemAllocationRequestDetailView
-from project.views import ProjectAddAttributionView
+from project.forms import (ProjectCreationForm,
+                           ProjectUserMembershipCreationForm,
+                           RSEAllocationRequestCreationForm,
+                           SystemAllocationRequestCreationForm)
+from project.models import (Project, ProjectCategory, ProjectUserMembership,
+                            SystemAllocationRequest)
+from project.tests.test_models import (ProjectCategoryTests, ProjectTests,
+                                       ProjectUserMembershipTests)
+from project.views import (ProjectAddAttributionView,
+                           ProjectAndAllocationCreateView, ProjectCreateView,
+                           ProjectDetailView, ProjectListView,
+                           ProjectUserMembershipFormView,
+                           ProjectUserMembershipListView,
+                           ProjectUserRequestMembershipListView,
+                           RSEAllocationCreateView, SystemAllocationCreateView,
+                           SystemAllocationRequestDetailView)
 from system.models import System
 from users.models import CustomUser
-
-from django.contrib.auth.models import Group
-from django.contrib.auth.models import Permission
-
-from unittest.mock import patch
 
 
 class ProjectViewTests(TestCase):
@@ -241,7 +229,7 @@ class RSEAllocationCreateViewTests(ProjectViewTests, TestCase):
         self._access_view_as_unauthorised_application_user(
             reverse('request-project-rse-time', args=[self.project.id]),
             '/en-gb/accounts/login/?next=/en-gb/projects/applications/'
-            f'{self.project.id}'
+            '{}'.format(self.project.id),
             '/rse-time-application/',
         )
 
@@ -304,7 +292,7 @@ class SystemAllocationCreateViewTests(ProjectViewTests, TestCase):
         """
         self._access_view_as_unauthorised_application_user(
             reverse('create-allocation', args=[self.project.id]),
-            f'/en-gb/accounts/login/?next=/en-gb/projects/{self.project.id}/create-allocation/',
+            '/en-gb/accounts/login/?next=/en-gb/projects/{}/create-allocation/'.format(self.project.id)
         )
 
 
@@ -760,7 +748,7 @@ class ProjectAddAttributionViewTests(ProjectViewTests, TestCase):
         self._access_view_as_unauthorised_application_user(
             reverse('project-add-attributions', args=[self.project.id]),
             '/en-gb/accounts/login/?next=/en-gb/projects/applications/'
-            f'{self.project.id}/attributions/',
+            '{}/attributions/'.format(self.project.id),
         )
 
         
@@ -903,11 +891,11 @@ class ProjectSupervisorApproveViewTests(ProjectViewTests, TestCase):
     def setUp(self):
         self.user = CustomUser.objects.get(email='norman.gordon@example.ac.uk')
         self.project = Project.objects.create(
-            title=f'Temporary test project for {self.user.email}',
+            title='Temporary test project for {}'.format(self.user.email),
             description='Project description',
             legacy_hpcw_id='HPCW-12345',
             legacy_arcca_id='ARCCA-12345',
-            code=f'scw1004',
+            code='scw1004',
             institution_reference='BW-12345',
             department='School of Chemistry',
             supervisor_name="Joe Bloggs",

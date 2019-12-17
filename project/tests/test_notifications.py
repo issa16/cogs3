@@ -1,9 +1,10 @@
-from project import notifications
-from django.test import TestCase, override_settings
 from django.conf import settings
-from project.models import Project, ProjectUserMembership, ProjectCategory
-from users.models import CustomUser
 from django.core import mail
+from django.test import TestCase, override_settings
+
+from project import notifications
+from project.models import Project, ProjectCategory, ProjectUserMembership
+from users.models import CustomUser
 
 
 @override_settings(DEFAULT_SUPPORT_EMAIL='admin_team@example.ac.uk')
@@ -14,13 +15,13 @@ class ProjectNotificationTests(TestCase):
     def setUp(self):
         self.base_domain = 'aber.ac.uk'
         self.user = CustomUser.objects.create(
-            username=f'user@{self.base_domain}',
-            email=f'user@{self.base_domain}'
+            username='user@{}'.format(self.base_domain),
+            email='user@{}'.format(self.base_domain)
         )
         self.user.save()
         self.user2 = CustomUser.objects.create(
-            username=f'user2@{self.base_domain}',
-            email=f'user2@{self.base_domain}'
+            username='user2@{}'.format(self.base_domain),
+            email='user2@{}'.format(self.base_domain)
         )
         self.user2.save()
         self.project = Project(
@@ -53,12 +54,12 @@ class ProjectNotificationTests(TestCase):
         assert len(mail.outbox[0].to) == 1,\
                 'Mail should be sent to  one recipient'
         assert mail.outbox[0].to[0] == settings.DEFAULT_SUPPORT_EMAIL,\
-                f'Wrong recipient: {mail.outbox[0].to}'
+                'Wrong recipient: {}'.format(mail.outbox[0].to)
 
     def test_project_created_notification_institution_email(self):
         from institution.models import Institution
         uni = Institution.objects.get(base_domain=self.base_domain)
-        uni.support_email = f'support@{self.base_domain}'
+        uni.support_email = 'support@{}'.format(self.base_domain)
         uni.save()
 
         notifications.project_created_notification(self.project)
@@ -68,7 +69,7 @@ class ProjectNotificationTests(TestCase):
         assert len(mail.outbox[0].to) == 1,\
                 'Mail should be sent to  one recipient'
         assert mail.outbox[0].to[ 0 ] == uni.support_email, \
-                f'Wrong recipient: {mail.outbox[0].to}'
+                'Wrong recipient: {}'.format(mail.outbox[0].to)
 
     def test_project_membership_created(self):
         membership = ProjectUserMembership.objects.get(pk=1)

@@ -1,8 +1,9 @@
 from django.conf import settings
 from django.test import TestCase, override_settings
 
-from institution.exceptions import (InvalidInstitutionalEmailAddress,
-                                    InvalidInstitutionalIndentityProvider)
+from institution.exceptions import (
+    InvalidInstitutionalEmailAddress, InvalidInstitutionalIndentityProvider
+)
 from institution.models import Institution
 
 
@@ -20,7 +21,9 @@ class InstitutionTests(TestCase):
         elif institution_name == 'swan':
             self.assertTrue(separate_alloc)
         else:
-            raise ValueError(f'Institution {institution_name} not recognised')
+            raise ValueError(
+                'Institution {} not recognised'.format(institution_name)
+            )
 
     def test_invalid_institutional_system(self):
         with self.assertRaises(ValueError) as e:
@@ -39,15 +42,24 @@ class InstitutionTests(TestCase):
     def test_invalid_institutional_email_address(self):
         with self.assertRaises(InvalidInstitutionalEmailAddress) as e:
             Institution.is_valid_email_address('invalid-email@invalid.ac.uk')
-        self.assertEqual(str(e.exception), 'Email address domain is not supported.')
+        self.assertEqual(
+            str(e.exception), 'Email address domain is not supported.'
+        )
 
     def test_valid_institutional_identity_provider(self):
-        self.assertTrue(Institution.is_valid_identity_provider('https://idp.bangor.ac.uk/shibboleth'))
+        self.assertTrue(
+            Institution.
+            is_valid_identity_provider('https://idp.bangor.ac.uk/shibboleth')
+        )
 
     def test_invalid_institutional_identity_provider(self):
         with self.assertRaises(InvalidInstitutionalIndentityProvider) as e:
-            Institution.is_valid_identity_provider('https://idp.invalid-identity-provider.ac.uk/shibboleth')
-        self.assertEqual(str(e.exception), 'Identity provider is not supported.')
+            Institution.is_valid_identity_provider(
+                'https://idp.invalid-identity-provider.ac.uk/shibboleth'
+            )
+        self.assertEqual(
+            str(e.exception), 'Identity provider is not supported.'
+        )
 
     def test_str_representation(self):
         institution = Institution.objects.create(
