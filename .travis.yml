@@ -7,7 +7,6 @@ env:
   - DJANGO_VERSION=2.0.9
 
 services:
-  - mysql
   - redis-server
 
 before_install:
@@ -27,6 +26,7 @@ install:
 
 addons:
   firefox: "60.0"
+  mariadb: "5.5.64"
 
 before_script:
   # Create database
