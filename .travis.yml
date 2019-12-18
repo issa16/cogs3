@@ -41,7 +41,8 @@ script:
   - python manage.py migrate
   - python manage.py loaddata institutions.json
   - python manage.py loaddata systems.json
-  - coverage run manage.py test --verbosity=3
+  #- coverage run manage.py test --verbosity=3
+  - python manage.py test priority.tests
 
 after_success:
   - codecov
