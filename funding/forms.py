@@ -1,12 +1,13 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from .models import FundingSource
-from .models import Publication
 
 from institution.models import Institution
 
+from .models import FundingSource, Publication
+
 
 class FundingSourceForm(forms.ModelForm):
+
     class Meta:
         model = FundingSource
         fields = ['title', 'identifier', 'amount', 'funding_body', 'pi_email']
@@ -48,20 +49,24 @@ class FundingSourceForm(forms.ModelForm):
 
 
 class AddFundingSourceForm(forms.ModelForm):
+
     class Meta:
         model = FundingSource
         fields = ['identifier']
 
 
 class PublicationForm(forms.ModelForm):
+
     class Meta:
         model = Publication
         fields = ['title', 'url']
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if (user.profile.institution is not None and
-            user.profile.institution.local_repository_name != ''):
+        if (
+            user.profile.institution is not None and
+            user.profile.institution.local_repository_name != ''
+        ):
             self.local_repository_domain = user.profile.institution.local_repository_domain
             self.fields['url'].label = _(
                 '{repo} URL of the publication'.format(
@@ -81,9 +86,13 @@ class PublicationForm(forms.ModelForm):
 
 
 class FundingSourceApprovalForm(forms.ModelForm):
+
     class Meta:
         model = FundingSource
-        fields = ['title', 'identifier', 'amount', 'funding_body', 'pi_email', 'approved']
+        fields = [
+            'title', 'identifier', 'amount', 'funding_body', 'pi_email',
+            'approved'
+        ]
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.get('instance', {})
@@ -115,4 +124,3 @@ class FundingSourceApprovalForm(forms.ModelForm):
                 'You did not approve the funding source.'
             ))
         return approved
-

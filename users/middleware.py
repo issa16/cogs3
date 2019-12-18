@@ -4,15 +4,14 @@ from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth import load_backend
 from django.contrib.auth.backends import RemoteUserBackend
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.urls import resolve
-from django.urls import reverse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import resolve, reverse
+from shibboleth.middleware import (
+    ShibbolethRemoteUserMiddleware, ShibbolethValidationError
+)
 
 from institution.exceptions import InvalidInstitutionalIndentityProvider
 from institution.models import Institution
-from shibboleth.middleware import ShibbolethRemoteUserMiddleware
-from shibboleth.middleware import ShibbolethValidationError
 
 
 class TermsOfServiceMiddleware:
@@ -23,10 +22,17 @@ class TermsOfServiceMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         if request.user.is_authenticated:
-            if (request.user.first_name == '' and request.user.last_name == ''
-                and request.session.get('shib', None)):
-                if not request.path.startswith(reverse('complete-registration')):
-                    return HttpResponseRedirect(reverse('complete-registration'))
+            if (
+                request.user.first_name == '' and
+                request.user.last_name == '' and
+                request.session.get('shib', None)
+            ):
+                if not request.path.startswith(
+                    reverse('complete-registration')
+                ):
+                    return HttpResponseRedirect(
+                        reverse('complete-registration')
+                    )
             elif not request.user.accepted_terms_and_conditions:
                 if not request.path.startswith(reverse('terms-of-service')):
                     return HttpResponseRedirect(reverse('terms-of-service'))
@@ -48,12 +54,15 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
                 "The Django remote user auth middleware requires the authentication middleware to "
                 " be installed. Edit your MIDDLEWARE setting to insert "
                 "'django.contrib.auth.middleware.AuthenticationMiddleware' "
-                "before the RemoteUserMiddleware class.")
+                "before the RemoteUserMiddleware class."
+            )
 
         # Prevent the user from logging in if the django application requires the user to
         # reauthenticate with their shibboleth identity provider.
         # This will require the user to close their browser.
-        if request.session.get(settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY) == True:
+        if request.session.get(
+            settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY
+        ) == True:
             return
 
         # Locate the required headers.
@@ -81,7 +90,9 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         email_regex = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
         if not re.match(email_regex, username):
             # Must append the institutions base domain to the username.
-            institution = Institution.objects.get(identity_provider=identity_provider)
+            institution = Institution.objects.get(
+                identity_provider=identity_provider
+            )
             username = '@'.join([username, institution.base_domain])
 
         # If the user is already authenticated and that user is the user we are getting passed in
@@ -94,14 +105,19 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
                 self._remove_invalid_user(request)
 
         # Make sure we have all required Shibboleth elements before proceeding.
-        shib_meta, error = ShibbolethRemoteUserMiddleware.parse_attributes(request)
+        shib_meta, error = ShibbolethRemoteUserMiddleware.parse_attributes(
+            request
+        )
 
         # Add parsed attributes to the session.
         request.session['shib'] = shib_meta
         request.session['shib']['username'] = username  # Override
 
         if error:
-            raise ShibbolethValidationError('All required Shibboleth elements not found. %s' % shib_meta)
+            raise ShibbolethValidationError(
+                'All required Shibboleth elements not found. {}'.
+                format(shib_meta)
+            )
 
         # We are seeing this user for the first time in this session, attempt to authenticate
         # the user.
@@ -123,7 +139,9 @@ class SCWRemoteUserMiddleware(ShibbolethRemoteUserMiddleware):
         user is authenticated via the RemoteUserBackend.
         """
         try:
-            stored_backend = load_backend(request.session.get(auth.BACKEND_SESSION_KEY, ''))
+            stored_backend = load_backend(
+                request.session.get(auth.BACKEND_SESSION_KEY, '')
+            )
         except ImportError:
             # Backend failed to load
             auth.logout(request)

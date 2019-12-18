@@ -24,7 +24,7 @@ class FileLinkWidget(forms.Widget):
 
     def render(self, name, value, attrs=None, renderer=None):
         if self.object.pk:
-            return u'<a target="_blank" href="/en/projects/applications/%s/document">Download</a>' % (
+            return u'<a target="_blank" href="/en/projects/applications/{}/document">Download</a>'.format(
                 self.object.id
             )
         else:
