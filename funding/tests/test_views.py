@@ -392,7 +392,7 @@ class ListAttributionsTests(FundingViewTests, TestCase):
                 reverse(self.view_name, args=[project.pk]),
                 **headers
             )
-            response_content = json.loads(response.content)
+            response_content = json.loads(response.content.decode())
             titles = [result['title']
                       for result in response_content['results']]
             for title in project_account['expected titles']:
