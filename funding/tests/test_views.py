@@ -444,7 +444,7 @@ class ListAttributionsTests(FundingViewTests, TestCase):
                 reverse(self.view_name, args=[project.pk]),
                 **headers
             )
-            response_content = json.loads(response.content)
+            response_content = json.loads(response.content.decode())
             titles = [result['title']
                       for result in response_content['results']]
             for title in project_account['expected titles']:
@@ -956,7 +956,7 @@ class ListUnapprovedFundingSourcesTest(FundingViewTests, TestCase):
 
             # Check that the page at least contains titles for all funding source objects
             if response.status_code == 200:
-                [self.assertTrue(f.title in str(response.content)) for f in FundingSource.objects.all()]
+                [self.assertTrue(f.title in str(response.content.decode())) for f in FundingSource.objects.all()]
 
 class PublicationDeleteViewTests(FundingViewTests, TestCase):
 
