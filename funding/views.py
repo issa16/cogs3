@@ -20,7 +20,9 @@ from .models import (Attribution, FundingSource, FundingSourceMembership,
 # Create your views here.
 
 
-class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
+class FundingSourceCreateView(
+    SuccessMessageMixin, LoginRequiredMixin, generic.CreateView
+):
     model = FundingSource
     form_class = FundingSourceForm
     success_url = reverse_lazy('list-attributions')
@@ -33,19 +35,26 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
 
         if fundingsource.pi.first_name:
             email_addressee = fundingsource.pi.first_name
-            letter_from_line = ' '.join((fundingsource.pi.first_name,
-                                         fundingsource.pi.last_name))
+            letter_from_line = ' '.join(
+                (fundingsource.pi.first_name, fundingsource.pi.last_name)
+            )
         else:
             email_addressee = fundingsource.pi.email.split('@')[0]
             letter_from_line = 'YOUR NAME HERE'
 
         context = {
-            'first_name': email_addressee,
-            'to': fundingsource.pi.email,
-            'identifier': fundingsource.identifier,
-            'title': fundingsource.title,
-            'scw_email': fundingsource.pi.profile.institution.funding_document_email,
-            'user': user_name,
+            'first_name':
+                email_addressee,
+            'to':
+                fundingsource.pi.email,
+            'identifier':
+                fundingsource.identifier,
+            'title':
+                fundingsource.title,
+            'scw_email':
+                fundingsource.pi.profile.institution.funding_document_email,
+            'user':
+                user_name,
         }
         docx_file = create_funding_document(
             fundingsource.funding_body.name,
@@ -68,10 +77,7 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
         if 'identifier' in self.kwargs:
             kwargs['initial']['identifier'] = self.kwargs['identifier']
 
-        return FundingSourceForm(
-            self.request.user,
-            **kwargs
-        )
+        return FundingSourceForm(self.request.user, **kwargs)
 
     def form_valid(self, form):
         # If this is a popup, add the label to redirects
@@ -90,17 +96,21 @@ class FundingSourceCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.C
             self.notify_pi(fundingsource)
 
         if self.request.GET.get('_popup'):
-            return HttpResponse('''
+            return HttpResponse(
+                '''
                 Closing popup
                 <script>
                 opener.updateField({new_id});
                 window.close();
                 </script>
-            '''.format(new_id=fundingsource.id))
+            '''.format(new_id=fundingsource.id)
+            )
         return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
 
-class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.FormView):
+class FundingSourceAddView(
+    SuccessMessageMixin, LoginRequiredMixin, generic.FormView
+):
     ''' A customuser adds new fundingsources using this view. If a matching
         funding source is not found, the user is forwarded to the createview.
         If it is found, the user is added to its users list
@@ -129,7 +139,9 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
     def form_valid(self, form):
         # First time around we only ask for the identifier and check for matching funding sources
         identifier = form.cleaned_data['identifier']
-        matching_funding_source = FundingSource.objects.filter(identifier=identifier)
+        matching_funding_source = FundingSource.objects.filter(
+            identifier=identifier
+        )
 
         # If this is a popup, add the label to redirects
         if self.request.GET.get('_popup'):
@@ -141,23 +153,26 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
             fundingsource = matching_funding_source.first()
             if fundingsource.pi.profile.institution.needs_funding_approval:
                 user_is_member = FundingSourceMembership.objects.filter(
-                    user=self.request.user,
-                    fundingsource=fundingsource).exists()
+                    user=self.request.user, fundingsource=fundingsource
+                ).exists()
 
                 if user_is_member:
-                    messages.add_message(self.request, messages.INFO,
-                        "You already are a member of this funding source. It will become visible in attributions once the PI approves your membership")
-                    return HttpResponseRedirect(reverse_lazy('list-attributions')+popup)
+                    messages.add_message(
+                        self.request, messages.INFO,
+                        "You already are a member of this funding source. It will become visible in attributions once the PI approves your membership"
+                    )
+                    return HttpResponseRedirect(
+                        reverse_lazy('list-attributions') + popup
+                    )
                 else:
                     messages.add_message(
                         self.request, messages.INFO,
                         "A funding source with this identifier has been found "
                         "on the system. "
-                        "An email has been sent to the PI provided " +
-                        (f"({fundingsource.pi_email}) "
-                         if fundingsource.pi_email
-                         else '') +
-                        "to request that you "
+                        "An email has been sent to the PI provided " + (
+                            "({})".format(fundingsource.pi_email)
+                            if fundingsource.pi_email else ''
+                        ) + "to request that you "
                         "are added to this funding. "
                     )
 
@@ -169,26 +184,34 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
                         defaults={'approved': False}
                     )
 
-                    return HttpResponseRedirect(reverse_lazy('list-attributions')+popup)
+                    return HttpResponseRedirect(
+                        reverse_lazy('list-attributions') + popup
+                    )
 
             else:
                 if self.request.GET.get('_popup'):
-                    return HttpResponse('''
+                    return HttpResponse(
+                        '''
                     Closing popup
                     <script>
                     opener.updateField({new_id});
                     window.close();
                     </script>
-                    '''.format(new_id=fundingsource.id))
+                    '''.format(new_id=fundingsource.id)
+                    )
                 return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
         else:
             # No match, ask to create
-            messages.add_message(self.request, messages.INFO,
-                    "You have requested to attribute a funding source that does not yet exist in the system. "
-                    "Please include additional detail for our records.")
+            messages.add_message(
+                self.request, messages.INFO,
+                "You have requested to attribute a funding source that does not yet exist in the system. "
+                "Please include additional detail for our records."
+            )
             if identifier:
-                endpoint = reverse_lazy('create-funding-source-with-identifier', args=[identifier])
+                endpoint = reverse_lazy(
+                    'create-funding-source-with-identifier', args=[identifier]
+                )
             else:
                 # this code is currently inaccessible due to validation on
                 # identfier in FundingSource, but redirecting in case of identifier
@@ -197,29 +220,31 @@ class FundingSourceAddView(SuccessMessageMixin, LoginRequiredMixin, generic.Form
 
             return HttpResponseRedirect(endpoint + popup)
 
-class PublicationCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
+
+class PublicationCreateView(
+    SuccessMessageMixin, LoginRequiredMixin, generic.CreateView
+):
     model = Publication
     success_url = reverse_lazy('list-attributions')
     success_message = _("Successfully added publication.")
 
     def get_form(self):
-        return PublicationForm(
-            self.request.user,
-            **self.get_form_kwargs()
-        )
+        return PublicationForm(self.request.user, **self.get_form_kwargs())
 
     def form_valid(self, form):
         publication = form.save(commit=False)
         publication.created_by = self.request.user
         publication.save()
         if self.request.GET.get('_popup'):
-            return HttpResponse('''
+            return HttpResponse(
+                '''
                 Closing popup
                 <script>
                 opener.updateField({new_id});
                 window.close();
                 </script>
-            '''.format(new_id=publication.id))
+            '''.format(new_id=publication.id)
+            )
         return HttpResponseRedirect(reverse_lazy('list-attributions'))
 
 
@@ -237,10 +262,12 @@ class AttributionListView(LoginRequiredMixin, generic.ListView):
             query_filter['{}__isnull'.format(self.model_filter)] = False
         queryset = super().get_queryset().filter(**query_filter)
         owned_set = queryset.filter(owner=user)
-        user_set = queryset.filter(fundingsource__in=FundingSource.objects.filter(
-            fundingsourcemembership__user=user,
-            fundingsourcemembership__approved=True,
-        ))
+        user_set = queryset.filter(
+            fundingsource__in=FundingSource.objects.filter(
+                fundingsourcemembership__user=user,
+                fundingsourcemembership__approved=True,
+            )
+        )
         return (owned_set | user_set).order_by('-created_time')
 
 
@@ -252,7 +279,9 @@ class FundingSourceListView(AttributionListView):
     model_filter = 'fundingsource'
 
 
-class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):
+class AttributionUpdateView(
+    SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView
+):
     model = Attribution
     success_message = _("Successfully modified attribution.")
     success_url = reverse_lazy('list-attributions')
@@ -266,29 +295,31 @@ class AttributionUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.Upd
     def get_form(self):
         if self.type == 'fundingsource':
             return FundingSourceForm(
-                self.request.user,
-                view='update',
-                **self.get_form_kwargs()
+                self.request.user, view='update', **self.get_form_kwargs()
             )
         if self.type == 'publication':
-            return PublicationForm(
-                self.request.user,
-                **self.get_form_kwargs()
-            )
+            return PublicationForm(self.request.user, **self.get_form_kwargs())
 
     def user_passes_test(self, request):
         return (
-            Attribution.objects.filter(id=self.kwargs['pk'],
-                                       owner=self.request.user).exists()
-            or self.request.user.has_perm('funding.approve_funding_sources')
+            Attribution.objects.filter(
+                id=self.kwargs['pk'], owner=self.request.user
+            ).exists() or
+            self.request.user.has_perm('funding.approve_funding_sources')
         )
 
     def dispatch(self, request, *args, **kwargs):
         obj = self.get_object()
         # User cannot update a funding source if the funding approval workflow is required
         if obj.type == 'fundingsource' and obj.pi.profile.institution.needs_funding_approval:
-            if not self.request.user.has_perm('funding.approve_funding_sources'):
-                return HttpResponseRedirect(reverse('funding_source-detail-view',kwargs={'pk':obj.id}))
+            if not self.request.user.has_perm(
+                'funding.approve_funding_sources'
+            ):
+                return HttpResponseRedirect(
+                    reverse(
+                        'funding_source-detail-view', kwargs={'pk': obj.id}
+                    )
+                )
 
         if not self.user_passes_test(request):
             return HttpResponseRedirect(reverse('list-attributions'))
@@ -324,13 +355,15 @@ class AttributionDeleteView(LoginRequiredMixin, generic.DeleteView):
         if attribution.is_fundingsource:
             fundingsource = attribution.child
             if (
-                    fundingsource.approved and
-                    fundingsource.pi.profile.institution.needs_funding_approval
+                fundingsource.approved and
+                fundingsource.pi.profile.institution.needs_funding_approval
             ):
                 return False
             else:
                 return fundingsource.owner == self.request.user
-        return Attribution.objects.filter(id=self.kwargs['pk'], owner=self.request.user).exists()
+        return Attribution.objects.filter(
+            id=self.kwargs['pk'], owner=self.request.user
+        ).exists()
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
@@ -353,7 +386,9 @@ class ListFundingSourceMembership(LoginRequiredMixin, generic.ListView):
         return queryset
 
 
-class ToggleFundingSourceMembershipApproved(LoginRequiredMixin, generic.UpdateView):
+class ToggleFundingSourceMembershipApproved(
+    LoginRequiredMixin, generic.UpdateView
+):
     context_object_name = 'memberships'
     model = FundingSourceMembership
     fields = ['approved']
@@ -370,11 +405,15 @@ class ToggleFundingSourceMembershipApproved(LoginRequiredMixin, generic.UpdateVi
 
     def dispatch(self, request, *args, **kwargs):
         if not self.request_allowed(request):
-            return HttpResponseRedirect(reverse('list-funding_source_memberships'))
+            return HttpResponseRedirect(
+                reverse('list-funding_source_memberships')
+            )
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        response = HttpResponseRedirect(reverse('list-funding_source_memberships'))
+        response = HttpResponseRedirect(
+            reverse('list-funding_source_memberships')
+        )
         membership = FundingSourceMembership.objects.get(id=self.kwargs['pk'])
         if membership.approved:
             membership.approved = False
@@ -412,7 +451,9 @@ class ListUnapprovedFundingSources(PermissionRequiredMixin, generic.ListView):
         return queryset
 
 
-class ApproveFundingSource(SuccessMessageMixin, PermissionRequiredMixin, generic.UpdateView):
+class ApproveFundingSource(
+    SuccessMessageMixin, PermissionRequiredMixin, generic.UpdateView
+):
     model = FundingSource
     form_class = FundingSourceApprovalForm
     success_message = _("Successfully approved funding source.")

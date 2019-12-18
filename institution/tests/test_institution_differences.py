@@ -95,7 +95,9 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
 
     # For conveninence and for DRY code
     def _createuser(self, instname, username='user_tid'):
-        institution = Institution.objects.get(name=f"{instname} University")
+        institution = Institution.objects.get(
+            name="{} University".format(instname)
+        )
         # tid : Test Institution Differences
         email = '@'.join([username, institution.base_domain])
         return CustomUser(
@@ -236,7 +238,8 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
             # There should be an allocation request section here:
             if access_request_text not in self.selenium.page_source:
                 raise AssertionError(
-                    '"{}" string not in page source.'.format(access_equest_text)
+                    '"{}" string not in page source.'.
+                    format(access_equest_text)
                 )
         else:
             # There should be no allocation request section here:
@@ -373,7 +376,9 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
                 )
         except NoSuchElementException:
             if allows_rse_requests:
-                raise AssertionError('A "{strtofind}" link should be present'.format(strtofind))
+                raise AssertionError(
+                    'A "{strtofind}" link should be present'.format(strtofind)
+                )
 
     @tag("RSE_reqs")
     def test_aberystwyth_user_sees_rse_requests_NO(self):
