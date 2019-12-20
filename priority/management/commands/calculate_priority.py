@@ -1,14 +1,13 @@
 import os
 from datetime import date, timedelta
 
-from django.core.management.base import BaseCommand
-from django.conf import settings
-
 import numpy as np
-import pandas as pd
+from django.conf import settings
+from django.core.management.base import BaseCommand
 
-from project.models import Project
+import pandas as pd
 from priority.models import SlurmPriority
+from project.models import Project
 
 # remove false postive warning about chained assignment the default is 'warn'
 pd.options.mode.chained_assignment = None
@@ -41,14 +40,14 @@ def read_and_aggregate_sacct_dump(filename):
     compute_data = df[(df.Partition != "gpu") & (df.Partition != "xgpu")]
 
     # calculate the total raw cpu time used for each project
-    cpu_total_time = (compute_data.groupby('Account')['CPUTimeHours']
-                      .sum()
-                      .astype(int)
-                      .to_frame(name='cpu_total_time'))
-    gpu_total_time = (gpu_data.groupby('Account')['CPUTimeHours']
-                      .sum()
-                      .astype(int)
-                      .to_frame(name='gpu_total_time'))
+    cpu_total_time = (
+        compute_data.groupby('Account')['CPUTimeHours'].sum().astype(int)
+        .to_frame(name='cpu_total_time')
+    )
+    gpu_total_time = (
+        gpu_data.groupby('Account')['CPUTimeHours'].sum().astype(int)
+        .to_frame(name='gpu_total_time')
+    )
 
     return cpu_total_time, gpu_total_time
 
@@ -61,26 +60,24 @@ def calculate_priority(priority_attribution_data, sacct_data):
     cpu_total_time, gpu_total_time = sacct_data
     full_data = (
         priority_attribution_data
-        .rename(columns={'account': 'Account'})
-        .merge(cpu_total_time, on='Account', how='outer')
-        .merge(gpu_total_time, on='Account', how='outer')
+        #.rename(columns={'account': 'Account'})
+        .merge(cpu_total_time, how='outer', right_index=True, left_on='account')
+        .merge(gpu_total_time, how='outer', right_index=True, left_on='account')
         .fillna(0)
-        .rename(columns={'Account': 'account'})
+        #.rename(columns={'Account': 'account'})
     )
 
     # Added to avoid problems in the event that projects are in the sacct
     # Dump but not on Cogs (e.g. Cardiff users temporarily using Sunbird).
     # These would otherwise default to an AP of Zero which crashes the
     # np.log10 function.
-    full_data.attribution_points.loc[
-        full_data.attribution_points == 0
-    ] = 50000
+    full_data.attribution_points.loc[full_data.attribution_points == 0] = 50000
 
     # Calculate cpu/gpu hours used since last sacct dump.
-    full_data['cpu_hours_delta'] = (full_data['cpu_total_time']
-                                    - full_data['cpu_hours_to_date'])
-    full_data['gpu_hours_delta'] = (full_data['gpu_total_time']
-                                    - full_data['gpu_hours_to_date'])
+    full_data['cpu_hours_delta'
+             ] = (full_data['cpu_total_time'] - full_data['cpu_hours_to_date'])
+    full_data['gpu_hours_delta'
+             ] = (full_data['gpu_total_time'] - full_data['gpu_hours_to_date'])
 
     # Calculate parameter such that K*log(AP) has a max defined by
     # QOS_levels
@@ -90,45 +87,35 @@ def calculate_priority(priority_attribution_data, sacct_data):
     # Check if previous run was prioritised and if so add the time since
     # last sacct dump to total priortised time
     prioritised_projects = full_data[full_data['quality_of_service'] > 0]
-    prioritised_projects['prioritised_cpu_hours'] += (
-        prioritised_projects['cpu_hours_delta']
-    )
-    prioritised_projects['prioritised_gpu_hours'] += (
-        prioritised_projects['gpu_hours_delta']
-    )
+    prioritised_projects['prioritised_cpu_hours'
+                        ] += (prioritised_projects['cpu_hours_delta'])
+    prioritised_projects['prioritised_gpu_hours'
+                        ] += (prioritised_projects['gpu_hours_delta'])
     full_data.update(prioritised_projects)
 
     full_data['cpu_hours_to_date'] = full_data['cpu_total_time']
     full_data['gpu_hours_to_date'] = full_data['gpu_total_time']
 
     # Calculate Priority
-    full_data['AP_credit'] = (
-        (
-            full_data['attribution_points']
-            - (
-                full_data['prioritised_cpu_hours']
-                * full_data['AP_per_CPU_hour']
-                + full_data['prioritised_gpu_hours']
-                * full_data['AP_per_GPU_hour']
-            )
+    full_data['AP_credit'] = ((
+        full_data['attribution_points'] - (
+            full_data['prioritised_cpu_hours'] * full_data['AP_per_CPU_hour'] +
+            full_data['prioritised_gpu_hours'] * full_data['AP_per_GPU_hour']
         )
-        .astype(int)
-    )
+    ).astype(int))
 
     full_data['quality_of_service'] = (
-        full_data['attribution_points']
-        .map(lambda a: k * np.log10(a))
-        .round(0)
-        .astype(int))
+        full_data['attribution_points'].map(lambda a: k * np.log10(a)).round(0)
+        .astype(int)
+    )
     full_data['quality_of_service'] = (
-        full_data['quality_of_service'].where(
-            full_data['AP_credit'] >= 0, 0
-        )
+        full_data['quality_of_service'].where(full_data['AP_credit'] >= 0, 0)
     )
     return full_data
 
 
 class Command(BaseCommand):
+
     def add_arguments(self, parser):
         parser.add_argument(
             '-i',
@@ -158,8 +145,9 @@ class Command(BaseCommand):
 
         sacct_data = read_and_aggregate_sacct_dump(in_path)
         priority_attribution_data = get_priority_attribution_data()
-        priority_results = calculate_priority(priority_attribution_data,
-                                              sacct_data)
+        priority_results = calculate_priority(
+            priority_attribution_data, sacct_data
+        )
 
         # output Acount and QOS to pipe seperated csv file
         priority_results.to_csv(
@@ -173,8 +161,7 @@ class Command(BaseCommand):
             update_SlurmPriority_and_Project_tables(project_record)
 
 
-def update_SlurmPriority_and_Project_tables(project_record,
-                                            override_date=None):
+def update_SlurmPriority_and_Project_tables(project_record, override_date=None):
     '''
     Accepts a Pandas NamedTuple containing at least project `account`,
     current `attribution_points` total, current `quality_of_service`,
@@ -186,9 +173,7 @@ def update_SlurmPriority_and_Project_tables(project_record,
     purposes.
     '''
     # Write current AP and QOS to Project table
-    Project.objects.filter(
-        code=project_record.account
-    ).update(
+    Project.objects.filter(code=project_record.account).update(
         active_attribution_points=project_record.attribution_points,
         quality_of_service=project_record.quality_of_service
     )
@@ -226,10 +211,12 @@ def get_priority_attribution_data():
     database (should these exist) for comparison.
     '''
 
-    attribution_points = [(project.code, project.AP())
-                          for project in Project.objects.all()]
-    attribution_data = pd.DataFrame(attribution_points,
-                                    columns=['account', 'attribution_points'])
+    attribution_points = [
+        (project.code, project.AP()) for project in Project.objects.all()
+    ]
+    attribution_data = pd.DataFrame(
+        attribution_points, columns=['account', 'attribution_points']
+    )
     yesterday = date.today() - timedelta(1)
     priority_db = SlurmPriority.objects.filter(date=yesterday)
 
@@ -238,20 +225,15 @@ def get_priority_attribution_data():
         priority_data = pd.DataFrame(
             list(
                 priority_db.values(
-                    'account',
-                    'cpu_hours_to_date',
-                    'gpu_hours_to_date',
-                    'prioritised_cpu_hours',
-                    'prioritised_gpu_hours',
+                    'account', 'cpu_hours_to_date', 'gpu_hours_to_date',
+                    'prioritised_cpu_hours', 'prioritised_gpu_hours',
                     'quality_of_service'
                 )
             )
         )
         priority_attribution_data = pd.merge(
-            priority_data,
-            attribution_data,
-            on='account',
-            how='outer').fillna(0)
+            priority_data, attribution_data, on='account', how='outer'
+        ).fillna(0)
     else:
         # Priority DB is empty therfore create default values for projects that
         # are prioritized. These will then be added into the database during
@@ -268,27 +250,32 @@ def get_priority_attribution_data():
     project_institution_db = Project.objects.select_related(
         'tech_lead__profile__shibbolethprofile__institution'
     )
-    project_institution_data = pd.DataFrame(list(project_institution_db.values(
-        'code',
-        'tech_lead__profile__shibbolethprofile__institution__AP_per_GPU_hour',
-        'tech_lead__profile__shibbolethprofile__institution__AP_per_CPU_hour'
-    )))
-    project_institution_data = project_institution_data.rename(columns={
-        'tech_lead__profile__shibbolethprofile__institution__AP_per_GPU_hour':
-        'AP_per_GPU_hour',
-        'tech_lead__profile__shibbolethprofile__institution__AP_per_CPU_hour':
-        'AP_per_CPU_hour'
-    })
+    project_institution_data = pd.DataFrame(
+        list(
+            project_institution_db.values(
+                'code',
+                'tech_lead__profile__shibbolethprofile__institution__AP_per_GPU_hour',
+                'tech_lead__profile__shibbolethprofile__institution__AP_per_CPU_hour'
+            )
+        )
+    )
+    project_institution_data = project_institution_data.rename(
+        columns={
+            'tech_lead__profile__shibbolethprofile__institution__AP_per_GPU_hour':
+                'AP_per_GPU_hour',
+            'tech_lead__profile__shibbolethprofile__institution__AP_per_CPU_hour':
+                'AP_per_CPU_hour'
+        }
+    )
 
     priority_attribution_data = (
-        pd
-        .merge(priority_attribution_data,
-               project_institution_data,
-               left_on='account',
-               right_on='code',
-               how='inner')
-        .fillna(0)
-        .drop(columns='code')
+        pd.merge(
+            priority_attribution_data,
+            project_institution_data,
+            left_on='account',
+            right_on='code',
+            how='inner'
+        ).fillna(0).drop(columns='code')
     )
 
     return priority_attribution_data
