@@ -59,12 +59,11 @@ def calculate_priority(priority_attribution_data, sacct_data):
     # combine the three data frames into one
     cpu_total_time, gpu_total_time = sacct_data
     full_data = (
-        priority_attribution_data
-        #.rename(columns={'account': 'Account'})
-        .merge(cpu_total_time, how='outer', right_index=True, left_on='account')
-        .merge(gpu_total_time, how='outer', right_index=True, left_on='account')
-        .fillna(0)
-        #.rename(columns={'Account': 'account'})
+        priority_attribution_data.merge(
+            cpu_total_time, how='outer', right_index=True, left_on='account'
+        ).merge(
+            gpu_total_time, how='outer', right_index=True, left_on='account'
+        ).fillna(0)
     )
 
     # Added to avoid problems in the event that projects are in the sacct
