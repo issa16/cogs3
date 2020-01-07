@@ -3,7 +3,7 @@ dist: xenial
 language: python
 
 python:
-  - "3.4.8"
+  - "3.4"
 
 env:
   - DJANGO_VERSION=2.0.13
@@ -38,8 +38,6 @@ before_script:
 script:
   - pip install -r requirements.txt
   - python manage.py migrate
-  - python manage.py loaddata institutions.json
-  - python manage.py loaddata systems.json
   - coverage run manage.py test --verbosity=3
 
 after_success:
