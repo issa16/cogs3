@@ -29,7 +29,6 @@ install:
 
 addons:
   firefox: "60.0"
-  mariadb: "5.5.64"
 
 before_script:
   # Create database
