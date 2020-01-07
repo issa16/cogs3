@@ -163,7 +163,7 @@ class ProjectCreateViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('create-allocation', args=[self.project.id]),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('form'), SystemAllocationRequestCreationForm))
@@ -194,7 +194,7 @@ class RSEAllocationCreateViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('request-project-rse-time', args=[project.id]),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url,
@@ -213,7 +213,7 @@ class RSEAllocationCreateViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('request-project-rse-time', args=[self.project.id]),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('form'),
@@ -228,9 +228,7 @@ class RSEAllocationCreateViewTests(ProjectViewTests, TestCase):
         """
         self._access_view_as_unauthorised_application_user(
             reverse('request-project-rse-time', args=[self.project.id]),
-            '/en-gb/accounts/login/?next=/en-gb/projects/applications/'
-            '{}'.format(self.project.id),
-            '/rse-time-application/',
+            '/en-gb/accounts/login/?next=/en-gb/projects/applications/{}/rse-time-application/'.format(self.project.id),
         )
 
 
@@ -247,7 +245,7 @@ class SystemAllocationCreateViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('create-allocation', args=[self.project.id]),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
@@ -263,7 +261,7 @@ class SystemAllocationCreateViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('create-allocation', args=[self.project.id]),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('form'), SystemAllocationRequestCreationForm))
@@ -280,7 +278,7 @@ class SystemAllocationCreateViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('create-allocation', args=[self.project.id]),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('form'), SystemAllocationRequestCreationForm))
@@ -309,7 +307,7 @@ class ProjectAndAllocationCreateViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('create-project-and-allocation'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
@@ -325,7 +323,7 @@ class ProjectAndAllocationCreateViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('create-project-and-allocation'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('project_form'), ProjectCreationForm))
@@ -355,7 +353,7 @@ class ProjectListViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-application-list'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
@@ -371,7 +369,7 @@ class ProjectListViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-application-list'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('view'), ProjectListView))
@@ -387,7 +385,7 @@ class ProjectListViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-application-list'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('view'), ProjectListView))
@@ -415,7 +413,7 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-application-detail', args=[1]),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
@@ -432,7 +430,7 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-application-detail', args=[project.id]),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data.get('project'), project)
@@ -450,7 +448,7 @@ class ProjectDetailViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-application-detail', args=[project.id]),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data.get('project'), project)
@@ -479,7 +477,7 @@ class ProjectUserMembershipFormViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-membership-create'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('form'), ProjectUserMembershipCreationForm))
@@ -495,7 +493,7 @@ class ProjectUserMembershipFormViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-membership-create'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('form'), ProjectUserMembershipCreationForm))
@@ -525,7 +523,7 @@ class ProjectUserRequestMembershipListViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-user-membership-request-list'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
@@ -541,7 +539,7 @@ class ProjectUserRequestMembershipListViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-user-membership-request-list'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('view'), ProjectUserRequestMembershipListView))
@@ -585,7 +583,7 @@ class ProjectUserMembershipListViewTests(ProjectViewTests, TestCase):
             }
             response = self.client.get(
                 reverse('project-membership-list'),
-                **headers,
+                **headers
             )
             self.assertEqual(response.status_code, account.get('expected_status_code'))
             self.assertTrue(isinstance(response.context_data.get('view'), ProjectUserMembershipListView))
@@ -604,7 +602,7 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
 
     def setUp(self):
         super().setUp()
-        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        code = ''.join(random.sample(string.ascii_uppercase + string.digits, k=10))
 
     @patch('project.openldap.project_membership_api',spec=[
         'list_project_memberships', 'create_project_membership', 'delete_project_membership'])
@@ -705,7 +703,7 @@ class ProjectUserRequestMembershipUpdateViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-membership-list'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('view'), ProjectUserMembershipListView))
@@ -734,7 +732,7 @@ class ProjectAddAttributionViewTests(ProjectViewTests, TestCase):
         }
         response = self.client.get(
             reverse('project-add-attributions', args=[self.project.id]),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data.get('view'),
@@ -747,8 +745,7 @@ class ProjectAddAttributionViewTests(ProjectViewTests, TestCase):
         """
         self._access_view_as_unauthorised_application_user(
             reverse('project-add-attributions', args=[self.project.id]),
-            '/en-gb/accounts/login/?next=/en-gb/projects/applications/'
-            '{}/attributions/'.format(self.project.id),
+            '/en-gb/accounts/login/?next=/en-gb/projects/applications/{}/attributions/'.format(self.project.id),
         )
 
         
@@ -808,7 +805,7 @@ class ProjectDocumentViewTests(ProjectViewTests, TestCase):
             response = self.client.get(
                 reverse('project-application-document',
                         args=[self.system_allocation_request.id]),
-                **headers,
+                **headers
             )
             if 'content-type' in account:
                 self.assertEqual(response['content-type'],
@@ -869,7 +866,7 @@ class ProjectMembershipInviteViewTests(ProjectViewTests, TestCase):
             }
             response = self.client.get(
                 reverse('project-membership-invite', args=[self.project.id]),
-                **headers,
+                **headers
             )
             self.assertEqual(response.status_code,
                              account['expected_status_code'])
@@ -932,7 +929,7 @@ class ProjectSupervisorApproveViewTests(ProjectViewTests, TestCase):
             }
             response = self.client.get(
                 reverse('project-supervisor-approval', args=[self.project.id]),
-                **headers,
+                **headers
             )
             self.assertEqual(response.status_code,
                              account['expected_status_code'])

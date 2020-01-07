@@ -41,12 +41,13 @@ def read_and_aggregate_sacct_dump(filename):
 
     # calculate the total raw cpu time used for each project
     cpu_total_time = (
-        compute_data.groupby('Account')['CPUTimeHours'].sum().astype(int)
-        .to_frame(name='cpu_total_time')
+        compute_data.groupby('Account')
+        ['CPUTimeHours'].sum().astype(int).to_frame(name='cpu_total_time')
     )
     gpu_total_time = (
-        gpu_data.groupby('Account')['CPUTimeHours'].sum().astype(int)
-        .to_frame(name='gpu_total_time')
+        gpu_data.groupby('Account')['CPUTimeHours'].sum().astype(int).to_frame(
+            name='gpu_total_time'
+        )
     )
 
     return cpu_total_time, gpu_total_time
@@ -63,7 +64,7 @@ def calculate_priority(priority_attribution_data, sacct_data):
             cpu_total_time, how='outer', right_index=True, left_on='account'
         ).merge(
             gpu_total_time, how='outer', right_index=True, left_on='account'
-        ).fillna(0)
+        ).fillna(0).reset_index(drop=True)
     )
 
     # Added to avoid problems in the event that projects are in the sacct
@@ -73,10 +74,12 @@ def calculate_priority(priority_attribution_data, sacct_data):
     full_data.attribution_points.loc[full_data.attribution_points == 0] = 50000
 
     # Calculate cpu/gpu hours used since last sacct dump.
-    full_data['cpu_hours_delta'
-             ] = (full_data['cpu_total_time'] - full_data['cpu_hours_to_date'])
-    full_data['gpu_hours_delta'
-             ] = (full_data['gpu_total_time'] - full_data['gpu_hours_to_date'])
+    full_data['cpu_hours_delta'] = (
+        full_data['cpu_total_time'] - full_data['cpu_hours_to_date']
+    )
+    full_data['gpu_hours_delta'] = (
+        full_data['gpu_total_time'] - full_data['gpu_hours_to_date']
+    )
 
     # Calculate parameter such that K*log(AP) has a max defined by
     # QOS_levels
@@ -86,10 +89,12 @@ def calculate_priority(priority_attribution_data, sacct_data):
     # Check if previous run was prioritised and if so add the time since
     # last sacct dump to total priortised time
     prioritised_projects = full_data[full_data['quality_of_service'] > 0]
-    prioritised_projects['prioritised_cpu_hours'
-                        ] += (prioritised_projects['cpu_hours_delta'])
-    prioritised_projects['prioritised_gpu_hours'
-                        ] += (prioritised_projects['gpu_hours_delta'])
+    prioritised_projects['prioritised_cpu_hours'] += (
+        prioritised_projects['cpu_hours_delta']
+    )
+    prioritised_projects['prioritised_gpu_hours'] += (
+        prioritised_projects['gpu_hours_delta']
+    )
     full_data.update(prioritised_projects)
 
     full_data['cpu_hours_to_date'] = full_data['cpu_total_time']
@@ -104,11 +109,15 @@ def calculate_priority(priority_attribution_data, sacct_data):
     ).astype(int))
 
     full_data['quality_of_service'] = (
-        full_data['attribution_points'].map(lambda a: k * np.log10(a)).round(0)
-        .astype(int)
+        full_data['attribution_points'].map(lambda a: k * np.log10(a)
+                                           ).round(0).astype(int)
     )
     full_data['quality_of_service'] = (
         full_data['quality_of_service'].where(full_data['AP_credit'] >= 0, 0)
+    )
+
+    full_data['quality_of_service'] = full_data['quality_of_service'].astype(
+        int
     )
     return full_data
 

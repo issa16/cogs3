@@ -19,7 +19,14 @@ class create_funding_documentTest(TestCase):
         templates = ['Swansea.docx', 'Aberystwyth.docx']
         self.texts = dict()
         for template in templates:
-            content = create_funding_document(**self.fixture, template=template)
+            content = create_funding_document(
+                funding_body=self.fixture['funding_body'],
+                title=self.fixture['title'],
+                pi_fullname=self.fixture['pi_fullname'],
+                pi_department=self.fixture['pi_department'],
+                receiver=self.fixture['receiver'],
+                template=template
+            )
             # reconstructing the document
             docx = Document(BytesIO(content))
             self.texts[template] = '\n'.join([p.text for p in docx.paragraphs])

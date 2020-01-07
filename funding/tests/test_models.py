@@ -371,7 +371,7 @@ class FundingSourceTests(FundingTests):
         }
         response = self.client.get(
             reverse('login'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('complete-registration'))

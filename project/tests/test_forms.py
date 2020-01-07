@@ -660,7 +660,7 @@ class ProjectUserMembershipCreationFormTests(ProjectFormTestCase):
         # self.approve_project(self.project)
 
         invalid_project_code = ''.join(
-            random.choices(string.ascii_uppercase + string.digits, k=21)
+            random.sample(string.ascii_uppercase + string.digits, k=21)
         )
         form = ProjectUserMembershipCreationForm(
             initial={
@@ -740,7 +740,7 @@ class ProjectUserInviteFormTests(ProjectFormTestCase):
         for account in accounts:
             # Create a project.
             code = ''.join(
-                random.choices(string.ascii_uppercase + string.digits, k=10)
+                random.sample(string.ascii_uppercase + string.digits, k=10)
             )
             project = Project.objects.get(code="scw0000")
             # self.approve_project(project)
@@ -769,7 +769,7 @@ class ProjectUserInviteFormTests(ProjectFormTestCase):
         """
         # Create a project.
         code = ''.join(
-            random.choices(string.ascii_uppercase + string.digits, k=10)
+            random.sample(string.ascii_uppercase + string.digits, k=10)
         )
         project = Project.objects.get(code="scw0000")
         # self.approve_project(project)
@@ -868,11 +868,10 @@ class RSEAllocationRequestCreationFormTests(ProjectFormTestCase):
 
     def test_invalid_durations(self):
         for duration in (0, -0.5, 0.00001, float('NaN')):
+            self.default_data['duration'] = duration
             form = RSEAllocationRequestCreationForm(
                 CustomUser.objects.get(email='shibboleth.user@example.ac.uk'),
-                data={
-                    **self.default_data, 'duration': duration
-                }
+                data=self.default_data,
             )
             self.assertFalse(form.is_valid())
 

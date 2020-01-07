@@ -42,7 +42,7 @@ class RegisterViewTests(UserViewTests, TestCase):
         response = self.client.post(
             reverse('register'),
             data,
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('login'))
@@ -63,7 +63,7 @@ class RegisterViewTests(UserViewTests, TestCase):
         }
         response = self.client.get(
             reverse('register'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data['view'], RegisterView))
@@ -79,7 +79,7 @@ class RegisterViewTests(UserViewTests, TestCase):
         }
         response = self.client.get(
             reverse('register'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('complete-registration'))
@@ -94,7 +94,7 @@ class RegisterViewTests(UserViewTests, TestCase):
         }
         response = self.client.get(
             reverse('register'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
@@ -113,7 +113,7 @@ class CompleteRegistrationViewTests(UserViewTests, TestCase):
         }
         response = self.client.get(
             reverse('complete-registration'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(isinstance(response.context_data['view'],
@@ -133,7 +133,7 @@ class LoginViewTests(UserViewTests, TestCase):
         }
         response = self.client.get(
             reverse('login'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url, reverse('register'))
@@ -148,7 +148,7 @@ class LoginViewTests(UserViewTests, TestCase):
         }
         response = self.client.get(
             reverse('login'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('home'))
@@ -167,7 +167,7 @@ class LogoutViewTests(UserViewTests, TestCase):
         }
         response = self.client.get(
             reverse('logout'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('register'))
@@ -182,7 +182,7 @@ class LogoutViewTests(UserViewTests, TestCase):
         }
         response = self.client.get(
             reverse('logout'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('logged_out'))

@@ -26,7 +26,7 @@ class DashboardViewTests(TestCase):
         headers = {}
         response = self.client.get(
             reverse('home'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/en-gb/accounts/login/?next=/en-gb/')
@@ -44,7 +44,7 @@ class DashboardViewTests(TestCase):
         }
         response = self.client.get(
             reverse('home'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('register'))
@@ -64,7 +64,7 @@ class DashboardViewTests(TestCase):
         }
         response = self.client.get(
             reverse('home'),
-            **headers,
+            **headers
         )
         self.assertEqual(response.status_code, 200)
 
