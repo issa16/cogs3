@@ -23,7 +23,6 @@ def update_openldap_project(allocation):
             project_api.activate_project.delay(allocation=allocation)
         else:
             project_api.create_project.delay(allocation=allocation)
-            activate_existing_users(project)
     elif allocation.status in deactivate_project_states:
         # Check for other approved allocations before deactivating
         num_approved_allocations = SystemAllocationRequest.objects.filter(
