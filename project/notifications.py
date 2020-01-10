@@ -12,7 +12,9 @@ def project_created_notification(project):
     Notify support that a new project has been created.
     """
     subject = _('{company_name} Project Created'.format(company_name=settings.COMPANY_NAME))
-    support_email = Institution.parse_support_email_from_user_email(project.tech_lead.email)
+    support_email = Institution.parse_support_email_from_user_email(
+        project.tech_lead.email
+    )
     context = {
         'code': project.code,
         'university': project.tech_lead.profile.institution.name,
@@ -42,3 +44,21 @@ def project_membership_created(membership):
     text_template_path = 'notifications/project_membership/created.txt'
     html_template_path = 'notifications/project_membership/created.html'
     email_user(subject, context, text_template_path, html_template_path)
+
+
+@job
+def supervisor_project_created_notification(project):
+    subject = _('{company_name} Project Created'.format(company_name=settings.COMPANY_NAME))
+    context = {
+        'university': project.tech_lead.profile.institution.name,
+        'technical_lead': project.tech_lead,
+        'title': project.title,
+        'to': project.supervisor_email,
+        'id': project.id,
+    }
+    email_user(
+        subject,
+        context,
+        'notifications/project/supervisor_created.txt',
+        'notifications/project/supervisor_created.html',
+    )

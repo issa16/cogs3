@@ -33,6 +33,7 @@ from project.models import SystemAllocationRequest
 from project.models import RSEAllocation
 from project.models import ProjectUserMembership
 from project.notifications import project_membership_created
+from project.notifications import supervisor_project_created_notification
 from project.openldap import update_openldap_project_membership
 from funding.models import Attribution
 from funding.models import FundingSource
@@ -65,23 +66,6 @@ def list_attributions(request, pk=None):
         'type': a.type
     } for a in owned_attributions]
     return JsonResponse({'results': list(values)})
-
-
-def notify_supervisor(project):
-    subject = _('{company_name} Project Created'.format(company_name=settings.COMPANY_NAME))
-    context = {
-        'university': project.tech_lead.profile.institution.name,
-        'technical_lead': project.tech_lead,
-        'title': project.title,
-        'to': project.supervisor_email,
-        'id': project.id,
-    }
-    email_user(
-        subject,
-        context,
-        'notifications/project/supervisor_created.txt',
-        'notifications/project/supervisor_created.html',
-    )
 
 
 class PermissionAndLoginRequiredMixin(PermissionRequiredMixin):
@@ -134,8 +118,8 @@ class ProjectCreateView(AllocationCreateView):
         response = super().form_valid(form)
         project = self.object
         institution = project.tech_lead.profile.institution
-        if (institution.needs_supervisor_approval):
-            notify_supervisor(project)
+        if institution.needs_supervisor_approval:
+            supervisor_project_created_notification.delay(project)
         return response
 
     def get_success_url(self):
@@ -297,8 +281,8 @@ class ProjectAndAllocationCreateView(
 
             allocation.save()
             institution = project.tech_lead.profile.institution
-            if (institution.needs_supervisor_approval):
-                notify_supervisor(project)
+            if institution.needs_supervisor_approval:
+                supervisor_project_created_notification.delay(project)
 
             messages.success(self.request, self.success_message)
             return HttpResponseRedirect(reverse('project-application-list'))
