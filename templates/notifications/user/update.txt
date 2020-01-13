@@ -3,8 +3,6 @@ User Account Update
 
 Dear {{first_name}},
 
-{% blocktrans %}Dear {{first_name}},{% endblocktrans %}
-
 {% if status == "approved" %}{% blocktrans %}We are pleased to inform you that your request for access to Supercomputing Wales facilities has been approved. You can manage your project and system access by logging into the Supercomputing Wales portal, at https://my.supercomputing.wales, using your university credentials.</p>
 <p>The portal will allow you to reset your password, mange your projects and project membership and tell us about any papers and/or funding that we've facilitated.</p>
 
