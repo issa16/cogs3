@@ -1,3 +1,5 @@
+import os
+from django.conf import settings
 from docx import Document
 from io import BytesIO
 
@@ -6,7 +8,10 @@ def create_funding_document(
     funding_body, title, pi_fullname, pi_department, receiver,
     template
 ):
-    document = Document('templates/funding/document/' + template)
+    document = Document(os.path.join(
+        settings.BASE_DIR, 
+        ('templates/funding/document/' + template))
+    )
 
     document.add_paragraph("Dear {receiver},".format(receiver=receiver))
     document.add_paragraph("")
