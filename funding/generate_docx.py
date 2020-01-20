@@ -6,7 +6,7 @@ from io import BytesIO
 
 def create_funding_document(
     funding_body, title, pi_fullname, pi_department, receiver,
-    template
+    institution_name, template
 ):
     document = Document(os.path.join(
         settings.BASE_DIR, 
@@ -48,7 +48,7 @@ def create_funding_document(
     document.add_paragraph('Prof. {name}'.format(name=pi_fullname))
     if (pi_department):
         document.add_paragraph('{department}'.format(department=pi_department))
-    document.add_paragraph("Swansea University")
+    document.add_paragraph(institution_name)
     document.add_paragraph("United Kingdom")
     document.add_paragraph("")
 

@@ -14,6 +14,7 @@ class create_funding_documentTest(TestCase):
             'title': '"TITLE"',
             'pi_fullname': 'PINAME',
             'pi_department': 'PIDEPARTMENT',
+            'institution_name': 'INSTITUTION',
             'receiver': 'RECEIVER',
         }
         templates = ['Swansea.docx', 'Aberystwyth.docx']
@@ -25,6 +26,7 @@ class create_funding_documentTest(TestCase):
                 pi_fullname=self.fixture['pi_fullname'],
                 pi_department=self.fixture['pi_department'],
                 receiver=self.fixture['receiver'],
+                institution_name=self.fixture['institution_name'],
                 template=template
             )
             # reconstructing the document
