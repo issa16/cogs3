@@ -62,6 +62,7 @@ class FundingSourceCreateView(
             letter_from_line,
             fundingsource.pi.profile.shibbolethprofile.department,
             fundingsource.pi.profile.institution.funding_document_receiver,
+            fundingsource.pi.profile.institution.name,
             fundingsource.pi.profile.institution.funding_document_template,
         )
         email_user(
