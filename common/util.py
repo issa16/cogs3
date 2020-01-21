@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
+from django_rq import job
 
 
 def email_user(subject, context, text_template_path, html_template_path, attachments=[]):
@@ -32,3 +33,7 @@ def email_user(subject, context, text_template_path, html_template_path, attachm
     for filename, content in attachments:
         email.attach(filename, content)
     email.send(fail_silently=False)
+
+@job
+def email_user_async(subject, context, text_template_path, html_template_path, attachments=[]):
+    email_user(subject, context, text_template_path, html_template_path, attachments=attachments)

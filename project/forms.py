@@ -365,7 +365,7 @@ class RSEAllocationRequestCreationForm(ProjectAssociatedForm):
             }
             text_template_path = 'notifications/project/rse_request.txt'
             html_template_path = 'notifications/project/rse_request.html'
-            email_user(subject, context, text_template_path, html_template_path)
+            email_user_async.delay(subject, context, text_template_path, html_template_path)
         return result
 
 
