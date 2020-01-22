@@ -80,6 +80,16 @@
 							<b>{% trans "Actions" %}</b>
 						</div>
 						<ul class="list-group list-group-flush">
+							  {% if perms.project.add_project %}
+							  <li class="list-group-item d-flex justify-content-between align-items-center">
+								    {% if request.user.profile.institution.separate_allocation_requests %}
+								    <a href="{% url 'create-project' %}">{% trans "Create a Project" %}</a>
+								    {% else %}
+								    <a
+									      href="{% url 'create-project-and-allocation' %}">{% trans "Apply for a project" %}</a>
+								    {%endif%}
+							  </li>
+							  {% endif %}
 							{% if user.profile.has_system_account %}
 							<li class="list-group-item d-flex justify-content-between align-items-center disabled">
 								<a
@@ -88,16 +98,6 @@
 							<li class="list-group-item d-flex justify-content-between align-items-center disabled">
 								<a href="#" data-toggle="modal"
 									data-target="#password-reset-modal">{% trans "Reset SCW Password" %}</a>
-							</li>
-							{% endif %}
-							{% if perms.project.add_project %}
-							<li class="list-group-item d-flex justify-content-between align-items-center">
-								{% if request.user.profile.institution.separate_allocation_requests %}
-								<a href="{% url 'create-project' %}">{% trans "Create a Project" %}</a>
-								{% else %}
-								<a
-									href="{% url 'create-project-and-allocation' %}">{% trans "Apply for a project" %}</a>
-								{%endif%}
 							</li>
 							{% endif %}
 							<li class="list-group-item d-flex justify-content-between align-items-center">
