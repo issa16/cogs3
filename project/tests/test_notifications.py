@@ -73,6 +73,7 @@ class ProjectNotificationTests(TestCase):
 
     def test_project_membership_created(self):
         membership = ProjectUserMembership.objects.get(pk=1)
+        previous_email = len(mail.outbox)
         notifications.project_membership_created(self.membership)
-        assert len(mail.outbox) > 0, "An email must be sent"
-        assert len(mail.outbox) == 1, "Only one email must be sent"
+        assert len(mail.outbox) - previous_email > 0, "An email must be sent"
+        assert len(mail.outbox) - previous_email == 1, "Only one email must be sent"
