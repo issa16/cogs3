@@ -65,7 +65,7 @@ class FundingSourceCreateView(
             fundingsource.pi.profile.institution.name,
             fundingsource.pi.profile.institution.funding_document_template,
         )
-        email_user(
+        email_user_async.delay(
             subject,
             context,
             'notifications/funding/new_attribution.txt',
@@ -130,7 +130,7 @@ class FundingSourceAddView(
             'title': fundingsource.title,
             'user': user_name,
         }
-        email_user(
+        email_user_async.delay(
             subject,
             context,
             'notifications/funding/attribution_request.txt',
