@@ -479,7 +479,7 @@ class InstitutionDifferencesIntegrationTest(SeleniumTestsBase):
     def _check_supervisor_approval_workflow(
         self, user, needs_supervisor_approval, separate_allocation_requests
     ):
-        with patch('project.views.email_user') as mocked_function:
+        with patch('project.views.email_user_async') as mocked_function:
             self.sign_in(user)
             self._create_fake_project_via_ui(
                 separate_allocation_requests, project_owner=user
