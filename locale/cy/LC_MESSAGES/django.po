@@ -117,7 +117,7 @@ msgid "Project Funding Sources"
 msgstr ""
 
 #: project/models.py:61
-msgid "Projects"
+msgid "Projects you created"
 msgstr ""
 
 #: project/models.py:65

@@ -136,7 +136,7 @@
 						<ul class="list-group list-group-flush">
 							{% if user.profile.is_approved and perms.project.add_project %}
 							<li class="list-group-item d-flex justify-content-between align-items-center">
-								<a href="{% url 'project-application-list' %}">{% trans "Projects" %}</a>
+								<a href="{% url 'project-application-list' %}">{% trans "Projects you created" %}</a>
 							</li>
 							{% endif %}
 							{% if perms.project.change_projectusermembership %}
