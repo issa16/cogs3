@@ -464,7 +464,7 @@ msgstr ""
 
 #: templates/dashboard.html:128 templates/project/membership/requests.html:6
 #: templates/project/membership/requests.html:12
-msgid "Project User Requests"
+msgid "Requests to join your projects"
 msgstr ""
 
 #: templates/dashboard.html:134 templates/project/applications.html:6
