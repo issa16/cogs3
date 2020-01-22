@@ -83,7 +83,7 @@
 							</tr>
 							{% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
 							<tr>
-								<th scope="row">{% trans "Attributions" %}</th>
+								<th scope="row">{% trans "Attributed Outputs" %}</th>
 								<td>
 									{% if project.attributions.all %}
 										{% trans "Funding Sources and Grants" %}
@@ -103,7 +103,7 @@
 										{% trans "None yet" %}
 									{% endif %}
 									<br />
-									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Manage attributions" %}</a>
+									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Manage attributed outputs" %}</a>
 								</td>
 							</tr>
 							{% endif %}
