@@ -8,7 +8,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
-from common.util import email_user
+from common.util import email_user_async
 from institution.models import Institution
 
 from .forms import (AddFundingSourceForm, FundingSourceApprovalForm,
