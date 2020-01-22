@@ -20,12 +20,12 @@
 					<h4>{% trans "Project Application" %}</h4>
 						{% if project.has_allocation_request %}
 							{% if request.user.profile.institution.separate_allocation_requests %}
-								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a system allocation request has been approved" %}')">{% trans "Invite User" %}</button>
+								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a request for supercomputer usage has been approved. You may Request supercomputer time using the button below." %}')">{% trans "Invite User" %}</button>
 							{% else %}
 								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after the project has been approved" %}')">{% trans "Invite User" %}</button>
 							{% endif %}
 						{% else %}
-							<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a system allocation request has been created and approved" %}')">{% trans "Invite User" %}</button>
+								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a request for supercomputer usage has been approved." %}')">{% trans "Invite User" %}</button>
 						{% endif %}
 					{% endif %}
 				</div>
