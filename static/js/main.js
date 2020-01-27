@@ -25,6 +25,7 @@ $(document).ready(function() {
 				location.reload();
 			},
 			error: function(a) {
+        alert('There was an error setting the user membership. Please contact your system administrator.');
 				location.reload();
 			}
 		});
