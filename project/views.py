@@ -450,7 +450,11 @@ class ProjectUserRequestMembershipUpdateView(
     def form_valid(self, form):
         response = super().form_valid(form)
         if 'status' in form.changed_data:
-            update_openldap_project_membership(project_membership=form.instance)
+            try:
+                update_openldap_project_membership(project_membership=form.instance)
+            except:
+                return JsonResponse({'message': 'We\'re sorry, something went wrong adding this use.'}, status=500)
+
         if self.request.is_ajax():
             return JsonResponse({'message': 'Successfully updated.'})
         else:

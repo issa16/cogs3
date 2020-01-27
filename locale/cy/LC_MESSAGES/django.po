@@ -440,7 +440,7 @@ msgid "Reset SCW Password"
 msgstr ""
 
 #: templates/dashboard.html:90
-msgid "Create Project Application"
+msgid "Apply for a project"
 msgstr ""
 
 #: templates/dashboard.html:94
