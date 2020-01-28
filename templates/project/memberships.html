@@ -3,13 +3,14 @@
 {% load i18n %}
 {% load static %}
 {% load widget_tweaks %}
-{% block title %}{% trans "Projects you belong to" %}{% endblock %}
+{% load project_filters %}
+{% block title %}{% trans "Your Projects" %}{% endblock %}
 {% block content %}
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<div class="row">
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>{% trans "Projects you belong to" %}</h4>
+					<h4>{% trans "Your Projects" %}</h4>
 				</div>
 			</div>
 		</div>
@@ -47,7 +48,13 @@
 									<small class="text-muted">{% trans "ARRCA"%}: {{project_membership.project.legacy_arcca_id}}</small>
 								{% endif %}
 							</td>
-							<td>{{project_membership.project.title}}</td>
+							<td>
+								  {% if project_membership.project|project_can_be_viewed:user %}
+                    <a href="{% url 'project-application-detail' project_membership.project.pk %} ">{{project_membership.project.title}}</a>
+								  {% else %}
+                    {{project_membership.project.title}}
+								  {% endif %}
+              </td>
 							<td>{{project_membership.project.tech_lead.profile.institution}}</td>
 							<td>
 								{% if project_membership.project.tech_lead == user %}
