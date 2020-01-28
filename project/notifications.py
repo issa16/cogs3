@@ -16,6 +16,8 @@ def project_created_notification(project):
         project.tech_lead.email
     )
     context = {
+        'first_name': project.tech_lead.first_name,
+        'last_name': project.tech_lead.last_name,
         'code': project.code,
         'university': project.tech_lead.profile.institution.name,
         'technical_lead': project.tech_lead,
