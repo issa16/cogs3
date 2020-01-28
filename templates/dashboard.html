@@ -80,6 +80,16 @@
 							<b>{% trans "Actions" %}</b>
 						</div>
 						<ul class="list-group list-group-flush">
+							  {% if perms.project.add_project %}
+							  <li class="list-group-item d-flex justify-content-between align-items-center">
+								    {% if request.user.profile.institution.separate_allocation_requests %}
+								    <a href="{% url 'create-project' %}">{% trans "New Project" %}</a>
+								    {% else %}
+								    <a
+									      href="{% url 'create-project-and-allocation' %}">{% trans "Apply for a project" %}</a>
+								    {%endif%}
+							  </li>
+							  {% endif %}
 							{% if user.profile.has_system_account %}
 							<li class="list-group-item d-flex justify-content-between align-items-center disabled">
 								<a
@@ -88,16 +98,6 @@
 							<li class="list-group-item d-flex justify-content-between align-items-center disabled">
 								<a href="#" data-toggle="modal"
 									data-target="#password-reset-modal">{% trans "Reset SCW Password" %}</a>
-							</li>
-							{% endif %}
-							{% if perms.project.add_project %}
-							<li class="list-group-item d-flex justify-content-between align-items-center">
-								{% if request.user.profile.institution.separate_allocation_requests %}
-								<a href="{% url 'create-project' %}">{% trans "Create a Project" %}</a>
-								{% else %}
-								<a
-									href="{% url 'create-project-and-allocation' %}">{% trans "Apply for a project" %}</a>
-								{%endif%}
 							</li>
 							{% endif %}
 							<li class="list-group-item d-flex justify-content-between align-items-center">
@@ -136,24 +136,24 @@
 						<ul class="list-group list-group-flush">
 							{% if user.profile.is_approved and perms.project.add_project %}
 							<li class="list-group-item d-flex justify-content-between align-items-center">
-								<a href="{% url 'project-application-list' %}">{% trans "Projects" %}</a>
+								<a href="{% url 'project-application-list' %}">{% trans "Your Projects" %}</a>
 							</li>
 							{% endif %}
 							{% if perms.project.change_projectusermembership %}
 							<li class="list-group-item d-flex justify-content-between align-items-center">
 								<a
-									href="{% url 'project-user-membership-request-list' %}">{% trans "Project User Requests" %}</a>
+									  href="{% url 'project-user-membership-request-list' %}">{% trans "Your Project Members" %}</a>
 								<span
 									class="badge badge-primary badge-pill float-right">{{ project_user_requests_count }}</span>
 							</li>
 							{% endif %}
 							<li class="list-group-item d-flex justify-content-between align-items-center">
-								<a href="{% url 'project-membership-list' %}">{% trans "Project Memberships" %}</a>
+								<a href="{% url 'project-membership-list' %}">{% trans "Projects you belong to" %}</a>
 							</li>
 
 							{%if user.profile.institution.needs_funding_workflow %}
 							<li class="list-group-item d-flex justify-content-between align-items-center">
-								<a href="{% url 'list-attributions' %}">{% trans "Attributions" %}</a>
+								<a href="{% url 'list-attributions' %}">{% trans "Your attributed outputs" %}</a>
 							</li>
 							{% endif %}
 						</ul>

@@ -1,7 +1,7 @@
 New Project as Supervisor
 
-A project application has been created on my.supercomputin.wales
-with you as supervisor. We as you to confirm your role in the project
+A project application has been created on my.supercomputing.wales
+with you as supervisor. We ask you to confirm your role in the project
 before it is submitted for approval.
 
 To do this please access the following url:

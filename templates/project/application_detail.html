@@ -17,15 +17,15 @@
 							<a class="btn btn-gray" onclick="alert('{% trans "This project has reached its membership cap. If you require more members, please contact support." %}')"}>{% trans "Invite User" %}</a>
 						{% endif %}
 					{% else %}
-					<h4>{% trans "Project Application" %}</h4>
+					<h4>{% trans "Project Details" %}</h4>
 						{% if project.has_allocation_request %}
 							{% if request.user.profile.institution.separate_allocation_requests %}
-								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a system allocation request has been approved" %}')">{% trans "Invite User" %}</button>
+								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a request for supercomputer usage has been approved. You may Request supercomputer time using the button below." %}')">{% trans "Invite User" %}</button>
 							{% else %}
 								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after the project has been approved" %}')">{% trans "Invite User" %}</button>
 							{% endif %}
 						{% else %}
-							<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a system allocation request has been created and approved" %}')">{% trans "Invite User" %}</button>
+								<button class="btn btn-gray" onclick="alert('{% trans "You can only invite users to a project after a request for supercomputer usage has been approved." %}')">{% trans "Invite User" %}</button>
 						{% endif %}
 					{% endif %}
 				</div>
@@ -42,7 +42,7 @@
 					<table class="table table-bordered">
 						<tbody>
 							<tr>
-								<th scope="row" style="width:25%">{% trans "Title" %}</th>
+								<th scope="row" style="width:25%">{% trans "Project Title" %}</th>
 								<td style="width:75%">{{project.title}}</td>
 							</tr>
 							{% if project.code %}
@@ -83,7 +83,7 @@
 							</tr>
 							{% if project.tech_lead.profile.institution.needs_funding_workflow or project.tech_lead.profile.institution == None %}
 							<tr>
-								<th scope="row">{% trans "Attributions" %}</th>
+								<th scope="row">{% trans "Attributed Outputs" %}</th>
 								<td>
 									{% if project.attributions.all %}
 										{% trans "Funding Sources and Grants" %}
@@ -103,7 +103,7 @@
 										{% trans "None yet" %}
 									{% endif %}
 									<br />
-									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Manage attributions" %}</a>
+									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Manage attributed outputs" %}</a>
 								</td>
 							</tr>
 							{% endif %}
@@ -128,7 +128,7 @@
 					</table>
 
                 {% if request.user.profile.institution.separate_allocation_requests %}
-                <h5> {% trans "Supercomputer access requests" %}: </h5>
+                <h5> {% trans "Supercomputer usage requests" %}: </h5>
                 {% endif %}
                 <table class="table table-bordered">
                     <tbody>

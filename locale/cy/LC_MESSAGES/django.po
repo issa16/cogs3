@@ -117,7 +117,7 @@ msgid "Project Funding Sources"
 msgstr ""
 
 #: project/models.py:61
-msgid "Projects"
+msgid "Your Projects"
 msgstr ""
 
 #: project/models.py:65
@@ -464,7 +464,7 @@ msgstr ""
 
 #: templates/dashboard.html:128 templates/project/membership/requests.html:6
 #: templates/project/membership/requests.html:12
-msgid "Project User Requests"
+msgid "Your Project Members"
 msgstr ""
 
 #: templates/dashboard.html:134 templates/project/applications.html:6
@@ -474,7 +474,7 @@ msgstr ""
 
 #: templates/dashboard.html:139 templates/project/memberships.html:6
 #: templates/project/memberships.html:12
-msgid "Project Memberships"
+msgid "Projects you belong to"
 msgstr ""
 
 #: templates/dashboard.html:164
