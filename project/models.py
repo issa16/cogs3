@@ -214,25 +214,25 @@ class Project(models.Model):
         else:
             return False
 
-    def can_view_project(self, user):
-        if ProjectUserMembership.objects.filter(
+    def is_project_member(self, user):
+        return ProjectUserMembership.objects.filter(
             project=self, status=ProjectUserMembership.AUTHORISED, user=user
-        ).count() > 0:
+        ).count() > 0
+
+    def can_view_project(self, user):
+        if self.is_project_member(user):
             return True
         else:
             return False
 
     def can_request_rse_allocation(self, user):
-        is_project_member = ProjectUserMembership.objects.filter(
-            project=self, status=ProjectUserMembership.AUTHORISED, user=user
-        ).count() > 0
 
         institution_allows = user.profile.institution.allows_rse_requests
 
         # Only a tech lead, a project member and users from institutions
         # that allow rse requests can create rse allocations
 
-        if is_project_member and self.tech_lead == user and institution_allows:
+        if self.is_project_member(user) and self.tech_lead == user and institution_allows:
             return True
         else:
             return False
