@@ -11,7 +11,7 @@
 			<div class="col">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
 					{% if project.is_approved %}
-					<h4>{% trans "Project" %}</h4>
+					  <h4> {{project.title}} </h4>
 						{% if project.can_have_more_users %}
 							<a class="btn btn-primary" href="{% url 'project-membership-invite' project.pk %}" role="button">{% trans "Invite User" %}</a>
 						{% else %}
@@ -37,15 +37,15 @@
 	  		{% include 'includes/messages.html'%}
 	  	</div>
 	  </div>
+    <h5>
+    Project Details
+    </h5>
+
 		<div class="row">
 			<div class="col">
 				<div class="table-responsive">
 					<table class="table table-bordered">
 						<tbody>
-							<tr>
-								<th scope="row" style="width:25%">{% trans "Project Title" %}</th>
-								<td style="width:75%">{{project.title}}</td>
-							</tr>
 							{% if project.code %}
 								<tr>
 									<th scope="row">{% trans "Code" %}</th>
@@ -129,18 +129,20 @@
 					</table>
 
                 {% if request.user.profile.institution.separate_allocation_requests %}
-                <h5> {% trans "Supercomputer usage requests" %}: </h5>
+                <h5> {% trans "Supercomputer access" %}: </h5>
                 {% endif %}
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
                             <th>{% trans "Start Date" %}</th>
-                            <th>{% trans "Request Status" %}</th>
+                            <th>{% trans "End Date" %}</th>
+                            <th>{% trans "Status" %}</th>
                             <th></th>
                         </tr>
                         {% for allocation in project.get_allocation_requests %}
                         <tr>
                             <td> {{allocation.start_date}} </td>
+                            <td> {{allocation.end_date}} </td>
                             <td> {{allocation.get_status_display}} </td>
                             <td>
                                 <a href="{% url 'allocation-request-detail' allocation.pk %}"> {% trans "Show details" %} </a>
@@ -150,7 +152,8 @@
                     </tbody>
                 </table>
                 {% if request.user.profile.institution.allows_rse_requests %}
-                <h5> {% trans "RSE support requests" %}: </h5>
+                <h5> {% trans "RSE support" %}: </h5>
+                {% if project.has_rse_requests %}
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
@@ -171,6 +174,19 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% else %}
+                <p>
+                    You have not yet requested support from the Research Software Engineering team.
+
+                </p>
+                <p>
+                    Support for your research software may be available to you at no charge.
+
+                    {% if project|can_request_rse_allocation:user %}
+                      Please use the button below to submit a support request.
+                    {% endif %}
+                </p>
+                {% endif %}
                 {% endif %}
             </div>
             {% if request.user.profile.institution.separate_allocation_requests and project|can_request_separate_supercomputer_usage:user %}

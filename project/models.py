@@ -266,6 +266,9 @@ class Project(models.Model):
         return RSEAllocation.objects.filter(project=self.id
                                            ).order_by('-created_time')
 
+    def has_rse_requests(self):
+        return self.get_rse_requests().count() > 0
+
     def _assign_project_owner_project_membership(self):
         try:
             project_membership, created = ProjectUserMembership.objects.get_or_create(
