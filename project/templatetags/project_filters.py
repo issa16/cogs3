@@ -17,3 +17,11 @@ def can_request_rse_allocation(project, user):
     except Exception as e:
         False
         # Since templates (and therefore filters) cannot propagate exceptions, better to fail here
+
+@register.filter
+def can_request_separate_supercomputer_usage(project, user):
+    try:
+        return project.can_request_separate_supercomputer_usage(user)
+    except Exception as e:
+        False
+        # Since templates (and therefore filters) cannot propagate exceptions, better to fail here

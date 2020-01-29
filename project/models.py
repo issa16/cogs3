@@ -225,14 +225,25 @@ class Project(models.Model):
         else:
             return False
 
+    def can_request_separate_supercomputer_usage(self, user):
+        # Used to check if a user should be able to see or visit a separate
+        # SystemAllocation request form
+
+        institution = user.profile.institution
+
+        if self.is_project_member(user) and self.tech_lead == user and institution.separate_allocation_requests:
+            return True
+        else:
+            return False
+
     def can_request_rse_allocation(self, user):
 
-        institution_allows = user.profile.institution.allows_rse_requests
+        institution = user.profile.institution
 
         # Only a tech lead, a project member and users from institutions
         # that allow rse requests can create rse allocations
 
-        if self.is_project_member(user) and self.tech_lead == user and institution_allows:
+        if self.is_project_member(user) and self.tech_lead == user and institution.allows_rse_requests:
             return True
         else:
             return False

@@ -173,7 +173,7 @@
                 </table>
                 {% endif %}
             </div>
-            {% if request.user.profile.institution.separate_allocation_requests %}
+            {% if request.user.profile.institution.separate_allocation_requests and project|can_request_separate_supercomputer_usage:user %}
             <a class='btn btn-primary' href="{% url 'create-allocation' project.pk %}">{% trans "Request supercomputer usage" %}</a>
             {% endif %}
             {% if project|can_request_rse_allocation:user %}
