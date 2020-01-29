@@ -131,6 +131,7 @@
                 {% if request.user.profile.institution.separate_allocation_requests %}
                 <h5> {% trans "Supercomputer access" %}: </h5>
                 {% endif %}
+                {% if project.has_allocation_request %}
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
@@ -151,6 +152,11 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% else %}
+                <p>
+                  You have created a project, but have not yet requested access to the supercomputing system. You will not be able to submit jobs until you have requested access.
+                </p>
+                {% endif %}
                 {% if request.user.profile.institution.allows_rse_requests %}
                 <h5> {% trans "RSE support" %}: </h5>
                 {% if project.has_rse_requests %}
