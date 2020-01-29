@@ -29,16 +29,6 @@ urlpatterns = [
         name='project-membership-create',
     ),
     path(
-        'applications/',
-        views.ProjectListView.as_view(),
-        name='project-application-list',
-    ),
-    path(
-        'rse-time/',
-        views.ProjectListView.as_view(),
-        name='rse-allocation-list',
-    ),
-    path(
         'applications/<int:pk>/',
         views.ProjectDetailView.as_view(),
         name='project-application-detail',
