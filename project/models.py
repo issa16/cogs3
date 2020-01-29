@@ -220,7 +220,7 @@ class Project(models.Model):
         ).count() > 0
 
     def can_view_project(self, user):
-        if self.is_project_member(user):
+        if self.tech_lead == user or self.supervisor_email == user.email:
             return True
         else:
             return False
