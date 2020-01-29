@@ -92,13 +92,16 @@
 								<td>
 									{% if project.attributions.all %}
 										{% trans "Funding Sources and Grants" %}
+                    <ul>
 										{% for source in project.attributions.get_fundingsources %}
 											<li>{{source.title}}</li>
 										{% empty %}
 											<li>{% trans "None yet" %}</li>
 										{% endfor %}
+                    </ul>
 										<br />
 										{% trans "Publications" %}
+                    <ul>
 										{% for source in project.attributions.get_publications %}
 											<li>{{source.title}}</li>
 										{% empty %}
@@ -107,6 +110,7 @@
 									{% else %}
 										{% trans "None yet" %}
 									{% endif %}
+                    </ul>
 									<br />
 									<a class='btn btn-primary' href="{% url 'project-add-attributions' project.pk %}">{% trans "Manage attributed outputs" %}</a>
 								</td>
