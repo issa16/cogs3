@@ -340,66 +340,6 @@ class ProjectAndAllocationCreateViewTests(ProjectViewTests, TestCase):
         )
 
 
-class ProjectListViewTests(ProjectViewTests, TestCase):
-
-    def test_view_as_authorised_application_user_without_project_add_permission(self):
-        """
-        Ensure the project list view is not accessible to an authorised application user,
-        who does not have the required permissions.
-        """
-        headers = {
-            'Shib-Identity-Provider': self.project_applicant.profile.institution.identity_provider,
-            'REMOTE_USER': self.project_applicant.email,
-        }
-        response = self.client.get(
-            reverse('project-application-list'),
-            **headers
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse('home'))
-
-    def test_view_as_authorised_application_user_with_project_add_permission(self):
-        """
-        Ensure the project list view is accessible to an authorised application user,
-        who does have the required permissions.
-        """
-        headers = {
-            'Shib-Identity-Provider': self.project_owner.profile.institution.identity_provider,
-            'REMOTE_USER': self.project_owner.email,
-        }
-        response = self.client.get(
-            reverse('project-application-list'),
-            **headers
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(isinstance(response.context_data.get('view'), ProjectListView))
-
-    def test_view_without_user_approval_with_project_add_permission(self):
-        """
-        Ensure the project list view is accessible to a user who is not required to be authorised,
-        who does have the required permissions.
-        """
-        headers = {
-            'Shib-Identity-Provider': self.inst2_applicant.profile.institution.identity_provider,
-            'REMOTE_USER': self.inst2_applicant.email,
-        }
-        response = self.client.get(
-            reverse('project-application-list'),
-            **headers
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(isinstance(response.context_data.get('view'), ProjectListView))
-
-    def test_view_as_unauthorised_application_user(self):
-        """
-        Ensure the project list view is not accessible to an unauthorised application user.
-        """
-        self._access_view_as_unauthorised_application_user(
-            reverse('project-application-list'),
-            '/en-gb/accounts/login/?next=/en-gb/projects/applications/',
-        )
-
-
 class ProjectDetailViewTests(ProjectViewTests, TestCase):
 
     def test_view_as_authorised_application_user_without_project_add_permission(self):

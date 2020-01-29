@@ -472,11 +472,6 @@ msgstr ""
 msgid "Project Applications"
 msgstr ""
 
-#: templates/dashboard.html:139 templates/project/memberships.html:6
-#: templates/project/memberships.html:12
-msgid "Projects you belong to"
-msgstr ""
-
 #: templates/dashboard.html:164
 msgid "Your new password must comply with the following format"
 msgstr ""

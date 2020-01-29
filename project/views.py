@@ -190,7 +190,7 @@ class ProjectSupervisorApproveView(SuccessMessageMixin, generic.UpdateView):
 
 class SystemAllocationCreateView(AllocationCreateView):
     form_class = SystemAllocationRequestCreationForm
-    success_url = reverse_lazy('project-application-list')
+    success_url = reverse_lazy('project-membership-list')
     success_message = _('Successfully submitted a system allocation application.')
     template_name = 'project/createallocation.html'
     permission_required = 'project.add_project'
@@ -203,12 +203,17 @@ class SystemAllocationCreateView(AllocationCreateView):
 
 class RSEAllocationCreateView(AllocationCreateView):
     form_class = RSEAllocationRequestCreationForm
-    success_url = reverse_lazy('rse-allocation-list')
+    success_url = reverse_lazy('project-membership-list')
     success_message = _('Successfully submitted an RSE time allocation application.')
     template_name = 'project/rse_time.html'
     permission_required = 'project.add_project'
 
     def request_allowed(self, request):
+        project = Project.objects.get(id=self.kwargs['project'])
+
+        if not project.can_request_rse_allocation(self.request.user):
+            return False
+
         try:
             return (
                 request.user.profile.institution.allows_rse_requests and
@@ -285,27 +290,13 @@ class ProjectAndAllocationCreateView(
                 supervisor_project_created_notification.delay(project)
 
             messages.success(self.request, self.success_message)
-            return HttpResponseRedirect(reverse('project-application-list'))
+            return HttpResponseRedirect(reverse('project-membership-list'))
 
         return self.render_to_response(
             self.get_context_data(
                 project_form=project_form, allocation_form=allocation_form
             )
         )
-
-
-class ProjectListView(PermissionAndLoginRequiredMixin, generic.ListView):
-    context_object_name = 'projects'
-    model = Project
-    paginate_by = 50
-    template_name = 'project/applications.html'
-    permission_required = 'project.add_project'
-    ordering = ['-created_time']
-
-    def get_queryset(self):
-        user = self.request.user
-        queryset = super().get_queryset()
-        return queryset.filter(Q(tech_lead=user))
 
 
 class ProjectDetailView(PermissionAndLoginRequiredMixin, generic.DetailView):
@@ -355,7 +346,7 @@ class ProjectDocumentView(LoginRequiredMixin, generic.DetailView):
 
     def dispatch(self, request, *args, **kwargs):
         if not self.user_passes_test(request):
-            return HttpResponseRedirect(reverse('project-application-list'))
+            return HttpResponseRedirect(reverse('project-membership-list'))
         allocation = SystemAllocationRequest.objects.get(id=self.kwargs['pk'])
         filename = os.path.join(settings.MEDIA_ROOT, allocation.document.name)
         with open(filename, 'rb') as f:

@@ -214,10 +214,36 @@ class Project(models.Model):
         else:
             return False
 
-    def can_view_project(self, user):
-        if ProjectUserMembership.objects.filter(
+    def is_project_member(self, user):
+        return ProjectUserMembership.objects.filter(
             project=self, status=ProjectUserMembership.AUTHORISED, user=user
-        ).count() > 0:
+        ).count() > 0
+
+    def can_view_project(self, user):
+        if self.tech_lead == user or self.supervisor_email == user.email:
+            return True
+        else:
+            return False
+
+    def can_request_separate_supercomputer_usage(self, user):
+        # Used to check if a user should be able to see or visit a separate
+        # SystemAllocation request form
+
+        institution = user.profile.institution
+
+        if self.is_project_member(user) and self.tech_lead == user and institution.separate_allocation_requests:
+            return True
+        else:
+            return False
+
+    def can_request_rse_allocation(self, user):
+
+        institution = user.profile.institution
+
+        # Only a tech lead, a project member and users from institutions
+        # that allow rse requests can create rse allocations
+
+        if self.is_project_member(user) and self.tech_lead == user and institution.allows_rse_requests:
             return True
         else:
             return False
@@ -239,6 +265,9 @@ class Project(models.Model):
     def get_rse_requests(self):
         return RSEAllocation.objects.filter(project=self.id
                                            ).order_by('-created_time')
+
+    def has_rse_requests(self):
+        return self.get_rse_requests().count() > 0
 
     def _assign_project_owner_project_membership(self):
         try:
