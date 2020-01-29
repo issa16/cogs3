@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load static %}
 {% load widget_tweaks %}
+{% load project_filters %}
 {% block title %}{% trans "Project details" %}{% endblock %}
 {% block content %}
 	<div class="my-3 p-3 bg-white rounded box-shadow">
@@ -175,7 +176,7 @@
             {% if request.user.profile.institution.separate_allocation_requests %}
             <a class='btn btn-primary' href="{% url 'create-allocation' project.pk %}">{% trans "Request supercomputer usage" %}</a>
             {% endif %}
-            {% if request.user.profile.institution.allows_rse_requests %}
+            {% if project|can_request_rse_allocation:user %}
             <a class='btn btn-primary' href="{% url 'request-project-rse-time' project.pk %}">{% trans "Request RSE support" %}</a>
             {% endif %}
         </div>

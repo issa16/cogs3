@@ -9,5 +9,11 @@ def project_can_be_viewed(project, user):
     except Exception as e:
         False
         # Since templates (and therefore filters) cannot propagate exceptions, better to fail here
+
+@register.filter
+def can_request_rse_allocation(project, user):
+    try:
+        return project.can_request_rse_allocation(user)
+    except Exception as e:
         False
         # Since templates (and therefore filters) cannot propagate exceptions, better to fail here

@@ -209,6 +209,11 @@ class RSEAllocationCreateView(AllocationCreateView):
     permission_required = 'project.add_project'
 
     def request_allowed(self, request):
+        project = Project.objects.get(id=self.kwargs['project'])
+
+        if not project.can_request_rse_allocation(self.request.user):
+            return False
+
         try:
             return (
                 request.user.profile.institution.allows_rse_requests and
