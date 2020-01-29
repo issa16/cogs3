@@ -7,7 +7,7 @@
             <a href="{% url 'login' %}" class="nav-link active">{% trans "Educational Institution" %}</a>
         </li>
         <li class="nav-item">
-            <a href="{% url 'external-login' %}" class="nav-link">{% trans "External Collaborators" %}</a>
+            <a href="{% url 'external-login' %}?next={{next}}" class="nav-link">{% trans "External Collaborators" %}</a>
         </li>
     </ul>
     <h6 class="mt-4 text-center">{% trans "Which institution would you like to sign in with?" %}</h6>
