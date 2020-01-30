@@ -66,8 +66,9 @@ class LogoutView(generic.TemplateView):
     def get(self, *args, **kwargs):
         # If the user has logged in via a shibboleth identity provider, then they must
         # reauthenticate with the identity provider after logging out of the django application.
-        if self.request.user.is_shibboleth_login_required:
-            self.request.session[settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY] = True
-            self.request.session.set_expiry(0)
         auth.logout(self.request)
+
+        self.request.session[settings.SHIBBOLETH_FORCE_REAUTH_SESSION_KEY] = True
+        self.request.session.set_expiry(0)
+
         return redirect(reverse('logged_out'))
