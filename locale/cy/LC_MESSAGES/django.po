@@ -777,11 +777,11 @@ msgid "Login"
 msgstr ""
 
 #: templates/registration/logged_out.html:10
-msgid "To log out please do the following:"
+msgid "You have been logged out"
 msgstr ""
 
 #: templates/registration/logged_out.html:11
-msgid "Close this web browser (including all tabs and windows)."
+msgid "In order to complete logout, and to log in again, please close and restart your web browser (including all tabs and windows)."
 msgstr ""
 
 #: templates/registration/login.html:13
