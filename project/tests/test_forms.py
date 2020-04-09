@@ -184,7 +184,7 @@ class SystemAllocationRequestAdminFormTests(TestCase):
         call_args, call_kwargs = delete_mock.call_args_list[0]
         call_url = call_args[0]
         expected_call_url = '{}project/scw0000/'.format(
-            'settings.OPENLDAP_HOST'
+            settings.OPENLDAP_HOST
         )
         self.assertEqual(call_url, expected_call_url)
         # yapf: disable
