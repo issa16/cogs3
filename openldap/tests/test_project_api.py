@@ -26,8 +26,8 @@ class OpenLDAPProjectAPITests(OpenLDAPBaseAPITests):
                 'siY24iOiJzY3cwMDAwIiwibWVtYmVyVWlkIjoiZS5zaGliYm9sZXRoLnVzZXIiLCJ'
                 'kZXNjcmlwdGlvbiI6InRlc3Rfc3lzdGVtX2FsbG9jYXRpb25fcmVxdWVzdF9hcHBy'
                 'b3ZhbCIsImdpZE51bWJlciI6IjUwMDAwMDEiLCJvYmplY3RDbGFzcyI6WyJpbmV0T'
-                '3JnUGVyc29uIiwicG9zaXhBY2NvdW50IiwidG9wIl19fQ.vxcREwE3GfE6szGl5SG'
-                'A0bo_yypYT4IIqeAu4GJPJvU'
+                '3JnUGVyc29uIiwicG9zaXhBY2NvdW50IiwidG9wIl19fQ.U_xkdgeQFPnEMQOaDKC'
+                'uquDsj1mXJZKV8jMj9maWvzE'
             )
             return OpenLDAPBaseAPITests.mock_response(
                 status=201, content=jwt.encode()
