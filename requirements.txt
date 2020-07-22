@@ -15,7 +15,7 @@ django-extensions==2.0.5
 django-hreflang==2.2
 django-import-export==1.0.1
 django-maintenance-mode==0.11.0
-django-rq==1.1.0
+django-rq==2.3.2
 git+https://github.com/Brown-University-Library/django-shibboleth-remoteuser.git
 django-simple-history==2.2.0
 django-widget-tweaks==1.4.1
