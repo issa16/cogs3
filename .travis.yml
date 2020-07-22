@@ -28,7 +28,7 @@ install:
   - mkdir -vp /home/travis/build/issa16/cogs3/logs
 
 addons:
-  firefox: "60.0"
+  firefox: "77.0"
 
 before_script:
   # Create database
