@@ -6,7 +6,7 @@ python:
   - "3.8.3"
 
 env:
-  - DJANGO_VERSION=2.2
+  - DJANGO_VERSION=2.2.13
 
 services:
   - mysql
