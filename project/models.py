@@ -92,7 +92,7 @@ class Project(models.Model):
         max_length=128,
         blank=True,
         verbose_name=_('Department'),
-        help_text= ('Enter the department or other division of the university that the project will be based in'),
+        help_text=('Enter the department or other division of the university that the project will be based in'),
     )
     pi_legacy = models.CharField(
         max_length=256,
@@ -101,19 +101,19 @@ class Project(models.Model):
     supervisor_name = models.CharField(
         max_length=256,
         verbose_name=_("Project Leader's name"),
-        help_text= ("Enter the name of the member of staff who is leading this research. This need not be you, but should be a permanent member of University staff. If this research is funded, this would typically be the local Principal Investigator on the grant."),
+        help_text=("Enter the name of the member of staff who is leading this research. This need not be you, but should be a permanent member of University staff. If this research is funded, this would typically be the local Principal Investigator on the grant."),
         blank=True,
     )
     supervisor_position = models.CharField(
         max_length=256,
         verbose_name=_("Project Leader's position"),
-        help_text= (' What position does the Project Leader named above hold? (For example, Lecturer, Professor, Head of Department)'),
+        help_text=(' What position does the Project Leader named above hold? (For example, Lecturer, Professor, Head of Department)'),
         blank=True,
     )
     supervisor_email = models.CharField(
         max_length=256,
         verbose_name=_("Project Leader's email"),
-        help_text= ('Enter the email address of the Project Leader named above.'),
+        help_text=('Enter the email address of the Project Leader named above.'),
         blank=True,
     )
     approved_by_supervisor = models.BooleanField(
@@ -231,7 +231,9 @@ class Project(models.Model):
 
         institution = user.profile.institution
 
-        if self.is_project_member(user) and self.tech_lead == user and institution.separate_allocation_requests:
+        if self.is_project_member(
+            user
+        ) and self.tech_lead == user and institution.separate_allocation_requests:
             return True
         else:
             return False
@@ -243,7 +245,9 @@ class Project(models.Model):
         # Only a tech lead, a project member and users from institutions
         # that allow rse requests can create rse allocations
 
-        if self.is_project_member(user) and self.tech_lead == user and institution.allows_rse_requests:
+        if self.is_project_member(
+            user
+        ) and self.tech_lead == user and institution.allows_rse_requests:
             return True
         else:
             return False
@@ -324,7 +328,7 @@ class Project(models.Model):
             return prefix + str(int(code) + 1).zfill(4)
 
     def save(self, *args, **kwargs):
-        if self.code is '':
+        if self.code == '':
             self.code = self._generate_project_code()
 
         super(Project, self).save(*args, **kwargs)
@@ -387,8 +391,8 @@ class SystemAllocationRequest(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_('Project'),
     )
-    start_date = models.DateField(verbose_name=_('Start date'), help_text= ('When do you like to start using the system for this project?'),)
-    end_date = models.DateField(verbose_name=_('End date'), help_text= ('When do you anticipate being finished with the system for this project?'),)
+    start_date = models.DateField(verbose_name=_('Start date'), help_text=('When do you like to start using the system for this project?'),)
+    end_date = models.DateField(verbose_name=_('End date'), help_text=('When do you anticipate being finished with the system for this project?'),)
 
     allocation_rse = models.BooleanField(
         default=False,
@@ -412,7 +416,7 @@ class SystemAllocationRequest(models.Model):
         blank=True,
         verbose_name=_('Home storage in GB'),
         help_text=('Home storage is long-term (although not backed up) file storage used for data you need to keep on the system for months at a time. This is subject to a quota. Enter the amount of storage you need for the longer term; 100GB is the default size.'),
-        )
+    )
     allocation_storage_scratch = models.PositiveIntegerField(
         null=True,
         blank=True,

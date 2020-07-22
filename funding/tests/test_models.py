@@ -70,7 +70,7 @@ class AttributionTests(FundingTests):
         funding_sources = Attribution.objects.get_fundingsources()
         expected_funding_sources = [
             attribution for attribution in Attribution.objects.all()
-            if attribution.type is 'fundingsource'
+            if attribution.type == 'fundingsource'
         ]
         self.assertEqual(funding_sources, expected_funding_sources)
 
@@ -81,7 +81,7 @@ class AttributionTests(FundingTests):
         publications = Attribution.objects.get_publications()
         expected_publications = [
             attribution for attribution in Attribution.objects.all()
-            if attribution.type is 'publication'
+            if attribution.type == 'publication'
         ]
         self.assertEqual(publications, expected_publications)
 
@@ -365,14 +365,11 @@ class FundingSourceTests(FundingTests):
             amount=1000,
         )
         headers = {
-            'Shib-Identity-Provider': (funding_source.pi.profile
-                                       .institution.identity_provider),
+            'Shib-Identity-Provider':
+                (funding_source.pi.profile.institution.identity_provider),
             'REMOTE_USER': pi_email
         }
-        response = self.client.get(
-            reverse('login'),
-            **headers
-        )
+        response = self.client.get(reverse('login'), **headers)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('complete-registration'))
 
