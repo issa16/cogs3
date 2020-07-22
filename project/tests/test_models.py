@@ -167,8 +167,8 @@ class ProjectTests(ProjectModelTests, TestCase):
         A test to ensure a project can be created when the title exists in the database.
 
         Issues:
-            - https://github.com/tystakartografen/cogs3/issues/30
-            - https://github.com/tystakartografen/cogs3/issues/31
+            - https://github.com/issa16/cogs3/issues/30
+            - https://github.com/issa16/cogs3/issues/31
         """
         title_1 = 'Project title'
         code_1 = 'SCW-0001'
@@ -288,8 +288,7 @@ class ProjectUserMembershipTests(ProjectModelTests, TestCase):
 
         self.assertEqual(
             ProjectUserMembership.objects.filter(user=self.project_applicant
-                                                ).count(),
-            1
+                                                ).count(), 1
         )
 
     @classmethod

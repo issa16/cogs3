@@ -3,10 +3,10 @@ dist: xenial
 language: python
 
 python:
-  - "3.4"
+  - "3.8.3"
 
 env:
-  - DJANGO_VERSION=2.0.13
+  - DJANGO_VERSION=2.2
 
 services:
   - mysql
@@ -25,7 +25,7 @@ before_install:
 
 install: 
   - pip install codecov
-  - mkdir -vp /home/travis/build/tystakartografen/cogs3/logs
+  - mkdir -vp /home/travis/build/issa16/cogs3/logs
 
 addons:
   firefox: "60.0"

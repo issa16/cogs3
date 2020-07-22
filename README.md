@@ -1,20 +1,20 @@
 # ![cogs3](cogs3.svg) cogs3
 
-[![Build Status](https://travis-ci.org/tystakartografen/cogs3.svg?branch=master)](https://travis-ci.org/tystakartografen/cogs3)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c98d95ae20094f32aea3f40dd83f55e0)](https://www.codacy.com/app/tystakartografen/cogs3?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tystakartografen/cogs3&amp;utm_campaign=Badge_Grade)
-[![codecov](https://codecov.io/gh/tystakartografen/cogs3/branch/master/graph/badge.svg)](https://codecov.io/gh/tystakartografen/cogs3)
-[![Code Health](https://landscape.io/github/tystakartografen/cogs3/master/landscape.svg?style=flat)](https://landscape.io/github/tystakartografen/cogs3/master)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/tystakartografen/cogs3/blob/master/LICENSE.md)
+[![Build Status](https://travis-ci.org/issa16/cogs3.svg?branch=master)](https://travis-ci.org/issa16/cogs3)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c98d95ae20094f32aea3f40dd83f55e0)](https://www.codacy.com/app/issa16/cogs3?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=issa16/cogs3&amp;utm_campaign=Badge_Grade)
+[![codecov](https://codecov.io/gh/issa16/cogs3/branch/master/graph/badge.svg)](https://codecov.io/gh/issa16/cogs3)
+[![Code Health](https://landscape.io/github/issa16/cogs3/master/landscape.svg?style=flat)](https://landscape.io/github/issa16/cogs3/master)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/issa16/cogs3/blob/master/LICENSE.md)
 
 - [Sequence Diagrams](#sequence-diagrams)
 - [Getting started](#getting-started)
 
 #### Sequence Diagrams
 
-- [User Role Sequences](https://github.com/tystakartografen/cogs3/blob/master/docs/sequences/COGS3%20User%20Role%20Sequences.pdf)
-- [Tech Lead Role Sequences](https://github.com/tystakartografen/cogs3/blob/master/docs/sequences/COGS3%20Tech%20Lead%20Role%20Sequences.pdf)
-- [RSE Role Sequences](https://github.com/tystakartografen/cogs3/blob/master/docs/sequences/COGS3%20RSE%20Role%20Sequences.pdf)
-- [Sysadmin Role Sequences](https://github.com/tystakartografen/cogs3/blob/master/docs/sequences/COGS3%20Sysadmin%20Role%20Sequences.pdf)
+- [User Role Sequences](https://github.com/issa16/cogs3/blob/master/docs/sequences/COGS3%20User%20Role%20Sequences.pdf)
+- [Tech Lead Role Sequences](https://github.com/issa16/cogs3/blob/master/docs/sequences/COGS3%20Tech%20Lead%20Role%20Sequences.pdf)
+- [RSE Role Sequences](https://github.com/issa16/cogs3/blob/master/docs/sequences/COGS3%20RSE%20Role%20Sequences.pdf)
+- [Sysadmin Role Sequences](https://github.com/issa16/cogs3/blob/master/docs/sequences/COGS3%20Sysadmin%20Role%20Sequences.pdf)
 
 #### Getting started
 
@@ -22,7 +22,7 @@
 
    ```sh
    mkdir -p ~/code && cd $_
-   git clone git@github.com:tystakartografen/cogs3.git
+   git clone git@github.com:issa16/cogs3.git
    ```
 
 2. Create a virtual environment.
