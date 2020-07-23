@@ -1,6 +1,6 @@
-COMPANY_NAME='ACME Corporation'
+COMPANY_NAME='cogs3 development env'
 
-SECRET_KEY=''
+SECRET_KEY='be-sure-to-change-before-release-to-prod'
 
 DEBUG=True
 
@@ -23,7 +23,7 @@ DEFAULT_FROM_EMAIL=''
 DEFAULT_BCC_EMAIL=''
 DEFAULT_CONTACT_EMAIL=''
 
-EMAIL_BACKEND= ''
+EMAIL_BACKEND=''
 EMAIL_FILE_PATH=''
 EMAIL_HOST=''
 EMAIL_HOST_USER=''
@@ -31,9 +31,11 @@ EMAIL_HOST_PASSWORD=''
 EMAIL_PORT=''
 EMAIL_USE_TLS=True
 
-RQ_HOST=''
-RQ_PORT=''
-RQ_DB=''
+DATABASE_URL='mysql://root:root@mysql:3306/cogs3'
+
+RQ_HOST='redis'
+RQ_PORT='6379'
+RQ_DB='0'
 RQ_PASSWORD=''
 RQ_DEFAULT_TIMEOUT=360
 
