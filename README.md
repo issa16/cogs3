@@ -6,12 +6,9 @@
 </p>
 
 ---
-<p align="center">
    [![Build Status](https://travis-ci.org/issa16/cogs3.svg?branch=master)](https://travis-ci.org/issa16/cogs3)
    [![codecov](https://codecov.io/gh/issa16/cogs3/branch/master/graph/badge.svg)](https://codecov.io/gh/issa16/cogs3)
    [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/issa16/cogs3/blob/master/LICENSE.md)
-</p>
-
 ---
 
 - [Development](#development)
@@ -84,12 +81,12 @@
 
 10. Generate coverage report.
 
-   ```sh
-   coverage run manage.py test
-   coverage html
-   ```
+      ```sh
+      coverage run manage.py test
+      coverage html
+      ```
 
-10. Enter ```http://localhost:5000/``` in a browser to see the application running.
+11. Enter ```http://localhost:5000/``` in a browser to see the application running.
 
 ---
 
