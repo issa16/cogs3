@@ -40,6 +40,8 @@
    ```sh
    docker-compose up -d
    ```
+   
+   Note: If docker-compose hangs when creating the *cogs3_web_1* container, you may need to add the *cogs3* directory to the list of file sharing resources.
 
 4. Obtain an SSH connection to the *cogs3_web_1* container.
 
