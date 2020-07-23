@@ -31,13 +31,13 @@
 2. Create an env file.
 
    ```sh
+   cd cogs3
    mv cogs3/.template_env cogs3/.env
    ```
    
 3. Build and run.
 
    ```sh
-   cd cogs3
    docker-compose up -d
    ```
 
