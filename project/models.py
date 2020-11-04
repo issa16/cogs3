@@ -275,7 +275,7 @@ class Project(models.Model):
 
     def _generate_project_code(self):
         prefix = 'scw'
-        last_project = Project.objects.order_by('id').last()
+        last_project = Project.objects.exclude(code="scw0001").exclude(code="scw0002").order_by('id').last()
         if not last_project:
             if self.legacy_arcca_id or self.legacy_hpcw_id:
                 return prefix + '0000'
