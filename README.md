@@ -12,7 +12,6 @@
 ---
 
 - [Development](#development)
-- [Deployment](#deployment)
 - [Sequence Diagrams](#sequence-diagrams)
 
 ---
@@ -69,26 +68,20 @@
    python3 manage.py createsuperuser
    ```
 
-8. Generate history tables.
-
-   ```sh
-   python3 manage.py populate_history --auto
-   ```
-
-9. Run the unit tests.
+8. Run the unit tests.
 
    ```sh
    python3 manage.py test -v 3
    ```
 
-10. Generate coverage report.
+9. Generate coverage report.
 
       ```sh
       coverage run manage.py test
       coverage html
       ```
 
-11. Enter ```http://localhost:5000/``` in a browser to see the application running.
+10. Enter ```http://localhost:5000/``` in a browser to see the application running.
 
 ---
 
