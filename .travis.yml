@@ -1,10 +1,12 @@
+dist: xenial
+
 language: python
 
 python:
-  - "3.6"
+  - "3.8.3"
 
 env:
-  - DJANGO_VERSION=2.1.7
+  - DJANGO_VERSION=2.2.13
 
 services:
   - mysql
@@ -16,26 +18,26 @@ before_install:
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 2560x1440x16
 
   # Install geckodriver
-  - wget https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz
   - mkdir geckodriver
-  - tar -xzf geckodriver-v0.20.1-linux64.tar.gz -C geckodriver
+  - tar -xzf geckodriver-v0.26.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
 
 install: 
   - pip install codecov
-  - mkdir -vp /home/travis/build/tystakartografen/cogs3/logs
+  - mkdir -vp /home/travis/build/issa16/cogs3/logs
 
 addons:
-  firefox: "60.0"
+  firefox: "77.0"
 
 before_script:
+  # Create database
   - mysql -e 'DROP DATABASE IF EXISTS `cogs3`';
   - mysql -e 'CREATE DATABASE `cogs3`';
   
 script:
-  - pip install mysqlclient
   - pip install -r requirements.txt
-  - coverage run manage.py test
+  - coverage run manage.py test --verbosity=3
 
 after_success:
   - codecov
