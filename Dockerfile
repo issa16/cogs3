@@ -23,3 +23,6 @@ RUN tar -xzf geckodriver-v0.26.0-linux64.tar.gz
 RUN chmod +x geckodriver
 RUN mv geckodriver /usr/local/bin
 RUN rm geckodriver-v0.26.0-linux64.tar.gz
+
+# Create a directory to store emails
+RUN mkdir -vp /tmp/app-messages
