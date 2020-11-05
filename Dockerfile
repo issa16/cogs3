@@ -1,6 +1,9 @@
 # Parent image
 FROM python:3.8.3
 
+# Install additional software packages
+RUN apt-get update && apt-get install -y vim
+
 # Enable log messages to be immediately sent to the output stream
 ENV PYTHONBUFFERED 1
 
