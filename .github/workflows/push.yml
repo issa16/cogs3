@@ -16,5 +16,15 @@ jobs:
       - name: Build and run.
         run: docker-compose up -d
       - name: Check running containers
-        run: docker ps -a
+        run: docker ps
+      - name: Obtain cogs3_web container id
+        run: export container_id=$(docker ps | grep cogs3_web | awk '{print $1}')
+      - name: Obtain an SSH connection to cogs3_web container
+        run: docker exec it ${container_id} bash
+      - name: Run the database migrations.
+        run: python3 manage.py migrate
+      - name: Load institutions fixtures into the database.
+        run: python3 manage.py loaddata institutions.json
+      - name: Load systems fixtures into the database.
+        run: python3 manage.py loaddata systems.json
 
