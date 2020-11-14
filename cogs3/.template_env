@@ -1,6 +1,6 @@
 COMPANY_NAME='ACME Corporation'
 
-SECRET_KEY=''
+SECRET_KEY='A_SECRET_KEY'
 
 DEBUG=True
 
