@@ -11,10 +11,8 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
-      - name: Debug
-        run: ls && pwd
       - name: Create an env file.
-        run: cd cogs && mv cogs3/.template_env cogs3/.env
+        run: cd cogs3 && mv cogs3/.template_env cogs3/.env
       - name: Build and run.
         run: docker-compose up -d
       - name: Check running containers
