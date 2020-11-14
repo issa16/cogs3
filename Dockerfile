@@ -4,6 +4,9 @@ FROM python:3.8.3
 # Install additional software packages
 RUN apt-get update && apt-get install -y vim
 
+# Prevent Python from writing out pyc files
+ENV PYTHONDONTWRITEBYTECODE 1
+
 # Enable log messages to be immediately sent to the output stream
 ENV PYTHONBUFFERED 1
 
