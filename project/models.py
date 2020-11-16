@@ -17,7 +17,7 @@ class ProjectCategory(models.Model):
 
     class Meta:
         verbose_name_plural = _('Project Categories')
-        ordering = ('name', )
+        ordering = ('name',)
 
     name = models.CharField(
         max_length=128,
@@ -35,7 +35,7 @@ class ProjectFundingSource(models.Model):
 
     class Meta:
         verbose_name_plural = _('Project Funding Sources')
-        ordering = ('name', )
+        ordering = ('name',)
 
     name = models.CharField(
         max_length=128,
@@ -286,7 +286,7 @@ class Project(models.Model):
             return prefix + str(int(code) + 1).zfill(4)
 
     def save(self, *args, **kwargs):
-        if self.code is '':
+        if self.code == '':
             self.code = self._generate_project_code()
             project_created_notification.delay(self)
         if self.status == Project.APPROVED:
@@ -301,7 +301,7 @@ class ProjectSystemAllocation(models.Model):
 
     class Meta:
         verbose_name_plural = _('Project System Allocations')
-        unique_together = (('project', 'system'), )
+        unique_together = (('project', 'system'),)
 
     project = models.ForeignKey(
         Project,

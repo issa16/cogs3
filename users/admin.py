@@ -5,6 +5,7 @@ from users.forms import CustomUserChangeForm
 from users.forms import CustomUserCreationForm
 from users.forms import ProfileUpdateForm
 from users.models import CustomUser
+from users.models import UserLastLogin
 from users.models import Profile
 from users.models import ShibbolethProfile
 from users.openldap import update_openldap_user
@@ -125,20 +126,18 @@ class CustomUserAdmin(UserAdmin):
     )
 
     # Fields to be displayed when creating a CustomUser instance.
-    add_fieldsets = (
-        (
-            None, {
-                'classes': ('wide', ),
-                'fields': (
-                    'email',
-                    'first_name',
-                    'last_name',
-                    'is_shibboleth_login_required',
-                    'reason_for_account',
-                ),
-            }
-        ),
-    )
+    add_fieldsets = ((
+        None, {
+            'classes': ('wide',),
+            'fields': (
+                'email',
+                'first_name',
+                'last_name',
+                'is_shibboleth_login_required',
+                'reason_for_account',
+            ),
+        }
+    ),)
     search_fields = (
         'email',
         'first_name',
@@ -147,7 +146,7 @@ class CustomUserAdmin(UserAdmin):
         'profile__hpcw_username',
         'profile__raven_username',
     )
-    ordering = ('created_at', )
+    ordering = ('created_at',)
     list_filter = (
         'is_shibboleth_login_required',
         'is_staff',
@@ -177,3 +176,13 @@ class CustomUserAdmin(UserAdmin):
             else:
                 self.inlines = [ProfileInline]
         return super(CustomUserAdmin, self).get_form(request, user, **kwargs)
+
+
+@admin.register(UserLastLogin)
+class UserLastLoginAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'last_login_time',
+        'last_login_host',
+        'modified_time',
+    )
