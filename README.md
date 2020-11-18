@@ -24,7 +24,7 @@
 
    ```sh
    mkdir -p ~/code && cd $_
-   git clone git@github.com:issa16/cogs3.git
+   git clone git@github.com:unifi-dev/cogs3.git
    ```
 
 2. Create an env file.
