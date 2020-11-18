@@ -17,8 +17,8 @@ RUN mkdir /app
 WORKDIR /app
 
 # Install the required software packages
-COPY requirements.txt /app/
-RUN pip install -r requirements.txt
+COPY requirements-docker.txt /app/
+RUN pip install -r requirements-docker.txt
 
 # Copy the application's source code to the working directory
 COPY . /app/
