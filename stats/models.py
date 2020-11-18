@@ -80,27 +80,39 @@ class DailyStat(models.Model):
     wall_time = models.DurationField()
     user = models.ForeignKey(
         CustomUser,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     project = models.ForeignKey(
         Project,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     queue = models.ForeignKey(
         Queue,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     application = models.ForeignKey(
         Application,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     access_method = models.ForeignKey(
         AccessMethod,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     number_of_processors = models.ForeignKey(
         NumberOfProcessors,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
@@ -119,12 +131,16 @@ class WeeklyStatStorageProjectsCF(models.Model):
 
     project = models.ForeignKey(
         Project,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     date = models.DateField()
     phase = models.ForeignKey(
         Phase,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     home_space_used = models.BigIntegerField()
     home_files_used = models.BigIntegerField()

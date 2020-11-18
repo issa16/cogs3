@@ -321,7 +321,9 @@ class UserLastLogin(models.Model):
 
     user = models.ForeignKey(
         CustomUser,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     last_login_time = models.DateTimeField()
     last_login_unix_time = models.PositiveIntegerField()

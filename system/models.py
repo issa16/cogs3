@@ -74,11 +74,15 @@ class Queue(models.Model):
     description = models.CharField(max_length=512)
     cluster = models.ForeignKey(
         System,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     os = models.ForeignKey(
         OperatingSystem,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     cores_per_node = models.IntegerField()
     created_time = models.DateTimeField(auto_now_add=True)
