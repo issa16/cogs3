@@ -58,8 +58,7 @@
 6. Load data fixtures into the database.
 
    ```sh
-   python3 manage.py loaddata institutions.json
-   python3 manage.py loaddata systems.json
+   ./data_migration
    ```
 
 7. Create an admin user.

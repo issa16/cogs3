@@ -1,0 +1,18 @@
+[
+  {
+    "model": "stats.AccessMethod",
+    "fields": {
+      "name": "CONDOR",
+      "created_time": "2020-11-16T00:00:00Z",
+      "modified_time": "2020-11-16T00:00:00Z"
+    }
+  },
+  {
+    "model": "stats.AccessMethod",
+    "fields": {
+      "name": "SSH",
+      "created_time": "2020-11-16T00:00:00Z",
+      "modified_time": "2020-11-16T00:00:00Z"
+    }
+  }
+]
