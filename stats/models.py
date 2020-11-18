@@ -3,8 +3,8 @@ from django.utils.translation import gettext_lazy as _
 
 from project.models import Project
 from users.models import CustomUser
-from system.models import Phase
 from system.models import Queue
+from system.models import System
 
 
 class Application(models.Model):
@@ -136,8 +136,8 @@ class WeeklyStatStorageProjectsCF(models.Model):
         null=True,
     )
     date = models.DateField()
-    phase = models.ForeignKey(
-        Phase,
+    system = models.ForeignKey(
+        System,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
