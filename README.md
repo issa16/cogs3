@@ -54,11 +54,11 @@
    ```sh
    python3 manage.py migrate
    ```
-
+  
 6. Load data fixtures into the database.
 
    ```sh
-   ./data_migration
+   ./load_fixtures
    ```
 
 7. Create an admin user.
