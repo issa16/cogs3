@@ -2,19 +2,19 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext as _
 
-from institution.exceptions import (InvalidInstitutionalEmailAddress,
-                                    InvalidInstitutionalIndentityProvider)
+from institution.exceptions import (InvalidInstitutionalEmailAddress, InvalidInstitutionalIndentityProvider)
 
 
 class Institution(models.Model):
 
     class Meta:
-        ordering = ('name', )
+        ordering = ('name',)
 
     name = models.CharField(max_length=255, unique=True)
     base_domain = models.CharField(max_length=255, blank=True)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
+    academic = models.BooleanField(default=False)
+    commercial = models.BooleanField(default=False)
+    service_provider = models.BooleanField(default=False)
     identity_provider = models.URLField(
         max_length=200,
         blank=True,
@@ -22,6 +22,8 @@ class Institution(models.Model):
     )
     support_email = models.EmailField(blank=True)
     logo_path = models.CharField(max_length=255, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
 
     @classmethod
     def parse_support_email_from_user_email(cls, email):
@@ -37,7 +39,7 @@ class Institution(models.Model):
             return support_email if support_email else settings.DEFAULT_SUPPORT_EMAIL
         except Exception:
             return settings.DEFAULT_SUPPORT_EMAIL
-        
+
     @classmethod
     def is_valid_email_address(cls, email):
         """
