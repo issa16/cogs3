@@ -1,7 +1,7 @@
 from django.db import migrations
 
 
-def update_systems_description(apps, schema_editor):
+def add_number_of_processors(apps, schema_editor):
     NumberOfProcessors = apps.get_model('stats', 'NumberOfProcessors')
 
     for i in range(1, 8281):
@@ -16,5 +16,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(update_systems_description),
+        migrations.RunPython(add_number_of_processors),
     ]
