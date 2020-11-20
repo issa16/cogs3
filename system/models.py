@@ -98,8 +98,8 @@ class Partition(models.Model):
     """
     name = models.CharField(max_length=32, unique=True)
     description = models.CharField(max_length=512)
-    system = models.ForeignKey(
-        System,
+    hardware_group = models.ForeignKey(
+        HardwareGroup,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,

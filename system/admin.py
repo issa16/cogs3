@@ -58,7 +58,7 @@ class PartitionAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'description',
-        'system',
+        'hardware_group',
         'os',
         'cores_per_node',
         'modified_time',
