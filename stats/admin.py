@@ -1,48 +1,11 @@
 from django.contrib import admin
 
-from stats.models import Application
-from stats.models import Theme
-from stats.models import AccessMethod
-from stats.models import NumberOfProcessors
-from stats.models import DailyStat
-from stats.models import WeeklyStatStorageProjectsCF
+from stats.models import ComputeDaily
+from stats.models import StorageWeekly
 
 
-@admin.register(Application)
-class ApplicationAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'modified_time',
-    )
-
-
-@admin.register(Theme)
-class ThemeAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'distinguished_name',
-        'modified_time',
-    )
-
-
-@admin.register(AccessMethod)
-class AccessMethodAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'modified_time',
-    )
-
-
-@admin.register(NumberOfProcessors)
-class NumberOfProcessorsAdmin(admin.ModelAdmin):
-    list_display = (
-        'number',
-        'modified_time',
-    )
-
-
-@admin.register(DailyStat)
-class DailyStatAdmin(admin.ModelAdmin):
+@admin.register(ComputeDaily)
+class ComputeDaily(admin.ModelAdmin):
     list_display = (
         'date',
         'user',
@@ -55,8 +18,8 @@ class DailyStatAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(WeeklyStatStorageProjectsCF)
-class WeeklyStatStorageProjectsCFAdmin(admin.ModelAdmin):
+@admin.register(StorageWeekly)
+class StorageWeekly(admin.ModelAdmin):
     list_display = (
         'date',
         'project',

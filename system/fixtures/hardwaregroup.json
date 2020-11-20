@@ -1,6 +1,6 @@
 [
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "SW-SUNBIRD-COMPUTE-CHEM",
             "description": "Swansea Sunbird compute-chem Partition",
@@ -11,7 +11,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE-AMD",
             "description": "Cardiff Hawk AMD Epyc 7502 Partition CORE",
@@ -22,7 +22,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-GPU-V100",
             "description": "Cardiff Hawk GPU V100 Partition CORE",
@@ -33,7 +33,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE-LIGO2",
             "description": "Cardiff Hawk ligo2 Partition",
@@ -44,7 +44,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE-HUYGENS",
             "description": "Cardiff Hawk huygens Partition",
@@ -55,7 +55,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE-WGP",
             "description": "Cardiff Hawk wgp Partition",
@@ -66,7 +66,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE-DRI1",
             "description": "Cardiff Hawk compute-dri1 Partition",
@@ -77,7 +77,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE-CHEMY2",
             "description": "Cardiff Hawk chemy2 Partition",
@@ -88,7 +88,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE-NEURO1",
             "description": "Cardiff Hawk neuro1 Partition",
@@ -99,7 +99,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-HIGHMEM-DRI1",
             "description": "Cardiff Hawk highmem-dri1 Partition",
@@ -110,7 +110,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-VHIGHMEM-DRI1",
             "description": "Cardiff Hawk vhighmem-dri1 Partition",
@@ -121,7 +121,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-GPU-LIGO1",
             "description": "Cardiff Hawk gpu-ligo1 Partition",
@@ -132,7 +132,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE-LIGO1",
             "description": "Cardiff Hawk ligo1 Partition",
@@ -143,7 +143,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-EXTERNAL",
             "description": "Cardiff Hawk xexternal nodes Partition",
@@ -154,7 +154,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-GPU-DIRI1",
             "description": "Cardiff Hawk gpu-diri1 Partition",
@@ -165,7 +165,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-GPU-COMSC1",
             "description": "Cardiff Hawk gpu-comsc1 Partition",
@@ -176,7 +176,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE-MDI1",
             "description": "Cardiff Hawk mdi1 Partition",
@@ -187,7 +187,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE-CHEMY1",
             "description": "Cardiff Hawk chemy1 Partition",
@@ -198,7 +198,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "SW-SUNBIRD-GPU",
             "description": "Swansea Sunbird GPU Partition CORE",
@@ -209,7 +209,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "SW-SUNBIRD-COMPUTE",
             "description": "Swansea Sunbird Compute Partition CORE",
@@ -220,7 +220,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-DEV",
             "description": "Cardiff Hawk Dev Partition CORE",
@@ -231,7 +231,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-GPU",
             "description": "Cardiff Hawk GPU Partition CORE",
@@ -242,7 +242,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-HTC",
             "description": "Cardiff Hawk HTC Partition CORE",
@@ -253,7 +253,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-HIGHMEM",
             "description": "Cardiff Hawk Highmem Partition CORE",
@@ -264,7 +264,7 @@
         }
     },
     {
-        "model": "system.cluster",
+        "model": "system.hardwaregroup",
         "fields": {
             "name": "CF-HAWK-COMPUTE",
             "description": "Cardiff Hawk Compute Partition CORE",

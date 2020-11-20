@@ -1,6 +1,6 @@
 [
   {
-    "model": "system.system",
+    "model": "system.cluster",
     "pk": 1,
     "fields": {
       "name": "Hawk",
@@ -11,7 +11,7 @@
     }
   },
   {
-    "model": "system.system",
+    "model": "system.cluster",
     "pk": 2,
     "fields": {
       "name": "Sunbird",
