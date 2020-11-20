@@ -1,6 +1,6 @@
 [
   {
-    "model": "stats.accessmethod",
+    "model": "system.accessmethod",
     "fields": {
       "name": "CONDOR",
       "created_time": "2020-11-16T00:00:00Z",
@@ -8,7 +8,7 @@
     }
   },
   {
-    "model": "stats.accessmethod",
+    "model": "system.accessmethod",
     "fields": {
       "name": "SSH",
       "created_time": "2020-11-16T00:00:00Z",
