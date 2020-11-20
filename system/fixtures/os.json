@@ -1,0 +1,10 @@
+[
+    {
+        "model": "system.operatingsystem",
+        "fields": {
+            "name": "RHEL 7",
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    }
+]
