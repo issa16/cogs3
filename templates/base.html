@@ -75,6 +75,20 @@
 					<span class="oi oi-signal pr-3 dark_blue"></span>
 					<span>{% trans "Data Analytics" %}<span class="badge badge-danger badge-pill ml-1">New</span></span>
 				</a>
+				{% if 'data-analytics' in request.path %}
+				<a class="js-nav-tooltip-link nav-link py-3 pl-5" href="{% url 'project-data' %}">
+					<span class="oi oi-chevron-right pr-3 dark_blue"></span>
+					<span>{% trans "Project Data" %}</span>
+				</a>
+				<a class="js-nav-tooltip-link nav-link py-3 pl-5" href="{% url 'compute-consumption-data' %}">
+					<span class="oi oi-chevron-right pr-3 dark_blue"></span>
+					<span>{% trans "Compute Consumption Data" %}</span>
+				</a>
+				<a class="js-nav-tooltip-link nav-link py-3 pl-5" href="{% url 'storage-consumption-data' %}">
+					<span class="oi oi-chevron-right pr-3 dark_blue"></span>
+					<span>{% trans "Storage Consumption Data" %}</span>
+				</a>
+				{% endif %}
 				<a class="js-nav-tooltip-link nav-link py-3"
 					href="https://portal.supercomputing.wales/index.php/index/accessing-the-system/">
 					<span class="oi oi-account-login pr-3 dark_blue"></span>
