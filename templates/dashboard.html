@@ -221,7 +221,12 @@
 				name: 'EPSRC',
 				y: 5
 			},]
-		}]
+		}],
+		exporting: {
+			csv: {
+				dateFormat: '%Y-%m-%d'
+			}
+		}
 	});
 
 	// Build Compute chart
@@ -236,7 +241,12 @@
 			type: 'column',
 			name: 'Core hours',
 			data: [3, 2, 1, 3, 4]
-		}]
+		}],
+		exporting: {
+			csv: {
+				dateFormat: '%Y-%m-%d'
+			}
+		}
 	});
 
 	// Build Compute chart
@@ -264,7 +274,12 @@
 				lineColor: Highcharts.getOptions().colors[3],
 				fillColor: 'white'
 			}
-		},]
+		},],
+		exporting: {
+			csv: {
+				dateFormat: '%Y-%m-%d'
+			}
+		}
 	});
 
 </script>
