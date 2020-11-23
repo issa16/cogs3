@@ -1,15 +1,15 @@
 <!-- templates/project/create.html -->
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 {% load widget_tweaks %}
 {% block title %}Create new project{% endblock %}
 {% block content %}
-	<div class="my-3 p-3 bg-white rounded box-shadow">
-		<div class="row">
-			<div class="col">
-				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>Project Application</h4>
-				</div>
+<div class="row pb-3">
+	<div class="col">
+		<div class="card">
+			<h6 class="card-header border-bottom font-weight-bold">{% trans "Project Application" %}</h6>
+			<div class="card-body">
 				<form method="post" enctype="multipart/form-data" novalidate>
 					{% csrf_token %}
 					{% include 'includes/generic_form.html' with form=form %}
@@ -18,4 +18,5 @@
 			</div>
 		</div>
 	</div>
+</div>
 {% endblock %}

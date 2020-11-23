@@ -5,109 +5,110 @@
 {% load widget_tweaks %}
 {% block title %}{% trans "Project details" %}{% endblock %}
 {% block content %}
-	<div class="my-3 px-3 pt-3 bg-white rounded box-shadow">
-		<div class="row">
-			<div class="col">
-				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>{% trans "Project Application" %}</h4>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">
-				<div class="table-responsive">
-					<table class="table table-bordered">
-						<tbody>
-							<tr>
-								<th scope="row" style="width:25%">{% trans "Title" %}</th>
-								<td style="width:75%">{{project.title}}</td>
-							</tr>
-							{% if project.code %}
-								<tr>
-									<th scope="row">{% trans "Code" %}</th>
-									<td>{{project.code}}</td>
-								</tr>
-							{% endif %}
-							<tr>
-								<th scope="row">{% trans "Description" %}</th>
-								<td>{{project.description}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Status" %}</th>
-								<td>{{project.get_status_display}}</td>
-							</tr>
-							{% if project.legacy_hpcw_id %}
-								<tr>
-									<th scope="row">{% trans "Legacy HPC Wales ID" %}</th>
-									<td>{{project.legacy_hpcw_id}}</td>
-								</tr>
-							{% endif %}
-							{% if project.legacy_arcca_id %}
-								<tr>
-									<th scope="row">{% trans "Legacy ARCCA ID" %}</th>
-									<td>{{project.legacy_arcca_id}}</td>
-								</tr>
-							{% endif %}
-							<tr>
-								<th scope="row">{% trans "Institution of technical lead" %}</th>
-								<td>{{project.tech_lead.profile.institution}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Institution project reference" %}</th>
-								<td>{{project.institution_reference}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Principal Investigator" %}</th>
-								<td>{{project.pi}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Funding source" %}</th>
-								<td>{{project.funding_source}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Start date" %}</th>
-								<td>{{project.start_date}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "End date" %}</th>
-								<td>{{project.end_date}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements software" %}</th>
-								<td>{{project.requirements_software}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements gateways" %}</th>
-								<td>{{project.requirements_gateways}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements training" %}</th>
-								<td>{{project.requirements_training}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Requirements onboarding" %}</th>
-								<td>{{project.requirements_onboarding}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "CPU time allocation in hours" %}</th>
-								<td>{{project.allocation_cputime}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "RAM allocation in GB" %}</th>
-								<td>{{project.allocation_memory}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Home storage in GB" %}</th>
-								<td>{{project.allocation_storage_home}}</td>
-							</tr>
-							<tr>
-								<th scope="row">{% trans "Scratch storage in GB" %}</th>
-								<td>{{project.allocation_storage_scratch}}</td>
-							</tr>
-						</tbody>
-					</table>
+
+<div class="row pb-3">
+	<div class="col">
+		<div class="card">
+			<h6 class="card-header border-bottom font-weight-bold">{% trans "Project Application" %}</h6>
+			<div class="card-body">
+				<div class="row">
+					<div class="col">
+						<div class="table-responsive">
+							<table class="table table-bordered">
+								<tbody>
+									<tr>
+										<th scope="row" style="width:25%">{% trans "Title" %}</th>
+										<td style="width:75%">{{project.title}}</td>
+									</tr>
+									{% if project.code %}
+									<tr>
+										<th scope="row">{% trans "Code" %}</th>
+										<td>{{project.code}}</td>
+									</tr>
+									{% endif %}
+									<tr>
+										<th scope="row">{% trans "Description" %}</th>
+										<td>{{project.description}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Status" %}</th>
+										<td>{{project.get_status_display}}</td>
+									</tr>
+									{% if project.legacy_hpcw_id %}
+									<tr>
+										<th scope="row">{% trans "Legacy HPC Wales ID" %}</th>
+										<td>{{project.legacy_hpcw_id}}</td>
+									</tr>
+									{% endif %}
+									{% if project.legacy_arcca_id %}
+									<tr>
+										<th scope="row">{% trans "Legacy ARCCA ID" %}</th>
+										<td>{{project.legacy_arcca_id}}</td>
+									</tr>
+									{% endif %}
+									<tr>
+										<th scope="row">{% trans "Institution of technical lead" %}</th>
+										<td>{{project.tech_lead.profile.institution}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Institution project reference" %}</th>
+										<td>{{project.institution_reference}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Principal Investigator" %}</th>
+										<td>{{project.pi}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Funding source" %}</th>
+										<td>{{project.funding_source}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Start date" %}</th>
+										<td>{{project.start_date}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "End date" %}</th>
+										<td>{{project.end_date}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Requirements software" %}</th>
+										<td>{{project.requirements_software}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Requirements gateways" %}</th>
+										<td>{{project.requirements_gateways}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Requirements training" %}</th>
+										<td>{{project.requirements_training}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Requirements onboarding" %}</th>
+										<td>{{project.requirements_onboarding}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "CPU time allocation in hours" %}</th>
+										<td>{{project.allocation_cputime}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "RAM allocation in GB" %}</th>
+										<td>{{project.allocation_memory}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Home storage in GB" %}</th>
+										<td>{{project.allocation_storage_home}}</td>
+									</tr>
+									<tr>
+										<th scope="row">{% trans "Scratch storage in GB" %}</th>
+										<td>{{project.allocation_storage_scratch}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+</div>
 {% endblock %}
