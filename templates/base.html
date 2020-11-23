@@ -71,7 +71,7 @@
 					<span>{% trans "Home" %}</span>
 				</a>
 				{% if user.profile.is_approved %}
-				<a class="js-nav-tooltip-link nav-link py-3" href="">
+				<a class="js-nav-tooltip-link nav-link py-3" href="{% url 'data-analytics' %}">
 					<span class="oi oi-signal pr-3 dark_blue"></span>
 					<span>{% trans "Data Analytics" %}<span class="badge badge-danger badge-pill ml-1">New</span></span>
 				</a>

@@ -84,4 +84,8 @@ urlpatterns = i18n_patterns(
         TermsOfService.as_view(),
         name='terms-of-service',
     ),
+    path(
+        '',
+        include('stats.urls'),
+    ),
 )
