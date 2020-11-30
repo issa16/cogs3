@@ -96,10 +96,16 @@ main {
 	border-radius: .375rem .375rem 0 0;
 }
 
-.table td,
-.table th {
-	border: 0;
+.table thead {
+	border-top: hidden;
+	border-left: hidden;
+	border-right: hidden;
 }
+
+.table-borderless td {
+	border:0;
+}
+
 
 .list-group-item {
 	border: none;
@@ -127,7 +133,7 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6{
 	color: #1e2022;
 }
 
@@ -163,3 +169,13 @@ h6 {
 	vertical-align: baseline;
 	border-radius: .25rem;
 }
+
+/*
+.row{
+	border:1px solid red;
+}
+
+.col {
+	border:1px solid green;
+}
+*/

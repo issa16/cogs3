@@ -1,0 +1,131 @@
+{% load static %}
+{% load i18n %}
+{% load hreflang %}
+<div class="row no-gutters mt-4">
+    <div class="col mt-3 mb-2">
+        <form>
+            <div class="form-row">
+                <div class="col-5">
+                    <div class="input-group mr-sm-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Start Date</div>
+                        </div>
+                        <input type="text" class="form-control" value="03/10/2020">
+                    </div>
+                </div>
+                <div class="col-5">
+                    <div class="input-group mr-sm-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">End Date</div>
+                        </div>
+                        <input type="text" class="form-control" value="28/10/2020">
+                    </div>
+                </div>
+                <div class="col-2">
+                    <button type="submit" class="btn btn-block btn-primary">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row no-gutters mb-4">
+    <div class="col mt-3">
+        <table class="table m-0">
+            <thead class="text-dark text-center font-weight-bold">
+                <tr>
+                    <td></td>
+                    <td>
+                        {% trans "Home" %}
+                    </td>
+                    <td>
+                        {% trans "Scratch" %}
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="text-center">
+                    <td class="text-left font-weight-bold">
+                        {% trans "Average disk space usage per week" %}
+                    </td>
+                    <td>50 GB</td>
+                    <td>50 GB</td>
+                </tr>
+                <tr class="text-center">
+                    <td class="text-left font-weight-bold">
+                        {% trans "Average file count per week" %}
+                    </td>
+                    <td>10000</td>
+                    <td>10000</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-right text-dark font-weight-bold">
+                        {% trans "Total Charge" %}
+                    </td>
+                    <td class="text-right">N/A</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row no-gutters my-4">
+    <div class="col-6 mt-4">
+        <figure class="highcharts-figure">
+            <div id="disk_space_storage_chart"></div>
+        </figure>
+    </div>
+    <div class="col-6 mt-4">
+        <figure class="highcharts-figure">
+            <div id="file_count_storage_chart"></div>
+        </figure>
+    </div>
+</div>
+<div class="row no-gutters mb-4">
+    <div class="col-6 px-2">
+        <table class="table">
+            <thead>
+                <tr class="text-center font-weight-bold text-dark">
+                    <td style="width: 10%;" class="text-left">{% trans "Date" %}</td>
+                    <td style="width: 15%;">{% trans "Home (GB)" %}</td>
+                    <td style="width: 15%;">{% trans "Scratch (GB)" %}</td>
+                    <td style="width: 15%;">{% trans "Total (GB)" %}</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in '0123456789'|make_list %}
+                <tr class="text-center">
+                    <td class="text-left">
+                        00/00/0000
+                    </td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-6 px-2">
+        <table class="table">
+            <thead>
+                <tr class="text-center font-weight-bold text-dark">
+                    <td style="width: 10%;" class="text-left">{% trans "Date" %}</td>
+                    <td style="width: 15%;">{% trans "Home" %}</td>
+                    <td style="width: 15%;">{% trans "Scratch" %}</td>
+                    <td style="width: 15%;">{% trans "Total" %}</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in '0123456789'|make_list %}
+                <tr class="text-center">
+                    <td class="text-left">
+                        00/00/0000
+                    </td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
