@@ -3,10 +3,20 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
 
+from stats.models import StorageWeekly
+from system.models import System
+
 
 class ImportWeeklyStorageTest(TestCase):
 
-    fixtures = ["system/fixtures/systems.json"]
+    fixtures = [
+        'users/fixtures/tests/users.json',
+        'project/fixtures/tests/funding_sources.json',
+        'project/fixtures/tests/categories.json',
+        'project/fixtures/tests/projects.json',
+        'project/fixtures/tests/memberships.json',
+        'system/fixtures/systems.json',
+    ]
 
     def test_required_command_line_args(self):
         with self.assertRaises(CommandError) as e:
@@ -71,3 +81,53 @@ class ImportWeeklyStorageTest(TestCase):
             stdout=out
         )
         self.assertIn('invalid_scratchfile.csv not found', out.getvalue())
+
+    def test_missing_project_codes(self):
+        out = StringIO()
+        call_command(
+            'import_weekly_storage',
+            '--homefile=/app/stats/tests/project_usage_home.csv',
+            '--scratchfile=/app/stats/tests/project_usage_scratch.csv',
+            '-d 21',
+            '-m 11',
+            '-y 2020',
+            '-s CF',
+            stdout=out
+        )
+        self.assertIn('No matching database project scw0001...skipping', out.getvalue())
+        self.assertIn('No matching database project scw0002...skipping', out.getvalue())
+
+    def test_missing_scratch_stat(self):
+        out = StringIO()
+        call_command(
+            'import_weekly_storage',
+            '--homefile=/app/stats/tests/project_usage_home.csv',
+            '--scratchfile=/app/stats/tests/project_usage_scratch.csv',
+            '-d 21',
+            '-m 11',
+            '-y 2020',
+            '-s CF',
+            stdout=out
+        )
+        self.assertIn("Couldn't find scratch stats for scw0000...skipping", out.getvalue())
+
+    def test_scw1000_storage_stats(self):
+        self.assertEqual(StorageWeekly.objects.count(), 0)
+        out = StringIO()
+        call_command(
+            'import_weekly_storage',
+            '--homefile=/app/stats/tests/project_usage_home.csv',
+            '--scratchfile=/app/stats/tests/project_usage_scratch.csv',
+            '-d 21',
+            '-m 11',
+            '-y 2020',
+            '-s CF',
+            stdout=out
+        )
+        self.assertEqual(StorageWeekly.objects.count(), 1)
+        scw1000_storage_stats = StorageWeekly.objects.get(project__code='scw1000')
+        self.assertEqual(str(scw1000_storage_stats.system), 'Hawk')
+        self.assertEqual(scw1000_storage_stats.home_space_used, 88)
+        self.assertEqual(scw1000_storage_stats.home_files_used, 99)
+        self.assertEqual(scw1000_storage_stats.scratch_space_used, 66)
+        self.assertEqual(scw1000_storage_stats.scratch_files_used, 55)
