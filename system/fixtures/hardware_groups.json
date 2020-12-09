@@ -273,5 +273,16 @@
             "created_time": "2018-05-15T13:38:05.966Z",
             "modified_time": "2018-05-17T14:34:03.106Z"
         }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "SW-SUNBIRD-GPU-ENG",
+            "description": "Swansea Sunbird GPU ENG Partition",
+            "total_number_of_cores": 24,
+            "system": 2,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
     }
 ]

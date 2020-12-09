@@ -113,6 +113,17 @@ class Partition(models.Model):
     cores_per_node = models.IntegerField()
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+    CORE = 0
+    RESEARCH = 1
+    PARTITION_TYPE_CHOICES = (
+        (CORE, _('Core')),
+        (RESEARCH, _('Research')),
+    )
+    partition_type = models.PositiveSmallIntegerField(
+        choices=PARTITION_TYPE_CHOICES,
+        default=CORE,
+        verbose_name=_('Partition Type'),
+    )
 
     def __str__(self):
         return f'{self.name}'

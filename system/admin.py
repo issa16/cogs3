@@ -61,5 +61,6 @@ class PartitionAdmin(admin.ModelAdmin):
         'hardware_group',
         'os',
         'cores_per_node',
+        'partition_type',
         'modified_time',
     )

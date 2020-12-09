@@ -526,5 +526,17 @@
             "created_time": "2018-05-15T13:38:05.966Z",
             "modified_time": "2018-05-17T14:34:03.106Z"
         }
+    },
+    {
+        "model": "system.partition",
+        "fields": {
+            "name": "SW-s_gpu_eng",
+            "description": "Sunbird s_gpu_eng queue",
+            "hardware_group": 26,
+            "os": 1,
+            "cores_per_node": "24",
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
     }
 ]
