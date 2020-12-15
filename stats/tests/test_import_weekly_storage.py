@@ -1,10 +1,9 @@
 from io import StringIO
+
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
-
 from stats.models import StorageWeekly
-from system.models import System
 
 
 class ImportWeeklyStorageTest(TestCase):
@@ -19,14 +18,23 @@ class ImportWeeklyStorageTest(TestCase):
     ]
 
     def test_required_command_line_args(self):
+        '''
+        Ensure an error is displayed to the user if the required command line
+        args are not supplied.
+        '''
         with self.assertRaises(CommandError) as e:
             out = StringIO()
             call_command('import_weekly_storage', stdout=out)
         self.assertIn(
-            'Error: the following arguments are required: --homefile, --scratchfile, -d, -m, -y, -s', str(e.exception)
+            'Error: the following arguments are required: --homefile, --scratchfile, -d, -m, -y, -s',
+            str(e.exception),
         )
 
     def test_invalid_date(self):
+        '''
+        Ensure an error is displayed to the user if the date value is 
+        not a Saturday.
+        '''
         out = StringIO()
         call_command(
             'import_weekly_storage',
@@ -41,6 +49,9 @@ class ImportWeeklyStorageTest(TestCase):
         self.assertIn('is not a Saturday', out.getvalue())
 
     def test_invalid_system_code(self):
+        '''
+        Ensure an error is displayed to the user if the system code is invalid.
+        '''
         out = StringIO()
         call_command(
             'import_weekly_storage',
@@ -55,6 +66,10 @@ class ImportWeeklyStorageTest(TestCase):
         self.assertIn("System 'INVALID' not found", out.getvalue())
 
     def test_invalid_homefile_path(self):
+        '''
+        Ensure an error is displayed to the user if the path to the home
+        file is invalid.
+        '''
         out = StringIO()
         call_command(
             'import_weekly_storage',
@@ -69,6 +84,10 @@ class ImportWeeklyStorageTest(TestCase):
         self.assertIn('invalid_homefile.csv not found', out.getvalue())
 
     def test_invalid_scratchfile_path(self):
+        '''
+        Ensure an error is displayed to the user if the path to the scratch
+        file is invalid.
+        '''
         out = StringIO()
         call_command(
             'import_weekly_storage',
@@ -83,6 +102,10 @@ class ImportWeeklyStorageTest(TestCase):
         self.assertIn('invalid_scratchfile.csv not found', out.getvalue())
 
     def test_missing_project_codes(self):
+        '''
+        Ensure an error is displayed to the user if project codes
+        are not found within the database.
+        '''
         out = StringIO()
         call_command(
             'import_weekly_storage',
@@ -94,10 +117,20 @@ class ImportWeeklyStorageTest(TestCase):
             '-s CF',
             stdout=out
         )
-        self.assertIn('No matching database project scw0001...skipping', out.getvalue())
-        self.assertIn('No matching database project scw0002...skipping', out.getvalue())
+        self.assertIn(
+            'No matching database project scw0001...skipping',
+            out.getvalue(),
+        )
+        self.assertIn(
+            'No matching database project scw0002...skipping',
+            out.getvalue(),
+        )
 
     def test_missing_scratch_stat(self):
+        '''
+        Ensure an error is displayed to the user if scratch stats
+        for a project are not found.
+        '''
         out = StringIO()
         call_command(
             'import_weekly_storage',
@@ -109,9 +142,15 @@ class ImportWeeklyStorageTest(TestCase):
             '-s CF',
             stdout=out
         )
-        self.assertIn("Couldn't find scratch stats for scw0000...skipping", out.getvalue())
+        self.assertIn(
+            "Couldn't find scratch stats for scw0000...skipping",
+            out.getvalue(),
+        )
 
     def test_scw1000_storage_stats(self):
+        '''
+        Ensure storage stats for scw1000 are process correctly.
+        '''
         self.assertEqual(StorageWeekly.objects.count(), 0)
         out = StringIO()
         call_command(

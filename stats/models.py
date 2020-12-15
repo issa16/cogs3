@@ -1,12 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
 from project.models import Project
+from system.models import AccessMethod, Application, Partition, System
 from users.models import CustomUser
-from system.models import Partition
-from system.models import System
-from system.models import Application
-from system.models import AccessMethod
 
 
 class ComputeDaily(models.Model):
@@ -19,6 +15,7 @@ class ComputeDaily(models.Model):
 
     date = models.DateField()
     number_jobs = models.PositiveIntegerField()
+    number_processors = models.PositiveIntegerField(default=0)
     wait_time = models.DurationField()
     cpu_time = models.DurationField()
     wall_time = models.DurationField()
@@ -56,7 +53,7 @@ class ComputeDaily(models.Model):
     modified_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.date}:{self.number_jobs}:{self.user}:{self.project}:{self.queue}:{self.application}:{self.access_method}:{self.wait_time}:{self.cpu_time}:{self.wall_time}'
+        return f'{self.date}:{self.number_jobs}:{self.number_processors}:{self.user}:{self.project}:{self.partition}:{self.application}:{self.access_method}:{self.wait_time}:{self.cpu_time}:{self.wall_time}'
 
 
 class StorageWeekly(models.Model):

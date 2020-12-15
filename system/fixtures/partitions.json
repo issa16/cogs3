@@ -6,9 +6,10 @@
             "description": "Sunbird s_compute_chem_rse queue",
             "hardware_group": 1,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.762Z",
+            "partition_type": 1
         }
     },
     {
@@ -18,9 +19,10 @@
             "description": "Sunbird s_compute_chem queue",
             "hardware_group": 1,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.761Z",
+            "partition_type": 1
         }
     },
     {
@@ -30,9 +32,10 @@
             "description": "Hawk xgpu_v100 queue",
             "hardware_group": 3,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.722Z",
+            "partition_type": 0
         }
     },
     {
@@ -42,9 +45,10 @@
             "description": "Hawk gpu_v100 queue",
             "hardware_group": 3,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.721Z",
+            "partition_type": 0
         }
     },
     {
@@ -54,9 +58,10 @@
             "description": "Hawk xcompute_amd queue",
             "hardware_group": 2,
             "os": 1,
-            "cores_per_node": "64",
+            "cores_per_node": 64,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.719Z",
+            "partition_type": 0
         }
     },
     {
@@ -66,9 +71,10 @@
             "description": "Hawk compute_amd queue",
             "hardware_group": 2,
             "os": 1,
-            "cores_per_node": "64",
+            "cores_per_node": 64,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.718Z",
+            "partition_type": 0
         }
     },
     {
@@ -78,9 +84,10 @@
             "description": "Hawk c_compute_chemy_webmo queue",
             "hardware_group": 18,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.735Z",
+            "partition_type": 1
         }
     },
     {
@@ -90,9 +97,10 @@
             "description": "Hawk c_compute_ligo2 queue",
             "hardware_group": 4,
             "os": 1,
-            "cores_per_node": "24",
+            "cores_per_node": 24,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.758Z",
+            "partition_type": 1
         }
     },
     {
@@ -102,9 +110,10 @@
             "description": "Hawk c_compute_huygens queue",
             "hardware_group": 5,
             "os": 1,
-            "cores_per_node": "28",
+            "cores_per_node": 28,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.757Z",
+            "partition_type": 1
         }
     },
     {
@@ -114,9 +123,10 @@
             "description": "Hawk c_compute_wgp1 queue",
             "hardware_group": 6,
             "os": 1,
-            "cores_per_node": "24",
+            "cores_per_node": 24,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.756Z",
+            "partition_type": 1
         }
     },
     {
@@ -126,9 +136,10 @@
             "description": "Hawk c_compute_wgp queue",
             "hardware_group": 6,
             "os": 1,
-            "cores_per_node": "24",
+            "cores_per_node": 24,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.755Z",
+            "partition_type": 1
         }
     },
     {
@@ -138,9 +149,10 @@
             "description": "Hawk c_compute_neuro1_smrtlink queue",
             "hardware_group": 9,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.752Z",
+            "partition_type": 1
         }
     },
     {
@@ -150,9 +162,10 @@
             "description": "Hawk c_compute_neuro1_long queue",
             "hardware_group": 9,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.751Z",
+            "partition_type": 1
         }
     },
     {
@@ -162,9 +175,10 @@
             "description": "Hawk c_compute_dri1 queue",
             "hardware_group": 7,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.748Z",
+            "partition_type": 1
         }
     },
     {
@@ -174,9 +188,10 @@
             "description": "Hawk c_compute_chemy2 queue",
             "hardware_group": 8,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.753Z",
+            "partition_type": 1
         }
     },
     {
@@ -186,9 +201,10 @@
             "description": "Hawk c_compute_neuro1 queue",
             "hardware_group": 9,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.750Z",
+            "partition_type": 1
         }
     },
     {
@@ -198,9 +214,10 @@
             "description": "Hawk c_highmem_dri1 queue",
             "hardware_group": 10,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.747Z",
+            "partition_type": 1
         }
     },
     {
@@ -210,9 +227,10 @@
             "description": "Hawk c_vhighmem_dri1 queue",
             "hardware_group": 11,
             "os": 1,
-            "cores_per_node": "8",
+            "cores_per_node": 8,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.746Z",
+            "partition_type": 1
         }
     },
     {
@@ -222,9 +240,10 @@
             "description": "Hawk c_gpu_ligo1 queue",
             "hardware_group": 12,
             "os": 1,
-            "cores_per_node": "80",
+            "cores_per_node": 80,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.744Z",
+            "partition_type": 1
         }
     },
     {
@@ -234,9 +253,10 @@
             "description": "Hawk c_compute_ligo1 queue",
             "hardware_group": 13,
             "os": 1,
-            "cores_per_node": "80",
+            "cores_per_node": 80,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.742Z",
+            "partition_type": 1
         }
     },
     {
@@ -246,9 +266,10 @@
             "description": "Sunbird development queue",
             "hardware_group": 20,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.725Z",
+            "partition_type": 0
         }
     },
     {
@@ -258,9 +279,10 @@
             "description": "Hawk xexternal queue",
             "hardware_group": 14,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.759Z",
+            "partition_type": 1
         }
     },
     {
@@ -270,9 +292,10 @@
             "description": "Hawk c_gpu_diri1 queue",
             "hardware_group": 15,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.740Z",
+            "partition_type": 1
         }
     },
     {
@@ -282,9 +305,10 @@
             "description": "Hawk c_gpu_comsc1 queue",
             "hardware_group": 16,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.738Z",
+            "partition_type": 1
         }
     },
     {
@@ -294,9 +318,10 @@
             "description": "Hawk c_compute_mdi1 queue",
             "hardware_group": 17,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.737Z",
+            "partition_type": 1
         }
     },
     {
@@ -306,9 +331,10 @@
             "description": "Hawk c_compute_chemy1 queue",
             "hardware_group": 18,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.733Z",
+            "partition_type": 1
         }
     },
     {
@@ -318,9 +344,10 @@
             "description": "Sunbird xgpu queue",
             "hardware_group": 19,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.732Z",
+            "partition_type": 0
         }
     },
     {
@@ -330,9 +357,10 @@
             "description": "Sunbird gpu queue",
             "hardware_group": 19,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.730Z",
+            "partition_type": 0
         }
     },
     {
@@ -342,9 +370,10 @@
             "description": "Sunbird compute64b queue",
             "hardware_group": 20,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.728Z",
+            "partition_type": 0
         }
     },
     {
@@ -354,9 +383,10 @@
             "description": "Sunbird compute64 queue",
             "hardware_group": 20,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.727Z",
+            "partition_type": 0
         }
     },
     {
@@ -366,9 +396,10 @@
             "description": "Sunbird xcompute queue",
             "hardware_group": 20,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.726Z",
+            "partition_type": 0
         }
     },
     {
@@ -378,9 +409,10 @@
             "description": "Sunbird compute queue",
             "hardware_group": 20,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.723Z",
+            "partition_type": 0
         }
     },
     {
@@ -390,9 +422,10 @@
             "description": "Hawk xdev queue",
             "hardware_group": 21,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.717Z",
+            "partition_type": 0
         }
     },
     {
@@ -402,9 +435,10 @@
             "description": "Hawk dev queue",
             "hardware_group": 21,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.716Z",
+            "partition_type": 0
         }
     },
     {
@@ -414,9 +448,10 @@
             "description": "Hawk xgpu queue",
             "hardware_group": 22,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.714Z",
+            "partition_type": 0
         }
     },
     {
@@ -426,9 +461,10 @@
             "description": "Hawk gpu queue",
             "hardware_group": 22,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.712Z",
+            "partition_type": 0
         }
     },
     {
@@ -438,9 +474,10 @@
             "description": "Hawk xhtc queue",
             "hardware_group": 23,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.711Z",
+            "partition_type": 0
         }
     },
     {
@@ -450,9 +487,10 @@
             "description": "Hawk htc queue",
             "hardware_group": 23,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.710Z",
+            "partition_type": 0
         }
     },
     {
@@ -462,9 +500,10 @@
             "description": "Hawk xhighmem queue",
             "hardware_group": 24,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.709Z",
+            "partition_type": 0
         }
     },
     {
@@ -474,9 +513,10 @@
             "description": "Hawk highmem queue",
             "hardware_group": 24,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.708Z",
+            "partition_type": 0
         }
     },
     {
@@ -486,9 +526,10 @@
             "description": "Hawk compute64b queue",
             "hardware_group": 25,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.707Z",
+            "partition_type": 0
         }
     },
     {
@@ -498,9 +539,10 @@
             "description": "Hawk compute64 queue",
             "hardware_group": 25,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.705Z",
+            "partition_type": 0
         }
     },
     {
@@ -510,9 +552,10 @@
             "description": "Hawk xcompute queue",
             "hardware_group": 25,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.704Z",
+            "partition_type": 0
         }
     },
     {
@@ -522,9 +565,10 @@
             "description": "Hawk compute queue",
             "hardware_group": 25,
             "os": 1,
-            "cores_per_node": "40",
+            "cores_per_node": 40,
             "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "modified_time": "2020-12-09T20:39:09.703Z",
+            "partition_type": 0
         }
     },
     {
@@ -534,9 +578,10 @@
             "description": "Sunbird s_gpu_eng queue",
             "hardware_group": 26,
             "os": 1,
-            "cores_per_node": "24",
-            "created_time": "2018-05-15T13:38:05.966Z",
-            "modified_time": "2018-05-17T14:34:03.106Z"
+            "cores_per_node": 24,
+            "created_time": "2020-12-09T20:39:01.102Z",
+            "modified_time": "2020-12-09T20:39:09.764Z",
+            "partition_type": 1
         }
     }
 ]

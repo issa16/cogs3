@@ -72,5 +72,42 @@
       "created_time": "2018-06-26T19:57:11.653Z",
       "modified_time": "2018-06-26T19:57:11.653Z"
     }
+  },
+  {
+    "model": "project.project",
+    "pk": 3,
+    "fields": {
+      "title": "Project title",
+      "description": "Project Description",
+      "legacy_hpcw_id": "12345678",
+      "legacy_arcca_id": "87654321",
+      "code": "scw1124",
+      "gid_number": null,
+      "institution_reference": "CF-1234",
+      "department": "Chemistry",
+      "pi": "Aaron Owen, Technical Directory, owen.smith@cardiff.ac.uk",
+      "tech_lead": 1,
+      "category": 1,
+      "funding_source": 1,
+      "start_date": "2018-06-26",
+      "end_date": "2018-06-26",
+      "economic_user": false,
+      "requirements_software": "None",
+      "requirements_gateways": "None",
+      "requirements_training": "None",
+      "requirements_onboarding": "None",
+      "allocation_rse": false,
+      "allocation_cputime": 1234,
+      "allocation_memory": 1234,
+      "allocation_storage_home": 1234,
+      "allocation_storage_scratch": 1234,
+      "document": "",
+      "status": 0,
+      "previous_status": 0,
+      "reason_decision": "",
+      "notes": "",
+      "created_time": "2018-06-26T19:57:11.653Z",
+      "modified_time": "2018-06-26T19:57:11.653Z"
+    }
   }
 ]

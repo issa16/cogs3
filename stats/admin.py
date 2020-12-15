@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from stats.models import ComputeDaily
-from stats.models import StorageWeekly
+from stats.models import ComputeDaily, StorageWeekly
 
 
 @admin.register(ComputeDaily)

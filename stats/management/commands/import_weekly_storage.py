@@ -1,20 +1,30 @@
 import csv
-import os
 import datetime
+import os
 
 from django.core.management.base import BaseCommand
-
 from project.models import Project
 from stats.models import StorageWeekly
-from system.models import System
+
+from .util import get_system
 
 
 class Command(BaseCommand):
     help = 'Import weekly storage stats from csv files.'
 
     def add_arguments(self, parser):
-        parser.add_argument('--homefile', required=True, help='Home stats file to parse', type=str)
-        parser.add_argument('--scratchfile', required=True, help='Scratch stats file to parse', type=str)
+        parser.add_argument(
+            '--homefile',
+            required=True,
+            help='Home stats file to parse',
+            type=str,
+        )
+        parser.add_argument(
+            '--scratchfile',
+            required=True,
+            help='Scratch stats file to parse',
+            type=str,
+        )
         parser.add_argument('-d', required=True, help='Day', type=int)
         parser.add_argument('-m', required=True, help='Month', type=int)
         parser.add_argument('-y', required=True, help='Year', type=int)
@@ -23,16 +33,6 @@ class Command(BaseCommand):
     def verify_day_is_saturday(self, date):
         if date.weekday() != 5:
             raise Exception(f'Date specified ({date}) is not a Saturday')
-
-    def get_system(self, system):
-        valid_systems = {
-            'CF': 'Hawk',
-            'SW': 'Sunbird',
-        }
-        try:
-            return System.objects.get(name__iexact=valid_systems[system])
-        except Exception:
-            raise Exception(f"System '{system}' not found.")
 
     def parse_stats(self, stats_file):
         data = []
@@ -61,7 +61,7 @@ class Command(BaseCommand):
             self.verify_day_is_saturday(date)
 
             # Verify system
-            system = self.get_system(system)
+            system = get_system(system)
 
             # Read in home stats
             field_names = ['project', 'space_used', 'files_used']
@@ -88,7 +88,10 @@ class Command(BaseCommand):
                     continue
 
                 # Find scratch dict
-                scratch_stat = next((item for item in scratch_data if item['project'] == home_stat['project']), None)
+                scratch_stat = next(
+                    (item for item in scratch_data if item['project'] == home_stat['project']),
+                    None,
+                )
                 if scratch_stat is None:
                     msg = f"Couldn't find scratch stats for {home_stat['project']}...skipping"
                     self.stdout.write(self.style.ERROR(msg))
@@ -113,5 +116,5 @@ class Command(BaseCommand):
         except Exception as e:
             self.stdout.write(self.style.ERROR(e))
 
-        print('Finished processing csv files. ')
-        print(f'New records: {created_count}, Updated records: {updated_count}\n')
+        self.stdout.write(self.style.SUCCESS('Finished processing csv files.'))
+        self.stdout.write(self.style.SUCCESS(f'New records: {created_count}, Updated records: {updated_count}\n'))
