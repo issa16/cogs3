@@ -62,7 +62,7 @@ class Command(BaseCommand):
                 15/12/2020
                 The userName supplied in the LIGO file does not match the
                 format expected in cogs3. This issue has been raised with
-                arcca and agreed to resolved at a later date.
+                arcca and agreed to be resolved at a later date.
 
                 Notes
                 -----
