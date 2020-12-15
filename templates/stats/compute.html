@@ -42,13 +42,37 @@
                 </thead>
                 <tbody>
                     <tr class="text-center">
-                        <td class="font-weight-bold text-left">03/10/2020 to 28/10/2020</td>
+                        <td colspan=4 class="font-weight-bold text-left text-primary">Core Partitions</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="text-left px-5">03/10/2020 to 28/10/2020</td>
                         <td>0</td>
                         <td>0</td>
                         <td>0</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="font-weight-bold text-left">01/01/2000 - Present</td>
+                        <td class="text-left px-5">01/01/2000 - Present</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td colspan=4 class="font-weight-bold text-left text-primary">Research Partitions</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="text-left px-5">03/10/2020 to 28/10/2020</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="text-left px-5">01/01/2000 - Present</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="font-weight-bold text-left text-primary">Total</td>
                         <td>0</td>
                         <td>0</td>
                         <td>0</td>
@@ -66,14 +90,31 @@
         </div>
     </div>
     <div class="row no-gutters mt-4">
+        <div class="col">
+            <nav>
+                <div class="nav nav-tabs active" id="nav-tab-partitions" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-all-partitions-tab" data-toggle="tab"
+                        href="#nav-all-partitions" role="tab" aria-controls="nav-all-partitions"
+                        aria-selected="true">{% trans "All Partitions" %}</a>
+                    <a class="nav-item nav-link" id="nav-core-paritions-tab-tab" data-toggle="tab"
+                        href="#nav-core-paritions-tab" role="tab" aria-controls="nav-core-paritions-tab"
+                        aria-selected="false">{% trans "Core Partitions" %}</a>
+                    <a class="nav-item nav-link" id="nav-research-partitions-tab-tab" data-toggle="tab"
+                        href="#nav-research-partitions-tab" role="tab" aria-controls="nav-research-partitions-tab"
+                        aria-selected="false">{% trans "Research Partitions" %}</a>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <div class="row no-gutters mt-4">
         <div class="col-6">
             <figure class="highcharts-figure">
-                <div id="rate_of_usage_chart"></div>
+                <div id="rate_of_usage_chart_core"></div>
             </figure>
         </div>
         <div class="col-6">
             <figure class="highcharts-figure">
-                <div id="cumlative_usage_chart"></div>
+                <div id="cumlative_usage_chart_core"></div>
             </figure>
         </div>
     </div>
@@ -90,7 +131,7 @@
                 </thead>
                 <tbody>
                     <tr class="text-center">
-                        <td class="font-weight-bold text-left">
+                        <td class="text-left">
                             03/10/2020 to 28/10/2020
                         </td>
                         <td>0</td>
@@ -98,7 +139,7 @@
                         <td>0</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="font-weight-bold text-left">
+                        <td class="text-left">
                             01/01/2000 - Present
                         </td>
                         <td>0</td>
@@ -120,7 +161,7 @@
                 </thead>
                 <tbody>
                     <tr class="text-center">
-                        <td class="font-weight-bold text-left">
+                        <td class="text-left">
                             03/10/2020 to 28/10/2020
                         </td>
                         <td>0</td>
@@ -128,7 +169,7 @@
                         <td>0</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="font-weight-bold text-left">
+                        <td class="text-left">
                             01/01/2000 - Present
                         </td>
                         <td>0</td>
@@ -139,6 +180,7 @@
             </table>
         </div>
     </div>
+
     <div class="row no-gutters mt-4">
         <div class="col-6">
             <figure class="highcharts-figure">
@@ -149,56 +191,6 @@
             <figure class="highcharts-figure">
                 <div id="usage_by_partition_chart"></div>
             </figure>
-        </div>
-    </div>
-    <div class="row no-gutters mt-0 mb-4">
-        <div class="col-6 px-3">
-            <table class="table">
-                <thead>
-                    <tr class="text-dark text-center font-weight-bold">
-                        <td></td>
-                        <td>Number of users</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="font-weight-bold">
-                            03/10/2020 to 28/10/2020
-                        </td>
-                        <td class="text-center">0</td>
-                    </tr>
-                    <tr>
-                        <td class="font-weight-bold">
-                            01/01/2000 - Present
-                        </td>
-                        <td class="text-center">0</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="col-6 px-3">
-            <table class="table">
-                <thead>
-                    <tr class="text-dark text-center font-weight-bold">
-                        <td></td>
-                        <td>Not sure?</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="font-weight-bold">
-                            03/10/2020 to 28/10/2020
-                        </td>
-                        <td class="text-center">0</td>
-                    </tr>
-                    <tr>
-                        <td class="font-weight-bold">
-                            01/01/2000 - Present
-                        </td>
-                        <td class="text-center">0</td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
     <div class="row no-gutters mt-4">
@@ -224,13 +216,13 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="font-weight-bold">
+                        <td>
                             03/10/2020 to 28/10/2020
                         </td>
                         <td class="text-center">0</td>
                     </tr>
                     <tr>
-                        <td class="font-weight-bold">
+                        <td>
                             01/01/2000 - Present
                         </td>
                         <td class="text-center">0</td>
@@ -248,13 +240,13 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="font-weight-bold">
+                        <td>
                             03/10/2020 to 28/10/2020
                         </td>
                         <td class="text-center">0</td>
                     </tr>
                     <tr>
-                        <td class="font-weight-bold">
+                        <td>
                             01/01/2000 - Present
                         </td>
                         <td class="text-center">0</td>
@@ -288,7 +280,7 @@
                 </thead>
                 <tbody>
                     <tr class="text-center">
-                        <td class="font-weight-bold text-left">
+                        <td class="text-left">
                             03/10/2020 to 28/10/2020
                         </td>
                         <td>0</td>
@@ -296,7 +288,7 @@
                         <td>0</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="font-weight-bold text-left">
+                        <td class="text-left">
                             01/01/2000 - Present
                         </td>
                         <td>0</td>
@@ -317,14 +309,14 @@
                 </thead>
                 <tbody class="text-center">
                     <tr>
-                        <td class="font-weight-bold text-left">
+                        <td class="text-left">
                             03/10/2020 to 28/10/2020
                         </td>
                         <td>0</td>
                         <td>0</td>
                     </tr>
                     <tr>
-                        <td class="font-weight-bold text-left">
+                        <td class="text-left">
                             01/01/2000 - Present
                         </td>
                         <td>0</td>

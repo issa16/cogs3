@@ -1,8 +1,13 @@
 {% load static %}
 {% load i18n %}
 {% load hreflang %}
-<div class="row no-gutters mt-4">
-    <div class="col-6 mt-3">
+<div class="row no-gutters px-3 pt-3">
+    <div class="col">
+        <a class="btn btn-primary float-right" href="#" role="button">Export to PDF</a>
+    </div>
+</div>
+<div class="row no-gutters">
+    <div class="col-6">
         <table class="table table-borderless">
             <tbody>
                 <tr>
@@ -46,7 +51,7 @@
             </tbody>
         </table>
     </div>
-    <div class="col-6 mt-3">
+    <div class="col-6">
         <table class="table table-borderless">
             <tbody style="border-top:0;">
                 <tr>
@@ -90,12 +95,12 @@
     </div>
 </div>
 <div class="row no-gutters mt-4">
-    <div class="col-6 mt-4">
+    <div class="col-6">
         <figure class="highcharts-figure">
             <div id="pi_projects_chart"></div>
         </figure>
     </div>
-    <div class="col-6 mt-4">
+    <div class="col-6">
         <figure class="highcharts-figure">
             <div id="project_users_chart"></div>
         </figure>
@@ -112,19 +117,19 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="font-weight-bold">Active</td>
+                    <td>Active</td>
                     <td class="text-center">5</td>
                 </tr>
                 <tr>
-                    <td class="font-weight-bold">Dormant</td>
+                    <td>Dormant</td>
                     <td class="text-center">2</td>
                 </tr>
                 <tr>
-                    <td class="font-weight-bold">Inactive</td>
+                    <td>Inactive</td>
                     <td class="text-center">1</td>
                 </tr>
                 <tr>
-                    <td class="font-weight-bold">Retired</td>
+                    <td>Retired</td>
                     <td class="text-center">1</td>
                 </tr>
             </tbody>
@@ -140,15 +145,15 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="font-weight-bold">Active</td>
+                    <td>Active</td>
                     <td class="text-center">10</td>
                 </tr>
                 <tr>
-                    <td class="font-weight-bold">Dormant</td>
+                    <td>Dormant</td>
                     <td class="text-center">1</td>
                 </tr>
                 <tr>
-                    <td class="font-weight-bold">Inactive</td>
+                    <td>Inactive</td>
                     <td class="text-center">3</td>
                 </tr>
             </tbody>
