@@ -32,7 +32,7 @@
                         <td>{% duration compute_stats_in_date_range.wall_time|default_if_none:0 %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="text-left px-5">{{ active_project.created_time|date:"Y-m-d" }} - Present</td>
+                        <td class="text-left px-5">{{ active_project.start_date|date:"Y-m-d" }} - Present</td>
                         <td>{% duration compute_stats_to_present.cpu_time|default_if_none:0 %}</td>
                         <td>{% duration compute_stats_to_present.wait_time|default_if_none:0 %}</td>
                         <td>{% duration compute_stats_to_present.wall_time|default_if_none:0 %}</td>
@@ -51,7 +51,7 @@
                         <td>{% duration research_stats_in_date_range.wall_time|default_if_none:0 %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="text-left px-5">{{ active_project.created_time|date:"Y-m-d" }} - Present</td>
+                        <td class="text-left px-5">{{ active_project.start_date|date:"Y-m-d" }} - Present</td>
                         <td>{% duration research_stats_to_present.cpu_time|default_if_none:0 %}</td>
                         <td>{% duration research_stats_to_present.wait_time|default_if_none:0 %}</td>
                         <td>{% duration research_stats_to_present.wall_time|default_if_none:0 %}</td>
