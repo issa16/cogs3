@@ -100,6 +100,10 @@ class ProjectStatsParser:
         result = ComputeDaily.objects.filter(project=self.project).aggregate(cpu_time=Sum('cpu_time'))['cpu_time']
         return result if result else 0
 
+    def total_wait_time(self):
+        result = ComputeDaily.objects.filter(project=self.project).aggregate(wait_time=Sum('wait_time'))['wait_time']
+        return result if result else 0
+
     def efficency(self):
         '''
         Return the overall project efficency (CPU/Elapsed).

@@ -90,7 +90,7 @@
             });
         }
 
-        function build_overiew_graphs(data) {
+        function build_overview_graphs(data) {
             // ----------------------------------------------------------------
             // Principal Investigator's Projects
             // ----------------------------------------------------------------
@@ -257,7 +257,7 @@
             url: "{% url 'data-analytics-search-json' %}" + '?code={{active_project.code}}&start_date={{query_start_date|date:"Y-m-d"}}&end_date={{query_end_date|date:"Y-m-d"}}',
             dataType: 'json',
             success: function (data) {
-                build_overiew_graphs(data);
+                build_overview_graphs(data);
                 build_compute_graphs(data);
                 build_storage_graphs(data);
             },
