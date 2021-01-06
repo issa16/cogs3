@@ -14,92 +14,92 @@
 				<div class="row">
 					<div class="col">
 						<div class="table-responsive">
-							<table class="table table-bordered">
+							<table class="table m-0">
 								<tbody>
 									<tr>
-										<th scope="row" style="width:25%">{% trans "Title" %}</th>
+										<td class="text-dark font-weight-bold" style="width:25%">{% trans "Title" %}</th>
 										<td style="width:75%">{{project.title}}</td>
 									</tr>
 									{% if project.code %}
 									<tr>
-										<th scope="row">{% trans "Code" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Code" %}</th>
 										<td>{{project.code}}</td>
 									</tr>
 									{% endif %}
 									<tr>
-										<th scope="row">{% trans "Description" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Description" %}</th>
 										<td>{{project.description}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Status" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Status" %}</th>
 										<td>{{project.get_status_display}}</td>
 									</tr>
 									{% if project.legacy_hpcw_id %}
 									<tr>
-										<th scope="row">{% trans "Legacy HPC Wales ID" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Legacy HPC Wales ID" %}</th>
 										<td>{{project.legacy_hpcw_id}}</td>
 									</tr>
 									{% endif %}
 									{% if project.legacy_arcca_id %}
 									<tr>
-										<th scope="row">{% trans "Legacy ARCCA ID" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Legacy ARCCA ID" %}</th>
 										<td>{{project.legacy_arcca_id}}</td>
 									</tr>
 									{% endif %}
 									<tr>
-										<th scope="row">{% trans "Institution of technical lead" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Institution of technical lead" %}</th>
 										<td>{{project.tech_lead.profile.institution}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Institution project reference" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Institution project reference" %}</th>
 										<td>{{project.institution_reference}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Principal Investigator" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Principal Investigator" %}</th>
 										<td>{{project.pi}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Funding source" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Funding source" %}</th>
 										<td>{{project.funding_source}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Start date" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Start date" %}</th>
 										<td>{{project.start_date}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "End date" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "End date" %}</th>
 										<td>{{project.end_date}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Requirements software" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Requirements software" %}</th>
 										<td>{{project.requirements_software}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Requirements gateways" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Requirements gateways" %}</th>
 										<td>{{project.requirements_gateways}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Requirements training" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Requirements training" %}</th>
 										<td>{{project.requirements_training}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Requirements onboarding" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Requirements onboarding" %}</th>
 										<td>{{project.requirements_onboarding}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "CPU time allocation in hours" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "CPU time allocation in hours" %}</th>
 										<td>{{project.allocation_cputime}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "RAM allocation in GB" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "RAM allocation in GB" %}</th>
 										<td>{{project.allocation_memory}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Home storage in GB" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Home storage in GB" %}</th>
 										<td>{{project.allocation_storage_home}}</td>
 									</tr>
 									<tr>
-										<th scope="row">{% trans "Scratch storage in GB" %}</th>
+										<td class="text-dark font-weight-bold">{% trans "Scratch storage in GB" %}</th>
 										<td>{{project.allocation_storage_scratch}}</td>
 									</tr>
 								</tbody>

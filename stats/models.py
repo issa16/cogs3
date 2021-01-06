@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from project.models import Project
 from system.models import AccessMethod, Application, Partition, System
 from users.models import CustomUser
 
@@ -26,7 +25,7 @@ class ComputeDaily(models.Model):
         null=True,
     )
     project = models.ForeignKey(
-        Project,
+        'project.Project',  # To avoid circular imports issue
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -65,7 +64,7 @@ class StorageWeekly(models.Model):
         verbose_name_plural = _('Storage Weekly')
 
     project = models.ForeignKey(
-        Project,
+        'project.Project',  # To avoid circular imports issue
         on_delete=models.SET_NULL,
         blank=True,
         null=True,

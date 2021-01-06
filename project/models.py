@@ -5,10 +5,10 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from system.models import System
 
 from openldap.api import project_membership_api
 from project.notifications import project_created_notification
-from system.models import System
 
 logger = logging.getLogger('apps')
 
@@ -52,13 +52,17 @@ class ProjectFundingSource(models.Model):
 class ProjectManager(models.Manager):
 
     def awaiting_approval(self, user):
-        return Project.objects.filter(tech_lead=user, status=Project.AWAITING_APPROVAL)
+        return Project.objects.filter(
+            tech_lead=user,
+            status=Project.AWAITING_APPROVAL,
+        )
 
 
 class Project(models.Model):
 
     class Meta:
         verbose_name_plural = _('Projects')
+        get_latest_by = 'created_time'
 
     title = models.CharField(
         max_length=256,
@@ -292,6 +296,20 @@ class Project(models.Model):
         if self.status == Project.APPROVED:
             self._assign_project_owner_project_membership()
         super(Project, self).save(*args, **kwargs)
+
+    @classmethod
+    def latest_project(cls, tech_lead):
+        '''
+        Return the tech lead's latest project.
+        '''
+        return cls.objects.filter(tech_lead=tech_lead).latest()
+
+    @classmethod
+    def project_codes_for_tech_lead(cls, tech_lead):
+        '''
+        Return a list of project codes for a tech lead.
+        '''
+        return cls.objects.filter(tech_lead=tech_lead,).order_by('-created_time').values_list('code', flat=True)
 
     def __str__(self):
         return self.code

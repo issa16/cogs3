@@ -1,32 +1,11 @@
 {% load static %}
 {% load i18n %}
 {% load hreflang %}
+{% load data_analytics_tags %}
 <div class="tab-pane fade show active" id="nav-compute" role="tabpanel" aria-labelledby="nav-compute-tab">
     <div class="row no-gutters mt-4">
         <div class="col mt-3">
-            <form>
-                <div class="form-row">
-                    <div class="col-5">
-                        <div class="input-group mr-sm-2">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">Start Date</div>
-                            </div>
-                            <input type="text" class="form-control" value="03/10/2020">
-                        </div>
-                    </div>
-                    <div class="col-5">
-                        <div class="input-group mr-sm-2">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">End Date</div>
-                            </div>
-                            <input type="text" class="form-control" value="28/10/2020">
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <button type="submit" class="btn btn-block btn-primary">Submit</button>
-                    </div>
-                </div>
-            </form>
+            {% include 'stats/date_range_form.html' %}
         </div>
     </div>
     <div class="row no-gutters">
@@ -45,37 +24,43 @@
                         <td colspan=4 class="font-weight-bold text-left text-primary">Core Partitions</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="text-left px-5">03/10/2020 to 28/10/2020</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td class="text-left px-5">
+                            {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
+                        </td>
+                        <td>{% duration compute_stats_in_date_range.cpu_time|default_if_none:0 %}</td>
+                        <td>{% duration compute_stats_in_date_range.wait_time|default_if_none:0 %}</td>
+                        <td>{% duration compute_stats_in_date_range.wall_time|default_if_none:0 %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="text-left px-5">01/01/2000 - Present</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td class="text-left px-5">{{ active_project.created_time|date:"Y-m-d" }} - Present</td>
+                        <td>{% duration compute_stats_to_present.cpu_time|default_if_none:0 %}</td>
+                        <td>{% duration compute_stats_to_present.wait_time|default_if_none:0 %}</td>
+                        <td>{% duration compute_stats_to_present.wall_time|default_if_none:0 %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td colspan=4 class="font-weight-bold text-left text-primary">Research Partitions</td>
+                        <td colspan=4 class="font-weight-bold text-left text-primary">
+                            {% trans "Researcher Owned Partitions" %}
+                        </td>
                     </tr>
                     <tr class="text-center">
-                        <td class="text-left px-5">03/10/2020 to 28/10/2020</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td class="text-left px-5">
+                            {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
+                        </td>
+                        <td>{% duration research_stats_in_date_range.cpu_time|default_if_none:0 %}</td>
+                        <td>{% duration research_stats_in_date_range.wait_time|default_if_none:0 %}</td>
+                        <td>{% duration research_stats_in_date_range.wall_time|default_if_none:0 %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="text-left px-5">01/01/2000 - Present</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td class="text-left px-5">{{ active_project.created_time|date:"Y-m-d" }} - Present</td>
+                        <td>{% duration research_stats_to_present.cpu_time|default_if_none:0 %}</td>
+                        <td>{% duration research_stats_to_present.wait_time|default_if_none:0 %}</td>
+                        <td>{% duration research_stats_to_present.wall_time|default_if_none:0 %}</td>
                     </tr>
                     <tr class="text-center">
                         <td class="font-weight-bold text-left text-primary">Total</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td>{% duration active_project.total_cpu_time|default_if_none:0 %}</td>
+                        <td>{% duration active_project.total_wait_time|default_if_none:0 %}</td>
+                        <td>{% duration active_project.total_wall_time|default_if_none:0 %}</td>
                     </tr>
                     <tr class="text-center">
                         <td></td>
@@ -94,14 +79,14 @@
             <nav>
                 <div class="nav nav-tabs active" id="nav-tab-partitions" role="tablist">
                     <a class="nav-item nav-link active" id="nav-all-partitions-tab" data-toggle="tab"
-                        href="#nav-all-partitions" role="tab" aria-controls="nav-all-partitions"
-                        aria-selected="true">{% trans "All Partitions" %}</a>
+                        href="#nav-all-partitions" role="tab" aria-controls="nav-all-partitions" aria-selected="true">
+                        {% trans "All Partitions" %}</a>
                     <a class="nav-item nav-link" id="nav-core-paritions-tab-tab" data-toggle="tab"
                         href="#nav-core-paritions-tab" role="tab" aria-controls="nav-core-paritions-tab"
                         aria-selected="false">{% trans "Core Partitions" %}</a>
                     <a class="nav-item nav-link" id="nav-research-partitions-tab-tab" data-toggle="tab"
                         href="#nav-research-partitions-tab" role="tab" aria-controls="nav-research-partitions-tab"
-                        aria-selected="false">{% trans "Research Partitions" %}</a>
+                        aria-selected="false">{% trans "Researcher Owned Partitions" %}</a>
                 </div>
             </nav>
         </div>

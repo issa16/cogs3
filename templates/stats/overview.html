@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
 {% load hreflang %}
+{% load data_analytics_tags %}
 <div class="row no-gutters px-3 pt-3">
     <div class="col">
         <a class="btn btn-primary float-right" href="#" role="button">Export to PDF</a>
@@ -14,38 +15,38 @@
                     <td style="width: 40%;">
                         <b>{% trans "Principal Investigator" %}</b>
                     </td>
-                    <td style="width: 60%;">{{user.first_name}} {{user.last_name}} (Institution)</td>
+                    <td style="width: 60%;">{% parse_pi_name active_project.pi %}</td>
                 </tr>
                 <tr>
                     <td>
                         <b>{% trans "Technical Lead" %}</b>
                     </td>
-                    <td>{{user.first_name}} {{user.last_name}}</td>
+                    <td>{{ active_project.tech_lead.first_name }} {{ active_project.tech_lead.last_name }}</td>
                 </tr>
                 <tr>
                     <td>
                         <b>{% trans "Start Date" %}</b>
                     </td>
-                    <td>00/00/0000</td>
+                    <td>{{ active_project.start_date }}</td>
                 </tr>
                 <tr>
                     <td>
                         <b>{% trans "End Date" %}</b>
                     </td>
-                    <td>00/00/0000</td>
+                    <td>{{ active_project.end_date }}</td>
                 </tr>
                 <tr>
                     <td>
                         <b>{% trans "Institution" %}</b>
                     </td>
-                    <td>Cardiff University</td>
+                    <td>{{ active_project.tech_lead.profile.institution }}</td>
                 </tr>
                 <tr>
                     <td>
                         <b>{% trans "Efficency" %}</b>
                     </td>
                     <td class="text-success">
-                        88%
+                        {{ stats_parser.efficency|floatformat:2 }}%
                     </td>
                 </tr>
             </tbody>
@@ -58,37 +59,43 @@
                     <td style="width: 40%;">
                         <b>{% trans "Home storage allocation" %}</b>
                     </td>
-                    <td style="width: 60%;">N/A</td>
+                    <td style="width: 60%;">
+                        {% gb_to_tb active_project.allocation_storage_home|default_if_none:"N/A" %}
+                    </td>
                 </tr>
                 <tr>
                     <td>
                         <b>{% trans "Scratch storage allocation" %}</b>
                     </td>
-                    <td>N/A</td>
+                    <td>
+                        {% gb_to_tb active_project.allocation_storage_scratch|default_if_none:"N/A" %}
+                    </td>
                 </tr>
                 <tr>
                     <td>
                         <b>{% trans "Total allocated core hours" %}</b>
                     </td>
-                    <td>N/A</td>
+                    <td>
+                        {{ active_project.allocation_cputime|default_if_none:"N/A" }}
+                    </td>
                 </tr>
                 <tr>
                     <td>
                         <b>{% trans "Total number of core hours" %}</b>
                     </td>
-                    <td>0</td>
+                    <td>{{ stats_parser.total_core_hours|default_if_none:0 }}</td>
                 </tr>
                 <tr>
                     <td>
                         <b>{% trans "Total number of CPU hours" %}</b>
                     </td>
-                    <td>0</td>
+                    <td>{{ stats_parser.total_cpu_hours|default_if_none:0 }}</td>
                 </tr>
                 <tr>
                     <td>
                         <b>{% trans "Total number of Slurm jobs" %}</b>
                     </td>
-                    <td>0</td>
+                    <td>{{ stats_parser.total_slurm_jobs|default_if_none:0 }}</td>
                 </tr>
             </tbody>
         </table>
@@ -108,7 +115,7 @@
 </div>
 <div class="row no-gutters mb-4">
     <div class="col-6 px-3">
-        <table class="table">
+        <table class="table" id='pi_projects'>
             <thead>
                 <tr class="text-dark text-center font-weight-bold">
                     <td></td>
@@ -116,27 +123,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Active</td>
-                    <td class="text-center">5</td>
-                </tr>
-                <tr>
-                    <td>Dormant</td>
-                    <td class="text-center">2</td>
-                </tr>
-                <tr>
-                    <td>Inactive</td>
-                    <td class="text-center">1</td>
-                </tr>
-                <tr>
-                    <td>Retired</td>
-                    <td class="text-center">1</td>
-                </tr>
             </tbody>
         </table>
     </div>
     <div class="col-6 px-3">
-        <table class="table">
+        <table class="table" id='user_status'>
             <thead>
                 <tr class="text-dark text-center font-weight-bold">
                     <td></td>
@@ -144,18 +135,6 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Active</td>
-                    <td class="text-center">10</td>
-                </tr>
-                <tr>
-                    <td>Dormant</td>
-                    <td class="text-center">1</td>
-                </tr>
-                <tr>
-                    <td>Inactive</td>
-                    <td class="text-center">3</td>
-                </tr>
             </tbody>
         </table>
     </div>

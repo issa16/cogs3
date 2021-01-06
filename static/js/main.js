@@ -1,4 +1,5 @@
 $(document).ready(function () {
+	
 	// Initialise date picker
 	$('.datepicker').datepicker({
 		dateFormat: 'yy-mm-dd'

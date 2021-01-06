@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y vim
 ENV PYTHONDONTWRITEBYTECODE 1
 
 # Enable log messages to be immediately sent to the output stream
-ENV PYTHONBUFFERED 1
+ENV PYTHONUNBUFFERED 1
 
 # Create a directory to store the application's source code
 RUN mkdir /app
