@@ -58,9 +58,9 @@
                     </tr>
                     <tr class="text-center">
                         <td class="font-weight-bold text-left text-primary">Total</td>
-                        <td>{% duration active_project.total_cpu_time|default_if_none:0 %}</td>
-                        <td>{% duration active_project.total_wait_time|default_if_none:0 %}</td>
-                        <td>{% duration active_project.total_wall_time|default_if_none:0 %}</td>
+                        <td>{% duration stats_parser.total_cpu_time|default_if_none:0 %}</td>
+                        <td>{% duration stats_parser.total_wait_time|default_if_none:0 %}</td>
+                        <td>{% duration stats_parser.total_wall_time|default_if_none:0 %}</td>
                     </tr>
                     <tr class="text-center">
                         <td></td>
