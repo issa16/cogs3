@@ -115,7 +115,7 @@ class ProjectStatsParser:
 
     def total_slurm_jobs(self):
         '''
-        Return the total number of jobs run through Slurm ober all time.
+        Return the total number of jobs run through Slurm over all time.
         '''
         result = ComputeDaily.objects.filter(project=self.project
                                             ).aggregate(number_jobs=Sum('number_jobs'),)['number_jobs']
