@@ -57,7 +57,20 @@
                         <td>{% duration research_stats_to_present.wall_time|default_if_none:0 %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="font-weight-bold text-left text-primary">Total</td>
+                        <td colspan=4 class="font-weight-bold text-left text-primary">
+                            {% trans "Total" %}
+                        </td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="text-left px-5">
+                            {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
+                        </td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="text-left px-5">{{ active_project.start_date|date:"Y-m-d" }} - Present</td>
                         <td>{% duration stats_parser.total_cpu_hours|default_if_none:0 %}</td>
                         <td>{% duration stats_parser.total_wait_time|default_if_none:0 %}</td>
                         <td>{% duration stats_parser.total_core_hours|default_if_none:0 %}</td>
