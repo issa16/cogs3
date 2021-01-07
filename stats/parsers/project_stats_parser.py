@@ -109,7 +109,7 @@ class ProjectStatsParser:
         Return the overall project efficency (CPU/Elapsed).
         '''
         try:
-            return self.total_cpu_hours() / self.total_core_hours()
+            return (self.total_cpu_hours() / self.total_core_hours()) * 100
         except ZeroDivisionError:
             return 0
 
