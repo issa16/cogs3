@@ -109,5 +109,42 @@
       "created_time": "2018-06-26T19:57:11.653Z",
       "modified_time": "2018-06-26T19:57:11.653Z"
     }
+  },
+  {
+    "model": "project.project",
+    "pk": 4,
+    "fields": {
+      "title": "LIGO",
+      "description": "LIGO Project",
+      "legacy_hpcw_id": "",
+      "legacy_arcca_id": "",
+      "code": "scw1158",
+      "gid_number": null,
+      "institution_reference": "",
+      "department": "School of Physics and Astronomy",
+      "pi": "Owen Smith, Technical Lead, owen.smith@ligo.org",
+      "tech_lead": 1,
+      "category": 1,
+      "funding_source": 1,
+      "start_date": "2018-06-26",
+      "end_date": "2018-06-26",
+      "economic_user": false,
+      "requirements_software": "None",
+      "requirements_gateways": "None",
+      "requirements_training": "None",
+      "requirements_onboarding": "None",
+      "allocation_rse": false,
+      "allocation_cputime": 9999,
+      "allocation_memory": 9999,
+      "allocation_storage_home": 9999,
+      "allocation_storage_scratch": 9999,
+      "document": "",
+      "status": 1,
+      "previous_status": 0,
+      "reason_decision": "",
+      "notes": "",
+      "created_time": "2018-06-26T19:57:11.653Z",
+      "modified_time": "2018-06-26T19:57:11.653Z"
+    }
   }
 ]

@@ -131,7 +131,7 @@ class ImportDailyComputeTest(TestCase):
             '-s CF',
             stdout=out,
         )
-        self.assertEqual(ComputeDaily.objects.count(), 1)
+
         # Checkout output
         self.assertIn('INFO: Parsed array size 5 jobs', out.getvalue())
         self.assertIn(

@@ -1,16 +1,71 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
-from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from project.mixins import PermissionAndLoginRequiredMixin
 from project.models import Project
 from system.models import Partition
 
 from .parsers.project_stats_parser import ProjectStatsParser
+from .parsers.user_stats_parser import UserStatsParser
+
+
+class IndexView(
+    PermissionAndLoginRequiredMixin,
+    TemplateView,
+):
+    '''
+    IndexView
+    '''
+    template_name = 'stats/index.html'
+    permission_required = 'project.change_project'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        try:
+            # Which projects is this user a technical lead of?
+            projects = Project.objects.filter(tech_lead=user).order_by('-start_date')
+            context['project_codes'] = [project.code for project in projects]
+
+            # Parse the date range.
+            start_date, end_date = parse_date_range(self.request)
+
+            # Add to the context to maintain search range between requests.
+            context['query_start_date'] = start_date
+            context['query_end_date'] = end_date
+
+            # Parse the project within the query params and verify.
+            project_code = self.request.GET.get('code', '')
+
+            if user.is_staff:
+                # Staff have the ability to query any project stats data.
+                selected_project = Project.objects.get(code=project_code)
+            else:
+                # Verify non staff member is the tech lead of the project.
+                selected_project = Project.objects.get(
+                    code=project_code,
+                    tech_lead=user,
+                )
+
+            context['selected_project'] = selected_project
+
+            # Query the relevant data from the stats tables.
+            stats_parser = ProjectStatsParser(
+                selected_project,
+                'all',
+                start_date,
+                end_date,
+            )
+
+            # Build project stats and add to request context.
+            context = build_project_stats(stats_parser, context)
+        except Exception:
+            if user.is_staff and project_code:
+                messages.add_message(self.request, messages.ERROR, 'Project does not exist.')
+        return context
 
 
 def parse_date_range(request):
@@ -21,8 +76,7 @@ def parse_date_range(request):
     start_date = request.GET.get('start_date', None)
     try:
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
-    except Exception as e:
-        print(e)
+    except Exception:
         start_date = date.today() + relativedelta(months=-12)
     '''
     Parse the query's end date if supplied.
@@ -36,47 +90,63 @@ def parse_date_range(request):
     return start_date, end_date
 
 
-def parse_project_stats(context, request):
-    '''
-    Parse the compute and storage stats for given project
-    over a valid date range.
-    '''
-    project = context['active_project']
-
-    # Parse the date range
-    start_date, end_date = parse_date_range(request)
-
-    # Add to the context to maintain search range between request.
-    context['query_start_date'] = start_date
-    context['query_end_date'] = end_date
-
-    # Create a ProjectStatsParser for the project
-    stats_parser = ProjectStatsParser(
-        project,
-        start_date,
-        end_date,
-    )
-
-    # Enable access via templates
-    context['stats_parser'] = stats_parser
+def build_project_stats(stats_parser, context):
+    # Retrieve project overview stats
+    context['total_core_hours'] = stats_parser.total_core_hours()
+    context['total_cpu_hours'] = stats_parser.total_cpu_hours()
+    context['total_slurm_jobs'] = stats_parser.total_slurm_jobs()
+    context['efficency'] = stats_parser.efficency()
 
     # Retrieve core partitions stats in date range
-    context['compute_stats_in_date_range'] = stats_parser.partition_stats_in_date_range(partition=Partition.CORE)
+    context['core_partitions_in_date_range'] = stats_parser.partition_stats_in_date_range(
+        partition_type=[
+            Partition.CORE,
+        ]
+    )
 
     # Retrieve core partitions stats to present
-    context['compute_stats_to_present'] = stats_parser.partition_stats_in_date_range(
-        start_date=datetime.now() - timedelta(days=365 * 10),
-        partition=Partition.CORE,
+    context['core_partitions_to_present'] = stats_parser.partition_stats_in_date_range(
+        start_date=stats_parser.project.start_date,
+        partition_type=[
+            Partition.CORE,
+        ],
     )
 
-    # Retrieve researcher owned partitions stats in date range
-    context['research_stats_in_date_range'] = stats_parser.partition_stats_in_date_range(partition=Partition.RESEARCH)
-
-    # Retrieve researcher owned partitions stats to present
-    context['research_stats_to_present'] = stats_parser.partition_stats_in_date_range(
-        start_date=datetime.now() - timedelta(days=365 * 10),
-        partition=Partition.RESEARCH,
+    # Retrieve researcher funded partitions stats in date range
+    context['researcher_partitions_in_date_range'] = stats_parser.partition_stats_in_date_range(
+        partition_type=[
+            Partition.RESEARCH,
+        ],
     )
+
+    # Retrieve researcher funded partitions stats to present
+    context['researcher_partitions_to_present'] = stats_parser.partition_stats_in_date_range(
+        start_date=stats_parser.project.start_date,
+        partition_type=[
+            Partition.RESEARCH,
+        ],
+    )
+
+    # Retrieve compute totals in date range
+    context['compute_totals_in_date_range'] = stats_parser.partition_stats_in_date_range(
+        partition_type=[
+            Partition.CORE,
+            Partition.RESEARCH,
+        ],
+    )
+
+    # Retrieve compute totals to present
+    context['compute_totals_to_present'] = stats_parser.partition_stats_in_date_range(
+        start_date=stats_parser.project.start_date,
+        partition_type=[
+            Partition.CORE,
+            Partition.RESEARCH,
+        ],
+    )
+
+    # Retrieve list of partitions used
+    context['core_partitions_used'] = stats_parser.partitions_used(partition_type=Partition.CORE)
+    context['researcher_partitions_used'] = stats_parser.partitions_used(partition_type=Partition.RESEARCH)
 
     # Retrieve storage stats
     context['storage_stats'] = stats_parser.storage_stats_in_date_range()
@@ -84,90 +154,41 @@ def parse_project_stats(context, request):
     return context
 
 
-# DataAnalyticsPermissionMixin
-class LatestProjectView(
-    PermissionAndLoginRequiredMixin,
-    TemplateView,
-):
-    template_name = 'stats/index.html'
-    permission_required = 'project.change_project'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-        if user.is_staff:
-            '''
-            A member of staff should have access to the data-analytics page.
-            They should not be a techincal lead of a project, therefore
-            available project codes and the latest project should be empty.
-            '''
-            context['project_codes'] = None
-            context['active_project'] = None
-        else:
-            '''
-            For technical leads of a project, we should return a list
-            of their project codes and load the latest project they
-            have created as the default active project to display.
-            '''
-            context['project_codes'] = ProjectStats.project_codes_for_tech_lead(user)
-            context['active_project'] = Project.latest_project(user)
-            context = parse_project_stats(context, self.request)
-        return context
-
-
-class ProjectDetailView(
-    PermissionAndLoginRequiredMixin,
-    TemplateView,
-):
+def UserStatsParserJSONView(request):
     '''
-    The ProjectDetailView should return details of a project given a
-    valid project code.
+    UserStatsParserJSONView
     '''
-    context_object_name = 'projects'
-    model = Project
-    template_name = 'stats/index.html'
-    permission_required = 'project.change_project'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-        context['project_codes'] = ProjectManager.project_codes_for_tech_lead(user)
+    data = {}
+    if request.GET:
         try:
-            context['active_project'] = Project.objects.get(tech_lead=user, code=kwargs['code'])
-            context = parse_project_stats(context, self.request)
-        except Project.DoesNotExist:
-            context['active_project'] = None
-        return context
+            # Determine user
+            user = request.user
 
+            # Find the project
+            project_filter = request.GET.get('code')
 
-@method_decorator(staff_member_required, name='dispatch')
-class ProjectSearchView(
-    PermissionAndLoginRequiredMixin,
-    TemplateView,
-):
-    '''
-    Members of staff can use the SCW administration form in the
-    data-analytics page to view details on any project.
-    '''
-    context_object_name = 'projects'
-    model = Project
-    template_name = 'stats/index.html'
-    permission_required = 'project.change_project'
+            # Create a UserStatsParser for the project
+            stats_parser = UserStatsParser(
+                user=user,
+                project_filter=project_filter,
+            )
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['project_codes'] = None
-        context['active_project'] = None
-        try:
-            project_code = self.request.GET.get('code')
-            context['active_project'] = Project.objects.get(code=project_code)
-            context = parse_project_stats(context, self.request)
-        except Project.DoesNotExist:
-            messages.add_message(self.request, messages.ERROR, 'Project does not exist.')
-        return context
+            # Query stats
+            data['rate_of_usage_per_month'] = stats_parser.rate_of_usage_per_month()
+            data['cumlative_total_usage_per_month'] = stats_parser.cumlative_total_usage_per_month()
+            data['efficency_per_month'] = stats_parser.efficency_per_month()
+            data['num_jobs_per_month'] = stats_parser.num_jobs_per_month()
+
+        except Exception:
+            pass
+
+    return JsonResponse(data, safe=False)
 
 
 def ProjectStatsParserJSONView(request):
+    '''
+    ProjectStatsParserJSONView
+    '''
     data = {}
     if request.GET:
         try:
@@ -186,12 +207,18 @@ def ProjectStatsParserJSONView(request):
                     tech_lead=user,
                 )
 
+            # Parse partition id
+            partition_filter = request.GET.get('partition')
+            if not partition_filter:
+                partition_filter = 'all'
+
             # Parse the date range
             start_date, end_date = parse_date_range(request)
 
             # Create a ProjectStatsParser for the project
             stats_parser = ProjectStatsParser(
                 project,
+                partition_filter,
                 start_date,
                 end_date,
             )
@@ -199,13 +226,14 @@ def ProjectStatsParserJSONView(request):
             # Overview stats
             data['pi_projects'] = stats_parser.pi_projects()
             data['user_status'] = stats_parser.user_status()
+            data['efficency'] = stats_parser.efficency()
 
             # Compute stats
             data['rate_of_usage'] = stats_parser.rate_of_usage()
-            data['cumlative_usage'] = stats_parser.cumlative_usage()
-            data['individual_user_usage'] = stats_parser.individual_user_usage()
+            data['cumlative_total_usage'] = stats_parser.cumlative_total_usage()
+            data['top_users_usage'] = stats_parser.top_users_usage()
             data['usage_by_partition'] = stats_parser.usage_by_partition()
-            data['efficency'] = stats_parser.efficency()
+            data['efficency_per_month'] = stats_parser.efficency_per_month()
             data['num_jobs_per_month'] = stats_parser.num_jobs_per_month()
             data['per_job_avg_stats'] = stats_parser.per_job_avg_stats()
             data['core_count_node_utilisation'] = stats_parser.core_count_node_utilisation()
@@ -214,10 +242,7 @@ def ProjectStatsParserJSONView(request):
             data['disk_space'] = stats_parser.disk_space()
             data['file_count'] = stats_parser.file_count()
 
-            # Return data dict as a json response
-            return JsonResponse(data, safe=False)
-        except Exception as e:
-            print(e)
-            return JsonResponse(data, safe=False)
+        except Exception:
+            pass
 
     return JsonResponse(data, safe=False)

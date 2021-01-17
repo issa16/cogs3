@@ -1,0 +1,31 @@
+<!-- templates/stats/project_filter.html -->
+{% load static %}
+{% load i18n %}
+{% load hreflang %}
+<div class="row no-gutters">
+    <div class="col">
+        <div class="form-row">
+            <div class="col-5">
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputGroupSelect01">{% trans "Project Filter" %}</label>
+                    <div class="dropdown ml-2" id="project_filter">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="project_filter_button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {% trans "All Projects" %}
+                        </button>
+                        {% if project_codes|length > 1 %}
+                            <div id="project_filter" class="dropdown-menu" aria-labelledby="project_filter_button">
+                                <a data-project-code="all" class="dropdown-item font-weight-bold">{% trans "All Projects" %}</a>
+                                <div class="dropdown-divider"></div>
+                                {% for project_code in project_codes %}
+                                    {% if project_code != selected_project.code %}
+                                        <a data-project-code="{{ project_code }}" class="dropdown-item">{{ project_code }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

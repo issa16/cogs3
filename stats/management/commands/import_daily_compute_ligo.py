@@ -2,13 +2,24 @@ import datetime
 import os
 
 from django.core.management.base import BaseCommand
-from project.models import Project
+from project.models import Project, ProjectUserMembership
 from stats.models import ComputeDaily
 from stats.slurm.StatsParserCondorLigo import StatsParserCondorLigo
 from system.models import AccessMethod, Application, Partition
-from users.models import Profile
+from users.models import CustomUser, Profile
 
 from .util import get_system
+'''
+15/12/2020
+The userName supplied in the LIGO file does not match the
+format expected in cogs3. This issue has been raised with
+ARCCA and agreed to be resolved at a later date.
+
+11/01/2021
+It has been agreed to create a new user account in cogs3
+if the user within the LIGO daily compute file is not found.
+The user will be created as an external account.
+'''
 
 
 class Command(BaseCommand):
@@ -58,36 +69,52 @@ class Command(BaseCommand):
             sumWall = datetime.timedelta(0)
 
             for i in sp.getResultsArray():
-                '''
-                15/12/2020
-                The userName supplied in the LIGO file does not match the
-                format expected in cogs3. This issue has been raised with
-                arcca and agreed to be resolved at a later date.
-
-                Notes
-                -----
-                Some Cardiff users appear to have multiple citizenship on both
-                Hawk and LIGO. Therefore care is needed when applying a
-                solution as the users may already exist in cogs3.
-
-                Possible solutions:
-                - Add a new ligo_username field to the users profile. Would
-                  result in Cardiff users having two accounts.
-                '''
-                # Find the user record
-                try:
-                    userProfile = Profile.objects.get(scw_username__iexact=i['userName'])
-                    myUser = userProfile.user
-                except Profile.DoesNotExist:
-                    msg = f"No matching user: {i['userName']}"
-                    self.stdout.write(msg)
-                    continue
-                # Find the project record
+                # Find the project
                 try:
                     myProject = Project.objects.get(code__iexact=i['projectCode'])
                 except Project.DoesNotExist:
                     msg = f"No matching project: {i['projectCode']}"
                     self.stdout.write(msg)
+                    continue
+                # Find or create user
+                try:
+                    firstname, lastname = i['userName'].split('.')
+                    email = f'{firstname}.{lastname}@ligo.org'.lower()
+                    user, created = CustomUser.objects.get_or_create(
+                        username=f'{firstname}.{lastname}'.lower(),
+                        email=email,
+                        first_name=firstname.title(),
+                        last_name=lastname.title(),
+                        is_shibboleth_login_required=False,
+                    )
+                    if created:
+                        # Reset password
+                        user.set_password(CustomUser.objects.make_random_password())
+                        user.save()
+
+                        # Create user profile
+                        profile = user.profile
+                        profile.description = 'Imported via LIGO daily compute script'
+                        profile.account_status = Profile.APPROVED
+                        profile.save()
+
+                        # Create a user membership
+                        project_user_membership = ProjectUserMembership(
+                            user=user,
+                            project=myProject,
+                            status=ProjectUserMembership.AUTHORISED,
+                            date_joined=date.today(),
+                        )
+                        project_user_membership.save()
+
+                        msg = f'Successfully created user account, profile and project membership for {email}'
+                        self.stdout.write(self.style.SUCCESS(msg))
+                    else:
+                        msg = f'{email} already exists.'
+                        self.stdout.write(self.style.SUCCESS(msg))
+                    myUser = user
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(e))
                     continue
                 # Find the submission method
                 try:
@@ -103,7 +130,7 @@ class Command(BaseCommand):
                         defaults={'name': i['execApp']},
                     )
                     if state:
-                        print("Created new Application", myExecApp)
+                        self.stdout.write(f'Created new Application {myExecApp}')
                 except Application.DoesNotExist:
                     msg = f"No matching application profile: {i['execApp']}"
                     self.stdout.write(msg)
@@ -127,18 +154,16 @@ class Command(BaseCommand):
                     msg = "ERROR: queue not parsed from ligo machineattr record"
                     self.stdout.write(msg)
 
-                #debug
-                #print("myUser="+str(myUser)+" myProject="+str(myProject)+" myPartition="+str(myPartition)+" myExecApp="+str(myExecApp)+" mySubMethod="+str(mySubMethod)+" myExecNCPU="+str(myExecNCPU)+" nJobs="+str(i['nJobs'])+" waitTime="+str(i['waitTime'])+" cpuTime="+str(i['cpuTime'])+" wallTime="+str(i['wallTime']))
                 sumWall += i['wallTime']
 
-                ## Check for existing record for the matching dimensions of measurement
+                # Check for existing record for the matching dimensions of measurement
                 obj, created = ComputeDaily.objects.get_or_create(
                     user=myUser,
                     project=myProject,
                     partition=myPartition,
                     application=myExecApp,
                     access_method=mySubMethod,
-                    number_processors=myExecNCPU,  #
+                    number_processors=myExecNCPU,
                     date=date,
                     defaults={
                         'number_jobs': i['nJobs'],
@@ -154,12 +179,18 @@ class Command(BaseCommand):
                     obj.wall_time = i['wallTime']
                     obj.save()
                     countUpdated += 1
-                    #print("INFO: Updated:",obj.id,date,obj.user,obj.project,obj.partition,obj.application,obj.access_method,obj.number_processors,i['waitTime'],i['cpuTime'],i['wallTime'],i['nJobs'])
+                    msg = (
+                        f"INFO: Updated: {obj.id} {date} {obj.user} {obj.project} {obj.partition} {obj.application} {obj.access_method}"
+                        f" {obj.number_processors} {i['waitTime']} {i['cpuTime']} {i['wallTime']} {i['nJobs']}"
+                    )
                 else:
                     countNew += 1
-                    #print("INFO: Added new:",obj.id,date,obj.user,obj.project,obj.partition,obj.application,obj.access_method,obj.number_processors,i['waitTime'],i['cpuTime'],i['wallTime'],i['nJobs'])
-
-            count += 1
+                    msg = (
+                        f"INFO: Added new: {obj.id} {date} {obj.user} {obj.project} {obj.partition} {obj.application} {obj.access_method}"
+                        f" {obj.number_processors} {i['waitTime']} {i['cpuTime']} {i['wallTime']} {i['nJobs']}"
+                    )
+                self.stdout.write(self.style.SUCCESS(msg))
+                count += 1
 
             msg = f'END - {countNew} new records, {countUpdated} updated records'
             self.stdout.write(self.style.SUCCESS(msg))

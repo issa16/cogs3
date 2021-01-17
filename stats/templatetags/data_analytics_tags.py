@@ -1,38 +1,11 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
 
-@register.simple_tag
-def gb_to_tb(gb):
-    if gb:
-        return f'{gb / 1024.0:.3f} TB'
-    else:
-        return ''
-
-
-@register.simple_tag
-def duration(td):
-    if td:
-        total_seconds = int(td.total_seconds())
-
-        days = total_seconds // 86400
-        remaining_hours = total_seconds % 86400
-        remaining_minutes = remaining_hours % 3600
-        hours = remaining_hours // 3600
-        minutes = remaining_minutes // 60
-
-        days_str = f'{days}d ' if days else ''
-        hours_str = f'{hours}h ' if hours else ''
-        minutes_str = f'{minutes}m ' if minutes else ''
-
-        return f'{days_str}{hours_str}{minutes_str}'
-    else:
-        return 0
-
-
-@register.simple_tag
-def parse_pi_name(pi):
+@register.filter
+def format_pi(pi, is_safe=True):
     try:
         name, position, email = pi.split(',')
         institution = email.split('@')[1]
@@ -41,3 +14,37 @@ def parse_pi_name(pi):
         return f'{name} ({institution})'
     except Exception:
         return pi
+
+
+@register.filter
+def gb_to_tb(gb):
+    try:
+        return f'{gb / 1000.0:.3f} TB'
+    except Exception:
+        return 'N/A'
+
+
+@register.filter
+def in_hours(td):
+    if td:
+        total_seconds = int(td.total_seconds())
+        hours = total_seconds / 3600
+        return round(hours, 2)
+    else:
+        return 'N/A'
+
+
+@register.simple_tag
+def efficency_as_percentage(x, y=1):
+    try:
+        result = (x / y) * 100
+        color = 'black'
+        if result >= 70:
+            color = 'green'
+        elif result >= 50 and result < 70:
+            color = 'orange'
+        else:
+            color = 'red'
+        return mark_safe(f"<span style='color:{color};font-weight:bold;'> {result:.2f} %</span>")
+    except Exception:
+        return ''

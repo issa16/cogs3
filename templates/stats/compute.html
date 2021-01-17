@@ -1,3 +1,4 @@
+<!-- templates/stats/compute.html -->
 {% load static %}
 {% load i18n %}
 {% load hreflang %}
@@ -14,50 +15,55 @@
                 <thead class="text-dark text-center font-weight-bold">
                     <tr>
                         <td style="width:60%;"></td>
-                        <td>{% trans "CPU Time" %}</td>
-                        <td>{% trans "Wait Time" %}</td>
-                        <td>{% trans "Wall Time" %}</td>
+                        <td>{% trans "CPU Time (hrs)" %}</td>
+                        <td>{% trans "Wait Time (hrs)" %}</td>
+                        <td>{% trans "Wall Time (hrs)" %}</td>
+                        <td>{% trans "Efficency" %}</td>
                     </tr>
                 </thead>
                 <tbody>
                     <tr class="text-center">
-                        <td colspan=4 class="font-weight-bold text-left text-primary">Core Partitions</td>
+                        <td colspan=5 class="font-weight-bold text-left text-primary">Core Partitions</td>
                     </tr>
                     <tr class="text-center">
                         <td class="text-left px-5">
                             {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
                         </td>
-                        <td>{% duration compute_stats_in_date_range.cpu_time|default_if_none:0 %}</td>
-                        <td>{% duration compute_stats_in_date_range.wait_time|default_if_none:0 %}</td>
-                        <td>{% duration compute_stats_in_date_range.wall_time|default_if_none:0 %}</td>
+                        <td>{{ core_partitions_in_date_range.cpu_time|in_hours }}</td>
+                        <td>{{ core_partitions_in_date_range.wait_time|in_hours }}</td>
+                        <td>{{ core_partitions_in_date_range.wall_time|in_hours }}</td>
+                        <td>{% efficency_as_percentage core_partitions_in_date_range.cpu_time|in_hours core_partitions_in_date_range.wall_time|in_hours %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="text-left px-5">{{ active_project.start_date|date:"Y-m-d" }} - Present</td>
-                        <td>{% duration compute_stats_to_present.cpu_time|default_if_none:0 %}</td>
-                        <td>{% duration compute_stats_to_present.wait_time|default_if_none:0 %}</td>
-                        <td>{% duration compute_stats_to_present.wall_time|default_if_none:0 %}</td>
+                        <td class="text-left px-5">{{ selected_project.start_date|date:"Y-m-d" }} - Present</td>
+                        <td>{{ core_partitions_to_present.cpu_time|in_hours }}</td>
+                        <td>{{ core_partitions_to_present.wait_time|in_hours }}</td>
+                        <td>{{ core_partitions_to_present.wall_time|in_hours }}</td>
+                        <td>{% efficency_as_percentage core_partitions_to_present.cpu_time|in_hours core_partitions_to_present.wall_time|in_hours %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td colspan=4 class="font-weight-bold text-left text-primary">
-                            {% trans "Researcher Owned Partitions" %}
+                        <td colspan=5 class="font-weight-bold text-left text-primary">
+                            {% trans "Researcher Funded Partitions " %}
                         </td>
                     </tr>
                     <tr class="text-center">
                         <td class="text-left px-5">
                             {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
                         </td>
-                        <td>{% duration research_stats_in_date_range.cpu_time|default_if_none:0 %}</td>
-                        <td>{% duration research_stats_in_date_range.wait_time|default_if_none:0 %}</td>
-                        <td>{% duration research_stats_in_date_range.wall_time|default_if_none:0 %}</td>
+                        <td>{{ researcher_partitions_in_date_range.cpu_time|in_hours }}</td>
+                        <td>{{ researcher_partitions_in_date_range.wait_time|in_hours }}</td>
+                        <td>{{ researcher_partitions_in_date_range.wall_time|in_hours }}</td>
+                        <td>{% efficency_as_percentage researcher_partitions_in_date_range.cpu_time|in_hours researcher_partitions_in_date_range.wall_time|in_hours %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="text-left px-5">{{ active_project.start_date|date:"Y-m-d" }} - Present</td>
-                        <td>{% duration research_stats_to_present.cpu_time|default_if_none:0 %}</td>
-                        <td>{% duration research_stats_to_present.wait_time|default_if_none:0 %}</td>
-                        <td>{% duration research_stats_to_present.wall_time|default_if_none:0 %}</td>
+                        <td class="text-left px-5">{{ selected_project.start_date|date:"Y-m-d" }} - Present</td>
+                        <td>{{ researcher_partitions_to_present.cpu_time|in_hours }}</td>
+                        <td>{{ researcher_partitions_to_present.wait_time|in_hours }}</td>
+                        <td>{{ researcher_partitions_to_present.wall_time|in_hours }}</td>
+                        <td>{% efficency_as_percentage researcher_partitions_to_present.cpu_time|in_hours researcher_partitions_to_present.wall_time|in_hours %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td colspan=4 class="font-weight-bold text-left text-primary">
+                        <td colspan=5 class="font-weight-bold text-left text-primary">
                             {% trans "Total" %}
                         </td>
                     </tr>
@@ -65,17 +71,20 @@
                         <td class="text-left px-5">
                             {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
                         </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td>{{ compute_totals_in_date_range.cpu_time|in_hours }}</td>
+                        <td>{{ compute_totals_in_date_range.wait_time|in_hours }}</td>
+                        <td>{{ compute_totals_in_date_range.wall_time|in_hours }}</td>
+                        <td>{% efficency_as_percentage compute_totals_in_date_range.cpu_time|in_hours compute_totals_in_date_range.wall_time|in_hours %}</td>
                     </tr>
                     <tr class="text-center">
-                        <td class="text-left px-5">{{ active_project.start_date|date:"Y-m-d" }} - Present</td>
-                        <td>{% duration stats_parser.total_cpu_hours|default_if_none:0 %}</td>
-                        <td>{% duration stats_parser.total_wait_time|default_if_none:0 %}</td>
-                        <td>{% duration stats_parser.total_core_hours|default_if_none:0 %}</td>
+                        <td class="text-left px-5">{{ selected_project.start_date|date:"Y-m-d" }} - Present</td>
+                        <td>{{ compute_totals_to_present.cpu_time|in_hours }}</td>
+                        <td>{{ compute_totals_to_present.wait_time|in_hours }}</td>
+                        <td>{{ compute_totals_to_present.wall_time|in_hours }}</td>
+                        <td>{% efficency_as_percentage compute_totals_to_present.cpu_time|in_hours compute_totals_to_present.wall_time|in_hours %}</td>
                     </tr>
                     <tr class="text-center">
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td class="text-dark font-weight-bold">
@@ -89,100 +98,49 @@
     </div>
     <div class="row no-gutters mt-4">
         <div class="col">
-            <nav>
-                <div class="nav nav-tabs active" id="nav-tab-partitions" role="tablist">
-                    <a class="nav-item nav-link active" id="nav-all-partitions-tab" data-toggle="tab"
-                        href="#nav-all-partitions" role="tab" aria-controls="nav-all-partitions" aria-selected="true">
-                        {% trans "All Partitions" %}</a>
-                    <a class="nav-item nav-link" id="nav-core-paritions-tab-tab" data-toggle="tab"
-                        href="#nav-core-paritions-tab" role="tab" aria-controls="nav-core-paritions-tab"
-                        aria-selected="false">{% trans "Core Partitions" %}</a>
-                    <a class="nav-item nav-link" id="nav-research-partitions-tab-tab" data-toggle="tab"
-                        href="#nav-research-partitions-tab" role="tab" aria-controls="nav-research-partitions-tab"
-                        aria-selected="false">{% trans "Researcher Owned Partitions" %}</a>
+            <div class="form-row">
+                <div class="col-5">
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="inputGroupSelect01">{% trans "Partition Filter" %}</label>
+                        <div class="dropdown ml-2" id="partition_filter">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="partition_filter_button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {% trans "All Partitions" %}
+                            </button>
+                            <div id="partition_filter" class="dropdown-menu" aria-labelledby="partition_filter_button">
+                                <a data-partition-id="all" class="dropdown-item font-weight-bold">{% trans "All Partitions" %}</a>
+                                <div class="dropdown-divider"></div>
+                                <a data-partition-id="core" class="dropdown-item font-weight-bold">{% trans "Core Partitions" %}</a>
+                                {% for partition in core_partitions_used %}
+                                    <a data-partition-id="{{ partition.partition__id }}" data-partition-description="{{ partition.partition__description }}" class="dropdown-item">&nbsp;&nbsp;&nbsp;&nbsp;{{ partition.partition__description }}</a>
+                                {% endfor %}
+                                <div class="dropdown-divider"></div>
+                                <a data-partition-id="research" class="dropdown-item font-weight-bold">{% trans "Researcher Funded Partitions" %}</a>
+                                {% for partition in researcher_partitions_used %}
+                                    <a data-partition-id="{{ partition.partition__id }}" data-partition-description="{{ partition.partition__description }}" class="dropdown-item">&nbsp;&nbsp;&nbsp;&nbsp;{{ partition.partition__description }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </nav>
+            </div>
         </div>
     </div>
     <div class="row no-gutters mt-4">
         <div class="col-6">
             <figure class="highcharts-figure">
-                <div id="rate_of_usage_chart_core"></div>
+                <div id="rate_of_usage_chart"></div>
             </figure>
         </div>
         <div class="col-6">
             <figure class="highcharts-figure">
-                <div id="cumlative_usage_chart_core"></div>
+                <div id="cumlative_total_usage_chart"></div>
             </figure>
         </div>
     </div>
-    <div class="row no-gutters mt-0 mb-4">
-        <div class="col-6 px-3">
-            <table class="table">
-                <thead>
-                    <tr class="text-dark text-center font-weight-bold">
-                        <td></td>
-                        <td>{% trans "CPU Time" %}</td>
-                        <td>{% trans "Wait Time" %}</td>
-                        <td>{% trans "Wall Time" %}</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="text-center">
-                        <td class="text-left">
-                            03/10/2020 to 28/10/2020
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr class="text-center">
-                        <td class="text-left">
-                            01/01/2000 - Present
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="col-6 px-2">
-            <table class="table">
-                <thead>
-                    <tr class="text-dark text-center font-weight-bold">
-                        <td></td>
-                        <td>CPU Time</td>
-                        <td>Wait Time</td>
-                        <td>Wall Time</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="text-center">
-                        <td class="text-left">
-                            03/10/2020 to 28/10/2020
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr class="text-center">
-                        <td class="text-left">
-                            01/01/2000 - Present
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
     <div class="row no-gutters mt-4">
         <div class="col-6">
             <figure class="highcharts-figure">
-                <div id="user_usage_chart"></div>
+                <div id="top_users_usage_chart"></div>
             </figure>
         </div>
         <div class="col-6">
@@ -208,22 +166,22 @@
             <table class="table">
                 <thead>
                     <tr class="text-dark text-center font-weight-bold">
-                        <td></td>
-                        <td>Avg Efficency</td>
+                        <td class="text-left">{% trans "Date Range" %}</td>
+                        <td>{% trans "Avg Efficency" %}</td>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            03/10/2020 to 28/10/2020
+                            {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
                         </td>
-                        <td class="text-center">0</td>
+                        <td class="text-center" id="avg_efficency_in_date_range"></td>
                     </tr>
                     <tr>
                         <td>
-                            01/01/2000 - Present
+                            {{ selected_project.start_date|date:"Y-m-d" }} - Present
                         </td>
-                        <td class="text-center">0</td>
+                        <td class="text-center" id="avg_efficency_to_present"></td>
                     </tr>
                 </tbody>
             </table>
@@ -232,22 +190,22 @@
             <table class="table">
                 <thead>
                     <tr class="text-dark text-center font-weight-bold">
-                        <td></td>
-                        <td>Number of jobs</td>
+                        <td class="text-left">{% trans "Date Range" %}</td>
+                        <td>{% trans "Number of jobs" %}</td>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            03/10/2020 to 28/10/2020
+                            {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
                         </td>
-                        <td class="text-center">0</td>
+                        <td class="text-center" id="number_jobs_in_date_range">0</td>
                     </tr>
                     <tr>
                         <td>
-                            01/01/2000 - Present
+                            {{ selected_project.start_date|date:"Y-m-d" }} - Present
                         </td>
-                        <td class="text-center">0</td>
+                        <td class="text-center" id="number_jobs_to_present">0</td>
                     </tr>
                 </tbody>
             </table>
@@ -270,7 +228,7 @@
             <table class="table">
                 <thead>
                     <tr class="text-dark text-center font-weight-bold">
-                        <td></td>
+                        <td class="text-left">{% trans "Date Range" %}</td>
                         <td>Avg CPU Time</td>
                         <td>Avg Wait Time</td>
                         <td>Avg Wall Time</td>
@@ -279,19 +237,19 @@
                 <tbody>
                     <tr class="text-center">
                         <td class="text-left">
-                            03/10/2020 to 28/10/2020
+                            {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
                         </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td id="avg_cpu_time_in_date_range"></td>
+                        <td id="avg_wait_time_in_date_range"></td>
+                        <td id="avg_wall_time_in_date_range"></td>
                     </tr>
                     <tr class="text-center">
                         <td class="text-left">
-                            01/01/2000 - Present
+                            {{ selected_project.start_date|date:"Y-m-d" }} - Present
                         </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td id="avg_cpu_time_to_present"></td>
+                        <td id="avg_wait_time_to_present"></td>
+                        <td id="avg_wall_time_to_present"></td>
                     </tr>
                 </tbody>
             </table>
@@ -300,7 +258,7 @@
             <table class="table">
                 <thead>
                     <tr class="text-dark text-center font-weight-bold">
-                        <td></td>
+                        <td class="text-left">{% trans "Date Range" %}</td>
                         <td>Number of cores</td>
                         <td>Avg cores per job</td>
                     </tr>
@@ -308,17 +266,17 @@
                 <tbody class="text-center">
                     <tr>
                         <td class="text-left">
-                            03/10/2020 to 28/10/2020
+                            {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
                         </td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td id="num_processors_in_date_range"></td>
+                        <td id="avg_cores_per_job_in_date_range"></td>
                     </tr>
                     <tr>
                         <td class="text-left">
-                            01/01/2000 - Present
+                            {{ selected_project.start_date|date:"Y-m-d" }} - Present
                         </td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td id="num_processors_to_present"></td>
+                        <td id="avg_cores_per_job_to_present"></td>
                     </tr>
                 </tbody>
             </table>

@@ -6,7 +6,6 @@
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
 <html>
-
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -24,7 +23,6 @@
 	{% block custom_css %}
 	{% endblock %}
 </head>
-
 <body>
 	{% if user.is_authenticated %}
 	<nav class="navbar navbar-expand-md navbar-dark">
@@ -71,30 +69,30 @@
 					<span>{% trans 'Home' %}</span>
 				</a>
 				{% if user.profile.is_approved %}
-				{% if perms.project.change_project %}
-				<a class="js-nav-tooltip-link nav-link py-3" href="{% url 'data-analytics' %}">
-					<span class="oi oi-signal pr-3 dark_blue"></span>
-					<span>{% trans 'Data Analytics' %}
-						<span class="badge badge-danger badge-pill ml-1">{% trans 'New'%}</span>
-					</span>
-				</a>
-				{% endif %}
-				<a class="js-nav-tooltip-link nav-link py-3"
-					href="https://portal.supercomputing.wales/index.php/index/accessing-the-system/">
-					<span class="oi oi-account-login pr-3 dark_blue"></span>
-					<span>{% trans 'Access SCW System' %}</span>
-				</a>
-				<a class="js-nav-tooltip-link nav-link py-3" href="#" data-toggle="modal"
-					data-target="#password-reset-modal">
-					<span class="oi oi-key pr-3 dark_blue"></span>
-					<span>{% trans 'Reset SCW Password' %}</span>
-				</a>
+					{% if latest_project_code or user.is_staff %}
+						<a class="js-nav-tooltip-link nav-link py-3" href="{% url 'data-analytics'%}?code={{latest_project_code}}" >
+							<span class="oi oi-signal pr-3 dark_blue"></span>
+							<span>{% trans 'Data Analytics' %}
+								<span class="badge badge-danger badge-pill ml-1">{% trans 'New'%}</span>
+							</span>
+						</a>
+					{% endif %}
+					<a class="js-nav-tooltip-link nav-link py-3"
+						href="https://portal.supercomputing.wales/index.php/index/accessing-the-system/">
+						<span class="oi oi-account-login pr-3 dark_blue"></span>
+						<span>{% trans 'Access SCW System' %}</span>
+					</a>
+					<a class="js-nav-tooltip-link nav-link py-3" href="#" data-toggle="modal"
+						data-target="#password-reset-modal">
+						<span class="oi oi-key pr-3 dark_blue"></span>
+						<span>{% trans 'Reset SCW Password' %}</span>
+					</a>
 				{% endif %}
 				{% if perms.project.add_project %}
-				<a class="js-nav-tooltip-link nav-link py-3" href="{% url 'create-project' %}">
-					<span class="oi oi-document pr-3 dark_blue"></span>
-					<span>{% trans 'Create Project Application' %}</span>
-				</a>
+					<a class="js-nav-tooltip-link nav-link py-3" href="{% url 'create-project' %}">
+						<span class="oi oi-document pr-3 dark_blue"></span>
+						<span>{% trans 'Create Project Application' %}</span>
+					</a>
 				{% endif %}
 				<a class="js-nav-tooltip-link nav-link py-3"
 					href="https://portal.supercomputing.wales/index.php/index/submit-support-ticket/">
@@ -131,7 +129,7 @@
 		{% block logged_out %}
 		{% endblock %}
 		{% if not user.is_authenticated %}
-		{% include 'erdf.html' %}
+			{% include 'erdf.html' %}
 		{% endif %}
 	</main>
 	<footer class="fixed-bottom">
@@ -185,7 +183,6 @@
 		</div>
 	</div>
 	{% endif %}
-
 	<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 	<script src="{% static 'js/jquery-ui.min.js' %}"></script>
 	<script src="{% static 'js/popper.min.js' %}"></script>
@@ -201,5 +198,4 @@
 	{% block custom_js %}
 	{% endblock %}
 </body>
-
 </html>

@@ -1,5 +1,6 @@
 import datetime
 import logging
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -297,19 +298,22 @@ class Project(models.Model):
             self._assign_project_owner_project_membership()
         super(Project, self).save(*args, **kwargs)
 
+    @property
+    def pi_email(self):
+        '''
+        Try to parse a valid email address from the PI text field.
+        '''
+        try:
+            return re.findall(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+", self.pi)[0]
+        except Exception:
+            return None
+
     @classmethod
     def latest_project(cls, tech_lead):
         '''
         Return the tech lead's latest project.
         '''
         return cls.objects.filter(tech_lead=tech_lead).latest()
-
-    @classmethod
-    def project_codes_for_tech_lead(cls, tech_lead):
-        '''
-        Return a list of project codes for a tech lead.
-        '''
-        return cls.objects.filter(tech_lead=tech_lead,).order_by('-created_time').values_list('code', flat=True)
 
     def __str__(self):
         return self.code

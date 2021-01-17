@@ -3,27 +3,19 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # -------------------------------------------------------------------------
-    # Paths for the data-analytics dashboard
-    # -------------------------------------------------------------------------
     path(
         'data-analytics/',
-        views.LatestProjectView.as_view(),
+        views.IndexView.as_view(),
         name='data-analytics',
     ),
     path(
-        'data-analytics/search/',
-        views.ProjectSearchView.as_view(),
-        name='data-analytics-search',
-    ),
-    path(
-        'data-analytics/search/json/',
+        'data-analytics/project/json/',
         views.ProjectStatsParserJSONView,
-        name='data-analytics-search-json',
+        name='data-analytics-project-json',
     ),
     path(
-        'data-analytics/<str:code>/',
-        views.ProjectDetailView.as_view(),
-        name='data-analytics-detail',
+        'data-analytics/user/json/',
+        views.UserStatsParserJSONView,
+        name='data-analytics-user-json',
     ),
 ]
