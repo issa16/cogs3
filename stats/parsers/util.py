@@ -15,3 +15,7 @@ def parse_efficency_result_set(result_set):
         wall_time = seconds_to_hours(row['wall_time_sum'].total_seconds())
         efficency.append(round((cpu_time / wall_time) * 100, 2))
     return efficency
+
+
+def kb_to_gb(kb):
+    return round(kb / 1000000, 3)

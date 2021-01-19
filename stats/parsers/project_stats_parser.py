@@ -8,7 +8,7 @@ from project.models import Project, ProjectUserMembership
 from stats.models import ComputeDaily, StorageWeekly
 from system.models import Partition
 
-from .util import parse_efficency_result_set, seconds_to_hours
+from .util import kb_to_gb, parse_efficency_result_set, seconds_to_hours
 
 
 class ProjectStatsParser:
@@ -179,8 +179,8 @@ class ProjectStatsParser:
                 Avg('home_space_used'),
                 Avg('scratch_space_used'),
             )
-            data['home_space_used_avg'] = result['home_space_used__avg']
-            data['scratch_space_used_avg'] = result['scratch_space_used__avg']
+            data['home_space_used_avg'] = kb_to_gb(result['home_space_used__avg'])
+            data['scratch_space_used_avg'] = kb_to_gb(result['scratch_space_used__avg'])
         except Exception:
             pass
 
@@ -221,9 +221,9 @@ class ProjectStatsParser:
             total = []
             for row in result:
                 dates.append(row['month'].strftime('%b %Y'))
-                home.append(row['home_space_used_sum'])
-                scratch.append(row['scratch_space_used_sum'])
-                total.append(row['home_space_used_sum'] + row['scratch_space_used_sum'])
+                home.append(kb_to_gb(row['home_space_used_sum']))
+                scratch.append(kb_to_gb(row['scratch_space_used_sum']))
+                total.append(kb_to_gb(row['home_space_used_sum'] + row['scratch_space_used_sum']))
 
             # Build response
             data = {
