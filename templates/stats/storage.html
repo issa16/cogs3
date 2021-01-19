@@ -1,93 +1,75 @@
 <!-- templates/stats/storage.html -->
-{% load static %}
-{% load i18n %}
-{% load hreflang %}
-{% load data_analytics_tags %}
-{% load humanize %}
+{% load static %} {% load i18n %} {% load hreflang %} {% load data_analytics_tags %} {% load humanize %}
 <div class="row no-gutters mt-4">
-    <div class="col mt-3 mb-2">
-        {% include 'stats/date_range_form.html' %}
-    </div>
+  <div class="col mt-3 mb-2">{% include 'stats/date_range_form.html' %}</div>
 </div>
 <div class="row no-gutters mb-4">
-    <div class="col mt-3">
-        <table class="table m-0">
-            <thead class="text-dark text-center font-weight-bold">
-                <tr>
-                    <td></td>
-                    <td>
-                        {% trans "Home" %}
-                    </td>
-                    <td>
-                        {% trans "Scratch" %}
-                    </td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="text-center">
-                    <td class="text-left font-weight-bold text-dark">
-                        {% trans "Average disk space usage per week" %}
-                    </td>
-                    <td>{{storage_stats.home_space_used_avg|floatformat|intcomma|default_if_none:0}} GB</td>
-                    <td>{{storage_stats.scratch_space_used_avg|floatformat|intcomma|default_if_none:0}} GB</td>
-                </tr>
-                <tr class="text-center">
-                    <td class="text-left font-weight-bold text-dark">
-                        {% trans "Average file count per week" %}
-                    </td>
-                    <td>{{storage_stats.home_files_used_avg|floatformat:0|intcomma|default_if_none:0}}</td>
-                    <td>{{storage_stats.scratch_files_used_avg|floatformat:0|intcomma|default_if_none:0}}</td>
-                </tr>
-                <tr class="text-center">
-                    <td></td>
-                    <td class="text-dark font-weight-bold">
-                        {% trans "Total Charge" %}
-                    </td>
-                    <td>N/A</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="col mt-3">
+    <table class="table m-0">
+      <thead class="text-dark text-center font-weight-bold">
+        <tr>
+          <td></td>
+          <td>{% trans "Home" %}</td>
+          <td>{% trans "Scratch" %}</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="text-center">
+          <td class="text-left font-weight-bold text-dark">{% trans "Average disk space usage per week" %}</td>
+          <td>{{storage_stats.home_space_used_avg|floatformat|intcomma|default:0}} GB</td>
+          <td>{{storage_stats.scratch_space_used_avg|floatformat|intcomma|default:0}} GB</td>
+        </tr>
+        <tr class="text-center">
+          <td class="text-left font-weight-bold text-dark">{% trans "Average file count per week" %}</td>
+          <td>{{storage_stats.home_files_used_avg|floatformat:0|intcomma|default:0}}</td>
+          <td>{{storage_stats.scratch_files_used_avg|floatformat:0|intcomma|default:0}}</td>
+        </tr>
+        <tr class="text-center">
+          <td></td>
+          <td class="text-dark font-weight-bold">{% trans "Total Charge" %}</td>
+          <td>N/A</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 <div class="row no-gutters my-4">
-    <div class="col-6 mt-4">
-        <figure class="highcharts-figure">
-            <div id="disk_space_storage_chart"></div>
-        </figure>
-    </div>
-    <div class="col-6 mt-4">
-        <figure class="highcharts-figure">
-            <div id="file_count_storage_chart"></div>
-        </figure>
-    </div>
+  <div class="col-6 mt-4">
+    <figure class="highcharts-figure">
+      <div id="disk_space_storage_chart"></div>
+    </figure>
+  </div>
+  <div class="col-6 mt-4">
+    <figure class="highcharts-figure">
+      <div id="file_count_storage_chart"></div>
+    </figure>
+  </div>
 </div>
 <div class="row no-gutters mb-4">
-    <div class="col-6 px-2">
-        <table class="table" id="disk_space">
-            <thead>
-                <tr class="text-center font-weight-bold text-dark">
-                    <td style="width: 10%;" class="text-left">{% trans "Month" %}</td>
-                    <td style="width: 15%;">{% trans "Home (GB)" %}</td>
-                    <td style="width: 15%;">{% trans "Scratch (GB)" %}</td>
-                    <td style="width: 15%;">{% trans "Total (GB)" %}</td>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-    <div class="col-6 px-2">
-        <table class="table" id="file_count">
-            <thead>
-                <tr class="text-center font-weight-bold text-dark">
-                    <td style="width: 10%;" class="text-left">{% trans "Month" %}</td>
-                    <td style="width: 15%;">{% trans "Home" %}</td>
-                    <td style="width: 15%;">{% trans "Scratch" %}</td>
-                    <td style="width: 15%;">{% trans "Total" %}</td>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+  <div class="col-6 px-2">
+    <table class="table" id="disk_space">
+      <thead>
+        <tr class="text-center font-weight-bold text-dark">
+          <td style="width: 10%" class="text-left">{% trans "Month" %}</td>
+          <td style="width: 15%">{% trans "Home (GB)" %}</td>
+          <td style="width: 15%">{% trans "Scratch (GB)" %}</td>
+          <td style="width: 15%">{% trans "Total (GB)" %}</td>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="col-6 px-2">
+    <table class="table" id="file_count">
+      <thead>
+        <tr class="text-center font-weight-bold text-dark">
+          <td style="width: 10%" class="text-left">{% trans "Month" %}</td>
+          <td style="width: 15%">{% trans "Home" %}</td>
+          <td style="width: 15%">{% trans "Scratch" %}</td>
+          <td style="width: 15%">{% trans "Total" %}</td>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 </div>

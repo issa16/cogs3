@@ -2,11 +2,14 @@ from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
-from django.http import JsonResponse
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse, JsonResponse
+from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from project.mixins import PermissionAndLoginRequiredMixin
 from project.models import Project
 from system.models import Partition
+from weasyprint import HTML
 
 from .parsers.project_stats_parser import ProjectStatsParser
 from .parsers.user_stats_parser import UserStatsParser
@@ -90,22 +93,22 @@ def parse_date_range(request):
     return start_date, end_date
 
 
-def build_project_stats(stats_parser, context):
+def build_project_stats(stats_parser, data):
     # Retrieve project overview stats
-    context['total_core_hours'] = stats_parser.total_core_hours()
-    context['total_cpu_hours'] = stats_parser.total_cpu_hours()
-    context['total_slurm_jobs'] = stats_parser.total_slurm_jobs()
-    context['efficency'] = stats_parser.efficency()
+    data['total_core_hours'] = stats_parser.total_core_hours()
+    data['total_cpu_hours'] = stats_parser.total_cpu_hours()
+    data['total_slurm_jobs'] = stats_parser.total_slurm_jobs()
+    data['efficency'] = stats_parser.efficency()
 
     # Retrieve core partitions stats in date range
-    context['core_partitions_in_date_range'] = stats_parser.partition_stats_in_date_range(
+    data['core_partitions_in_date_range'] = stats_parser.partition_stats_in_date_range(
         partition_type=[
             Partition.CORE,
         ]
     )
 
     # Retrieve core partitions stats to present
-    context['core_partitions_to_present'] = stats_parser.partition_stats_in_date_range(
+    data['core_partitions_to_present'] = stats_parser.partition_stats_in_date_range(
         start_date=stats_parser.project.start_date,
         partition_type=[
             Partition.CORE,
@@ -113,14 +116,14 @@ def build_project_stats(stats_parser, context):
     )
 
     # Retrieve researcher funded partitions stats in date range
-    context['researcher_partitions_in_date_range'] = stats_parser.partition_stats_in_date_range(
+    data['researcher_partitions_in_date_range'] = stats_parser.partition_stats_in_date_range(
         partition_type=[
             Partition.RESEARCH,
         ],
     )
 
     # Retrieve researcher funded partitions stats to present
-    context['researcher_partitions_to_present'] = stats_parser.partition_stats_in_date_range(
+    data['researcher_partitions_to_present'] = stats_parser.partition_stats_in_date_range(
         start_date=stats_parser.project.start_date,
         partition_type=[
             Partition.RESEARCH,
@@ -128,7 +131,7 @@ def build_project_stats(stats_parser, context):
     )
 
     # Retrieve compute totals in date range
-    context['compute_totals_in_date_range'] = stats_parser.partition_stats_in_date_range(
+    data['compute_totals_in_date_range'] = stats_parser.partition_stats_in_date_range(
         partition_type=[
             Partition.CORE,
             Partition.RESEARCH,
@@ -136,7 +139,7 @@ def build_project_stats(stats_parser, context):
     )
 
     # Retrieve compute totals to present
-    context['compute_totals_to_present'] = stats_parser.partition_stats_in_date_range(
+    data['compute_totals_to_present'] = stats_parser.partition_stats_in_date_range(
         start_date=stats_parser.project.start_date,
         partition_type=[
             Partition.CORE,
@@ -145,13 +148,13 @@ def build_project_stats(stats_parser, context):
     )
 
     # Retrieve list of partitions used
-    context['core_partitions_used'] = stats_parser.partitions_used(partition_type=Partition.CORE)
-    context['researcher_partitions_used'] = stats_parser.partitions_used(partition_type=Partition.RESEARCH)
+    data['core_partitions_used'] = stats_parser.partitions_used(partition_type=Partition.CORE)
+    data['researcher_partitions_used'] = stats_parser.partitions_used(partition_type=Partition.RESEARCH)
 
     # Retrieve storage stats
-    context['storage_stats'] = stats_parser.storage_stats_in_date_range()
+    data['storage_stats'] = stats_parser.storage_stats_in_date_range()
 
-    return context
+    return data
 
 
 def UserStatsParserJSONView(request):
@@ -246,3 +249,57 @@ def ProjectStatsParserJSONView(request):
             pass
 
     return JsonResponse(data, safe=False)
+
+
+def GeneratePDF(request):
+    '''
+    GeneratePDF
+    '''
+    if request.GET:
+        try:
+            # Determine user
+            user = request.user
+
+            # Parse query params
+            project_code = request.GET.get('code')
+            start_date, end_date = parse_date_range(request)
+            partition_filter = request.GET.get('partition', 'all')
+
+            if user.is_staff:
+                # Staff can view all projects
+                project = Project.objects.get(code=project_code)
+            else:
+                # Tech leads can only view their own projects
+                project = Project.objects.get(
+                    code=project_code,
+                    tech_lead=user,
+                )
+
+            # Create a ProjectStatsParser for the project
+            stats_parser = ProjectStatsParser(
+                project,
+                partition_filter,
+                start_date,
+                end_date,
+            )
+
+            context = {
+                'project': project,
+                'query_start_date': start_date,
+                'query_end_date': end_date,
+                'user': user,
+            }
+            context = build_project_stats(stats_parser, context)
+
+            html_string = render_to_string('stats/pdf_template.html', context)
+            html = HTML(string=html_string, base_url=request.build_absolute_uri())
+            html.write_pdf(target='/tmp/mypdf.pdf')
+
+            fs = FileSystemStorage('/tmp')
+            with fs.open('mypdf.pdf') as pdf:
+                response = HttpResponse(pdf, content_type='application/pdf')
+                response['Content-Disposition'] = 'attachment; filename="' + project.code + '".pdf"'
+            return response
+        except Exception:
+            pass
+    return HttpResponse()

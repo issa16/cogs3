@@ -1,127 +1,95 @@
 <!-- templates/stats/index.html -->
-{% extends 'base.html' %}
-{% load static %}
-{% load i18n %}
-{% block title %}{% trans "Data Analytics" %}{% endblock %}
-{% block content %}
-<div class="row no-gutters pb-3">
-    <div class="col">
-        <div class="card">
-            <h6 class="card-header border-bottom"><b>{% trans "Data Analytics" %}</b></h6>
-            <div class="card-body">
-                {% if request.user.is_staff %}
-                    <div class="row no-gutters pb-0">
-                        <div class="col">
-                            <div class="alert alert-info mb-0" role="alert">
-                                <h5 class="alert-heading">{% trans "SCW Administration" %}</h5>
-                                <hr>
-                                <form class="form-row" method="GET" action="{% url 'data-analytics' %}" novalidate>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control col-12" name="code"
-                                            placeholder="{% trans 'SCW, HPCW or ARCCA project code' %}" value={{request.GET.code}}>
-                                        <div class="input-group-append">
-                                            <button type="submit" class="btn btn-primary">{% trans "Find" %}</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="my-3">
-                                {% if messages %}
-                                    {% for message in messages %}
-                                        <div {% if message.tags %} class="alert {{ message.tags }}" {% endif %} role="alert">
-                                            {{ message }}
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="row no-gutters">
-                        <div class="col">
-                            <div class="form-row">
-                                <div class="col-5">
-                                    <div class="input-group mb-3">
-                                        <label class="input-group-text" for="inputGroupSelect01">{% trans "Project Filter" %}</label>
-                                        <div class="dropdown ml-2" id="project_filter">
-                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="project_filter_button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                {{selected_project.code}}
-                                            </button>
-                                            {% if project_codes|length > 1 %}
-                                                <div id="project_filter" class="dropdown-menu" aria-labelledby="project_filter_button">
-                                                    {% for project_code in project_codes %}
-                                                        {% if project_code != selected_project.code %}
-                                                            <a class="dropdown-item" href="{% url 'data-analytics' %}?code={{ project_code }}">{{project_code}}</a>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-                {% if project_codes or selected_project %}
-                    <div class="row no-gutters pt-4 px-3">
-                        <div class="col" id="project-title">
-                            <h6 class="font-weight-bold">{{selected_project.code}} : {{selected_project.title}}</h6>
-                        </div>
-                    </div>
-                    <div class="row no-gutters pt-3">
-                        <div class="col">
-                            <nav>
-                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                    <a class="nav-item nav-link" id="overview-tab" data-toggle="tab" href="#overview"
-                                        role="tab" aria-controls="overview" aria-selected="true">
-                                        {% trans "Overview" %}
-                                    </a>
-                                    <a class="nav-item nav-link" id="nav-compute-tab" data-toggle="tab" href="#nav-compute"
-                                        role="tab" aria-controls="nav-compute" aria-selected="false">
-                                        {% trans "Compute" %}
-                                    </a>
-                                    <a class="nav-item nav-link" id="nav-storage-tab" data-toggle="tab" href="#nav-storage"
-                                        role="tab" aria-controls="nav-storage" aria-selected="false">
-                                        {% trans "Storage"%}
-                                    </a>
-                                </div>
-                            </nav>
-                            <div class="tab-content" id="nav-tabContent">
-                                <div class="tab-pane fade " id="overview" role="tabpanel" aria-labelledby="overview-tab">
-                                    {% include 'stats/overview.html' %}
-                                </div>
-                                <div class="tab-pane fade" id="nav-compute" role="tabpanel"
-                                    aria-labelledby="nav-compute-tab">
-                                    {% include 'stats/compute.html' %}
-                                </div>
-                                <div class="tab-pane fade" id="nav-storage" role="tabpanel"
-                                    aria-labelledby="nav-storage-tab">
-                                    {% include 'stats/storage.html' %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-{% block custom_js %}
-<script>
-$(document).ready(function() {
+{% extends 'base.html' %} {% load static %} {% load i18n %} {% block title %}{% trans "Data Analytics" %}{% endblock %} {% block content %}
 
+<div class="row no-gutters pb-3">
+  <div class="col">
+    <div class="card">
+      <h6 class="card-header border-bottom"><b>{% trans "Data Analytics" %}</b></h6>
+      <div class="card-body">
+        {% if request.user.is_staff %}
+        <div class="row no-gutters pb-0">
+          <div class="col">
+            <div class="alert alert-info mb-0" role="alert">
+              <h5 class="alert-heading">{% trans "SCW Administration" %}</h5>
+              <hr />
+              <form class="form-row" method="GET" action="{% url 'data-analytics' %}" novalidate>
+                <div class="input-group">
+                  <input type="text" class="form-control col-12" name="code" placeholder="{% trans 'SCW, HPCW or ARCCA project code' %}" value="{{request.GET.code}}" />
+                  <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">{% trans "Find" %}</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="my-3">
+              {% if messages %} {% for message in messages %}
+              <div {% if message.tags %} class="alert {{ message.tags }}" {% endif %} role="alert">{{ message }}</div>
+              {% endfor %} {% endif %}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="row no-gutters">
+          <div class="col">
+            <div class="form-row">
+              <div class="col-5">
+                <div class="input-group mb-3">
+                  <label class="input-group-text" for="inputGroupSelect01">{% trans "Project Filter" %}</label>
+                  <div class="dropdown ml-2" id="project_filter">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="project_filter_button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{selected_project.code}}</button>
+                    {% if project_codes|length > 1 %}
+                    <div id="project_filter" class="dropdown-menu" aria-labelledby="project_filter_button">
+                      {% for project_code in project_codes %} {% if project_code != selected_project.code %}
+                      <a class="dropdown-item" href="{% url 'data-analytics' %}?code={{ project_code }}">{{project_code}}</a>
+                      {% endif %} {% endfor %}
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %} {% if project_codes or selected_project %}
+        <div class="row no-gutters pt-4 px-3">
+          <div class="col" id="project-title">
+            <h6 class="font-weight-bold">{{selected_project.code}} : {{selected_project.title}}</h6>
+          </div>
+        </div>
+        <div class="row no-gutters pt-3">
+          <div class="col">
+            <nav>
+              <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true"> {% trans "Overview" %} </a>
+                <a class="nav-item nav-link" id="nav-compute-tab" data-toggle="tab" href="#nav-compute" role="tab" aria-controls="nav-compute" aria-selected="false"> {% trans "Compute" %} </a>
+                <a class="nav-item nav-link" id="nav-storage-tab" data-toggle="tab" href="#nav-storage" role="tab" aria-controls="nav-storage" aria-selected="false"> {% trans "Storage"%} </a>
+              </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+              <div class="tab-pane fade" id="overview" role="tabpanel" aria-labelledby="overview-tab">{% include 'stats/overview.html' %}</div>
+              <div class="tab-pane fade" id="nav-compute" role="tabpanel" aria-labelledby="nav-compute-tab">{% include 'stats/compute.html' %}</div>
+              <div class="tab-pane fade" id="nav-storage" role="tabpanel" aria-labelledby="nav-storage-tab">{% include 'stats/storage.html' %}</div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block custom_js %}
+<script>
+  $(document).ready(function () {
     /**
      * Compute and return sum of an array.
      * @param arr
      */
     function sum(arr) {
-        var total = 0;
-        for (var i = 0; i < arr.length; i++) {
-            total += arr[i];
-        }
-        return total;
+      var total = 0;
+      for (var i = 0; i < arr.length; i++) {
+        total += arr[i];
+      }
+      return total;
     }
 
     /**
@@ -129,24 +97,24 @@ $(document).ready(function() {
      * @param arr
      */
     function avg(arr) {
-        var total = sum(arr);
-        return Math.round(total / arr.length);
+      var total = sum(arr);
+      return Math.round(total / arr.length);
     }
 
     /**
      * Manage data analytics tabs between page refresh.
      */
-    $('a[data-toggle="tab"]').click(function(e) {
-        e.preventDefault();
-        $(this).tab('show');
+    $('a[data-toggle="tab"]').click(function (e) {
+      e.preventDefault();
+      $(this).tab("show");
     });
-    $('a[data-toggle="tab"]').on("shown.bs.tab", function(e) {
-        var id = $(e.target).attr("href");
-        localStorage.setItem('selectedTab', id)
+    $('a[data-toggle="tab"]').on("shown.bs.tab", function (e) {
+      var id = $(e.target).attr("href");
+      localStorage.setItem("selectedTab", id);
     });
-    var selectedTab = localStorage.getItem('selectedTab') || '#overview';
+    var selectedTab = localStorage.getItem("selectedTab") || "#overview";
     if (selectedTab != null) {
-        $('a[data-toggle="tab"][href="' + selectedTab + '"]').tab('show');
+      $('a[data-toggle="tab"][href="' + selectedTab + '"]').tab("show");
     }
 
     /**
@@ -154,54 +122,44 @@ $(document).ready(function() {
      * @param partition_id
      */
     function update_charts(project_code, partition_id) {
-        var partition_id = `&partition=${partition_id}`;
-        $.ajax({
-            url: "{% url 'data-analytics-project-json' %}" + '?code=' + project_code + '&start_date={{query_start_date|date:"Y-m-d"}}&end_date={{query_end_date|date:"Y-m-d"}}' + partition_id,
-            dataType: 'json',
-            success: function(data) {
-                console.log(data)
-                build_overview_charts(data);
-                build_compute_charts(data);
-                build_storage_charts(data);
-            },
-        });
-    }
-    
-    /**
-     * Update charts on page load.
-     */
-    var selected_project_code = "{{selected_project.code}}"
-    if (selected_project_code){
-        update_charts(selected_project_code, 'all');
+      var partition_id = `&partition=${partition_id}`;
+      $.ajax({
+        url: "{% url 'data-analytics-project-json' %}" + "?code=" + project_code + '&start_date={{query_start_date|date:"Y-m-d"}}&end_date={{query_end_date|date:"Y-m-d"}}' + partition_id,
+        dataType: "json",
+        success: function (data) {
+          console.log(data);
+          build_overview_charts(data);
+          build_compute_charts(data);
+          build_storage_charts(data);
+        },
+      });
     }
 
     /**
-     * Refresh charts when a user selects a partition filter.  
+     * Update charts on page load.
      */
-    $('#partition_filter a').click(function() {
-        event.preventDefault();
-        // Parse selected partition id
-        var partition_id = $(this).attr('data-partition-id');
-        // Update button text
-        $("#partition_filter_button").text($(this).text().trim());
-        // Update charts
-        update_charts(selected_project_code, partition_id);
+    var selected_project_code = "{{selected_project.code}}";
+    if (selected_project_code) {
+      update_charts(selected_project_code, "all");
+    }
+
+    /**
+     * Refresh charts when a user selects a partition filter.
+     */
+    $("#partition_filter a").click(function () {
+      event.preventDefault();
+      // Parse selected partition id
+      var partition_id = $(this).attr("data-partition-id");
+      // Update button text
+      $("#partition_filter_button").text($(this).text().trim());
+      // Update charts
+      update_charts(selected_project_code, partition_id);
     });
 
     /**
      * Default menu options for charts.
      */
-    var default_menu_options = [
-        "viewFullscreen",
-        "printChart",
-        "separator",
-        "downloadPNG",
-        "downloadJPEG",
-        "downloadPDF",
-        "downloadSVG",
-        "separator",
-        "downloadCSV",
-    ]
+    var default_menu_options = ["viewFullscreen", "printChart", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG", "separator", "downloadCSV"];
 
     /**
      * Generate html table rows for each data record.
@@ -209,562 +167,591 @@ $(document).ready(function() {
      * @param data
      */
     function generate_table_rows(table, data) {
-        $(table).empty();
-        $.each(data, function(key, value) {
-            var row = `
+      $(table).empty();
+      $.each(data, function (key, value) {
+        var row = `
                 <tr>
                     <td>${value[0]}</td>
                     <td class="text-center">${value[1]}</td>
                 </tr>`;
-            table.append(row);
-        });
+        table.append(row);
+      });
     }
 
     function build_pi_projects_chart(data) {
-        /**
-         * Principal Investigator's Projects chart.
-         * @param data
-         */
-        chart = Highcharts.chart('pi_projects_chart', {
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie'
+      /**
+       * Principal Investigator's Projects chart.
+       * @param data
+       */
+      chart = Highcharts.chart("pi_projects_chart", {
+        chart: {
+          plotBackgroundColor: null,
+          plotBorderWidth: null,
+          plotShadow: false,
+          type: "pie",
+        },
+        title: {
+          text: "Principal Investigator's Projects",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        series: [
+          {
+            type: "pie",
+            name: "Total",
+            data: data,
+          },
+        ],
+        exporting: {
+          filename: "principal-investigators-projects-{{selected_project.code}}",
+          csv: {
+            dateFormat: "%Y-%m-%d",
+            columnHeaderFormatter: function (item, key) {
+              if (!key) {
+                return "Status";
+              }
+              return false;
             },
-            title: {
-                text: "Principal Investigator's Projects",
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
+          },
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
             },
-            series: [{
-                type: 'pie',
-                name: 'Total',
-                data: data
-            }],
-            exporting: {
-                filename: "principal-investigators-projects-{{selected_project.code}}",
-                csv: {
-                    dateFormat: '%Y-%m-%d',
-                    columnHeaderFormatter: function(item, key) {
-                        if (!key) {
-                            return "Status"
-                        }
-                        return false
-                    },
-                },
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
-        });
-        generate_table_rows($('#pi_projects > tbody'), data)
+          },
+        },
+      });
+      generate_table_rows($("#pi_projects > tbody"), data);
     }
 
     function build_users_status_chart(data) {
-        /**
-         * User Status chart.
-         * @param data
-         */
-        Highcharts.chart('project_users_chart', {
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie'
+      /**
+       * User Status chart.
+       * @param data
+       */
+      Highcharts.chart("project_users_chart", {
+        chart: {
+          plotBackgroundColor: null,
+          plotBorderWidth: null,
+          plotShadow: false,
+          type: "pie",
+        },
+        title: {
+          text: "Users status",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        series: [
+          {
+            type: "pie",
+            name: "Total",
+            data: data,
+          },
+        ],
+        exporting: {
+          filename: "user-status-{{selected_project.code}}",
+          csv: {
+            dateFormat: "%Y-%m-%d",
+            columnHeaderFormatter: function (item, key) {
+              if (!key) {
+                return "Status";
+              }
+              return false;
             },
-            title: {
-                text: "Users status",
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
+          },
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
             },
-            series: [{
-                type: 'pie',
-                name: 'Total',
-                data: data
-            }],
-            exporting: {
-                filename: "user-status-{{selected_project.code}}",
-                csv: {
-                    dateFormat: '%Y-%m-%d',
-                    columnHeaderFormatter: function(item, key) {
-                        if (!key) {
-                            return "Status"
-                        }
-                        return false
-                    },
-                },
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
-        });
-        generate_table_rows($('#user_status > tbody'), data)
+          },
+        },
+      });
+      generate_table_rows($("#user_status > tbody"), data);
     }
 
     function build_rate_of_usage_per_month_chart(data) {
-        /**
-         * Build rate of usage chart.
-         * @param data
-         */
-        Highcharts.chart('rate_of_usage_chart', {
-            title: {
-                text: 'Rate of usage per month',
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
+      /**
+       * Build rate of usage chart.
+       * @param data
+       */
+      Highcharts.chart("rate_of_usage_chart", {
+        title: {
+          text: "Rate of usage per month",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "Hours",
+          },
+        },
+        xAxis: {
+          categories: data["dates"],
+          title: {
+            text: "Month",
+          },
+        },
+        series: [
+          {
+            name: "CPU Time",
+            data: data["cpu_time"],
+          },
+          {
+            name: "Wait Time",
+            data: data["wait_time"],
+          },
+          {
+            name: "Wall Time",
+            data: data["wall_time"],
+          },
+        ],
+        exporting: {
+          filename: "rate-of-usage-{{selected_project.code}}",
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
             },
-            yAxis: {
-                title: {
-                    text: 'Hours'
-                }
-            },
-            xAxis: {
-                categories: data['dates'],
-                title: {
-                    text: 'Month'
-                }
-            },
-            series: [{
-                name: 'CPU Time',
-                data: data['cpu_time']
-            }, {
-                name: 'Wait Time',
-                data: data['wait_time']
-            }, {
-                name: 'Wall Time',
-                data: data['wall_time']
-            }, ],
-            exporting: {
-                filename: "rate-of-usage-{{selected_project.code}}",
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
-        });
+          },
+        },
+      });
     }
 
     function build_cumlative_total_usage_per_month_chart(data) {
-        /**
-         * Build cumlative total chart.
-         * @param data
-         */
-        Highcharts.chart('cumlative_total_usage_chart', {
-            title: {
-                text: 'Cumlative total usage per month',
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
+      /**
+       * Build cumlative total chart.
+       * @param data
+       */
+      Highcharts.chart("cumlative_total_usage_chart", {
+        title: {
+          text: "Cumlative total usage per month",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "Hours",
+          },
+        },
+        xAxis: {
+          categories: data["dates"],
+          title: {
+            text: "Month",
+          },
+        },
+        series: [
+          {
+            name: "CPU Time",
+            data: data["cpu_time"],
+          },
+          {
+            name: "Wait TIme",
+            data: data["wait_time"],
+          },
+          {
+            name: "Wall Time",
+            data: data["wall_time"],
+          },
+        ],
+        exporting: {
+          filename: "cumlative-total-usage-{{selected_project.code}}",
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
             },
-            yAxis: {
-                title: {
-                    text: 'Hours'
-                }
-            },
-            xAxis: {
-                categories: data['dates'],
-                title: {
-                    text: 'Month'
-                }
-            },
-            series: [{
-                name: 'CPU Time',
-                data: data['cpu_time'],
-            }, {
-                name: 'Wait TIme',
-                data: data['wait_time']
-            }, {
-                name: 'Wall Time',
-                data: data['wall_time']
-            }, ],
-            exporting: {
-                filename: "cumlative-total-usage-{{selected_project.code}}",
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
-        });
+          },
+        },
+      });
     }
 
     function build_top_users_usage_chart(data) {
-        /**
-         * Top users chart.
-         * @param data
-         */
-        // Build data series
-        var data_series = []
-        for (var i = 0; i < data['usernames'].length; i++) {
-            data_series.push([
-                data['usernames'][i],
-                data['wall_time'][i],
-            ]);
-        }
-        Highcharts.chart('top_users_usage_chart', {
-            chart: {
-                type: 'column'
+      /**
+       * Top users chart.
+       * @param data
+       */
+      // Build data series
+      var data_series = [];
+      for (var i = 0; i < data["usernames"].length; i++) {
+        data_series.push([data["usernames"][i], data["wall_time"][i]]);
+      }
+      Highcharts.chart("top_users_usage_chart", {
+        chart: {
+          type: "column",
+        },
+        title: {
+          text: "Top 10 users usage",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "Wall Time",
+          },
+        },
+        xAxis: {
+          type: "category",
+          labels: {
+            rotation: -45,
+          },
+          title: {
+            text: "User",
+          },
+        },
+        legend: {
+          enabled: false,
+        },
+        series: [
+          {
+            name: "Wall Time",
+            data: data_series,
+            dataLabels: {
+              enabled: true,
+              color: "#FFFFFF",
+              align: "center",
+              format: "{point.y:.2f}",
+              y: 30,
             },
-            title: {
-                text: 'Top 10 users usage',
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
+          },
+        ],
+        exporting: {
+          filename: "top-users-usage-chart-{{selected_project.code}}",
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
             },
-            yAxis: {
-                title: {
-                    text: 'Wall Time'
-                }
-            },
-            xAxis: {
-                type: 'category',
-                labels: {
-                    rotation: -45,
-                },
-                title: {
-                    text: 'User'
-                },
-            },
-            legend: {
-                enabled: false
-            },
-            series: [{
-                name: 'Wall Time',
-                data: data_series,
-                dataLabels: {
-                    enabled: true,
-                    color: '#FFFFFF',
-                    align: 'center',
-                    format: '{point.y:.2f}',
-                    y: 30,
-                },
-            }],
-            exporting: {
-                filename: "top-users-usage-chart-{{selected_project.code}}",
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
-        });
+          },
+        },
+      });
     }
 
     function build_usage_by_partition_chart(data) {
-        /**
-         * Build usage by partition.
-         * @param data
-         */
-        // Build data series
-        var data_series = []
-        for (var i = 0; i < data['parition_names'].length; i++) {
-            data_series.push({
-                name: data['parition_names'][i],
-                y: data['partition_percentages'][i],
-            });
-        }
-        Highcharts.chart('usage_by_partition_chart', {
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie'
-            },
-            title: {
-                text: 'Usage by partition',
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
-            },
-            accessibility: {
-                point: {
-                    valueSuffix: '%'
-                }
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: false
-                    },
-                    showInLegend: true
-                }
-            },
-            series: [{
-                name: 'Percentage',
-                colorByPoint: true,
-                data: data_series,
-            }],
-            exporting: {
-                filename: "usage-by-partition-{{selected_project.code}}",
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
+      /**
+       * Build usage by partition.
+       * @param data
+       */
+      // Build data series
+      var data_series = [];
+      for (var i = 0; i < data["parition_names"].length; i++) {
+        data_series.push({
+          name: data["parition_names"][i],
+          y: data["partition_percentages"][i],
         });
+      }
+      Highcharts.chart("usage_by_partition_chart", {
+        chart: {
+          plotBackgroundColor: null,
+          plotBorderWidth: null,
+          plotShadow: false,
+          type: "pie",
+        },
+        title: {
+          text: "Usage by partition",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        tooltip: {
+          pointFormat: "{series.name}: <b>{point.percentage:.2f}%</b>",
+        },
+        accessibility: {
+          point: {
+            valueSuffix: "%",
+          },
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: "pointer",
+            dataLabels: {
+              enabled: false,
+            },
+            showInLegend: true,
+          },
+        },
+        series: [
+          {
+            name: "Percentage",
+            colorByPoint: true,
+            data: data_series,
+          },
+        ],
+        exporting: {
+          filename: "usage-by-partition-{{selected_project.code}}",
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
+            },
+          },
+        },
+      });
     }
 
     function build_efficency_per_month_chart(data) {
-        /**
-         * Build efficency per month chart.
-         * @param data
-         */
-        Highcharts.chart('compute_efficency_chart', {
-            chart: {
-                type: 'spline',
-            },
-            title: {
-                text: 'Efficency per month',
+      /**
+       * Build efficency per month chart.
+       * @param data
+       */
+      Highcharts.chart("compute_efficency_chart", {
+        chart: {
+          type: "spline",
+        },
+        title: {
+          text: "Efficency per month",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        xAxis: {
+          type: "datetime",
+          categories: data["dates"],
+          title: {
+            text: "Month",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "Efficency",
+          },
+          max: 100,
+          minorGridLineWidth: 0,
+          gridLineWidth: 0,
+          alternateGridColor: null,
+          plotBands: [
+            {
+              from: 0,
+              to: 40,
+              color: "rgba(68, 170, 213, 0.1)",
+              label: {
+                text: "Poor",
                 style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
-            },
-            xAxis: {
-                type: 'datetime',
-                categories: data['dates'],
-                title: {
-                    text: 'Month'
-                }
-            },
-            yAxis: {
-                title: {
-                    text: 'Efficency'
+                  color: "#606060",
                 },
-                max: 100,
-                minorGridLineWidth: 0,
-                gridLineWidth: 0,
-                alternateGridColor: null,
-                plotBands: [{
-                    from: 0,
-                    to: 40,
-                    color: 'rgba(68, 170, 213, 0.1)',
-                    label: {
-                        text: 'Poor',
-                        style: {
-                            color: '#606060'
-                        }
-                    }
-                }, {
-                    from: 40,
-                    to: 50,
-                    color: 'rgba(0, 0, 0, 0)',
-                    label: {
-                        text: 'Fair',
-                        style: {
-                            color: '#606060'
-                        }
-                    }
-                }, {
-                    from: 50,
-                    to: 75,
-                    color: 'rgba(68, 170, 213, 0.1)',
-                    label: {
-                        text: 'Good',
-                        style: {
-                            color: '#606060'
-                        }
-                    }
-                }, {
-                    from: 75,
-                    to: 100,
-                    color: 'rgba(0, 0, 0, 0)',
-                    label: {
-                        text: 'Excellent',
-                        style: {
-                            color: '#606060'
-                        }
-                    }
-                }]
+              },
             },
-            series: [{
-                name: 'Efficency',
-                data: data['efficency']
-            }],
-            exporting: {
-                filename: "efficency-per-month-{{selected_project.code}}",
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
-        });
-        // Set table values
-        $("#avg_efficency_in_date_range").text(data['avg_efficency_in_date_range'] + ' %');
-        $("#avg_efficency_to_present").text(data['avg_efficency_to_present'] + ' %');
+            {
+              from: 40,
+              to: 50,
+              color: "rgba(0, 0, 0, 0)",
+              label: {
+                text: "Fair",
+                style: {
+                  color: "#606060",
+                },
+              },
+            },
+            {
+              from: 50,
+              to: 75,
+              color: "rgba(68, 170, 213, 0.1)",
+              label: {
+                text: "Good",
+                style: {
+                  color: "#606060",
+                },
+              },
+            },
+            {
+              from: 75,
+              to: 100,
+              color: "rgba(0, 0, 0, 0)",
+              label: {
+                text: "Excellent",
+                style: {
+                  color: "#606060",
+                },
+              },
+            },
+          ],
+        },
+        series: [
+          {
+            name: "Efficency",
+            data: data["efficency"],
+          },
+        ],
+        exporting: {
+          filename: "efficency-per-month-{{selected_project.code}}",
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
+            },
+          },
+        },
+      });
+      // Set table values
+      $("#avg_efficency_in_date_range").text(data["avg_efficency_in_date_range"] + " %");
+      $("#avg_efficency_to_present").text(data["avg_efficency_to_present"] + " %");
     }
 
     function build_number_of_jobs_per_month_chart(data) {
-        /**
-         * Number of jobs per month.
-         * @param data
-         */
-        Highcharts.chart('num_slurm_jobs_chart', {
-            title: {
-                text: 'Number of jobs per month',
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
+      /**
+       * Number of jobs per month.
+       * @param data
+       */
+      Highcharts.chart("num_slurm_jobs_chart", {
+        title: {
+          text: "Number of jobs per month",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "Number of jobs",
+          },
+        },
+        xAxis: {
+          categories: data["dates"],
+          title: {
+            text: "Month",
+          },
+        },
+        series: [
+          {
+            type: "column",
+            name: "Number of jobs",
+            data: data["number_jobs"],
+          },
+        ],
+        exporting: {
+          filename: "number-of-jobs-per-month-{{selected_project.code}}",
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
             },
-            yAxis: {
-                title: {
-                    text: 'Number of jobs'
-                }
-            },
-            xAxis: {
-                categories: data['dates'],
-                title: {
-                    text: 'Month'
-                }
-            },
-            series: [{
-                type: 'column',
-                name: 'Number of jobs',
-                data: data['number_jobs'],
-            }],
-            exporting: {
-                filename: "number-of-jobs-per-month-{{selected_project.code}}",
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
-        });
-        // Set table values
-        $("#number_jobs_in_date_range").text(data['number_jobs_in_date_range']);
-        $("#number_jobs_to_present").text(data['number_jobs_to_present']);
+          },
+        },
+      });
+      // Set table values
+      $("#number_jobs_in_date_range").text(data["number_jobs_in_date_range"]);
+      $("#number_jobs_to_present").text(data["number_jobs_to_present"]);
     }
 
     function build_per_job_average_stats_per_month_chart(data) {
-        /**
-         * Per-job average stats per month.
-         * @param data
-         */
-        Highcharts.chart('per_job_average_chart', {
-            title: {
-                text: 'Per-Job average stats per month',
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
+      /**
+       * Per-job average stats per month.
+       * @param data
+       */
+      Highcharts.chart("per_job_average_chart", {
+        title: {
+          text: "Per-Job average stats per month",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        xAxis: {
+          categories: data["dates"],
+          title: {
+            text: "Month",
+          },
+        },
+        series: [
+          {
+            type: "column",
+            name: "CPU Time",
+            data: data["cpu_time"],
+          },
+          {
+            type: "column",
+            name: "Wait Time",
+            data: data["wait_time"],
+          },
+          {
+            type: "column",
+            name: "Wall Time",
+            data: data["wall_time"],
+          },
+        ],
+        exporting: {
+          filename: "per-job-average-stats-per-month-{{selected_project.code}}",
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
             },
-            xAxis: {
-                categories: data['dates'],
-                title: {
-                    text: 'Month'
-                }
-            },
-            series: [{
-                type: 'column',
-                name: 'CPU Time',
-                data: data['cpu_time']
-            }, {
-                type: 'column',
-                name: 'Wait Time',
-                data: data['wait_time']
-            }, {
-                type: 'column',
-                name: 'Wall Time',
-                data: data['wall_time']
-            }],
-            exporting: {
-                filename: "per-job-average-stats-per-month-{{selected_project.code}}",
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
-        });
-        // Set table values
-        $("#avg_cpu_time_in_date_range").text(data['avg_cpu_time_in_date_range']);
-        $("#avg_wait_time_in_date_range").text(data['avg_wait_time_in_date_range']);
-        $("#avg_wall_time_in_date_range").text(data['avg_wall_time_in_date_range']);
-        $("#avg_cpu_time_to_present").text(data['avg_cpu_time_to_present']);
-        $("#avg_wait_time_to_present").text(data['avg_wait_time_to_present']);
-        $("#avg_wall_time_to_present").text(data['avg_wall_time_to_present']);
+          },
+        },
+      });
+      // Set table values
+      $("#avg_cpu_time_in_date_range").text(data["avg_cpu_time_in_date_range"]);
+      $("#avg_wait_time_in_date_range").text(data["avg_wait_time_in_date_range"]);
+      $("#avg_wall_time_in_date_range").text(data["avg_wall_time_in_date_range"]);
+      $("#avg_cpu_time_to_present").text(data["avg_cpu_time_to_present"]);
+      $("#avg_wait_time_to_present").text(data["avg_wait_time_to_present"]);
+      $("#avg_wall_time_to_present").text(data["avg_wall_time_to_present"]);
     }
 
     function build_core_count_and_node_utilisation_chart(data) {
-        /**
-         * Core count and node utilisation.
-         * @param data
-         */
-        Highcharts.chart('number_of_processors_chart', {
-            title: {
-                text: 'Core count and node utilisation per month',
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
+      /**
+       * Core count and node utilisation.
+       * @param data
+       */
+      Highcharts.chart("number_of_processors_chart", {
+        title: {
+          text: "Core count and node utilisation per month",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        xAxis: {
+          categories: data["dates"],
+          title: {
+            text: "Month",
+          },
+        },
+        series: [
+          {
+            type: "column",
+            name: "Total cores",
+            data: data["num_processors"],
+          },
+          {
+            type: "spline",
+            name: "Average cores per job",
+            data: data["avg_cores_per_job"],
+            marker: {
+              lineWidth: 2,
+              lineColor: Highcharts.getOptions().colors[3],
+              fillColor: "white",
             },
-            xAxis: {
-                categories: data['dates'],
-                title: {
-                    text: 'Month'
-                }
+          },
+        ],
+        exporting: {
+          filename: "core-count-and-node-utilisation-per-month-{{selected_project.code}}",
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
             },
-            series: [{
-                type: 'column',
-                name: 'Total cores',
-                data: data['num_processors'],
-            }, {
-                type: 'spline',
-                name: 'Average cores per job',
-                data: data['avg_cores_per_job'],
-                marker: {
-                    lineWidth: 2,
-                    lineColor: Highcharts.getOptions().colors[3],
-                    fillColor: 'white'
-                }
-            }, ],
-            exporting: {
-                filename: "core-count-and-node-utilisation-per-month-{{selected_project.code}}",
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
-        });
-        // Set table values
-        $("#num_processors_in_date_range").text(data['num_processors_in_date_range']);
-        $("#avg_cores_per_job_in_date_range").text(data['avg_cores_per_job_in_date_range']);
-        $("#num_processors_to_present").text(data['num_processors_to_present']);
-        $("#avg_cores_per_job_to_present").text(data['avg_cores_per_job_to_present']);
+          },
+        },
+      });
+      // Set table values
+      $("#num_processors_in_date_range").text(data["num_processors_in_date_range"]);
+      $("#avg_cores_per_job_in_date_range").text(data["avg_cores_per_job_in_date_range"]);
+      $("#num_processors_to_present").text(data["num_processors_to_present"]);
+      $("#avg_cores_per_job_to_present").text(data["avg_cores_per_job_to_present"]);
     }
 
     /**
@@ -773,208 +760,219 @@ $(document).ready(function() {
      * @param data
      */
     function generate_storage_table_rows(table, data) {
-        $(table).empty();
-        $.each(data['dates'], function(key, value) {
-            var row = `
+      $(table).empty();
+      $.each(data["dates"], function (key, value) {
+        var row = `
                 <tr class="text-center">
                     <td class="text-left">${value}</td>
-                    <td class=>${data['home'][key]}</td>
-                    <td class=>${data['scratch'][key]}</td>
-                    <td class=>${data['total'][key]}</td>
+                    <td class=>${data["home"][key]}</td>
+                    <td class=>${data["scratch"][key]}</td>
+                    <td class=>${data["total"][key]}</td>
                 </tr>`;
-            table.prepend(row);
-        });
+        table.prepend(row);
+      });
     }
 
     function build_disk_space_chart(data) {
-        /**
-         * Disk Space chart.
-         * @param data
-         */
-        // Calculate disk space averages
-        var home_disk_space_avg = avg(data['home']);
-        var scratch_disk_space_avg = avg(data['scratch']);
+      /**
+       * Disk Space chart.
+       * @param data
+       */
+      // Calculate disk space averages
+      var home_disk_space_avg = avg(data["home"]);
+      var scratch_disk_space_avg = avg(data["scratch"]);
 
-        Highcharts.chart('disk_space_storage_chart', {
-            title: {
-                text: 'Disk space per month',
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
+      Highcharts.chart("disk_space_storage_chart", {
+        title: {
+          text: "Disk space per month",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "Disk space (GB)",
+          },
+          plotLines: [
+            {
+              color: "#7cb5ec",
+              width: 2,
+              value: home_disk_space_avg,
+              zIndex: 1,
+              label: {
+                text: home_disk_space_avg + " GB",
+                align: "left",
+              },
             },
-            yAxis: {
-                title: {
-                    text: 'Disk space (GB)'
-                },
-                plotLines: [{
-                    color: '#7cb5ec',
-                    width: 2,
-                    value: home_disk_space_avg,
-                    zIndex: 1,
-                    label: {
-                        text: home_disk_space_avg + ' GB',
-                        align: 'left',
-                    }
-                }, {
-                    color: '#434348',
-                    width: 2,
-                    value: scratch_disk_space_avg,
-                    zIndex: 1,
-                    label: {
-                        text: scratch_disk_space_avg + ' GB',
-                        align: 'left',
-                    }
-                }],
+            {
+              color: "#434348",
+              width: 2,
+              value: scratch_disk_space_avg,
+              zIndex: 1,
+              label: {
+                text: scratch_disk_space_avg + " GB",
+                align: "left",
+              },
             },
-            xAxis: {
-                title: {
-                    text: 'Month',
-                },
-                categories: data['dates']
+          ],
+        },
+        xAxis: {
+          title: {
+            text: "Month",
+          },
+          categories: data["dates"],
+        },
+        series: [
+          {
+            type: "column",
+            name: "Home",
+            data: data["home"],
+          },
+          {
+            type: "column",
+            name: "Scratch",
+            data: data["scratch"],
+          },
+        ],
+        exporting: {
+          filename: "disk-space-{{selected_project.code}}",
+          csv: {
+            dateFormat: "%Y-%m-%d",
+            columnHeaderFormatter: function (item, key) {
+              if (!key) {
+                return "Date";
+              }
+              return false;
             },
-            series: [{
-                type: 'column',
-                name: 'Home',
-                data: data['home']
-            }, {
-                type: 'column',
-                name: 'Scratch',
-                data: data['scratch']
-            }],
-            exporting: {
-                filename: "disk-space-{{selected_project.code}}",
-                csv: {
-                    dateFormat: '%Y-%m-%d',
-                    columnHeaderFormatter: function(item, key) {
-                        if (!key) {
-                            return "Date"
-                        }
-                        return false
-                    },
-                },
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
+          },
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
             },
-        });
-        generate_storage_table_rows($('#disk_space > tbody'), data)
+          },
+        },
+      });
+      generate_storage_table_rows($("#disk_space > tbody"), data);
     }
 
     function build_file_count_chart(data) {
-        /** 
-         * File count chart.
-         * @param data
-         */
-        // Calculate file count averages
-        var home_file_count_avg = avg(data['home']);
-        var scratch_file_count_avg = avg(data['scratch']);
+      /**
+       * File count chart.
+       * @param data
+       */
+      // Calculate file count averages
+      var home_file_count_avg = avg(data["home"]);
+      var scratch_file_count_avg = avg(data["scratch"]);
 
-        Highcharts.chart('file_count_storage_chart', {
-            title: {
-                text: 'File count per month',
-                style: {
-                    color: '#5e6e82F',
-                    fontSize: '16px',
-                    fontFamily: 'Lato',
-                }
+      Highcharts.chart("file_count_storage_chart", {
+        title: {
+          text: "File count per month",
+          style: {
+            color: "#5e6e82F",
+            fontSize: "16px",
+            fontFamily: "Lato",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "Number of files",
+          },
+          plotLines: [
+            {
+              color: "#7cb5ec",
+              width: 2,
+              value: home_file_count_avg,
+              zIndex: 1,
+              label: {
+                text: home_file_count_avg + " GB",
+                align: "left",
+              },
             },
-            yAxis: {
-                title: {
-                    text: 'Number of files'
-                },
-                plotLines: [{
-                    color: '#7cb5ec',
-                    width: 2,
-                    value: home_file_count_avg,
-                    zIndex: 1,
-                    label: {
-                        text: home_file_count_avg + ' GB',
-                        align: 'left',
-                    }
-                }, {
-                    color: '#434348',
-                    width: 2,
-                    value: scratch_file_count_avg,
-                    zIndex: 1,
-                    label: {
-                        text: scratch_file_count_avg + ' GB',
-                        align: 'left',
-                    }
-                }]
+            {
+              color: "#434348",
+              width: 2,
+              value: scratch_file_count_avg,
+              zIndex: 1,
+              label: {
+                text: scratch_file_count_avg + " GB",
+                align: "left",
+              },
             },
-            xAxis: {
-                title: {
-                    text: 'Month',
-                },
-                categories: data['dates']
+          ],
+        },
+        xAxis: {
+          title: {
+            text: "Month",
+          },
+          categories: data["dates"],
+        },
+        series: [
+          {
+            type: "column",
+            name: "Home",
+            data: data["home"],
+          },
+          {
+            type: "column",
+            name: "Scratch",
+            data: data["scratch"],
+          },
+        ],
+        exporting: {
+          filename: "file-count-{{selected_project.code}}",
+          csv: {
+            dateFormat: "%Y-%m-%d",
+            columnHeaderFormatter: function (item, key) {
+              if (!key) {
+                return "Date";
+              }
+              return false;
             },
-            series: [{
-                type: 'column',
-                name: 'Home',
-                data: data['home']
-            }, {
-                type: 'column',
-                name: 'Scratch',
-                data: data['scratch']
-            }],
-            exporting: {
-                filename: "file-count-{{selected_project.code}}",
-                csv: {
-                    dateFormat: '%Y-%m-%d',
-                    columnHeaderFormatter: function(item, key) {
-                        if (!key) {
-                            return "Date"
-                        }
-                        return false
-                    },
-                },
-                buttons: {
-                    contextButton: {
-                        menuItems: default_menu_options,
-                    }
-                }
-            }
-        });
-        generate_storage_table_rows($('#file_count > tbody'), data)
+          },
+          buttons: {
+            contextButton: {
+              menuItems: default_menu_options,
+            },
+          },
+        },
+      });
+      generate_storage_table_rows($("#file_count > tbody"), data);
     }
 
     function build_overview_charts(data) {
-        /**
-         * Build overview charts.
-         * @param data
-         */
-        build_pi_projects_chart(data['pi_projects']);
-        build_users_status_chart(data['user_status']);
+      /**
+       * Build overview charts.
+       * @param data
+       */
+      build_pi_projects_chart(data["pi_projects"]);
+      build_users_status_chart(data["user_status"]);
     }
 
     function build_compute_charts(data) {
-        /**
-         * Build compute charts.
-         * @param data
-         */
-        build_rate_of_usage_per_month_chart(data['rate_of_usage']);
-        build_cumlative_total_usage_per_month_chart(data['cumlative_total_usage']);
-        build_top_users_usage_chart(data['top_users_usage']);
-        build_usage_by_partition_chart(data['usage_by_partition']);
-        build_efficency_per_month_chart(data['efficency_per_month']);
-        build_number_of_jobs_per_month_chart(data['num_jobs_per_month']);
-        build_per_job_average_stats_per_month_chart(data['per_job_avg_stats'])
-        build_core_count_and_node_utilisation_chart(data['core_count_node_utilisation']);
+      /**
+       * Build compute charts.
+       * @param data
+       */
+      build_rate_of_usage_per_month_chart(data["rate_of_usage"]);
+      build_cumlative_total_usage_per_month_chart(data["cumlative_total_usage"]);
+      build_top_users_usage_chart(data["top_users_usage"]);
+      build_usage_by_partition_chart(data["usage_by_partition"]);
+      build_efficency_per_month_chart(data["efficency_per_month"]);
+      build_number_of_jobs_per_month_chart(data["num_jobs_per_month"]);
+      build_per_job_average_stats_per_month_chart(data["per_job_avg_stats"]);
+      build_core_count_and_node_utilisation_chart(data["core_count_node_utilisation"]);
     }
 
     function build_storage_charts(data) {
-        /**
-         * Build storage charts.
-         * @param data
-         */
-        build_disk_space_chart(data['disk_space']);
-        build_file_count_chart(data['file_count']);
+      /**
+       * Build storage charts.
+       * @param data
+       */
+      build_disk_space_chart(data["disk_space"]);
+      build_file_count_chart(data["file_count"]);
     }
-
-});
+  });
 </script>
 {% endblock %}

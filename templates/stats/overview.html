@@ -1,142 +1,129 @@
 <!-- templates/stats/overview.html -->
-{% load static %}
-{% load i18n %}
-{% load hreflang %}
-{% load data_analytics_tags %}
+{% load static %} {% load i18n %} {% load hreflang %} {% load data_analytics_tags %}
 <div class="row no-gutters px-3 pt-3">
-    <div class="col">
-        <a class="btn btn-primary float-right" href="" role="button">Export to PDF</a>
-    </div>
+  <div class="col">
+    <a class="btn btn-primary float-right" href="{% url 'data-analytics-generate-pdf' %}?code={{request.GET.code}}&start_date={{request.GET.start_date}}&end_date={{request.GET.end_date}}" role="button">Export to PDF</a>
+  </div>
 </div>
 <div class="row no-gutters">
-    <div class="col-6">
-        <table class="table table-borderless">
-            <tbody>
-                <tr>
-                    <td style="width: 40%;" class="text-dark">
-                        <b>{% trans "Principal Investigator" %}</b>
-                    </td>
-                    <td style="width: 60%;">{{ selected_project.pi|format_pi }}</td>
-                </tr>
-                <tr>
-                    <td class="text-dark">
-                        <b>{% trans "Technical Lead" %}</b>
-                    </td>
-                    <td>{{ selected_project.tech_lead.first_name|title }} {{ selected_project.tech_lead.last_name|title }}</td>
-                </tr>
-                <tr>
-                    <td class="text-dark">
-                        <b>{% trans "Start Date" %}</b>
-                    </td>
-                    <td>{{ selected_project.start_date }}</td>
-                </tr>
-                <tr>
-                    <td class="text-dark">
-                        <b>{% trans "End Date" %}</b>
-                    </td>
-                    <td>{{ selected_project.end_date }}</td>
-                </tr>
-                <tr>
-                    <td class="text-dark">
-                        <b>{% trans "Institution" %}</b>
-                    </td>
-                    <td>{{ selected_project.tech_lead.profile.institution }}</td>
-                </tr>
-                <tr>
-                    <td class="text-dark">
-                        <b>{% trans "Efficency" %}</b>
-                    </td>
-                    <td>
-                        {% efficency_as_percentage efficency %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="col-6">
-        <table class="table table-borderless">
-            <tbody style="border-top:0;">
-                <tr>
-                    <td style="width: 40%;" class="text-dark">
-                        <b>{% trans "Home storage allocation" %}</b>
-                    </td>
-                    <td style="width: 60%;">
-                        {{ selected_project.allocation_storage_home|gb_to_tb }}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-dark">
-                        <b>{% trans "Scratch storage allocation" %}</b>
-                    </td>
-                    <td>
-                        {{ selected_project.allocation_storage_scratch|gb_to_tb }}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-dark">
-                        <b>{% trans "Total allocated core hours" %}</b>
-                    </td>
-                    <td>
-                        {{ selected_project.allocation_cputime }}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-dark">
-                        <b>{% trans "Total number of core hours" %}</b>
-                    </td>
-                    <td>{{ total_core_hours|in_hours }}</td>
-                </tr>
-                <tr>
-                    <td class="text-dark">
-                        <b>{% trans "Total number of CPU hours" %}</b>
-                    </td>
-                    <td>{{ total_cpu_hours|in_hours }}</td>
-                </tr>
-                <tr>
-                    <td class="text-dark">
-                        <b>{% trans "Total number of Slurm jobs" %}</b>
-                    </td>
-                    <td>{{ total_slurm_jobs|default_if_none:0 }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="col-6">
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+          <td style="width: 40%" class="text-dark">
+            <b>{% trans "Principal Investigator" %}</b>
+          </td>
+          <td style="width: 60%">{{ selected_project.pi|format_pi }}</td>
+        </tr>
+        <tr>
+          <td class="text-dark">
+            <b>{% trans "Technical Lead" %}</b>
+          </td>
+          <td>{{ selected_project.tech_lead.first_name|title }} {{ selected_project.tech_lead.last_name|title }}</td>
+        </tr>
+        <tr>
+          <td class="text-dark">
+            <b>{% trans "Start Date" %}</b>
+          </td>
+          <td>{{ selected_project.start_date }}</td>
+        </tr>
+        <tr>
+          <td class="text-dark">
+            <b>{% trans "End Date" %}</b>
+          </td>
+          <td>{{ selected_project.end_date }}</td>
+        </tr>
+        <tr>
+          <td class="text-dark">
+            <b>{% trans "Institution" %}</b>
+          </td>
+          <td>{{ selected_project.tech_lead.profile.institution }}</td>
+        </tr>
+        <tr>
+          <td class="text-dark">
+            <b>{% trans "Efficency" %}</b>
+          </td>
+          <td>{% efficency_as_percentage efficency %}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-6">
+    <table class="table table-borderless">
+      <tbody style="border-top: 0">
+        <tr>
+          <td style="width: 40%" class="text-dark">
+            <b>{% trans "Home storage allocation" %}</b>
+          </td>
+          <td style="width: 60%">{{ selected_project.allocation_storage_home|gb_to_tb }}</td>
+        </tr>
+        <tr>
+          <td class="text-dark">
+            <b>{% trans "Scratch storage allocation" %}</b>
+          </td>
+          <td>{{ selected_project.allocation_storage_scratch|gb_to_tb }}</td>
+        </tr>
+        <tr>
+          <td class="text-dark">
+            <b>{% trans "Total allocated core hours" %}</b>
+          </td>
+          <td>{{ selected_project.allocation_cputime }}</td>
+        </tr>
+        <tr>
+          <td class="text-dark">
+            <b>{% trans "Total number of core hours" %}</b>
+          </td>
+          <td>{{ total_core_hours|in_hours }}</td>
+        </tr>
+        <tr>
+          <td class="text-dark">
+            <b>{% trans "Total number of CPU hours" %}</b>
+          </td>
+          <td>{{ total_cpu_hours|in_hours }}</td>
+        </tr>
+        <tr>
+          <td class="text-dark">
+            <b>{% trans "Total number of Slurm jobs" %}</b>
+          </td>
+          <td>{{ total_slurm_jobs|default_if_none:0 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 <div class="row no-gutters mt-4">
-    <div class="col-6">
-        <figure class="highcharts-figure">
-            <div id="pi_projects_chart"></div>
-        </figure>
-    </div>
-    <div class="col-6">
-        <figure class="highcharts-figure">
-            <div id="project_users_chart"></div>
-        </figure>
-    </div>
+  <div class="col-6">
+    <figure class="highcharts-figure">
+      <div id="pi_projects_chart"></div>
+    </figure>
+  </div>
+  <div class="col-6">
+    <figure class="highcharts-figure">
+      <div id="project_users_chart"></div>
+    </figure>
+  </div>
 </div>
 <div class="row no-gutters mb-4">
-    <div class="col-6 px-3">
-        <table class="table" id='pi_projects'>
-            <thead>
-                <tr class="text-dark font-weight-bold">
-                    <td class="text-left col-10">Status</td>
-                    <td class="text-center col-2">Total</td>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-    <div class="col-6 px-3">
-        <table class="table" id='user_status'>
-            <thead>
-                <tr class="text-dark font-weight-bold">
-                    <td class="text-left col-10">Status</td>
-                    <td class="text-center col-2">Total</td>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+  <div class="col-6 px-3">
+    <table class="table" id="pi_projects">
+      <thead>
+        <tr class="text-dark font-weight-bold">
+          <td class="text-left col-10">Status</td>
+          <td class="text-center col-2">Total</td>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="col-6 px-3">
+    <table class="table" id="user_status">
+      <thead>
+        <tr class="text-dark font-weight-bold">
+          <td class="text-left col-10">Status</td>
+          <td class="text-center col-2">Total</td>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 </div>

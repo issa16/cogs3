@@ -9,6 +9,11 @@ urlpatterns = [
         name='data-analytics',
     ),
     path(
+        'data-analytics/generate/pdf/',
+        views.GeneratePDF,
+        name='data-analytics-generate-pdf',
+    ),
+    path(
         'data-analytics/project/json/',
         views.ProjectStatsParserJSONView,
         name='data-analytics-project-json',
