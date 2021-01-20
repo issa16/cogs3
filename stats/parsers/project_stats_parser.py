@@ -409,7 +409,7 @@ class ProjectStatsParser:
             ).annotate(Count('user', distinct=True)).values('user__first_name', 'user__last_name').annotate(
                 c=Count('id'),
                 wall_time=Sum('wall_time'),
-            ).order_by('user')[:n_users]
+            ).order_by('-wall_time')[:n_users]
 
             # Parse result
             usernames = []
