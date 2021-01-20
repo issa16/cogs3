@@ -6,7 +6,7 @@ from django.db.models.functions import TruncMonth
 from project.models import Project, ProjectUserMembership
 from stats.models import ComputeDaily
 
-from .util import parse_efficency_result_set, seconds_to_hours
+from .util import parse_efficiency_result_set, seconds_to_hours
 
 
 class UserStatsParser:
@@ -102,9 +102,9 @@ class UserStatsParser:
             data = {}
         return data
 
-    def efficency_per_month(self):
+    def efficiency_per_month(self):
         '''
-        Return the efficency grouped by month.
+        Return the efficiency grouped by month.
         '''
         try:
             # Query cpu and wall time in date range
@@ -120,12 +120,12 @@ class UserStatsParser:
 
             # Parse in date range results
             dates = [row['month'].strftime('%b %Y') for row in results_in_date_range]
-            efficency = parse_efficency_result_set(results_in_date_range)
+            efficiency = parse_efficiency_result_set(results_in_date_range)
 
             # Build response
             data = {
                 'dates': dates,
-                'efficency': efficency,
+                'efficiency': efficiency,
             }
         except Exception:
             data = {}

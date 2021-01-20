@@ -502,17 +502,17 @@
       });
     }
 
-    function build_efficency_per_month_chart(data) {
+    function build_efficiency_per_month_chart(data) {
       /**
-       * Build efficency per month chart.
+       * Build efficiency per month chart.
        * @param data
        */
-      Highcharts.chart("compute_efficency_chart", {
+      Highcharts.chart("compute_efficiency_chart", {
         chart: {
           type: "spline",
         },
         title: {
-          text: "Efficency per month",
+          text: "Efficiency per month",
           style: {
             color: "#5e6e82F",
             fontSize: "16px",
@@ -528,7 +528,7 @@
         },
         yAxis: {
           title: {
-            text: "Efficency",
+            text: "Efficiency",
           },
           max: 100,
           minorGridLineWidth: 0,
@@ -583,12 +583,12 @@
         },
         series: [
           {
-            name: "Efficency",
-            data: data["efficency"],
+            name: "Efficiency",
+            data: data["efficiency"],
           },
         ],
         exporting: {
-          filename: "efficency-per-month-{{selected_project.code}}",
+          filename: "efficiency-per-month-{{selected_project.code}}",
           buttons: {
             contextButton: {
               menuItems: default_menu_options,
@@ -597,8 +597,8 @@
         },
       });
       // Set table values
-      $("#avg_efficency_in_date_range").text(data["avg_efficency_in_date_range"] + " %");
-      $("#avg_efficency_to_present").text(data["avg_efficency_to_present"] + " %");
+      $("#avg_efficiency_in_date_range").text(data["avg_efficiency_in_date_range"] + " %");
+      $("#avg_efficiency_to_present").text(data["avg_efficiency_to_present"] + " %");
     }
 
     function build_number_of_jobs_per_month_chart(data) {
@@ -960,7 +960,7 @@
       build_cumlative_total_usage_per_month_chart(data["cumlative_total_usage"]);
       build_top_users_usage_chart(data["top_users_usage"]);
       build_usage_by_partition_chart(data["usage_by_partition"]);
-      build_efficency_per_month_chart(data["efficency_per_month"]);
+      build_efficiency_per_month_chart(data["efficiency_per_month"]);
       build_number_of_jobs_per_month_chart(data["num_jobs_per_month"]);
       build_per_job_average_stats_per_month_chart(data["per_job_avg_stats"]);
       build_core_count_and_node_utilisation_chart(data["core_count_node_utilisation"]);

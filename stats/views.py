@@ -98,7 +98,7 @@ def build_project_stats(stats_parser, data):
     data['total_core_hours'] = stats_parser.total_core_hours()
     data['total_cpu_hours'] = stats_parser.total_cpu_hours()
     data['total_slurm_jobs'] = stats_parser.total_slurm_jobs()
-    data['efficency'] = stats_parser.efficency()
+    data['efficiency'] = stats_parser.efficiency()
 
     # Retrieve core partitions stats in date range
     data['core_partitions_in_date_range'] = stats_parser.partition_stats_in_date_range(
@@ -179,7 +179,7 @@ def UserStatsParserJSONView(request):
             # Query stats
             data['rate_of_usage_per_month'] = stats_parser.rate_of_usage_per_month()
             data['cumlative_total_usage_per_month'] = stats_parser.cumlative_total_usage_per_month()
-            data['efficency_per_month'] = stats_parser.efficency_per_month()
+            data['efficiency_per_month'] = stats_parser.efficiency_per_month()
             data['num_jobs_per_month'] = stats_parser.num_jobs_per_month()
 
         except Exception:
@@ -229,14 +229,14 @@ def ProjectStatsParserJSONView(request):
             # Overview stats
             data['pi_projects'] = stats_parser.pi_projects()
             data['user_status'] = stats_parser.user_status()
-            data['efficency'] = stats_parser.efficency()
+            data['efficiency'] = stats_parser.efficiency()
 
             # Compute stats
             data['rate_of_usage'] = stats_parser.rate_of_usage()
             data['cumlative_total_usage'] = stats_parser.cumlative_total_usage()
             data['top_users_usage'] = stats_parser.top_users_usage()
             data['usage_by_partition'] = stats_parser.usage_by_partition()
-            data['efficency_per_month'] = stats_parser.efficency_per_month()
+            data['efficiency_per_month'] = stats_parser.efficiency_per_month()
             data['num_jobs_per_month'] = stats_parser.num_jobs_per_month()
             data['per_job_avg_stats'] = stats_parser.per_job_avg_stats()
             data['core_count_node_utilisation'] = stats_parser.core_count_node_utilisation()

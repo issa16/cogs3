@@ -8,7 +8,7 @@ from project.models import Project, ProjectUserMembership
 from stats.models import ComputeDaily, StorageWeekly
 from system.models import Partition
 
-from .util import kb_to_gb, parse_efficency_result_set, seconds_to_hours
+from .util import kb_to_gb, parse_efficiency_result_set, seconds_to_hours
 
 
 class ProjectStatsParser:
@@ -463,9 +463,9 @@ class ProjectStatsParser:
             data = []
         return data
 
-    def efficency_per_month(self):
+    def efficiency_per_month(self):
         '''
-        Return the efficency for a date range.
+        Return the efficiency for a date range.
         '''
         try:
             # Query cpu and wall time in date range
@@ -481,8 +481,8 @@ class ProjectStatsParser:
 
             # Parse in date range results
             dates = [row['month'].strftime('%b %Y') for row in results_in_date_range]
-            efficency = parse_efficency_result_set(results_in_date_range)
-            avg_efficency_in_date_range = round(sum(efficency) / len(efficency), 2)
+            efficiency = parse_efficiency_result_set(results_in_date_range)
+            avg_efficiency_in_date_range = round(sum(efficiency) / len(efficiency), 2)
 
             # Query cpu and wall time to present
             results_to_present = ComputeDaily.objects.filter(
@@ -495,15 +495,15 @@ class ProjectStatsParser:
             ).order_by('month')
 
             # Parse to present results
-            efficency_to_present = parse_efficency_result_set(results_to_present)
-            avg_efficency_to_present = round(sum(efficency_to_present) / len(efficency_to_present), 2)
+            efficiency_to_present = parse_efficiency_result_set(results_to_present)
+            avg_efficiency_to_present = round(sum(efficiency_to_present) / len(efficiency_to_present), 2)
 
             # Build response
             data = {
                 'dates': dates,
-                'efficency': efficency,
-                'avg_efficency_in_date_range': avg_efficency_in_date_range,
-                'avg_efficency_to_present': avg_efficency_to_present,
+                'efficiency': efficiency,
+                'avg_efficiency_in_date_range': avg_efficiency_in_date_range,
+                'avg_efficiency_to_present': avg_efficiency_to_present,
             }
         except Exception:
             data = {}
@@ -700,9 +700,9 @@ class ProjectStatsParser:
         result = ComputeDaily.objects.filter(project=self.project).aggregate(wait_time=Sum('wait_time'))['wait_time']
         return result if result else 0
 
-    def efficency(self):
+    def efficiency(self):
         '''
-        Return the overall project efficency (CPU/Elapsed).
+        Return the overall project efficiency (CPU/Elapsed).
         '''
         try:
             return (self.total_cpu_hours() / self.total_core_hours())

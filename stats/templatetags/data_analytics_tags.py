@@ -35,7 +35,7 @@ def in_hours(td):
 
 
 @register.simple_tag
-def efficency_as_percentage(x, y=1):
+def efficiency_as_percentage(x, y=1):
     try:
         result = (x / y) * 100
         color = 'black'

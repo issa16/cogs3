@@ -13,7 +13,7 @@
             <td>{% trans "CPU Time (hrs)" %}</td>
             <td>{% trans "Wait Time (hrs)" %}</td>
             <td>{% trans "Wall Time (hrs)" %}</td>
-            <td>{% trans "Efficency" %}</td>
+            <td>{% trans "Efficiency" %}</td>
           </tr>
         </thead>
         <tbody>
@@ -25,14 +25,14 @@
             <td>{{ core_partitions_in_date_range.cpu_time|in_hours }}</td>
             <td>{{ core_partitions_in_date_range.wait_time|in_hours }}</td>
             <td>{{ core_partitions_in_date_range.wall_time|in_hours }}</td>
-            <td>{% efficency_as_percentage core_partitions_in_date_range.cpu_time|in_hours core_partitions_in_date_range.wall_time|in_hours %}</td>
+            <td>{% efficiency_as_percentage core_partitions_in_date_range.cpu_time|in_hours core_partitions_in_date_range.wall_time|in_hours %}</td>
           </tr>
           <tr class="text-center">
             <td class="text-left px-5">{{ selected_project.start_date|date:"Y-m-d" }} - Present</td>
             <td>{{ core_partitions_to_present.cpu_time|in_hours }}</td>
             <td>{{ core_partitions_to_present.wait_time|in_hours }}</td>
             <td>{{ core_partitions_to_present.wall_time|in_hours }}</td>
-            <td>{% efficency_as_percentage core_partitions_to_present.cpu_time|in_hours core_partitions_to_present.wall_time|in_hours %}</td>
+            <td>{% efficiency_as_percentage core_partitions_to_present.cpu_time|in_hours core_partitions_to_present.wall_time|in_hours %}</td>
           </tr>
           <tr class="text-center">
             <td colspan="5" class="font-weight-bold text-left text-primary">{% trans "Researcher Funded Partitions " %}</td>
@@ -42,14 +42,14 @@
             <td>{{ researcher_partitions_in_date_range.cpu_time|in_hours }}</td>
             <td>{{ researcher_partitions_in_date_range.wait_time|in_hours }}</td>
             <td>{{ researcher_partitions_in_date_range.wall_time|in_hours }}</td>
-            <td>{% efficency_as_percentage researcher_partitions_in_date_range.cpu_time|in_hours researcher_partitions_in_date_range.wall_time|in_hours %}</td>
+            <td>{% efficiency_as_percentage researcher_partitions_in_date_range.cpu_time|in_hours researcher_partitions_in_date_range.wall_time|in_hours %}</td>
           </tr>
           <tr class="text-center">
             <td class="text-left px-5">{{ selected_project.start_date|date:"Y-m-d" }} - Present</td>
             <td>{{ researcher_partitions_to_present.cpu_time|in_hours }}</td>
             <td>{{ researcher_partitions_to_present.wait_time|in_hours }}</td>
             <td>{{ researcher_partitions_to_present.wall_time|in_hours }}</td>
-            <td>{% efficency_as_percentage researcher_partitions_to_present.cpu_time|in_hours researcher_partitions_to_present.wall_time|in_hours %}</td>
+            <td>{% efficiency_as_percentage researcher_partitions_to_present.cpu_time|in_hours researcher_partitions_to_present.wall_time|in_hours %}</td>
           </tr>
           <tr class="text-center">
             <td colspan="5" class="font-weight-bold text-left text-primary">{% trans "Total" %}</td>
@@ -59,14 +59,14 @@
             <td>{{ compute_totals_in_date_range.cpu_time|in_hours }}</td>
             <td>{{ compute_totals_in_date_range.wait_time|in_hours }}</td>
             <td>{{ compute_totals_in_date_range.wall_time|in_hours }}</td>
-            <td>{% efficency_as_percentage compute_totals_in_date_range.cpu_time|in_hours compute_totals_in_date_range.wall_time|in_hours %}</td>
+            <td>{% efficiency_as_percentage compute_totals_in_date_range.cpu_time|in_hours compute_totals_in_date_range.wall_time|in_hours %}</td>
           </tr>
           <tr class="text-center">
             <td class="text-left px-5">{{ selected_project.start_date|date:"Y-m-d" }} - Present</td>
             <td>{{ compute_totals_to_present.cpu_time|in_hours }}</td>
             <td>{{ compute_totals_to_present.wait_time|in_hours }}</td>
             <td>{{ compute_totals_to_present.wall_time|in_hours }}</td>
-            <td>{% efficency_as_percentage compute_totals_to_present.cpu_time|in_hours compute_totals_to_present.wall_time|in_hours %}</td>
+            <td>{% efficiency_as_percentage compute_totals_to_present.cpu_time|in_hours compute_totals_to_present.wall_time|in_hours %}</td>
           </tr>
           <tr class="text-center">
             <td></td>
@@ -133,7 +133,7 @@
   <div class="row no-gutters mt-4">
     <div class="col-6 mt-4">
       <figure class="highcharts-figure">
-        <div id="compute_efficency_chart"></div>
+        <div id="compute_efficiency_chart"></div>
       </figure>
     </div>
     <div class="col-6 mt-4">
@@ -148,17 +148,17 @@
         <thead>
           <tr class="text-dark text-center font-weight-bold">
             <td class="text-left">{% trans "Date Range" %}</td>
-            <td>{% trans "Avg Efficency" %}</td>
+            <td>{% trans "Avg Efficiency" %}</td>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>{{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}</td>
-            <td class="text-center" id="avg_efficency_in_date_range"></td>
+            <td class="text-center" id="avg_efficiency_in_date_range"></td>
           </tr>
           <tr>
             <td>{{ selected_project.start_date|date:"Y-m-d" }} - Present</td>
-            <td class="text-center" id="avg_efficency_to_present"></td>
+            <td class="text-center" id="avg_efficiency_to_present"></td>
           </tr>
         </tbody>
       </table>
