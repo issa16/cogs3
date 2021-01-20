@@ -16,7 +16,7 @@ class UserStatsParser:
 
     def __init__(self, user, project_filter):
         self.user = user
-        self.project_ids = self._parse_project_ids(user, project_filter)
+        self.project_ids = self._parse_project_ids(project_filter)
         # Default to last 12 months
         self.start_date = date.today() + relativedelta(months=-12)
         self.end_date = date.today()
@@ -29,6 +29,7 @@ class UserStatsParser:
             # Query rate of usage
             result = ComputeDaily.objects.filter(
                 project__in=self.project_ids,
+                user=self.user,
                 date__range=[self.start_date, self.end_date],
             ).annotate(month=TruncMonth('date')).values('month').annotate(
                 c=Count('id'),
@@ -67,6 +68,7 @@ class UserStatsParser:
             # Query cumlative total usage
             result = ComputeDaily.objects.filter(
                 project__in=self.project_ids,
+                user=self.user,
                 date__range=[self.start_date, self.end_date],
             ).annotate(month=TruncMonth('date')).values('month').annotate(
                 c=Count('id'),
@@ -108,6 +110,7 @@ class UserStatsParser:
             # Query cpu and wall time in date range
             results_in_date_range = ComputeDaily.objects.filter(
                 project__in=self.project_ids,
+                user=self.user,
                 date__range=[self.start_date, self.end_date],
             ).annotate(month=TruncMonth('date')).values('month').annotate(
                 c=Count('id'),
@@ -136,6 +139,7 @@ class UserStatsParser:
             # Query number of jobs in date range
             results_in_date_range = ComputeDaily.objects.filter(
                 project__in=self.project_ids,
+                user=self.user,
                 date__range=[self.start_date, self.end_date],
             ).annotate(month=TruncMonth('date')).values('month').annotate(
                 c=Count('id'),
@@ -158,7 +162,7 @@ class UserStatsParser:
             data = {}
         return data
 
-    def _parse_project_ids(self, user, project_filter):
+    def _parse_project_ids(self, project_filter):
         '''
         Return project ids from a given list of project codes.
         '''
