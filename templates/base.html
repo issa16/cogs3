@@ -1,201 +1,171 @@
 <!-- templates/base.html -->
-{% load static %}
-{% load i18n %}
-{% load hreflang %}
-{% load cookielaw_tags %}
-{% get_current_language as LANGUAGE_CODE %}
+{% load static %} {% load i18n %} {% load hreflang %} {% load cookielaw_tags %} {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<title>{% block title %}{% trans 'Supercomputing Wales' %}{% endblock %}</title>
-	<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-	<link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/jquery-ui.min.css' %}" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-	<link href="{% static 'cookielaw/css/cookielaw.css' %}" rel="stylesheet">
-	<link href="{% static 'css/open-iconic-bootstrap.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/style.css' %}" rel="stylesheet">
-	{% block custom_css %}
-	{% endblock %}
-</head>
-<body>
-	{% if user.is_authenticated %}
-	<nav class="navbar navbar-expand-md navbar-dark">
-		<div class="container-fluid">
-			<a class="navbar-brand" href="{% url 'home' %}">
-				<img src="{% static 'img/scw_small.png' %}" height="30" alt="{% trans 'Supercomputing Wales' %}">
-				{% trans 'My SCW' %}
-			</a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
-				aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarCollapse">
-				<ul class="navbar-nav ml-auto">
-					{% if LANGUAGE_CODE == 'cy' %}
-					<li class="nav-item">
-						<a class="nav-link" href="{% translate_url 'en' %}" hreflang="en">English</a>
-					</li>
-					{% else %}
-					<li class="nav-item">
-						<a class="nav-link" href="{% translate_url 'cy' %}" hreflang="cy">Cymraeg</a>
-					</li>
-					{% endif %}
-					<li class="nav-item">
-						<a class="nav-link" href="{% url 'home' %}">{% trans 'Dashboard' %}</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="{% url 'logout' %}">{% trans 'Logout' %}</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</nav>
-	{% endif %}
-	<main class="container-fluid">
-		{% if user.is_authenticated %}
-		<div class="row no-gutters py-3">
-			<div class="col sidebar">
-				<h6 class="nav-link py-3">
-					<b class="pl-3">{{user.first_name}} {{user.last_name}}</b>
-				</h6>
-				<a class="js-nav-tooltip-link nav-link py-3" href="{% url 'home' %}">
-					<span class="oi oi-home pr-3 dark_blue"></span>
-					<span>{% trans 'Home' %}</span>
-				</a>
-				{% if user.profile.is_approved %}
-					{% if latest_project_code or user.is_staff %}
-						<a class="js-nav-tooltip-link nav-link py-3" href="{% url 'data-analytics'%}?code={{latest_project_code}}" >
-							<span class="oi oi-signal pr-3 dark_blue"></span>
-							<span>{% trans 'Data Analytics' %}
-								<span class="badge badge-danger badge-pill ml-1">{% trans 'New'%}</span>
-							</span>
-						</a>
-					{% endif %}
-					<a class="js-nav-tooltip-link nav-link py-3"
-						href="https://portal.supercomputing.wales/index.php/index/accessing-the-system/">
-						<span class="oi oi-account-login pr-3 dark_blue"></span>
-						<span>{% trans 'Access SCW System' %}</span>
-					</a>
-					<a class="js-nav-tooltip-link nav-link py-3" href="#" data-toggle="modal"
-						data-target="#password-reset-modal">
-						<span class="oi oi-key pr-3 dark_blue"></span>
-						<span>{% trans 'Reset SCW Password' %}</span>
-					</a>
-				{% endif %}
-				{% if perms.project.add_project %}
-					<a class="js-nav-tooltip-link nav-link py-3" href="{% url 'create-project' %}">
-						<span class="oi oi-document pr-3 dark_blue"></span>
-						<span>{% trans 'Create Project Application' %}</span>
-					</a>
-				{% endif %}
-				<a class="js-nav-tooltip-link nav-link py-3"
-					href="https://portal.supercomputing.wales/index.php/index/submit-support-ticket/">
-					<span class="oi oi-envelope-closed pr-3 dark_blue"></span>
-					<span>{% trans 'Submit Support Ticket' %}</span>
-				</a>
-				<a class="js-nav-tooltip-link nav-link pt-3 pb-5 border-bottom" href="{% url 'terms-of-service' %}">
-					<span class="oi oi-task pr-3 dark_blue"></span>
-					<span>{% trans 'Terms and Conditions' %}</span>
-				</a>
-				<div class="js-nav-tooltip-link nav-link py-5 text-center">
-					<p class="text-muted">&#169; {% now "Y' %} {% trans 'Supercomputing Wales' %}</p>
-					<p class="text-muted">
-						<a href="https://portal.supercomputing.wales/">Supercomputing Wales Portal</a>
-					</p>
-					<p class="text-muted">
-						<i>
-							{% blocktrans %} Supercomputing Wales is part-funded by the European Regional Development
-							Fund (ERDF) via Welsh Government.{% endblocktrans %}
-						</i>
-					</p>
-					<a href="https://www.gov.wales/eu-funding" target="_blank">
-						<img src="{% static 'img/erdf.png' %}" width="150" height="114"
-							alt="European Regional Development Fund">
-					</a>
-				</div>
-			</div>
-			{% endif %}
-			<div class="col px-3">
-				{% block content %}
-				{% endblock %}
-			</div>
-		</div>
-		{% block logged_out %}
-		{% endblock %}
-		{% if not user.is_authenticated %}
-			{% include 'erdf.html' %}
-		{% endif %}
-	</main>
-	<footer class="fixed-bottom">
-		{% cookielaw_banner %}
-	</footer>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>{% block title %}{% trans 'Supercomputing Wales' %}{% endblock %}</title>
+        <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon" />
+        <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon" />
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/jquery-ui.min.css' %}" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
+        <link href="{% static 'cookielaw/css/cookielaw.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/open-iconic-bootstrap.min.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+        {% block custom_css %} {% endblock %}
+    </head>
+    <body>
+        {% if user.is_authenticated %}
+        <nav class="navbar navbar-expand-md navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'home' %}">
+                    <img src="{% static 'img/scw_small.png' %}" height="30" alt="{% trans 'Supercomputing Wales' %}" />
+                    {% trans 'My SCW' %}
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav ml-auto">
+                        {% if LANGUAGE_CODE == 'cy' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% translate_url 'en' %}" hreflang="en">English</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% translate_url 'cy' %}" hreflang="cy">Cymraeg</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">{% trans 'Dashboard' %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">{% trans 'Logout' %}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {% endif %}
+        <main class="container-fluid">
+            {% if user.is_authenticated %}
+            <div class="row no-gutters py-3">
+                <div class="col sidebar">
+                    <h6 class="nav-link py-3">
+                        <b class="pl-3">{{user.first_name}} {{user.last_name}}</b>
+                    </h6>
+                    <a class="js-nav-tooltip-link nav-link py-3" href="{% url 'home' %}">
+                        <span class="oi oi-home pr-3 dark_blue"></span>
+                        <span>{% trans 'Home' %}</span>
+                    </a>
+                    {% if user.profile.is_approved %} {% if perms.project.change_project or user.is_staff %}
+                    <a class="js-nav-tooltip-link nav-link py-3" href="{% url 'data-analytics'%}?code={{latest_project_code}}">
+                        <span class="oi oi-signal pr-3 dark_blue"></span>
+                        <span
+                            >{% trans 'Data Analytics' %}
+                            <span class="badge badge-danger badge-pill ml-1">{% trans 'New'%}</span>
+                        </span>
+                    </a>
+                    {% endif %}
+                    <a class="js-nav-tooltip-link nav-link py-3" href="https://portal.supercomputing.wales/index.php/index/accessing-the-system/">
+                        <span class="oi oi-account-login pr-3 dark_blue"></span>
+                        <span>{% trans 'Access SCW System' %}</span>
+                    </a>
+                    <a class="js-nav-tooltip-link nav-link py-3" href="#" data-toggle="modal" data-target="#password-reset-modal">
+                        <span class="oi oi-key pr-3 dark_blue"></span>
+                        <span>{% trans 'Reset SCW Password' %}</span>
+                    </a>
+                    {% endif %} {% if perms.project.add_project %}
+                    <a class="js-nav-tooltip-link nav-link py-3" href="{% url 'create-project' %}">
+                        <span class="oi oi-document pr-3 dark_blue"></span>
+                        <span>{% trans 'Create Project Application' %}</span>
+                    </a>
+                    {% endif %}
+                    <a class="js-nav-tooltip-link nav-link py-3" href="https://portal.supercomputing.wales/index.php/index/submit-support-ticket/">
+                        <span class="oi oi-envelope-closed pr-3 dark_blue"></span>
+                        <span>{% trans 'Submit Support Ticket' %}</span>
+                    </a>
+                    <a class="js-nav-tooltip-link nav-link pt-3 pb-5 border-bottom" href="{% url 'terms-of-service' %}">
+                        <span class="oi oi-task pr-3 dark_blue"></span>
+                        <span>{% trans 'Terms and Conditions' %}</span>
+                    </a>
+                    <div class="js-nav-tooltip-link nav-link py-5 text-center">
+                        <p class="text-muted">&#169; {% now "Y' %} {% trans 'Supercomputing Wales' %}</p>
+                        <p class="text-muted">
+                            <a href="https://portal.supercomputing.wales/">Supercomputing Wales Portal</a>
+                        </p>
+                        <p class="text-muted">
+                            <i> {% blocktrans %} Supercomputing Wales is part-funded by the European Regional Development Fund (ERDF) via Welsh Government.{% endblocktrans %} </i>
+                        </p>
+                        <a href="https://www.gov.wales/eu-funding" target="_blank">
+                            <img src="{% static 'img/erdf.png' %}" width="150" height="114" alt="European Regional Development Fund" />
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col px-3">{% block content %} {% endblock %}</div>
+            </div>
+            {% block logged_out %} {% endblock %} {% if not user.is_authenticated %} {% include 'erdf.html' %} {% endif %}
+        </main>
+        <footer class="fixed-bottom">{% cookielaw_banner %}</footer>
 
-	{% if user.is_authenticated %}
-	<div id="password-reset-modal" class="modal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="dialog">
-			<div class="modal-content">
-				<div class="modal-header border-bottom">
-					<h6 class="modal-title font-weight-bold">{% trans 'Reset SCW Password' %}</h6>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<form id="password-reset" method="post">
-					{% csrf_token %}
-					<div class="modal-body p-4">
-						<div id="form-errors" class="alert alert-danger d-none"></div>
-						<div id="form-success" class="alert alert-success d-none"></div>
-						<div id="password-policy">
-							<p>
-								{% trans 'Your new password must comply with the following format' %}:
-							</p>
-							<ul>
-								<li>{% trans 'Must contain uppercase and lowercase characters.' %}</li>
-								<li>{% trans 'Must contain at least one number.' %}</li>
-								<li>{% trans 'Minimum length should be at least 8 characters.' %}</li>
-							</ul>
-							<div class="form-group">
-								<label for="password" class="col-form-label">{% trans 'New Password' %}:</label>
-								<input class="form-control" name="password" type="password" autocomplete="off" required
-									pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
-							</div>
-							<div class="form-group">
-								<label for="password-confirm" class="col-form-label">{% trans 'Confirm Password"
-									%}:</label>
-								<input class="form-control" name="password-confirm" type="password" autocomplete="off"
-									required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Close"
-							%}</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-	{% endif %}
-	<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-	<script src="{% static 'js/jquery-ui.min.js' %}"></script>
-	<script src="{% static 'js/popper.min.js' %}"></script>
-	<script src="{% static 'js/bootstrap.min.js' %}"></script>
-	<script src="{% static 'js/highcharts/highstock.js' %}"></script>
-	<script src="{% static 'js/highcharts/data.js' %}"></script>
-	<script src="{% static 'js/highcharts/exporting.js' %}"></script>
-	<script src="{% static 'js/highcharts/export-data.js' %}"></script>
-	<script src="{% static 'js/highcharts/series-label.js' %}"></script>
-	<script src="{% static 'js/highcharts/drilldown.js' %}"></script>
-	<script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>
-	<script src="{% static 'js/main.js' %}"></script>
-	{% block custom_js %}
-	{% endblock %}
-</body>
+        {% if user.is_authenticated %}
+        <div id="password-reset-modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="dialog">
+                <div class="modal-content">
+                    <div class="modal-header border-bottom">
+                        <h6 class="modal-title font-weight-bold">{% trans 'Reset SCW Password' %}</h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form id="password-reset" method="post">
+                        {% csrf_token %}
+                        <div class="modal-body p-4">
+                            <div id="form-errors" class="alert alert-danger d-none"></div>
+                            <div id="form-success" class="alert alert-success d-none"></div>
+                            <div id="password-policy">
+                                <p>{% trans 'Your new password must comply with the following format' %}:</p>
+                                <ul>
+                                    <li>{% trans 'Must contain uppercase and lowercase characters.' %}</li>
+                                    <li>{% trans 'Must contain at least one number.' %}</li>
+                                    <li>{% trans 'Minimum length should be at least 8 characters.' %}</li>
+                                </ul>
+                                <div class="form-group">
+                                    <label for="password" class="col-form-label">{% trans 'New Password' %}:</label>
+                                    <input class="form-control" name="password" type="password" autocomplete="off" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="password-confirm" class="col-form-label">{% trans 'Confirm Password" %}:</label>
+                                    <input class="form-control" name="password-confirm" type="password" autocomplete="off" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Close" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+        <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+        <script src="{% static 'js/popper.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/highcharts/highstock.js' %}"></script>
+        <script src="{% static 'js/highcharts/data.js' %}"></script>
+        <script src="{% static 'js/highcharts/exporting.js' %}"></script>
+        <script src="{% static 'js/highcharts/export-data.js' %}"></script>
+        <script src="{% static 'js/highcharts/series-label.js' %}"></script>
+        <script src="{% static 'js/highcharts/drilldown.js' %}"></script>
+        <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+        {% block custom_js %} {% endblock %}
+    </body>
 </html>
