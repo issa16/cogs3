@@ -480,9 +480,12 @@ class ProjectStatsParser:
             ).order_by('month')
 
             # Parse in date range results
-            dates = [row['month'].strftime('%b %Y') for row in results_in_date_range]
-            efficiency = parse_efficiency_result_set(results_in_date_range)
-            avg_efficiency_in_date_range = round(sum(efficiency) / len(efficiency), 2)
+            data = {}
+            if results_in_date_range:
+                data['dates'] = [row['month'].strftime('%b %Y') for row in results_in_date_range]
+                efficiency = parse_efficiency_result_set(results_in_date_range)
+                data['efficiency'] = efficiency
+                data['avg_efficiency_in_date_range'] = round(sum(efficiency) / len(efficiency), 2)
 
             # Query cpu and wall time to present
             results_to_present = ComputeDaily.objects.filter(
@@ -495,16 +498,11 @@ class ProjectStatsParser:
             ).order_by('month')
 
             # Parse to present results
-            efficiency_to_present = parse_efficiency_result_set(results_to_present)
-            avg_efficiency_to_present = round(sum(efficiency_to_present) / len(efficiency_to_present), 2)
+            if results_to_present:
+                efficiency_to_present = parse_efficiency_result_set(results_to_present)
+                avg_efficiency_to_present = round(sum(efficiency_to_present) / len(efficiency_to_present), 2)
+                data['avg_efficiency_to_present'] = avg_efficiency_to_present
 
-            # Build response
-            data = {
-                'dates': dates,
-                'efficiency': efficiency,
-                'avg_efficiency_in_date_range': avg_efficiency_in_date_range,
-                'avg_efficiency_to_present': avg_efficiency_to_present,
-            }
         except Exception:
             data = {}
         return data
@@ -582,8 +580,16 @@ class ProjectStatsParser:
             ).order_by('month')
 
             # Parse in date range results
-            dates = [row['month'].strftime('%b %Y') for row in results_in_date_range]
-            cpu_time, wait_time, wall_time = self._parse_per_job_avg_result_set(results_in_date_range)
+            data = {}
+            if results_in_date_range:
+                data['dates'] = [row['month'].strftime('%b %Y') for row in results_in_date_range]
+                cpu_time, wait_time, wall_time = self._parse_per_job_avg_result_set(results_in_date_range)
+                data['cpu_time'] = cpu_time
+                data['wait_time'] = wait_time
+                data['wall_time'] = wall_time
+                data['avg_cpu_time_in_date_range'] = round(mean(cpu_time), 2)
+                data['avg_wait_time_in_date_range'] = round(mean(wait_time), 2)
+                data['avg_wall_time_in_date_range'] = round(mean(wall_time), 2)
 
             # Query per-job avg stats to present
             results_to_present = ComputeDaily.objects.filter(
@@ -598,23 +604,13 @@ class ProjectStatsParser:
             ).order_by('month')
 
             # Parse to present results
-            cpu_time_to_present, wait_time_to_present, wall_time_to_present = self._parse_per_job_avg_result_set(
-                results_to_present
-            )
-
-            # Build response
-            data = {
-                'dates': dates,
-                'cpu_time': cpu_time,
-                'wait_time': wait_time,
-                'wall_time': wall_time,
-                'avg_cpu_time_in_date_range': round(mean(cpu_time), 2),
-                'avg_wait_time_in_date_range': round(mean(wait_time), 2),
-                'avg_wall_time_in_date_range': round(mean(wall_time), 2),
-                'avg_cpu_time_to_present': round(mean(cpu_time_to_present), 2),
-                'avg_wait_time_to_present': round(mean(wait_time_to_present), 2),
-                'avg_wall_time_to_present': round(mean(wall_time_to_present), 2),
-            }
+            if results_to_present:
+                cpu_time_to_present, wait_time_to_present, wall_time_to_present = self._parse_per_job_avg_result_set(
+                    results_to_present
+                )
+                data['avg_cpu_time_to_present'] = round(mean(cpu_time_to_present), 2)
+                data['avg_wait_time_to_present'] = round(mean(wait_time_to_present), 2)
+                data['avg_wall_time_to_present'] = round(mean(wall_time_to_present), 2)
         except Exception:
             data = {}
         return data
@@ -648,10 +644,17 @@ class ProjectStatsParser:
             ).order_by('month')
 
             # Parse date range results
-            dates = [row['month'].strftime('%b %Y') for row in results_in_date_range]
-            number_processors, avg_cores_per_job = self._parse_core_count_node_utilisation_result_set(
-                results_in_date_range
-            )
+            data = {}
+            if results_in_date_range:
+                data['dates'] = [row['month'].strftime('%b %Y') for row in results_in_date_range]
+                number_processors, avg_cores_per_job = self._parse_core_count_node_utilisation_result_set(
+                    results_in_date_range
+                )
+                data['num_processors'] = number_processors
+                data['avg_cores_per_job'] = avg_cores_per_job
+                data['num_processors_in_date_range'] = sum(number_processors)
+                print(avg_cores_per_job)
+                data['avg_cores_per_job_in_date_range'] = round(mean(avg_cores_per_job), 2)
 
             # Query number of cores to present
             results_to_present = ComputeDaily.objects.filter(
@@ -664,20 +667,12 @@ class ProjectStatsParser:
             ).order_by('month')
 
             # Parse to present results
-            number_processors_to_present, avg_cores_per_job_to_present = self._parse_core_count_node_utilisation_result_set(
-                results_to_present
-            )
-
-            # Build response
-            data = {
-                'dates': dates,
-                'num_processors': number_processors,
-                'avg_cores_per_job': avg_cores_per_job,
-                'num_processors_in_date_range': sum(number_processors),
-                'avg_cores_per_job_in_date_range': round(mean(avg_cores_per_job), 2),
-                'num_processors_to_present': sum(number_processors_to_present),
-                'avg_cores_per_job_to_present': round(mean(avg_cores_per_job_to_present), 2),
-            }
+            if results_to_present:
+                number_processors_to_present, avg_cores_per_job_to_present = self._parse_core_count_node_utilisation_result_set(
+                    results_to_present
+                )
+                data['num_processors_to_present'] = sum(number_processors_to_present)
+                data['avg_cores_per_job_to_present'] = round(mean(avg_cores_per_job_to_present), 2)
         except Exception:
             data = {}
         return data

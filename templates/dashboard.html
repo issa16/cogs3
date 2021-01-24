@@ -1,423 +1,423 @@
 <!-- templates/dashboard.html -->
 {% extends 'base.html' %} {% load static %} {% load i18n %} {% block title %}{% trans "Dashboard" %}{% endblock %} {% block content %}
 <div class="row pb-3">
-  <div class="col">
-    {% if user.profile.is_approved %}
-    <div class="card">
-      <h6 class="card-header border-bottom"><b>{% trans "Join a Project" %}</b></h6>
-      <div class="card-body">{% include 'project/membership/form.html' %}</div>
+    <div class="col">
+        {% if user.profile.is_approved %}
+        <div class="card">
+            <h6 class="card-header border-bottom"><b>{% trans "Join a Project" %}</b></h6>
+            <div class="card-body">{% include 'project/membership/form.html' %}</div>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
-  </div>
 </div>
 <div class="row no-gutters pb-3">
-  <div class="col-6 pr-3">
-    <div class="card h-100">
-      <h6 class="card-header border-bottom">
-        <b>Account</b>
-        {% if user.profile.account_status == user.profile.AWAITING_APPROVAL %}
-        <span class="badge badge-danger float-right">{{user.profile.get_account_status_display}}</span>
-        {% else %}
-        <span class="badge badge-success float-right">{{user.profile.get_account_status_display}}</span>
-        {% endif %}
-      </h6>
-      <div class="card-body p-3 pb-0">
-        <div class="row">
-          <div class="col">
-            <table class="table mb-0 table-borderless">
-              <tbody>
-                <tr>
-                  <td style="width: 40%">
-                    <b>{% trans "SCW username" %}:</b>
-                  </td>
-                  <td style="width: 60%">{% if user.profile.scw_username %} {{user.profile.scw_username}} {% endif %}</td>
-                </tr>
-                <tr>
-                  <td>
-                    <b>{% trans "Identity" %}:</b>
-                  </td>
-                  <td>{{user.email}}</td>
-                </tr>
-                {% if user.profile.hpcw_username %}
-                <tr>
-                  <td>{% trans "HPCW username" %}</td>
-                  <td>{{user.profile.hpcw_username}}</td>
-                </tr>
-                {% endif %} {% if user.profile.hpcw_email %}
-                <tr>
-                  <td>{% trans "HPCW email" %}</td>
-                  <td>{{user.profile.hpcw_email}}</td>
-                </tr>
-                {% endif %} {% if user.profile.raven_username %}
-                <tr>
-                  <td>{% trans "Raven username" %}</td>
-                  <td>{{user.profile.raven_username}}</td>
-                </tr>
-                {% endif %} {% if user.profile.raven_email %}
-                <tr>
-                  <td>{% trans "Raven email" %}</td>
-                  <td>{{user.profile.raven_email}}</td>
-                </tr>
+    <div class="col-6 pr-3">
+        <div class="card h-100">
+            <h6 class="card-header border-bottom">
+                <b>Account</b>
+                {% if user.profile.account_status == user.profile.AWAITING_APPROVAL %}
+                <span class="badge badge-danger float-right">{{user.profile.get_account_status_display}}</span>
+                {% else %}
+                <span class="badge badge-success float-right">{{user.profile.get_account_status_display}}</span>
                 {% endif %}
-              </tbody>
-            </table>
-          </div>
+            </h6>
+            <div class="card-body p-3 pb-0">
+                <div class="row">
+                    <div class="col">
+                        <table class="table mb-0 table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 40%">
+                                        <b>{% trans "SCW username" %}:</b>
+                                    </td>
+                                    <td style="width: 60%">{% if user.profile.scw_username %} {{user.profile.scw_username}} {% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <b>{% trans "Identity" %}:</b>
+                                    </td>
+                                    <td>{{user.email}}</td>
+                                </tr>
+                                {% if user.profile.hpcw_username %}
+                                <tr>
+                                    <td>{% trans "HPCW username" %}</td>
+                                    <td>{{user.profile.hpcw_username}}</td>
+                                </tr>
+                                {% endif %} {% if user.profile.hpcw_email %}
+                                <tr>
+                                    <td>{% trans "HPCW email" %}</td>
+                                    <td>{{user.profile.hpcw_email}}</td>
+                                </tr>
+                                {% endif %} {% if user.profile.raven_username %}
+                                <tr>
+                                    <td>{% trans "Raven username" %}</td>
+                                    <td>{{user.profile.raven_username}}</td>
+                                </tr>
+                                {% endif %} {% if user.profile.raven_email %}
+                                <tr>
+                                    <td>{% trans "Raven email" %}</td>
+                                    <td>{{user.profile.raven_email}}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  <div class="col-6">
-    <div class="card h-100">
-      <h6 class="card-header border-bottom"><b>{% trans "Project Management" %}</b></h6>
-      <div class="card-body p-3 pb-0">
-        <div class="row">
-          <div class="col">
-            <ul class="list-group list-group-flush p-0">
-              {% if perms.project.change_projectusermembership %}
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a href="{% url 'project-user-membership-request-list' %}">{% trans "Project User Requests" %}</a>
-                <span class="badge badge-primary badge-pill float-right">{{ project_user_requests_count }}</span>
-              </li>
-              {% endif %} {% if perms.project.add_project %}
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a href="{% url 'project-application-list' %}">{% trans "Project Applications" %}</a>
-                <span class="badge badge-primary badge-pill float-right">{{ project_application_count }}</span>
-              </li>
-              {% endif %}
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a href="{% url 'project-membership-list' %}">{% trans "Project Memberships" %}</a>
-              </li>
-            </ul>
-          </div>
+    <div class="col-6">
+        <div class="card h-100">
+            <h6 class="card-header border-bottom"><b>{% trans "Project Management" %}</b></h6>
+            <div class="card-body p-3 pb-0">
+                <div class="row">
+                    <div class="col">
+                        <ul class="list-group list-group-flush p-0">
+                            {% if perms.project.change_projectusermembership %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{% url 'project-user-membership-request-list' %}">{% trans "Project User Requests" %}</a>
+                                <span class="badge badge-primary badge-pill float-right">{{ project_user_requests_count }}</span>
+                            </li>
+                            {% endif %} {% if perms.project.add_project %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{% url 'project-application-list' %}">{% trans "Project Applications" %}</a>
+                                <span class="badge badge-primary badge-pill float-right">{{ project_application_count }}</span>
+                            </li>
+                            {% endif %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{% url 'project-membership-list' %}">{% trans "Project Memberships" %}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 {% if user.profile.is_approved and project_codes %}
 <div class="row no-gutters">
-  <div class="col">
-    <div class="card">
-      <div class="card-body">
-        {% include 'stats/project_filter.html' %}
-        <div class="row no-gutters mt-4">
-          <div class="col-6">
-            <figure class="highcharts-figure">
-              <div id="user_compute_efficiency_chart"></div>
-            </figure>
-          </div>
-          <div class="col-6">
-            <figure class="highcharts-figure">
-              <div id="user_num_slurm_jobs_chart"></div>
-            </figure>
-          </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                {% include 'stats/project_filter.html' %}
+                <div class="row no-gutters mt-4">
+                    <div class="col-6">
+                        <figure class="highcharts-figure">
+                            <div id="user_compute_efficiency_chart"></div>
+                        </figure>
+                    </div>
+                    <div class="col-6">
+                        <figure class="highcharts-figure">
+                            <div id="user_num_slurm_jobs_chart"></div>
+                        </figure>
+                    </div>
+                </div>
+                <div class="row no-gutters mt-4">
+                    <div class="col-6">
+                        <figure class="highcharts-figure">
+                            <div id="user_rate_of_usage_chart"></div>
+                        </figure>
+                    </div>
+                    <div class="col-6">
+                        <figure class="highcharts-figure">
+                            <div id="user_cumlative_total_usage_chart"></div>
+                        </figure>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row no-gutters mt-4">
-          <div class="col-6">
-            <figure class="highcharts-figure">
-              <div id="user_rate_of_usage_chart"></div>
-            </figure>
-          </div>
-          <div class="col-6">
-            <figure class="highcharts-figure">
-              <div id="user_cumlative_total_usage_chart"></div>
-            </figure>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 </div>
 {% endif %} {% endblock %} {% block custom_js %}
 <script>
-  $(document).ready(function () {
-    /**
-     * Dispatch an ajax request to download data required for charts.
-     * @param project_code
-     */
-    function update_charts(project_code) {
-      $.ajax({
-        url: "{% url 'data-analytics-user-json' %}" + "?code=" + project_code,
-        dataType: "json",
-        success: function (data) {
-          build_dashboard_charts(data);
-        },
-      });
-    }
+    $(document).ready(function () {
+        /**
+         * Dispatch an ajax request to download data required for charts.
+         * @param project_code
+         */
+        function update_charts(project_code) {
+            $.ajax({
+                url: "{% url 'data-analytics-user-json' %}" + "?code=" + project_code,
+                dataType: "json",
+                success: function (data) {
+                    build_dashboard_charts(data);
+                },
+            });
+        }
 
-    /**
-     * Update charts on page load
-     */
-    update_charts("all");
+        /**
+         * Update charts on page load
+         */
+        update_charts("all");
 
-    /**
-     * Refresh charts when a user selects a project filter.
-     */
-    var selected_project_code = "all"; // Default
-    $("#project_filter a").click(function () {
-      event.preventDefault();
-      // Parse selected project code
-      selected_project_code = $(this).attr("data-project-code");
-      // Update button text
-      $("#project_filter_button").text($(this).text().trim());
-      // Update charts
-      update_charts(selected_project_code);
+        /**
+         * Refresh charts when a user selects a project filter.
+         */
+        var selected_project_code = "all"; // Default
+        $("#project_filter a").click(function () {
+            event.preventDefault();
+            // Parse selected project code
+            selected_project_code = $(this).attr("data-project-code");
+            // Update button text
+            $("#project_filter_button").text($(this).text().trim());
+            // Update charts
+            update_charts(selected_project_code);
+        });
+
+        /**
+         * Default menu options for charts.
+         */
+        var default_menu_options = ["viewFullscreen", "printChart", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG", "separator", "downloadCSV"];
+
+        function build_rate_of_usage_per_month_chart(data) {
+            /**
+             * Build rate of usage chart.
+             * @param data
+             */
+            Highcharts.chart("user_rate_of_usage_chart", {
+                title: {
+                    text: "Rate of usage per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                yAxis: {
+                    title: {
+                        text: "Hours",
+                    },
+                },
+                xAxis: {
+                    categories: data["dates"],
+                    title: {
+                        text: "Month",
+                    },
+                },
+                series: [
+                    {
+                        name: "CPU Time",
+                        data: data["cpu_time"],
+                    },
+                    {
+                        name: "Wait Time",
+                        data: data["wait_time"],
+                    },
+                    {
+                        name: "Wall Time",
+                        data: data["wall_time"],
+                    },
+                ],
+                exporting: {
+                    filename: `rate-of-usage-${selected_project_code}`,
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+        }
+
+        function build_cumlative_total_usage_per_month_chart(data) {
+            /**
+             * Build cumlative total chart.
+             * @param data
+             */
+            Highcharts.chart("user_cumlative_total_usage_chart", {
+                title: {
+                    text: "Cumlative total usage per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                yAxis: {
+                    title: {
+                        text: "Hours",
+                    },
+                },
+                xAxis: {
+                    categories: data["dates"],
+                    title: {
+                        text: "Month",
+                    },
+                },
+                series: [
+                    {
+                        name: "CPU Time",
+                        data: data["cpu_time"],
+                    },
+                    {
+                        name: "Wait TIme",
+                        data: data["wait_time"],
+                    },
+                    {
+                        name: "Wall Time",
+                        data: data["wall_time"],
+                    },
+                ],
+                exporting: {
+                    filename: `cumlative-total-usage-${selected_project_code}`,
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+        }
+
+        function build_efficiency_per_month_chart(data) {
+            /**
+             * Build efficiency per month chart
+             * @param data
+             */
+            Highcharts.chart("user_compute_efficiency_chart", {
+                chart: {
+                    type: "spline",
+                },
+                title: {
+                    text: "Efficiency per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                xAxis: {
+                    type: "datetime",
+                    categories: data["dates"],
+                    title: {
+                        text: "Month",
+                    },
+                },
+                yAxis: {
+                    title: {
+                        text: "Efficiency",
+                    },
+                    max: 100,
+                    minorGridLineWidth: 0,
+                    gridLineWidth: 0,
+                    alternateGridColor: null,
+                    plotBands: [
+                        {
+                            from: 0,
+                            to: 40,
+                            color: "rgba(68, 170, 213, 0.1)",
+                            label: {
+                                text: "Poor",
+                                style: {
+                                    color: "#606060",
+                                },
+                            },
+                        },
+                        {
+                            from: 40,
+                            to: 50,
+                            color: "rgba(0, 0, 0, 0)",
+                            label: {
+                                text: "Fair",
+                                style: {
+                                    color: "#606060",
+                                },
+                            },
+                        },
+                        {
+                            from: 50,
+                            to: 75,
+                            color: "rgba(68, 170, 213, 0.1)",
+                            label: {
+                                text: "Good",
+                                style: {
+                                    color: "#606060",
+                                },
+                            },
+                        },
+                        {
+                            from: 75,
+                            to: 100,
+                            color: "rgba(0, 0, 0, 0)",
+                            label: {
+                                text: "Excellent",
+                                style: {
+                                    color: "#606060",
+                                },
+                            },
+                        },
+                    ],
+                },
+                series: [
+                    {
+                        name: "Efficiency",
+                        data: data["efficiency"],
+                    },
+                ],
+                exporting: {
+                    filename: `efficiency-per-month-${selected_project_code}`,
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+        }
+
+        function build_number_of_jobs_per_month_chart(data) {
+            /**
+             * Number of jobs per month
+             * @param data
+             */
+            Highcharts.chart("user_num_slurm_jobs_chart", {
+                title: {
+                    text: "Number of jobs per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                yAxis: {
+                    title: {
+                        text: "Number of jobs",
+                    },
+                },
+                xAxis: {
+                    categories: data["dates"],
+                    title: {
+                        text: "Month",
+                    },
+                },
+                series: [
+                    {
+                        type: "column",
+                        name: "Number of jobs",
+                        data: data["number_jobs"],
+                    },
+                ],
+                exporting: {
+                    filename: `number-of-jobs-per-month-${selected_project_code}`,
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+        }
+
+        /**
+         * Build dashboard charts.
+         * @param data
+         */
+        function build_dashboard_charts(data) {
+            build_rate_of_usage_per_month_chart(data["rate_of_usage_per_month"]);
+            build_cumlative_total_usage_per_month_chart(data["cumlative_total_usage_per_month"]);
+            build_efficiency_per_month_chart(data["efficiency_per_month"]);
+            build_number_of_jobs_per_month_chart(data["num_jobs_per_month"]);
+        }
     });
-
-    /**
-     * Default menu options for charts.
-     */
-    var default_menu_options = ["viewFullscreen", "printChart", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG", "separator", "downloadCSV"];
-
-    function build_rate_of_usage_per_month_chart(data) {
-      /**
-       * Build rate of usage chart.
-       * @param data
-       */
-      Highcharts.chart("user_rate_of_usage_chart", {
-        title: {
-          text: "Rate of usage per month",
-          style: {
-            color: "#5e6e82F",
-            fontSize: "16px",
-            fontFamily: "Lato",
-          },
-        },
-        yAxis: {
-          title: {
-            text: "Hours",
-          },
-        },
-        xAxis: {
-          categories: data["dates"],
-          title: {
-            text: "Month",
-          },
-        },
-        series: [
-          {
-            name: "CPU Time",
-            data: data["cpu_time"],
-          },
-          {
-            name: "Wait Time",
-            data: data["wait_time"],
-          },
-          {
-            name: "Wall Time",
-            data: data["wall_time"],
-          },
-        ],
-        exporting: {
-          filename: `rate-of-usage-${selected_project_code}`,
-          buttons: {
-            contextButton: {
-              menuItems: default_menu_options,
-            },
-          },
-        },
-      });
-    }
-
-    function build_cumlative_total_usage_per_month_chart(data) {
-      /**
-       * Build cumlative total chart.
-       * @param data
-       */
-      Highcharts.chart("user_cumlative_total_usage_chart", {
-        title: {
-          text: "Cumlative total usage per month",
-          style: {
-            color: "#5e6e82F",
-            fontSize: "16px",
-            fontFamily: "Lato",
-          },
-        },
-        yAxis: {
-          title: {
-            text: "Hours",
-          },
-        },
-        xAxis: {
-          categories: data["dates"],
-          title: {
-            text: "Month",
-          },
-        },
-        series: [
-          {
-            name: "CPU Time",
-            data: data["cpu_time"],
-          },
-          {
-            name: "Wait TIme",
-            data: data["wait_time"],
-          },
-          {
-            name: "Wall Time",
-            data: data["wall_time"],
-          },
-        ],
-        exporting: {
-          filename: `cumlative-total-usage-${selected_project_code}`,
-          buttons: {
-            contextButton: {
-              menuItems: default_menu_options,
-            },
-          },
-        },
-      });
-    }
-
-    function build_efficiency_per_month_chart(data) {
-      /**
-       * Build efficiency per month chart
-       * @param data
-       */
-      Highcharts.chart("user_compute_efficiency_chart", {
-        chart: {
-          type: "spline",
-        },
-        title: {
-          text: "Efficiency per month",
-          style: {
-            color: "#5e6e82F",
-            fontSize: "16px",
-            fontFamily: "Lato",
-          },
-        },
-        xAxis: {
-          type: "datetime",
-          categories: data["dates"],
-          title: {
-            text: "Month",
-          },
-        },
-        yAxis: {
-          title: {
-            text: "Efficiency",
-          },
-          max: 100,
-          minorGridLineWidth: 0,
-          gridLineWidth: 0,
-          alternateGridColor: null,
-          plotBands: [
-            {
-              from: 0,
-              to: 40,
-              color: "rgba(68, 170, 213, 0.1)",
-              label: {
-                text: "Poor",
-                style: {
-                  color: "#606060",
-                },
-              },
-            },
-            {
-              from: 40,
-              to: 50,
-              color: "rgba(0, 0, 0, 0)",
-              label: {
-                text: "Fair",
-                style: {
-                  color: "#606060",
-                },
-              },
-            },
-            {
-              from: 50,
-              to: 75,
-              color: "rgba(68, 170, 213, 0.1)",
-              label: {
-                text: "Good",
-                style: {
-                  color: "#606060",
-                },
-              },
-            },
-            {
-              from: 75,
-              to: 100,
-              color: "rgba(0, 0, 0, 0)",
-              label: {
-                text: "Excellent",
-                style: {
-                  color: "#606060",
-                },
-              },
-            },
-          ],
-        },
-        series: [
-          {
-            name: "Efficiency",
-            data: data["efficiency"],
-          },
-        ],
-        exporting: {
-          filename: `efficiency-per-month-${selected_project_code}`,
-          buttons: {
-            contextButton: {
-              menuItems: default_menu_options,
-            },
-          },
-        },
-      });
-    }
-
-    function build_number_of_jobs_per_month_chart(data) {
-      /**
-       * Number of jobs per month
-       * @param data
-       */
-      Highcharts.chart("user_num_slurm_jobs_chart", {
-        title: {
-          text: "Number of jobs per month",
-          style: {
-            color: "#5e6e82F",
-            fontSize: "16px",
-            fontFamily: "Lato",
-          },
-        },
-        yAxis: {
-          title: {
-            text: "Number of jobs",
-          },
-        },
-        xAxis: {
-          categories: data["dates"],
-          title: {
-            text: "Month",
-          },
-        },
-        series: [
-          {
-            type: "column",
-            name: "Number of jobs",
-            data: data["number_jobs"],
-          },
-        ],
-        exporting: {
-          filename: `number-of-jobs-per-month-${selected_project_code}`,
-          buttons: {
-            contextButton: {
-              menuItems: default_menu_options,
-            },
-          },
-        },
-      });
-    }
-
-    /**
-     * Build dashboard charts.
-     * @param data
-     */
-    function build_dashboard_charts(data) {
-      build_rate_of_usage_per_month_chart(data["rate_of_usage_per_month"]);
-      build_cumlative_total_usage_per_month_chart(data["cumlative_total_usage_per_month"]);
-      build_efficiency_per_month_chart(data["efficiency_per_month"]);
-      build_number_of_jobs_per_month_chart(data["num_jobs_per_month"]);
-    }
-  });
 </script>
 {% endblock %}

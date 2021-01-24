@@ -126,7 +126,7 @@
                             <td class="text-dark">
                                 <b>{% trans "Total number of core hours" %}</b>
                             </td>
-                            <td>{{ total_core_hours|in_hours }}</td>
+                            <td>{{ total_core_hours|in_hours }}&nbsp;&nbsp;&nbsp;&nbsp;{% if selected_project.allocation_cputime %} ({% percentage_color allocation_usage_percent %} of allocation) {% endif %}</td>
                         </tr>
                         <tr>
                             <td class="text-dark">

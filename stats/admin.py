@@ -10,6 +10,7 @@ class ComputeDaily(admin.ModelAdmin):
         'user',
         'project',
         'number_jobs',
+        'number_processors',
         'wait_time',
         'cpu_time',
         'wall_time',

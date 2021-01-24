@@ -48,3 +48,14 @@ def efficiency_as_percentage(x, y=1):
         return mark_safe(f"<span style='color:{color};font-weight:bold;'> {result:.2f} %</span>")
     except Exception:
         return ''
+
+
+@register.simple_tag
+def percentage_color(x):
+    if x >= 80:
+        color = 'red'
+    elif x >= 50 and x < 80:
+        color = 'blue'
+    else:
+        color = 'green'
+    return mark_safe(f"<span style='color:{color};font-weight:bold;'> {x:.2f} %</span>")
