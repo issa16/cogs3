@@ -1,7 +1,6 @@
 # cogs3
 
 * [Deployment](#deployment)
-* [Data Migration](#data-migration)
 * [User Guide](#user-guide)
   * [User](#user)
   * [Technical Lead](#technical-leads)
@@ -10,8 +9,6 @@
 
 
 ## Deployment
-
-## Data Migration
 
 ## Bangor
 
