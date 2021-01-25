@@ -10,7 +10,7 @@
 
 ## Deployment
 
-## Bangor
+### Bangor
 
 1. Switch to `arcca` branch
 
