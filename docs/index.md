@@ -1,25 +1,24 @@
 # cogs3
 
-* [Data Analytics](#data-aAnalytics)
-    * [Deployment](#deployment)
-    * [Data Migration](#data-migration)
-    * [User Guide](#user-guide)
-        * [User](#user)
-        * [Technical Lead](#technical-leads)
-        * [Staff](#staff)
+* [Deployment](#deployment)
+* [Data Migration](#data-migration)
+* [User Guide](#user-guide)
+  * [User](#user)
+  * [Technical Lead](#technical-leads)
+  * [Staff](#staff)
+  * [Administrators](#administrators)
 
-## Data Analytics
 
-### Deployment
+## Deployment
 ---
 
-### Data Migration
+## Data Migration
 ---
 
-### User Guide
+## User Guide
 ---
 
-#### User
+### User
 
 Users identified as not being a technical lead of a project, such as an institutional or external user can view the last 12 months of their compute usage on SCW. 
 
@@ -39,7 +38,58 @@ By default, the charts will display the cumulative totals of a users usage for t
     <img src="img/user-project-chart.png">
 </p>
   
-#### Technical Leads
+### Technical Leads
 
-#### Staff
+### Staff
 
+### Administrators
+
+#### Data Import
+
+**Find date range of LIGO file.**
+
+   ```
+   python3 manage.py find_date_range_of_ligo_file \
+      --file=path_to_ligo_log_file.out
+   ```
+
+**Import LIGO daily compute stats.**
+    
+   ```
+   python3 manage.py import_daily_compute_ligo \
+      --file=path_to_stats_file.out
+      -d 31 \
+      -m 10 \
+      -y 2020 \
+      -s CF
+   ```
+
+**Import daily compute stats.**
+    
+   ```
+   python3 manage.py import_daily_compute \
+      --file=path_to_stats_file.out
+      -d 31 \
+      -m 10 \
+      -y 2020 \
+      -s CF
+   ```
+
+**Import user last login stats.**
+
+   ```
+   python3 manage.py import_user_last_login \
+      --file=/path_to_user_last_login.csv
+   ```
+
+**Import weekly storage stats.**
+
+   ```
+   python3 manage.py import_weekly_storage \
+      --homefile=path_to_home_file.csv \
+      --scratchfile=path_to_scratch_file.csv \
+      -d 21 \
+      -m 11 \
+      -y 2020 \
+      -s CF
+   ```
