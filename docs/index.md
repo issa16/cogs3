@@ -110,7 +110,7 @@ By default, the charts will display the cumulative totals of a users usage for t
 
    ```
    python3 manage.py import_user_last_login \
-      --file=/path_to_user_last_login.csv
+      --file=path_to_user_last_login.csv
    ```
 
 **Import weekly storage stats.**
