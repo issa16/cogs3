@@ -75,7 +75,6 @@ class IndexView(
         except Exception:
             if user.is_staff and project_code:
                 messages.add_message(self.request, messages.ERROR, 'Project does not exist.')
-            context = None
         return context
 
 
