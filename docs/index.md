@@ -12,7 +12,7 @@
 
 ### Bangor
 
-1. Switch to `arcca` branch
+1. Switch to `arcca` branch.
 
     ```git checkout arcca```
 
@@ -35,31 +35,31 @@
        partitions.json
     ```
 
-5. Load in historical data
+5. Load in historical data.
 
-**Import daily compute**
+    **Import daily compute**
 
-    python3 manage.py import_historical_daily_compute \
-       --input_dir= \
-       --output_dir=
+        python3 manage.py import_historical_daily_compute \
+           --input_dir= \
+           --output_dir=
 
-**Import daily compute ligo**
+    **Import daily compute ligo**
 
-    python3 manage.py import_historical_daily_compute_ligo \
-       --input_dir= \
-       --output_dir=
+        python3 manage.py import_historical_daily_compute_ligo \
+           --input_dir= \
+           --output_dir=
 
-**Import user last login**
+    **Import user last login**
 
-    python3 manage.py import_historical_user_last_login \
-       --input_dir= \
-       --output_dir=
+        python3 manage.py import_historical_user_last_login \
+           --input_dir= \
+           --output_dir=
 
-**Import weekly storage**
+    **Import weekly storage**
 
-    python3 manage.py import_historical_weekly_storage \
-       --input_dir= \
-       --output_dir=
+        python3 manage.py import_historical_weekly_storage \
+           --input_dir= \
+           --output_dir=
 
 ## User Guide
 
