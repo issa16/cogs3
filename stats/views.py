@@ -67,10 +67,12 @@ class IndexView(
             context = build_project_stats(stats_parser, context)
 
             # Check allocated core hours usage
-            usage = stats_parser.total_core_hours().total_seconds()
-            allocation = timedelta(hours=selected_project.allocation_cputime).total_seconds()
-            if usage > 0 and allocation > 0:
+            try:
+                usage = stats_parser.total_core_hours().total_seconds()
+                allocation = timedelta(hours=selected_project.allocation_cputime).total_seconds()
                 context['allocation_usage_percent'] = round((usage / allocation), 2) * 100
+            except Exception:
+                pass
 
         except Exception:
             if user.is_staff and project_code:
