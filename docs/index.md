@@ -13,39 +13,56 @@
 
 ## Data Migration
 
-### Import historical data
+## Bangor
+
+1. Switch to `arcca` branch
+
+    ```git checkout arcca```
+
+2. Source environment.
+
+    ```source /path/to/vennv```
+
+3. Run database migrations.
+
+    ```python3 manage.py migrate```
+
+4. Load data fixtures.
+
+    ```
+    python3 manage.py loaddata \
+       access_methods.json \
+       applications.json \
+       os.json \
+       hardware_groups.json \ 
+       partitions.json
+    ```
+
+5. Load in historical data
 
 **Import daily compute**
 
-```
-python3 manage.py import_historical_daily_compute \
-   --input_dir= \
-   --output_dir=
-```
+    python3 manage.py import_historical_daily_compute \
+       --input_dir= \
+       --output_dir=
 
 **Import daily compute ligo**
 
-```
-python3 manage.py import_historical_daily_compute_ligo \
-   --input_dir= \
-   --output_dir=
-```
+    python3 manage.py import_historical_daily_compute_ligo \
+       --input_dir= \
+       --output_dir=
 
 **Import user last login**
 
-```
-python3 manage.py import_historical_user_last_login \
-   --input_dir= \
-   --output_dir=
-```
+    python3 manage.py import_historical_user_last_login \
+       --input_dir= \
+       --output_dir=
 
 **Import weekly storage**
 
-```
-python3 manage.py import_historical_weekly_storage \
-   --input_dir= \
-   --output_dir=
-```
+    python3 manage.py import_historical_weekly_storage \
+       --input_dir= \
+       --output_dir=
 
 ## User Guide
 
