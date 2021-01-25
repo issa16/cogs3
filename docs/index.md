@@ -25,11 +25,19 @@ Users identified as not being a technical lead of a project, such as an institut
 
 Upon a successful login to MySCW, the default view of the homepage will render charts of various compute metrics. 
 
-<Image>
+<p align="center">
+    <img src="img/user-default-charts.png">
+</p>
   
 By default, the charts will display the cumulative totals of the users usage for the projects in which the user has a valid project membership. The user can filter the results on a per project basis by selecting the ‘Project Filter’ dropdown option and selecting a project.
 
-<Image>
+<p align="center">
+    <img src="img/user-project-filter.png" height=350>
+</p>
+
+<p align="center">
+    <img src="img/user-project-chart.png">
+</p>
   
 #### Technical Leads
 
