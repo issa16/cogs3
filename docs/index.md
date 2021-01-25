@@ -10,10 +10,8 @@
 
 
 ## Deployment
----
 
 ## Data Migration
----
 
 ### Import historical data
 
@@ -50,7 +48,6 @@ python3 manage.py import_historical_weekly_storage \
 ```
 
 ## User Guide
----
 
 ### User
 
