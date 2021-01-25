@@ -15,6 +15,40 @@
 ## Data Migration
 ---
 
+### Import historical data
+
+**Import daily compute**
+
+```
+python3 manage.py import_historical_daily_compute \
+   --input_dir= \
+   --output_dir=
+```
+
+**Import daily compute ligo**
+
+```
+python3 manage.py import_historical_daily_compute_ligo \
+   --input_dir= \
+   --output_dir=
+```
+
+**Import user last login**
+
+```
+python3 manage.py import_historical_user_last_login \
+   --input_dir= \
+   --output_dir=
+```
+
+**Import weekly storage**
+
+```
+python3 manage.py import_historical_weekly_storage \
+   --input_dir= \
+   --output_dir=
+```
+
 ## User Guide
 ---
 
