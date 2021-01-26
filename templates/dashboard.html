@@ -183,6 +183,9 @@
                         fontFamily: "Lato",
                     },
                 },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
                 yAxis: {
                     title: {
                         text: "Hours",
@@ -193,6 +196,7 @@
                     title: {
                         text: "Month",
                     },
+                    crosshair: true,
                 },
                 series: [
                     {
@@ -233,6 +237,9 @@
                         fontFamily: "Lato",
                     },
                 },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
                 yAxis: {
                     title: {
                         text: "Hours",
@@ -243,6 +250,7 @@
                     title: {
                         text: "Month",
                     },
+                    crosshair: true,
                 },
                 series: [
                     {
@@ -286,12 +294,16 @@
                         fontFamily: "Lato",
                     },
                 },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
                 xAxis: {
                     type: "datetime",
                     categories: data["dates"],
                     title: {
                         text: "Month",
                     },
+                    crosshair: true,
                 },
                 yAxis: {
                     title: {
@@ -379,6 +391,9 @@
                         fontFamily: "Lato",
                     },
                 },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
                 yAxis: {
                     title: {
                         text: "Number of jobs",
@@ -389,6 +404,7 @@
                     title: {
                         text: "Month",
                     },
+                    crosshair: true,
                 },
                 series: [
                     {
