@@ -621,11 +621,13 @@ class ProjectStatsParser:
         given result_set.
         '''
         number_processors = []
+        number_jobs = []
         avg_cores_per_job = []
         for row in result_set:
             number_processors.append(row['number_processors'])
+            number_jobs.append(row['number_jobs'])
             avg_cores_per_job.append(round(row['number_processors'] / row['number_jobs'], 2))
-        return number_processors, avg_cores_per_job
+        return number_processors, number_jobs, avg_cores_per_job
 
     def core_count_node_utilisation(self):
         '''
@@ -647,14 +649,13 @@ class ProjectStatsParser:
             data = {}
             if results_in_date_range:
                 data['dates'] = [row['month'].strftime('%b %Y') for row in results_in_date_range]
-                number_processors, avg_cores_per_job = self._parse_core_count_node_utilisation_result_set(
+                number_processors, number_jobs, avg_cores_per_job = self._parse_core_count_node_utilisation_result_set(
                     results_in_date_range
                 )
                 data['num_processors'] = number_processors
                 data['avg_cores_per_job'] = avg_cores_per_job
                 data['num_processors_in_date_range'] = sum(number_processors)
-                print(avg_cores_per_job)
-                data['avg_cores_per_job_in_date_range'] = round(mean(avg_cores_per_job), 2)
+                data['avg_cores_per_job_in_date_range'] = round(sum(number_processors) / sum(number_jobs), 2)
 
             # Query number of cores to present
             results_to_present = ComputeDaily.objects.filter(
@@ -668,11 +669,13 @@ class ProjectStatsParser:
 
             # Parse to present results
             if results_to_present:
-                number_processors_to_present, avg_cores_per_job_to_present = self._parse_core_count_node_utilisation_result_set(
+                number_processors_to_present, number_jobs_to_present, _ = self._parse_core_count_node_utilisation_result_set(
                     results_to_present
                 )
                 data['num_processors_to_present'] = sum(number_processors_to_present)
-                data['avg_cores_per_job_to_present'] = round(mean(avg_cores_per_job_to_present), 2)
+                data['avg_cores_per_job_to_present'] = round(
+                    sum(number_processors_to_present) / sum(number_jobs_to_present), 2
+                )
         except Exception:
             data = {}
         return data
