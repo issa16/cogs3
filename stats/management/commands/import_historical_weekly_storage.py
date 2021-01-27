@@ -44,7 +44,7 @@ class Command(BaseCommand):
                     os.system(
                         f"python3 manage.py import_weekly_storage \
                             --homefile={home_file} \
-                            --scratchfile={scratch_file}.csv \
+                            --scratchfile={scratch_file} \
                             -d {day} \
                             -m {month} \
                             -y {year} \
