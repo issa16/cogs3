@@ -34,9 +34,10 @@ class Command(BaseCommand):
                         file.replace('home', 'scratch'),
                     )
                     data = file.split('_')
-                    day = data[6:8]
-                    month = data[4:6]
-                    year = data[0:4]
+                    date = data[4]
+                    day = date[6:8]
+                    month = date[4:6]
+                    year = date[0:4]
                     code = 'CF'  # Double check
 
                     # Call weekly storage import script
@@ -61,7 +62,7 @@ class Command(BaseCommand):
                         scratch_file,
                     ))
 
-                    self.stdout.write(self.style.SUCCESS('Finished processing {os.path.join(input_dir, file)}'))
+                    self.stdout.write(self.style.SUCCESS(f'Finished processing {os.path.join(input_dir, file)}'))
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(e))
