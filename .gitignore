@@ -125,3 +125,4 @@ db.sqlite*
 *.rdb
 
 
+stats/historical_data

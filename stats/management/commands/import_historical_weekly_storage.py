@@ -1,0 +1,69 @@
+import os
+import shutil
+
+from django.core.management.base import BaseCommand
+
+
+class Command(BaseCommand):
+    help = 'Import historical weekly storage stats from csv files.'
+
+    def add_arguments(self, parser):
+        parser.add_argument('--input_dir', required=True, help='Path to csv files to import', type=str)
+        parser.add_argument('--output_dir', required=True, help='Path to move csv files to once processed', type=str)
+
+    def handle(self, *args, **options):
+        try:
+            input_dir = options['input_dir']
+            output_dir = options['output_dir']
+
+            # Validate paths
+            if os.path.exists(input_dir) is False:
+                raise Exception(f'{input_dir} does not exist.')
+            if os.path.exists(output_dir) is False:
+                raise Exception(f'{output_dir} does not exist.')
+
+            # Process csv files
+            for file in os.listdir(input_dir):
+                if file.endswith('csv') and 'home' in file:
+                    self.stdout.write(self.style.SUCCESS('Processing {os.path.join(input_dir, file)}'))
+
+                    # Parse data attributes
+                    home_file = os.path.join(input_dir, file)
+                    scratch_file = os.path.join(
+                        input_dir,
+                        file.replace('home', 'scratch'),
+                    )
+                    data = file.split('_')
+                    day = data[6:8]
+                    month = data[4:6]
+                    year = data[0:4]
+                    code = 'CF'  # Double check
+
+                    # Call daily import script
+                    os.system(
+                        f"python3 manage.py import_daily_compute \
+                            --homefile={home_file} \
+                            --scratchfile={scratch_file}.csv \
+                            -d {day} \
+                            -m {month} \
+                            -y {year} \
+                            -s {code}"
+                    )
+
+                    # Once complete, move home and scratch files from
+                    # input_dir to output_dir.
+                    shutil.move(home_file, os.path.join(
+                        output_dir,
+                        home_file,
+                    ))
+                    shutil.move(scratch_file, os.path.join(
+                        output_dir,
+                        scratch_file,
+                    ))
+
+                    self.stdout.write(self.style.SUCCESS('Finished processing {os.path.join(input_dir, file)}'))
+
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(e))
+
+        self.stdout.write(self.style.SUCCESS('Finished processing csv files.'))
