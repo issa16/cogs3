@@ -40,26 +40,26 @@
     **Import daily compute**
 
         python3 manage.py import_historical_daily_compute \
-           --input_dir= \
-           --output_dir=
+           --input_dir=path_to_bz2_files_to_import \
+           --output_dir=path_to_move_bz2_files_to_once_processed
 
     **Import daily compute ligo**
 
         python3 manage.py import_historical_daily_compute_ligo \
-           --input_dir= \
-           --output_dir=
+           --input_dir=path_to_bz2_files_to_import \
+           --output_dir=path_to_move_bz2_files_to_once_processed
 
     **Import user last login**
 
         python3 manage.py import_historical_user_last_login \
-           --input_dir= \
-           --output_dir=
+           --input_dir=path_to_csv_files_to_import \
+           --output_dir=path_to_move_csv_files_to_once_processed
 
     **Import weekly storage**
 
         python3 manage.py import_historical_weekly_storage \
-           --input_dir= \
-           --output_dir=
+           --input_dir=path_to_csv_files_to_import \
+           --output_dir=path_to_move_csv_files_to_once_processed
 
 ## User Guide
 
