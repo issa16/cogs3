@@ -876,9 +876,9 @@
                 var row = `
                 <tr class="text-center">
                     <td class="text-left">${value}</td>
-                    <td class=>${data["home"][key]}</td>
-                    <td class=>${data["scratch"][key]}</td>
-                    <td class=>${data["total"][key]}</td>
+                    <td class=>${data["home"][key].toLocaleString("en")}</td>
+                    <td class=>${data["scratch"][key].toLocaleString("en")}</td>
+                    <td class=>${data["total"][key].toLocaleString("en")}</td>
                 </tr>`;
                 table.prepend(row);
             });
