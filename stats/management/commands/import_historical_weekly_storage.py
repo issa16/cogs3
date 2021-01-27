@@ -25,7 +25,7 @@ class Command(BaseCommand):
             # Process csv files
             for file in os.listdir(input_dir):
                 if file.endswith('csv') and 'home' in file:
-                    self.stdout.write(self.style.SUCCESS('Processing {os.path.join(input_dir, file)}'))
+                    self.stdout.write(self.style.SUCCESS(f'Processing {os.path.join(input_dir, file)}'))
 
                     # Parse data attributes
                     home_file = os.path.join(input_dir, file)
