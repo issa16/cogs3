@@ -39,9 +39,9 @@ class Command(BaseCommand):
                     year = data[0:4]
                     code = 'CF'  # Double check
 
-                    # Call daily import script
+                    # Call weekly storage import script
                     os.system(
-                        f"python3 manage.py import_daily_compute \
+                        f"python3 manage.py import_weekly_storage \
                             --homefile={home_file} \
                             --scratchfile={scratch_file}.csv \
                             -d {day} \
