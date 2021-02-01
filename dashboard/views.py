@@ -30,7 +30,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 tech_lead=user,
                 status=Project.APPROVED,
             ).latest().code
-        except Project.DoesNotExist:
+        except Exception:
             pass
 
         return context

@@ -106,7 +106,23 @@ class Project(models.Model):
     )
     pi = models.CharField(
         max_length=256,
-        verbose_name=_("Principal Investigator's name, position and email"),
+        blank=True,
+        verbose_name=_("(obsolete) Principal Investigator's name, position and email"),
+    )
+    pi_name = models.CharField(
+        max_length=128,
+        blank=True,
+        verbose_name=_("Principal Investigator's name"),
+    )
+    pi_position = models.CharField(
+        max_length=128,
+        blank=True,
+        verbose_name=_("Principal Investigator's position"),
+    )
+    pi_email = models.EmailField(
+        max_length=100,
+        blank=True,
+        verbose_name=_("Principal Investigator's email"),
     )
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -297,16 +313,6 @@ class Project(models.Model):
         if self.status == Project.APPROVED:
             self._assign_project_owner_project_membership()
         super(Project, self).save(*args, **kwargs)
-
-    @property
-    def pi_email(self):
-        '''
-        Try to parse a valid email address from the PI text field.
-        '''
-        try:
-            return re.findall(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+", self.pi)[0]
-        except Exception:
-            return None
 
     @classmethod
     def latest_project(cls, tech_lead):

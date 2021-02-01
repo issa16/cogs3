@@ -58,7 +58,7 @@
                             <td style="width: 50%;" class="text-dark">
                                 <b>{% trans "Principal Investigator" %}</b>
                             </td>
-                            <td style="width: 50%;">{{ project.pi|format_pi }}</td>
+                            <td style="width: 60%">{{ project.pi_name }} {{ project.pi_email|institution }}</td>
                         </tr>
                         <tr>
                             <td class="text-dark">
@@ -126,7 +126,7 @@
                             <td class="text-dark">
                                 <b>{% trans "Total number of core hours" %}</b>
                             </td>
-                            <td>{{ total_core_hours|in_hours }}&nbsp;&nbsp;&nbsp;&nbsp;{% if selected_project.allocation_cputime %} ({% percentage_color allocation_usage_percent %} of allocation) {% endif %}</td>
+                            <td>{{ total_core_hours|in_hours }}&nbsp;&nbsp;&nbsp;&nbsp;{% if project.allocation_cputime %} ({% percentage_color allocation_usage_percent %} of allocation) {% endif %}</td>
                         </tr>
                         <tr>
                             <td class="text-dark">

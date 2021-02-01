@@ -1,15 +1,15 @@
 from django.contrib import admin
 
 from project.forms import ProjectAdminForm, ProjectUserMembershipAdminForm
-from project.models import (Project, ProjectCategory, ProjectFundingSource,
-                            ProjectSystemAllocation, ProjectUserMembership)
-from project.openldap import (update_openldap_project,
-                              update_openldap_project_membership)
+from project.models import (
+    Project, ProjectCategory, ProjectFundingSource, ProjectSystemAllocation, ProjectUserMembership
+)
+from project.openldap import (update_openldap_project, update_openldap_project_membership)
 
 
 @admin.register(ProjectCategory)
 class ProjectCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', )
+    list_display = ('name',)
 
 
 @admin.register(ProjectFundingSource)
@@ -77,6 +77,10 @@ class ProjectUserMembershipAdmin(admin.ModelAdmin):
         'user__email',
         'user__profile__scw_username',
     )
+    autocomplete_fields = [
+        'project',
+        'user',
+    ]
 
 
 @admin.register(Project)
@@ -124,15 +128,19 @@ class ProjectAdmin(admin.ModelAdmin):
         'tech_lead',
         'status',
     )
-    list_filter = ('status', )
+    list_filter = ('status',)
     search_fields = (
         'title',
         'legacy_hpcw_id',
         'legacy_arcca_id',
         'code',
         'gid_number',
-        'pi',
+        'pi_name',
+        'pi_email',
         'tech_lead__first_name',
         'tech_lead__last_name',
         'tech_lead__email',
     )
+    autocomplete_fields = [
+        'tech_lead',
+    ]

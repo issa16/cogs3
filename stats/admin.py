@@ -16,6 +16,10 @@ class ComputeDaily(admin.ModelAdmin):
         'wall_time',
         'created_time',
     )
+    autocomplete_fields = [
+        'user',
+        'project',
+    ]
 
 
 @admin.register(StorageWeekly)
@@ -29,3 +33,6 @@ class StorageWeekly(admin.ModelAdmin):
         'scratch_files_used',
         'created_time',
     )
+    autocomplete_fields = [
+        'project',
+    ]

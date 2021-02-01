@@ -1,13 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from users.forms import CustomUserChangeForm
-from users.forms import CustomUserCreationForm
-from users.forms import ProfileUpdateForm
-from users.models import CustomUser
-from users.models import UserLastLogin
-from users.models import Profile
-from users.models import ShibbolethProfile
+from users.forms import (CustomUserChangeForm, CustomUserCreationForm, ProfileUpdateForm)
+from users.models import CustomUser, Profile, ShibbolethProfile, UserLastLogin
 from users.openldap import update_openldap_user
 
 

@@ -72,16 +72,12 @@ class ProjectStatsParser:
         '''
         Return the number of active, dormant, inactive and retired projects
         for the project's principal investigator (PI).
-
-        As the PI is stored as a text field, we will need to match the string
-        as best as possible. If no match is found, return the status of
-        self.project.
         '''
         try:
             pi_email = self.project.pi_email
             if pi_email:
                 # Find all projects that belong to a PI
-                projects = Project.objects.filter(pi__contains=pi_email)
+                projects = Project.objects.filter(pi_email=pi_email)
             else:
                 # No match found, use current project
                 projects = self.project

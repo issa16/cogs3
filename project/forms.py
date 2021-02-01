@@ -24,7 +24,10 @@ class FileLinkWidget(forms.Widget):
 
 class ProjectAdminForm(forms.ModelForm):
 
-    document_download = forms.CharField(label='Download Supporting Document', required=False)
+    document_download = forms.CharField(
+        label='Download Supporting Document',
+        required=False,
+    )
 
     class Meta:
         model = Project
@@ -37,6 +40,9 @@ class ProjectAdminForm(forms.ModelForm):
             'department',
             'gid_number',
             'pi',
+            'pi_name',
+            'pi_position',
+            'pi_email',
             'tech_lead',
             'category',
             'funding_source',
@@ -67,6 +73,9 @@ class ProjectAdminForm(forms.ModelForm):
         # Project must be created in order to generate a project code, before the status can be updated.
         if self.instance.id is None:
             self.fields['status'] = forms.ChoiceField(choices=[Project.STATUS_CHOICES[Project.AWAITING_APPROVAL]])
+        # Disable obsolete pi field
+        self.fields['pi'].required = False
+        self.fields['pi'].widget.attrs['disabled'] = 'disabled'
 
     def clean_code(self):
         """
@@ -149,7 +158,9 @@ class ProjectCreationForm(forms.ModelForm):
             'legacy_arcca_id',
             'institution_reference',
             'department',
-            'pi',
+            'pi_name',
+            'pi_position',
+            'pi_email',
             'funding_source',
             'start_date',
             'end_date',
@@ -216,6 +227,10 @@ class ProjectUserMembershipAdminForm(forms.ModelForm):
             'status',
             'date_joined',
             'date_left',
+        ]
+        search_fields = [
+            'project',
+            'user',
         ]
 
     def __init__(self, *args, **kwargs):

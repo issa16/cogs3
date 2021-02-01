@@ -13,7 +13,7 @@
                     <td style="width: 40%" class="text-dark">
                         <b>{% trans "Principal Investigator" %}</b>
                     </td>
-                    <td style="width: 60%">{{ selected_project.pi|format_pi }}</td>
+                    <td style="width: 60%">{{ selected_project.pi_name }} {{ selected_project.pi_email|institution }}</td>
                 </tr>
                 <tr>
                     <td class="text-dark">

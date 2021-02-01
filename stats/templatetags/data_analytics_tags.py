@@ -5,15 +5,14 @@ register = template.Library()
 
 
 @register.filter
-def format_pi(pi, is_safe=True):
+def institution(email, is_safe=True):
     try:
-        name, position, email = pi.split(',')
         institution = email.split('@')[1]
         institution = institution.split('.')[0]
         institution = institution.title()
-        return f'{name} ({institution})'
+        return f'({institution})'
     except Exception:
-        return pi
+        return email
 
 
 @register.filter
