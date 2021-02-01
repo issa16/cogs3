@@ -15,6 +15,7 @@ from stats.models import StorageWeekly
 
 from .parsers.project_stats_parser import ProjectStatsParser
 from .parsers.user_stats_parser import UserStatsParser
+from .parsers.util import kb_to_gb
 
 
 class IndexView(
@@ -73,8 +74,8 @@ class IndexView(
                 latest_stats_usage = StorageWeekly.objects.filter(project=selected_project).latest()
 
                 # Home
-                home_space_used = latest_stats_usage.home_space_used
-                home_space_allocation = selected_project.allocation_storage_home
+                home_space_used = kb_to_gb(latest_stats_usage.home_space_used)  # kb to gb
+                home_space_allocation = selected_project.allocation_storage_home  # gb
                 home_space_used_percentage = round((home_space_used / home_space_allocation), 2) * 100
                 notify_limit = 75
                 if home_space_used_percentage > notify_limit:
@@ -82,8 +83,8 @@ class IndexView(
                     messages.add_message(self.request, messages.ERROR, msg)
 
                 # Scratch
-                scratch_space_used = latest_stats_usage.scratch_space_used
-                scratch_space_allocation = selected_project.allocation_storage_scratch
+                scratch_space_used = kb_to_gb(latest_stats_usage.scratch_space_used)  # kb to gb
+                scratch_space_allocation = selected_project.allocation_storage_scratch  # gb
                 scratch_space_used_percentage = round((scratch_space_used / scratch_space_allocation), 2) * 100
                 notify_limit = 75
                 if scratch_space_used_percentage > notify_limit:
