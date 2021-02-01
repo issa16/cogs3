@@ -6,9 +6,9 @@
 
 ---
 
-A user that is not a technical lead of a project or a member of staff of MySCW has a restricted view of their compute and storage data analytics.
+A user that is not a technical lead of a project or a member of staff of MySCW has a restricted view of their compute and storage data consumption.
 
-Upon successful login to MySCW, a user’s view will default to the homepage that will display the following four charts: 
+Upon successful login to MySCW, a user’s view will default to the homepage that will display the following four charts:
 
 1. Efficiency per month.
 2. Number of jobs per month.
@@ -19,17 +19,13 @@ All of the above charts will default to display the user’s usage over the last
 
 **Insert images**
 
-
-
 **Filter Chart Data**
 
 ---
 
-By default, the charts will display the cumulative totals of a user's usage for the projects in which a user has a valid project membership. A user can filter the results on a per-project basis by selecting the ‘Project Filter' dropdown option and selecting a project.
+By default, the charts will display the cumulative totals of a user's usage for the projects in which a user has an approved project membership. A user can filter the results on a per-project basis by selecting the ‘Project Filter' dropdown option and selecting a project.
 
 **Insert images**
-
-
 
 #### Technical Lead
 
@@ -37,17 +33,15 @@ By default, the charts will display the cumulative totals of a user's usage for 
 
 ---
 
-In addition to the default users view as described in the ‘User' section above, a technical lead of a project will have the option to view the compute and storage data analytics for their projects.
+In addition to the default users view as described in the ‘User' section above, a technical lead of a project will have the option to view the compute and storage consumption for their projects.
 
-Upon successful login to MySCW, a technical lead will have an additional link in the left sidebar named ‘Data Analytics’. 
-
-**Insert images**
-
-By default, the link will take the user to the data analytics page of their most recently created project on MySCW.
+Upon successful login to MySCW, a technical lead will have an additional link in the left sidebar menu named ‘Data Analytics’.
 
 **Insert images**
 
+By default, the link will direct the user to the data analytics page of their most recently created project on MySCW.
 
+**Insert images**
 
 **Filter Projects**
 
@@ -56,8 +50,6 @@ By default, the link will take the user to the data analytics page of their most
 Technical leads that are linked to multiple SCW projects can switch between projects by selecting the ‘Project Filter' dropdown option and selecting a project.
 
 **Insert images**
-
-
 
 **Project Overview Data**
 
@@ -147,8 +139,6 @@ Technical leads that are linked to multiple SCW projects can switch between proj
     </tbody>
 </table>
 
-
-
 **Project Compute Data**
 
 ---
@@ -212,8 +202,6 @@ Technical leads that are linked to multiple SCW projects can switch between proj
     </tbody>
 </table>
 
-
-
 **Project Compute Charts**
 
 ---
@@ -250,42 +238,43 @@ Technical leads that are linked to multiple SCW projects can switch between proj
         <tr>
             <td>5</td>
             <td>Efficiency per month</td>
-            <td>Displays the efficiency per month within the query’s start and end date. The table below the chart shows the average efficiency per month within the query’s start and end date as well
+            <td>Displays the efficiency per month within the query’s start and end date.</br></br>
+                The table below the chart shows the average efficiency per month within the query’s start and end date as well
                 as the project’s start date to the present date.</td>
         </tr>
         <tr>
             <td>6</td>
             <td>Number of jobs per month</td>
-            <td>Displays the number of jobs per month within the query's start and end date. The table below the chart shows the total number of jobs within the query’s start and end date as well as
+            <td>Displays the number of jobs per month within the query's start and end date.</br></br>
+                The table below the chart shows the total number of jobs within the query’s start and end date as well as
                 the project’s start date to the present date.</td>
         </tr>
         <tr>
             <td>7</td>
             <td>Per-Job average stats per month</td>
-            <td>Displays the Per-Job average CPU Time, Wait Time and Wall Time per month within the query’s start and end date. The table below the chart shows the Per-Job average CPU Time, Wait Time
+            <td>Displays the Per-Job average CPU Time, Wait Time and Wall Time per month within the query’s start and end date.</br></br>
+                The table below the chart shows the Per-Job average CPU Time, Wait Time
                 and Wall Time per month within the query’s start and end date as well as the project’s start date to the present date.</td>
         </tr>
         <tr>
             <td>8</td>
             <td>Core count and node utilisation per month</td>
-            <td>Displays the core count and node utilisation per month within the query’s start and end date. The table below the chart shows the number of cores and average number of cores per job
-                per month within the query’s start and end date as well as the project’s start date to the present date. <strong>Note</strong>: Array jobs in the Compute Daily table display as using a
+            <td>Displays the core count and node utilisation per month within the query’s start and end date.</br></br>
+                The table below the chart shows the number of cores and average number of cores per job
+                per month within the query’s start and end date as well as the project’s start date to the present date.</br></br>
+                <strong>Note</strong>: Array jobs in the Compute Daily table display as using a
                 single core with multiple jobs.</td>
         </tr>
     </tbody>
 </table>
 
-
-
 **Filter Projects**
 
 ---
 
-Technical leads can filter the compute data analytics by partitions by selecting the ‘Partitions Filter' dropdown option and selecting a partition. 
+Technical leads can filter the compute data analytics by partitions by selecting the ‘Partitions Filter' dropdown option and selecting a partition.
 
 **Insert images**
-
-
 
 **Project Storage Data**
 
@@ -335,77 +324,62 @@ Technical leads can filter the compute data analytics by partitions by selecting
     </tbody>
 </table>
 
-
 **Note**: The start and end date will default to the last twelve months if not defined by the user.
-
-
 
 ### Data Export
 
-- PDF
-- Charts
-
-
+-   PDF
+-   Charts
 
 ### Data Import
 
 **Find date range of LIGO file.**
 
-   ```
-   python3 manage.py find_date_range_of_ligo_file \
-      --file=path_to_ligo_log_file.out
-   ```
-
-
+```
+python3 manage.py find_date_range_of_ligo_file \
+   --file=path_to_ligo_log_file.out
+```
 
 **Import LIGO daily compute stats.**
 
-   ```
-   python3 manage.py import_daily_compute_ligo \
-      --file=path_to_stats_file.out
-      -d 31 \
-      -m 10 \
-      -y 2020 \
-      -s CF
-   ```
-
-
+```
+python3 manage.py import_daily_compute_ligo \
+   --file=path_to_stats_file.out
+   -d 31 \
+   -m 10 \
+   -y 2020 \
+   -s CF
+```
 
 **Import daily compute stats.**
 
-   ```
-   python3 manage.py import_daily_compute \
-      --file=path_to_stats_file.out
-      -d 31 \
-      -m 10 \
-      -y 2020 \
-      -s CF
-   ```
-
-
+```
+python3 manage.py import_daily_compute \
+   --file=path_to_stats_file.out
+   -d 31 \
+   -m 10 \
+   -y 2020 \
+   -s CF
+```
 
 **Import user last login stats.**
 
-   ```
-   python3 manage.py import_user_last_login \
-      --file=path_to_user_last_login.csv
-   ```
-
-
+```
+python3 manage.py import_user_last_login \
+   --file=path_to_user_last_login.csv
+```
 
 **Import weekly storage stats.**
 
-   ```
-   python3 manage.py import_weekly_storage \
-      --homefile=path_to_home_file.csv \
-      --scratchfile=path_to_scratch_file.csv \
-      -d 21 \
-      -m 11 \
-      -y 2020 \
-      -s CF
-   ```
-
-
+```
+python3 manage.py import_weekly_storage \
+   --homefile=path_to_home_file.csv \
+   --scratchfile=path_to_scratch_file.csv \
+   -d 21 \
+   -m 11 \
+   -y 2020 \
+   -s CF
+```
 
 ### Deployment
 
@@ -413,38 +387,42 @@ Technical leads can filter the compute data analytics by partitions by selecting
 
 ---
 
-1. Switch to `arcca` branch.
+1.  Switch to `arcca` branch.
 
-    ```git checkout arcca```
+    `git checkout arcca`
 
-2. Source environment.
+2.  Source environment.
 
-    ```source /path/to/venv```
+    `source /path/to/venv`
 
-3. Run database migrations.
+3.  Run database migrations.
 
-    ```python3 manage.py migrate```
+    `python3 manage.py migrate`
 
-4. Load data fixtures.
+4.  Load data fixtures.
 
     ```
     python3 manage.py loaddata \
        access_methods.json \
        applications.json \
        os.json \
-       hardware_groups.json \ 
+       hardware_groups.json \
        partitions.json
     ```
 
-5. Migrate PI text field.
+5.  Migrate PI text field.
+
+        ```
+
+    python3 manage.py migrate_pi_text_field
 
     ```
-python3 manage.py migrate_pi_text_field
-    ```
-    
-6. Load in historical data.
 
-    - Import daily compute.
+    ```
+
+6.  Load in historical data.
+
+    -   Import daily compute.
 
         ```
         python3 manage.py import_historical_daily_compute \
@@ -452,7 +430,7 @@ python3 manage.py migrate_pi_text_field
            --output_dir=path_to_move_bz2_files_to_once_processed
         ```
 
-    - Import daily compute ligo.
+    -   Import daily compute ligo.
 
         ```
         python3 manage.py import_historical_daily_compute_ligo \
@@ -460,7 +438,7 @@ python3 manage.py migrate_pi_text_field
            --output_dir=path_to_move_bz2_files_to_once_processed
         ```
 
-    - Import user last login.
+    -   Import user last login.
 
         ```
         python3 manage.py import_historical_user_last_login \
@@ -468,7 +446,7 @@ python3 manage.py migrate_pi_text_field
            --output_dir=path_to_move_csv_files_to_once_processed
         ```
 
-    - Import weekly storage.
+    -   Import weekly storage.
 
         ```
         python3 manage.py import_historical_weekly_storage \
@@ -476,10 +454,6 @@ python3 manage.py migrate_pi_text_field
            --output_dir=path_to_move_csv_files_to_once_processed
         ```
 
-
-
 #### **Cardiff**
 
 ---
-
-
