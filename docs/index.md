@@ -1,8 +1,8 @@
 ### User Guide
 
-#### User
+### User
 
-**Overview**
+#### Overview
 
 ---
 
@@ -19,7 +19,7 @@ All of the above charts will default to display the user’s usage over the last
 
 **Insert images**
 
-**Filter Chart Data**
+#### Filter Chart Data
 
 ---
 
@@ -27,9 +27,9 @@ By default, the charts will display the cumulative totals of a user's usage for 
 
 **Insert images**
 
-#### Technical Lead
+### Technical Lead
 
-**Overview**
+#### Overview
 
 ---
 
@@ -43,7 +43,7 @@ By default, the link will direct the user to the data analytics page of their mo
 
 **Insert images**
 
-**Filter Projects**
+#### Filter Projects
 
 ---
 
@@ -51,7 +51,7 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 
 **Insert images**
 
-**Project Overview Data**
+### Project Overview Data
 
 ---
 
@@ -139,11 +139,11 @@ Technical leads that are linked to multiple SCW projects can switch between proj
     </tbody>
 </table>
 
-**Project Limits**
+### Project Limits
 
 ---
 
-**Project Compute Data**
+### Project Compute Data
 
 ---
 
@@ -206,7 +206,7 @@ Technical leads that are linked to multiple SCW projects can switch between proj
     </tbody>
 </table>
 
-**Project Compute Charts**
+### Project Compute Charts
 
 ---
 
@@ -272,7 +272,7 @@ Technical leads that are linked to multiple SCW projects can switch between proj
     </tbody>
 </table>
 
-**Filter Projects**
+#### Filter Projects
 
 ---
 
@@ -280,7 +280,7 @@ Technical leads can filter the compute data analytics by partitions by selecting
 
 **Insert images**
 
-**Project Storage Data**
+### Project Storage Data
 
 ---
 
@@ -334,14 +334,14 @@ Technical leads can filter the compute data analytics by partitions by selecting
 
 ### Data Import
 
-**Find date range of LIGO file.**
+#### Find date range of LIGO file.
 
 ```
 python3 manage.py find_date_range_of_ligo_file \
    --file=path_to_ligo_log_file.out
 ```
 
-**Import LIGO daily compute stats.**
+#### Import LIGO daily compute stats.\*\*
 
 ```
 python3 manage.py import_daily_compute_ligo \
@@ -352,7 +352,7 @@ python3 manage.py import_daily_compute_ligo \
    -s CF
 ```
 
-**Import daily compute stats.**
+#### Import daily compute stats.\*\*
 
 ```
 python3 manage.py import_daily_compute \
@@ -363,14 +363,14 @@ python3 manage.py import_daily_compute \
    -s CF
 ```
 
-**Import user last login stats.**
+#### Import user last login stats.\*\*
 
 ```
 python3 manage.py import_user_last_login \
    --file=path_to_user_last_login.csv
 ```
 
-**Import weekly storage stats.**
+#### Import weekly storage stats.\*\*
 
 ```
 python3 manage.py import_weekly_storage \
@@ -384,7 +384,7 @@ python3 manage.py import_weekly_storage \
 
 ### Deployment
 
-#### **Bangor**
+#### Bangor
 
 ---
 
@@ -451,6 +451,6 @@ python3 manage.py import_weekly_storage \
            --output_dir=path_to_move_csv_files_to_once_processed
         ```
 
-#### **Cardiff**
+#### Cardiff
 
 ---
