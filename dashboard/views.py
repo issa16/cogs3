@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from project.models import Project, ProjectUserMembership
+from stats.views import parse_date_range
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -32,5 +33,10 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             ).latest().code
         except Exception:
             pass
+
+        # Parse the date range for charts
+        start_date, end_date = parse_date_range(self.request)
+        context['query_start_date'] = start_date
+        context['query_end_date'] = end_date
 
         return context
