@@ -412,12 +412,8 @@ python3 manage.py import_weekly_storage \
 
 5.  Migrate PI text field.
 
-        ```
-
-    python3 manage.py migrate_pi_text_field
-
     ```
-
+    python3 manage.py migrate_pi_text_field
     ```
 
 6.  Load in historical data.
