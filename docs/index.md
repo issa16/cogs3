@@ -238,30 +238,30 @@ Technical leads that are linked to multiple SCW projects can switch between proj
         <tr>
             <td>5</td>
             <td>Efficiency per month</td>
-            <td>Displays the efficiency per month within the query’s start and end date.</br></br>
+            <td>Displays the efficiency per month within the query’s start and end date.<br /><br />
                 The table below the chart shows the average efficiency per month within the query’s start and end date as well
                 as the project’s start date to the present date.</td>
         </tr>
         <tr>
             <td>6</td>
             <td>Number of jobs per month</td>
-            <td>Displays the number of jobs per month within the query's start and end date.</br></br>
+            <td>Displays the number of jobs per month within the query's start and end date.<br /><br />
                 The table below the chart shows the total number of jobs within the query’s start and end date as well as
                 the project’s start date to the present date.</td>
         </tr>
         <tr>
             <td>7</td>
             <td>Per-Job average stats per month</td>
-            <td>Displays the Per-Job average CPU Time, Wait Time and Wall Time per month within the query’s start and end date.</br></br>
+            <td>Displays the Per-Job average CPU Time, Wait Time and Wall Time per month within the query’s start and end date.<br /><br />
                 The table below the chart shows the Per-Job average CPU Time, Wait Time
                 and Wall Time per month within the query’s start and end date as well as the project’s start date to the present date.</td>
         </tr>
         <tr>
             <td>8</td>
             <td>Core count and node utilisation per month</td>
-            <td>Displays the core count and node utilisation per month within the query’s start and end date.</br></br>
+            <td>Displays the core count and node utilisation per month within the query’s start and end date.<br /><br />
                 The table below the chart shows the number of cores and average number of cores per job
-                per month within the query’s start and end date as well as the project’s start date to the present date.</br></br>
+                per month within the query’s start and end date as well as the project’s start date to the present date.<br /><br />
                 <strong>Note</strong>: Array jobs in the Compute Daily table display as using a
                 single core with multiple jobs.</td>
         </tr>
