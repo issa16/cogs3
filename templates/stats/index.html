@@ -47,12 +47,12 @@
                 {% endif %}
                 <div class="my-3">
                     {% if messages %} {% for message in messages %}
-                    <div {% if message.tags %} class="alert {{ message.tags }}" {% endif %} role="alert">{{ message }}</div>
+                    <div {% if message.tags %} class="alert {{ message.tags }}" {% endif %} role="alert"><span class="oi oi-flag pr-3"></span>{{ message }}</div>
                     {% endfor %} {% endif %}
                 </div>
                 {% if project_codes or selected_project %}
-                <div class="row no-gutters pt-4 px-3">
-                    <div class="col-9" id="project-title">
+                <div class="row no-gutters pt-4">
+                    <div class="pl-2 col-9" id="project-title">
                         <h6 class="font-weight-bold">{{selected_project.code}} : {{selected_project.title}}</h6>
                     </div>
                     <div class="col-3">
