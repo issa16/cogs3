@@ -47,7 +47,7 @@ By default, the link will direct the user to the data analytics page of their mo
 
 ---
 
-Technical leads that are linked to multiple SCW projects can switch between projects by selecting the ‘Project Filter' dropdown option and selecting a project.
+Technical leads that are linked to multiple SCW projects can switch between projects by selecting the ‘Project Filter' dropdown option.
 
 **Insert images**
 
@@ -138,6 +138,10 @@ Technical leads that are linked to multiple SCW projects can switch between proj
         </tr>
     </tbody>
 </table>
+
+**Project Limits**
+
+---
 
 **Project Compute Data**
 
@@ -272,7 +276,7 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 
 ---
 
-Technical leads can filter the compute data analytics by partitions by selecting the ‘Partitions Filter' dropdown option and selecting a partition.
+Technical leads can filter the compute data analytics by partitions by selecting the ‘Partitions Filter' dropdown option.
 
 **Insert images**
 
@@ -327,9 +331,6 @@ Technical leads can filter the compute data analytics by partitions by selecting
 **Note**: The start and end date will default to the last twelve months if not defined by the user.
 
 ### Data Export
-
--   PDF
--   Charts
 
 ### Data Import
 
