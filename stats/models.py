@@ -11,6 +11,7 @@ class ComputeDaily(models.Model):
 
     class Meta:
         verbose_name_plural = _('Compute Daily')
+        get_latest_by = "date"
 
     date = models.DateField()
     number_jobs = models.PositiveIntegerField()
@@ -62,6 +63,7 @@ class StorageWeekly(models.Model):
 
     class Meta:
         verbose_name_plural = _('Storage Weekly')
+        get_latest_by = "date"
 
     project = models.ForeignKey(
         'project.Project',  # To avoid circular imports issue

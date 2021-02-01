@@ -51,9 +51,9 @@ def efficiency_as_percentage(x, y=1):
 
 @register.simple_tag
 def percentage_color(x):
-    if x >= 80:
+    if x >= 75:
         color = 'red'
-    elif x >= 50 and x < 80:
+    elif x >= 50 and x < 75:
         color = 'blue'
     else:
         color = 'green'

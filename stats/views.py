@@ -11,6 +11,8 @@ from project.models import Project
 from system.models import Partition
 from weasyprint import HTML
 
+from stats.models import StorageWeekly
+
 from .parsers.project_stats_parser import ProjectStatsParser
 from .parsers.user_stats_parser import UserStatsParser
 
@@ -33,7 +35,7 @@ class IndexView(
             projects = Project.objects.filter(tech_lead=user).order_by('-start_date')
             context['project_codes'] = [project.code for project in projects]
 
-            # Parse the date range.
+            # Parse the query date range.
             start_date, end_date = parse_date_range(self.request)
 
             # Add to the context to maintain search range between requests.
@@ -66,11 +68,41 @@ class IndexView(
             # Build project stats and add to request context.
             context = build_project_stats(stats_parser, context)
 
+            # Check home and scratch storage allocation usage
+            try:
+                latest_stats_usage = StorageWeekly.objects.filter(project=selected_project).latest()
+
+                # Home
+                home_space_used = latest_stats_usage.home_space_used
+                home_space_allocation = selected_project.allocation_storage_home
+                home_space_used_percentage = round((home_space_used / home_space_allocation), 2) * 100
+                print(home_space_used_percentage)
+                notify_limit = 75
+                if home_space_used_percentage > notify_limit:
+                    msg = f'{selected_project.code} is currently using more than {notify_limit}% of its home storage allocation.'
+                    messages.add_message(self.request, messages.ERROR, msg)
+
+                # Scratch
+                scratch_space_used = latest_stats_usage.scratch_space_used
+                scratch_space_allocation = selected_project.allocation_storage_scratch
+                scratch_space_used_percentage = round((scratch_space_used / scratch_space_allocation), 2) * 100
+                notify_limit = 75
+                if scratch_space_used_percentage > notify_limit:
+                    msg = f'{selected_project.code} is currently using more than {notify_limit}% of its scratch storage allocation.'
+                    messages.add_message(self.request, messages.ERROR, msg)
+            except Exception:
+                pass
+
             # Check allocated core hours usage
             try:
                 usage = stats_parser.total_core_hours().total_seconds()
                 allocation = timedelta(hours=selected_project.allocation_cputime).total_seconds()
-                context['allocation_usage_percent'] = round((usage / allocation), 2) * 100
+                usage_percentage = round((usage / allocation), 2) * 100
+                context['allocation_usage_percentage'] = usage_percentage
+                notify_limit = 75
+                if usage_percentage > notify_limit:
+                    msg = f'{selected_project.code} is currently using more than {notify_limit}% of its core hours allocation.'
+                    messages.add_message(self.request, messages.ERROR, msg)
             except Exception:
                 pass
 
@@ -309,7 +341,6 @@ def GeneratePDF(request):
                 response = HttpResponse(pdf, content_type='application/pdf')
                 response['Content-Disposition'] = 'attachment; filename="' + project.code + '".pdf"'
             return response
-        except Exception as e:
-            print(e)
+        except Exception:
             pass
     return HttpResponse()

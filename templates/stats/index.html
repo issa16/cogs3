@@ -1,6 +1,5 @@
 <!-- templates/stats/index.html -->
 {% extends 'base.html' %} {% load static %} {% load i18n %} {% block title %}{% trans "Data Analytics" %}{% endblock %} {% block content %}
-
 <div class="row no-gutters pb-3">
     <div class="col">
         <div class="card">
@@ -48,6 +47,9 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-3">
+                        <a class="btn btn-primary float-right" href="{% url 'data-analytics-generate-pdf' %}?code={{request.GET.code}}&start_date={{request.GET.start_date}}&end_date={{request.GET.end_date}}" role="button">Export to PDF</a>
                     </div>
                 </div>
                 {% endif %} {% if project_codes or selected_project %}

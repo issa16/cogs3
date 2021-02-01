@@ -1,17 +1,16 @@
 <!-- templates/stats/overview.html -->
 {% load static %} {% load i18n %} {% load hreflang %} {% load data_analytics_tags %}
-<div class="row no-gutters px-3 pt-3">
+<div class="row no-gutters p-2">
     <div class="col">
-        <a class="btn btn-primary float-right" href="{% url 'data-analytics-generate-pdf' %}?code={{request.GET.code}}&start_date={{request.GET.start_date}}&end_date={{request.GET.end_date}}" role="button">Export to PDF</a>
-    </div>
-</div>
-<div class="row no-gutters">
-    <div class="col-6">
         <div class="my-3">
             {% if messages %} {% for message in messages %}
             <div {% if message.tags %} class="alert {{ message.tags }}" {% endif %} role="alert">{{ message }}</div>
             {% endfor %} {% endif %}
         </div>
+    </div>
+</div>
+<div class="row no-gutters">
+    <div class="col-6">
         <table class="table table-borderless">
             <tbody>
                 <tr>
@@ -78,7 +77,7 @@
                     <td class="text-dark">
                         <b>{% trans "Total number of core hours" %}</b>
                     </td>
-                    <td>{{ total_core_hours|in_hours }}&nbsp;&nbsp;&nbsp;&nbsp;{% if selected_project.allocation_cputime %} ({% percentage_color allocation_usage_percent %} of allocation) {% endif %}</td>
+                    <td>{{ total_core_hours|in_hours }}&nbsp;&nbsp;&nbsp;&nbsp;{% if allocation_usage_percentage %} ({% percentage_color allocation_usage_percentage %} of allocation) {% endif %}</td>
                 </tr>
                 <tr>
                     <td class="text-dark">
