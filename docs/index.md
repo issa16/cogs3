@@ -53,8 +53,6 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 
 ### Project Overview Data
 
----
-
 **Insert images**
 
 <table>
@@ -141,11 +139,7 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 
 ### Project Limits
 
----
-
 ### Project Compute Data
-
----
 
 **Insert images**
 
@@ -207,8 +201,6 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 </table>
 
 ### Project Compute Charts
-
----
 
 <table>
     <thead>
@@ -282,8 +274,6 @@ Technical leads can filter the compute data analytics by partitions by selecting
 
 ### Project Storage Data
 
----
-
 **Insert images**
 
 <table>
@@ -341,7 +331,7 @@ python3 manage.py find_date_range_of_ligo_file \
    --file=path_to_ligo_log_file.out
 ```
 
-#### Import LIGO daily compute stats.\*\*
+#### Import LIGO daily compute stats.
 
 ```
 python3 manage.py import_daily_compute_ligo \
@@ -352,7 +342,7 @@ python3 manage.py import_daily_compute_ligo \
    -s CF
 ```
 
-#### Import daily compute stats.\*\*
+#### Import daily compute stats.
 
 ```
 python3 manage.py import_daily_compute \
@@ -363,14 +353,14 @@ python3 manage.py import_daily_compute \
    -s CF
 ```
 
-#### Import user last login stats.\*\*
+#### Import user last login stats.
 
 ```
 python3 manage.py import_user_last_login \
    --file=path_to_user_last_login.csv
 ```
 
-#### Import weekly storage stats.\*\*
+#### Import weekly storage stats.
 
 ```
 python3 manage.py import_weekly_storage \
