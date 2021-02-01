@@ -27,7 +27,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         # If the user is a tech lead, what is their latest project?
         try:
-            context['latest_project_code'] = Project.objects.filter(
+            self.request.session['latest_project_code'] = Project.objects.filter(
                 tech_lead=user,
                 status=Project.APPROVED,
             ).latest().code

@@ -63,7 +63,7 @@
                         <span>{% trans 'Home' %}</span>
                     </a>
                     {% if user.profile.is_approved %} {% if perms.project.change_project or user.is_staff %}
-                    <a class="js-nav-tooltip-link nav-link py-3" href="{% url 'data-analytics'%}?code={{latest_project_code}}">
+                    <a class="js-nav-tooltip-link nav-link py-3" href="{% url 'data-analytics'%}?code={{request.session.latest_project_code}}">
                         <span class="oi oi-signal pr-3 dark_blue"></span>
                         <span
                             >{% trans 'Data Analytics' %}
