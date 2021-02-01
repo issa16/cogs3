@@ -340,6 +340,7 @@ def GeneratePDF(request):
                 response = HttpResponse(pdf, content_type='application/pdf')
                 response['Content-Disposition'] = 'attachment; filename="' + project.code + '".pdf"'
             return response
-        except Exception:
+        except Exception as e:
+            print(e)
             pass
     return HttpResponse()
