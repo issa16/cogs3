@@ -35,7 +35,13 @@
        partitions.json
     ```
 
-5. Load in historical data.
+5. Migrate PI text field.
+
+    ```
+python3 manage.py migrate_pi_text_field
+    ```
+    
+6. Load in historical data.
 
     - Import daily compute
 
@@ -80,7 +86,7 @@ Upon successful login to MySCW, the default view of the homepage will render cha
 <p align="center">
     <img src="img/user-default-charts.png">
 </p>
-  
+
 By default, the charts will display the cumulative totals of a users usage for the projects in which a user has a valid project membership. A user can filter the results on a per-project basis by selecting the ‘Project Filter’ dropdown option and selecting a project.
 
 <p align="center">
@@ -90,7 +96,7 @@ By default, the charts will display the cumulative totals of a users usage for t
 <p align="center">
     <img src="img/user-project-chart.png">
 </p>
-  
+
 ### Technical Leads
 
 ### Staff

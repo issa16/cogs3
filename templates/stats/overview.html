@@ -1,15 +1,6 @@
 <!-- templates/stats/overview.html -->
 {% load static %} {% load i18n %} {% load hreflang %} {% load data_analytics_tags %}
-<div class="row no-gutters p-2">
-    <div class="col">
-        <div class="my-3">
-            {% if messages %} {% for message in messages %}
-            <div {% if message.tags %} class="alert {{ message.tags }}" {% endif %} role="alert">{{ message }}</div>
-            {% endfor %} {% endif %}
-        </div>
-    </div>
-</div>
-<div class="row no-gutters">
+<div class="row no-gutters pt-3">
     <div class="col-6">
         <table class="table table-borderless">
             <tbody>

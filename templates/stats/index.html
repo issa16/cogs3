@@ -1,5 +1,5 @@
 <!-- templates/stats/index.html -->
-{% extends 'base.html' %} {% load static %} {% load i18n %} {% block title %}{% trans "Data Analytics" %}{% endblock %} {% block content %}
+{% extends 'base.html' %} {% load static %}{% load data_analytics_tags %} {% load i18n %} {% block title %}{% trans "Data Analytics" %}{% endblock %} {% block content %}
 <div class="row no-gutters pb-3">
     <div class="col">
         <div class="card">
@@ -19,11 +19,6 @@
                                     </div>
                                 </div>
                             </form>
-                        </div>
-                        <div class="my-3">
-                            {% if messages %} {% for message in messages %}
-                            <div {% if message.tags %} class="alert {{ message.tags }}" {% endif %} role="alert">{{ message }}</div>
-                            {% endfor %} {% endif %}
                         </div>
                     </div>
                 </div>
@@ -52,7 +47,13 @@
                         <a class="btn btn-primary float-right" href="{% url 'data-analytics-generate-pdf' %}?code={{request.GET.code}}&start_date={{request.GET.start_date}}&end_date={{request.GET.end_date}}" role="button">Export to PDF</a>
                     </div>
                 </div>
-                {% endif %} {% if project_codes or selected_project %}
+                {% endif %}
+                <div class="my-3">
+                    {% if messages %} {% for message in messages %}
+                    <div {% if message.tags %} class="alert {{ message.tags }}" {% endif %} role="alert">{{ message }}</div>
+                    {% endfor %} {% endif %}
+                </div>
+                {% if project_codes or selected_project %}
                 <div class="row no-gutters pt-4 px-3">
                     <div class="col" id="project-title">
                         <h6 class="font-weight-bold">{{selected_project.code}} : {{selected_project.title}}</h6>

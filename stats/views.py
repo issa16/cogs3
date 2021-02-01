@@ -76,7 +76,6 @@ class IndexView(
                 home_space_used = latest_stats_usage.home_space_used
                 home_space_allocation = selected_project.allocation_storage_home
                 home_space_used_percentage = round((home_space_used / home_space_allocation), 2) * 100
-                print(home_space_used_percentage)
                 notify_limit = 75
                 if home_space_used_percentage > notify_limit:
                     msg = f'{selected_project.code} is currently using more than {notify_limit}% of its home storage allocation.'
