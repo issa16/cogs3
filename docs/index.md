@@ -11,11 +11,24 @@ A user that is not a technical lead of a project or a member of staff of MySCW h
 Upon successful login to MySCW, a user’s view will default to the homepage that will display the following four charts:
 
 1. Efficiency per month.
+
+<img src="img/efficiency-per-month-chart.png" alt="" height=400>
+
 2. Number of jobs per month.
+
+<img src="img/number-of-jobs-per-month-chart.png" alt="" height=400>
+
+
 3. Rate of usage per month.
+
+<img src="img/rate-of-usage-per-month-chart.png" alt="" height=400>
+
+
 4. Cumulative total usage per month.
 
-All of the above charts will default to display the user’s usage over the last twelve months.
+<img src="img/cumulative-total-usage-per-month-chart.png" alt="" height=400>
+
+**Note:** All of the above charts will default to display the user’s usage over the last twelve months. 
 
 **Insert images**
 
