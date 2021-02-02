@@ -2,7 +2,7 @@ import datetime
 from statistics import mean
 
 from dateutil.relativedelta import relativedelta
-from django.db.models import Avg, Count, Q, Sum
+from django.db.models import Avg, Count, F, Q, Sum
 from django.db.models.functions import TruncMonth
 from project.models import Project, ProjectUserMembership
 from stats.models import ComputeDaily, StorageWeekly
@@ -637,7 +637,7 @@ class ProjectStatsParser:
                 date__range=[self.start_date, self.end_date],
             ).annotate(month=TruncMonth('date')).values('month').annotate(
                 c=Count('id'),
-                number_processors=Sum('number_processors'),
+                number_processors=Sum(F('number_jobs') * F('number_processors')),
                 number_jobs=Sum('number_jobs'),
             ).order_by('month')
 
@@ -659,7 +659,7 @@ class ProjectStatsParser:
                 partition__in=self.partition_ids,
             ).annotate(month=TruncMonth('date')).values('month').annotate(
                 c=Count('id'),
-                number_processors=Sum('number_processors'),
+                number_processors=Sum(F('number_jobs') * F('number_processors')),
                 number_jobs=Sum('number_jobs'),
             ).order_by('month')
 
