@@ -286,7 +286,7 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 
 Technical leads can filter the compute data analytics by partitions by selecting the ‘Partitions Filter' dropdown option.
 
-<img src="img/data-analytics-partition-filter.png" alt="" height=200>
+<img src="img/data-analytics-partition-filter.png" alt="" height=350>
 
 ### Project Storage Data
 
