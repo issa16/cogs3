@@ -3,7 +3,6 @@
 ### User
 
 #### Overview
-
 ---
 
 A user that is not a technical lead of a project or a member of staff of MySCW has a restricted view of their compute and storage data consumption.
@@ -30,43 +29,42 @@ Upon successful login to MySCW, a user’s view will default to the homepage tha
 
 **Note:** All of the above charts will default to display the user’s usage over the last twelve months. 
 
-**Insert images**
 
 #### Filter Chart Data
-
 ---
 
 By default, the charts will display the cumulative totals of a user's usage for the projects in which a user has an approved project membership. A user can filter the results on a per-project basis by selecting the ‘Project Filter' dropdown option and selecting a project.
 
-**Insert images**
+<img src="img/data-analytics-project-dropdown-filter.png" alt="" height=400>
+
 
 ### Technical Lead
 
 #### Overview
-
 ---
 
 In addition to the default users view as described in the ‘User' section above, a technical lead of a project will have the option to view the compute and storage consumption for their projects.
 
 Upon successful login to MySCW, a technical lead will have an additional link in the left sidebar menu named ‘Data Analytics’.
 
-**Insert images**
+<img src="img/data-analytics-link.png" alt="" height=300>
 
 By default, the link will direct the user to the data analytics page of their most recently created project on MySCW.
 
-**Insert images**
+<img src="img/data-analytics-link-with-project.png" alt="" height=300>
+
 
 #### Filter Projects
-
 ---
 
 Technical leads that are linked to multiple SCW projects can switch between projects by selecting the ‘Project Filter' dropdown option.
 
-**Insert images**
+<img src="img/data-analytics-project-filter.png" alt="" height=200>
+
 
 ### Project Overview Data
 
-**Insert images**
+<img src="img/data-analytics-overview-map.png" alt="">
 
 <table>
     <thead>
@@ -152,9 +150,11 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 
 ### Project Limits
 
+- TODO
+
 ### Project Compute Data
 
-**Insert images**
+<img src="img/data-analytics-compute-map.png" alt="">
 
 <table>
     <thead>
@@ -278,16 +278,15 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 </table>
 
 #### Filter Projects
-
 ---
 
 Technical leads can filter the compute data analytics by partitions by selecting the ‘Partitions Filter' dropdown option.
 
-**Insert images**
+<img src="img/data-analytics-partition-filter.png" alt="" height=200>
 
 ### Project Storage Data
 
-**Insert images**
+<img src="img/data-analytics-storage-map.png" alt="">
 
 <table>
     <thead>
