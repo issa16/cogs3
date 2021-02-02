@@ -17,11 +17,9 @@ Upon successful login to MySCW, a user’s view will default to the homepage tha
 
 <img src="img/number-of-jobs-per-month-chart.png" alt="" height=400>
 
-
 3. Rate of usage per month.
 
 <img src="img/rate-of-usage-per-month-chart.png" alt="" height=400>
-
 
 4. Cumulative total usage per month.
 
@@ -61,6 +59,19 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 
 <img src="img/data-analytics-project-filter.png" alt="" height=200>
 
+### Project Notifications
+
+When a technical lead or member of staff views the data analytics for a given project, several background checks are performed. Should the project meet any of the criteria listed below, a notification is displayed on all the data analytics pages.
+
+1. Check the home storage allocation usage is > 75%.
+2. Check the scratch storage allocation usage is > 75%.
+3. Check the allocated core hours usage is > 75%.
+
+**Note:** Code for the checks above can be found within the `IndexView` of `stats/views.py`.
+
+**Example**
+
+<img src="img/data-analytics-project-notifications.png" alt="">
 
 ### Project Overview Data
 
@@ -147,10 +158,6 @@ Technical leads that are linked to multiple SCW projects can switch between proj
         </tr>
     </tbody>
 </table>
-
-### Project Limits
-
-- TODO
 
 ### Project Compute Data
 
