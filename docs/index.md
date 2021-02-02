@@ -47,7 +47,7 @@ In addition to the default users view as described in the ‘User' section above
 
 Upon successful login to MySCW, a technical lead will have an additional link in the left sidebar menu named ‘Data Analytics’.
 
-<img src="img/data-analytics-link.png" alt="" height=300>
+<img src="img/data-analytics-link.png" alt="" height=350>
 
 By default, the link will direct the user to the data analytics page of their most recently created project on MySCW.
 
