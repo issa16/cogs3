@@ -20,6 +20,7 @@ class ComputeDaily(admin.ModelAdmin):
         'user',
         'project',
     ]
+    readonly_fields = ('total_processors',)
 
 
 @admin.register(StorageWeekly)
