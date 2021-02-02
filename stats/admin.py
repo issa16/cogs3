@@ -11,7 +11,6 @@ class ComputeDaily(admin.ModelAdmin):
         'project',
         'number_jobs',
         'number_processors',
-        'total_processors',
         'wait_time',
         'cpu_time',
         'wall_time',
