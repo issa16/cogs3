@@ -215,6 +215,10 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 
 ### Project Compute Charts
 
+<img src="img/data-analytics-techlead-charts-1.png" alt="">
+
+<img src="img/data-analytics-techlead-charts-2.png" alt="">
+
 <table>
     <thead>
         <tr>
