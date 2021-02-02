@@ -336,6 +336,21 @@ Technical leads can filter the compute data analytics by partitions by selecting
 
 **Note**: The start and end date will default to the last twelve months if not defined by the user.
 
+### Staff
+
+#### Overview
+---
+
+In addition to the default users view as described in the ‘User’ section above, a member of staff will have the option to view the compute and storage consumption of any project.
+
+Upon successful login to MySCW, a member of staff will have an additional link in the left sidebar menu named ‘Data Analytics’.
+
+<img src="img/data-analytics-link.png" alt="" height=350>
+
+By default, this link will direct the member of staff to a project search form. 
+
+<img src="img/project-search-form.png" alt="">
+
 ### Data Export
 
 ### Data Import
