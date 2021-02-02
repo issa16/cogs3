@@ -359,9 +359,23 @@ Upon successful login to MySCW, a member of staff will have an additional link i
 
 By default, this link will direct the member of staff to a project search form. 
 
-<img src="img/project-search-form.png" alt="">
+<img src="img/project-search-form.png" alt="" height=200>
 
 ### Data Export
+
+#### Charts
+---
+
+All charts listed within these documents support multiple export formats. A list of supported formats is available by clicking the menu option found at the top right of a selected chart.
+
+<img src="img/data-analytics-export-formats.png" alt="" height=350>
+
+#### Project Summary
+---
+
+Technical leads and members of staff can generate and download a summary of the overview, compute and storage tabs found within the data analytics page for a project. The 'Export to PDF' button is located to the top left of the project title.
+
+<img src="img/data-analytics-export-to-pdf.png" alt="">
 
 ### Data Import
 
