@@ -61,6 +61,8 @@ Technical leads that are linked to multiple SCW projects can switch between proj
 
 ### Project Notifications
 
+#### Overview
+---
 When a technical lead or member of staff views the data analytics for a given project, several background checks are performed. Should the project meet any of the criteria listed below, a notification is displayed on all the data analytics pages.
 
 1. Check the home storage allocation usage is > 75%.
@@ -69,7 +71,8 @@ When a technical lead or member of staff views the data analytics for a given pr
 
 **Note:** Code for the checks above can be found within the `IndexView` of `stats/views.py`.
 
-**Example**
+#### Example
+---
 
 <img src="img/data-analytics-project-notifications.png" alt="">
 
