@@ -51,11 +51,12 @@ class ComputeDaily(models.Model):
     )
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
-    
+
     def _get_total_processors(self):
         return self.number_jobs * self.number_processors
+
     total_processors = property(_get_total_processors)
-   
+
     def __str__(self):
         return f'{self.date}:{self.number_jobs}:{self.number_processors}:{self.user}:{self.project}:{self.partition}:{self.application}:{self.access_method}:{self.wait_time}:{self.cpu_time}:{self.wall_time}'
 

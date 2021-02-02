@@ -21,12 +21,7 @@ class ComputeDaily(admin.ModelAdmin):
         'user',
         'project',
     ]
-    readonly_fields = [
-        'total_processors',
-    ]
-    search_fields = (
-        'project__code',
-    )
+    search_fields = ('project__code',)
 
 
 @admin.register(StorageWeekly)
@@ -43,6 +38,4 @@ class StorageWeekly(admin.ModelAdmin):
     autocomplete_fields = [
         'project',
     ]
-    search_fields = (
-        'project__code',
-    )
+    search_fields = ('project__code',)
