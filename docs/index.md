@@ -291,6 +291,8 @@ When a technical lead or member of staff views the data analytics for a given pr
     </tbody>
 </table>
 
+**Note**: The start and end date will default to the last twelve months if not defined by the user.
+
 #### Filter Projects
 ---
 
@@ -324,22 +326,22 @@ Technical leads can filter the compute data analytics by partitions by selecting
         <tr>
             <td>3</td>
             <td>Average disk space usage per week</td>
-            <td>Average disk space usage per week for home and scratch.</td>
+            <td>Average disk space usage per week for home and scratch within the query’s start and end date.</td>
         </tr>
         <tr>
             <td>4</td>
             <td>Average file count per week</td>
-            <td>Average file count per week for home and scratch.</td>
+            <td>Average file count per week for home and scratch within the query’s start and end date.</td>
         </tr>
         <tr>
             <td>5</td>
             <td>Disk space per month chart</td>
-            <td>Disk space usage per month for home and scratch.</td>
+            <td>Disk space usage per month for home and scratch within the query’s start and end date.</td>
         </tr>
         <tr>
             <td>6</td>
             <td>File count per month chart</td>
-            <td>File count per month for home and scratch.</td>
+            <td>File count per month for home and scratch within the query’s start and end date.</td>
         </tr>
     </tbody>
 </table>
@@ -351,7 +353,7 @@ Technical leads can filter the compute data analytics by partitions by selecting
 #### Overview
 ---
 
-In addition to the default users view as described in the ‘User’ section above, a member of staff will have the option to view the compute and storage consumption of any project.
+In addition to the default users view as described in the ‘User’ section above, a member of staff will have the option to view the compute and storage consumption of any project on MySCW.
 
 Upon successful login to MySCW, a member of staff will have an additional link in the left sidebar menu named ‘Data Analytics’.
 
@@ -359,7 +361,10 @@ Upon successful login to MySCW, a member of staff will have an additional link i
 
 By default, this link will direct the member of staff to a project search form. 
 
-<img src="img/project-search-form.png" alt="" height=200>
+<img src="img/project-search-form.png" alt="">
+
+The member of staff can then look up a project using an SCW, HPCW or ARCCA code. The returned data analytics view will be the same as described in the 'Technical User' section above.
+
 
 ### Data Export
 
@@ -472,7 +477,7 @@ python3 manage.py import_weekly_storage \
            --output_dir=path_to_move_bz2_files_to_once_processed
         ```
 
-    -   Import daily compute ligo.
+    -   Import daily compute LIGO.
 
         ```
         python3 manage.py import_historical_daily_compute_ligo \
