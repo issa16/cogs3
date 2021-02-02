@@ -349,12 +349,12 @@ class ProjectStatsParser:
             data = {}
         return data
 
-    def cumlative_total_usage(self):
+    def cumulative_total_usage(self):
         '''
-        Return the cumlative total usage for a date range (grouped by month).
+        Return the cumulative total usage for a date range (grouped by month).
         '''
         try:
-            # Query cumlative total usage
+            # Query cumulative total usage
             result = ComputeDaily.objects.filter(
                 project=self.project,
                 partition__in=self.partition_ids,
@@ -372,7 +372,7 @@ class ProjectStatsParser:
             cpu_time = [seconds_to_hours(result[0]['cpu_time'].total_seconds())]
             wall_time = [seconds_to_hours(result[0]['wall_time'].total_seconds())]
 
-            # Build cumlative values
+            # Build cumulative values
             if len(result) > 1:
                 for row in result[1:]:
                     dates.append(row['month'].strftime('%b %Y'))

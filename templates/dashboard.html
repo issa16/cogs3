@@ -120,7 +120,7 @@
                     </div>
                     <div class="col-6">
                         <figure class="highcharts-figure">
-                            <div id="user_cumlative_total_usage_chart"></div>
+                            <div id="user_cumulative_total_usage_chart"></div>
                         </figure>
                     </div>
                 </div>
@@ -223,14 +223,14 @@
             });
         }
 
-        function build_cumlative_total_usage_per_month_chart(data) {
+        function build_cumulative_total_usage_per_month_chart(data) {
             /**
-             * Build cumlative total chart.
+             * Build cumulative total chart.
              * @param data
              */
-            Highcharts.chart("user_cumlative_total_usage_chart", {
+            Highcharts.chart("user_cumulative_total_usage_chart", {
                 title: {
-                    text: "Cumlative total usage per month",
+                    text: "Cumulative total usage per month",
                     style: {
                         color: "#5e6e82F",
                         fontSize: "16px",
@@ -267,7 +267,7 @@
                     },
                 ],
                 exporting: {
-                    filename: `cumlative-total-usage-${selected_project_code}`,
+                    filename: `cumulative-total-usage-${selected_project_code}`,
                     buttons: {
                         contextButton: {
                             menuItems: default_menu_options,
@@ -430,7 +430,7 @@
          */
         function build_dashboard_charts(data) {
             build_rate_of_usage_per_month_chart(data["rate_of_usage_per_month"]);
-            build_cumlative_total_usage_per_month_chart(data["cumlative_total_usage_per_month"]);
+            build_cumulative_total_usage_per_month_chart(data["cumulative_total_usage_per_month"]);
             build_efficiency_per_month_chart(data["efficiency_per_month"]);
             build_number_of_jobs_per_month_chart(data["num_jobs_per_month"]);
         }

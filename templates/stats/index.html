@@ -339,14 +339,14 @@
             });
         }
 
-        function build_cumlative_total_usage_per_month_chart(data) {
+        function build_cumulative_total_usage_per_month_chart(data) {
             /**
-             * Build cumlative total chart.
+             * Build cumulative total chart.
              * @param data
              */
-            Highcharts.chart("cumlative_total_usage_chart", {
+            Highcharts.chart("cumulative_total_usage_chart", {
                 title: {
-                    text: "Cumlative total usage per month",
+                    text: "Cumulative total usage per month",
                     style: {
                         color: "#5e6e82F",
                         fontSize: "16px",
@@ -386,7 +386,7 @@
                     },
                 ],
                 exporting: {
-                    filename: "cumlative-total-usage-{{selected_project.code}}",
+                    filename: "cumulative-total-usage-{{selected_project.code}}",
                     buttons: {
                         contextButton: {
                             menuItems: default_menu_options,
@@ -1084,7 +1084,7 @@
              * @param data
              */
             build_rate_of_usage_per_month_chart(data["rate_of_usage"]);
-            build_cumlative_total_usage_per_month_chart(data["cumlative_total_usage"]);
+            build_cumulative_total_usage_per_month_chart(data["cumulative_total_usage"]);
             build_top_users_usage_chart(data["top_users_usage"]);
             build_usage_by_partition_chart(data["usage_by_partition"]);
             build_efficiency_per_month_chart(data["efficiency_per_month"]);

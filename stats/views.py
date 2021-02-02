@@ -219,7 +219,7 @@ def UserStatsParserJSONView(request):
 
             # Query stats
             data['rate_of_usage_per_month'] = stats_parser.rate_of_usage_per_month()
-            data['cumlative_total_usage_per_month'] = stats_parser.cumlative_total_usage_per_month()
+            data['cumulative_total_usage_per_month'] = stats_parser.cumulative_total_usage_per_month()
             data['efficiency_per_month'] = stats_parser.efficiency_per_month()
             data['num_jobs_per_month'] = stats_parser.num_jobs_per_month()
 
@@ -274,7 +274,7 @@ def ProjectStatsParserJSONView(request):
 
             # Compute stats
             data['rate_of_usage'] = stats_parser.rate_of_usage()
-            data['cumlative_total_usage'] = stats_parser.cumlative_total_usage()
+            data['cumulative_total_usage'] = stats_parser.cumulative_total_usage()
             data['top_users_usage'] = stats_parser.top_users_usage()
             data['usage_by_partition'] = stats_parser.usage_by_partition()
             data['efficiency_per_month'] = stats_parser.efficiency_per_month()
