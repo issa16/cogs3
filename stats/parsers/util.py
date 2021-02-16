@@ -12,10 +12,10 @@ def parse_efficiency_result_set(result_set):
     dates = []
     efficiency = []
     for row in result_set:
-        cpu_time = seconds_to_hours(row['cpu_time_sum'].total_seconds())
-        wall_time = seconds_to_hours(row['wall_time_sum'].total_seconds())
         try:
-            efficiency.append(round((cpu_time / wall_time) * 100, 2))
+            cpu_time = row['cpu_time_sum'].total_seconds()
+            wall_time = row['wall_time_sum'].total_seconds()
+            efficiency.append(round((cpu_time / wall_time) * 100, 4))
             dates.append(row['month'].strftime('%b %Y'))
         except Exception:
             pass
