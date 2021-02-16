@@ -478,8 +478,8 @@ class ProjectStatsParser:
             # Parse in date range results
             data = {}
             if results_in_date_range:
-                data['dates'] = [row['month'].strftime('%b %Y') for row in results_in_date_range]
-                efficiency = parse_efficiency_result_set(results_in_date_range)
+                dates, efficiency = parse_efficiency_result_set(results_in_date_range)
+                data['dates'] = dates
                 data['efficiency'] = efficiency
                 data['avg_efficiency_in_date_range'] = round(sum(efficiency) / len(efficiency), 2)
 
@@ -495,10 +495,9 @@ class ProjectStatsParser:
 
             # Parse to present results
             if results_to_present:
-                efficiency_to_present = parse_efficiency_result_set(results_to_present)
+                __, efficiency_to_present = parse_efficiency_result_set(results_to_present)
                 avg_efficiency_to_present = round(sum(efficiency_to_present) / len(efficiency_to_present), 2)
                 data['avg_efficiency_to_present'] = avg_efficiency_to_present
-
         except Exception:
             data = {}
         return data
