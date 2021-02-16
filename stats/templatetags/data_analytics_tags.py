@@ -57,4 +57,4 @@ def percentage_color(x):
         color = 'blue'
     else:
         color = 'green'
-    return mark_safe(f"<span style='color:{color};font-weight:bold;'> {x:.2f} %</span>")
+    return mark_safe(f"<span style='color:{color};font-weight:bold;'>{x:.2f} %</span>")
