@@ -119,8 +119,7 @@ class UserStatsParser:
             ).order_by('month')
 
             # Parse in date range results
-            dates = [row['month'].strftime('%b %Y') for row in results_in_date_range]
-            efficiency = parse_efficiency_result_set(results_in_date_range)
+            dates, efficiency = parse_efficiency_result_set(results_in_date_range)
 
             # Build response
             data = {

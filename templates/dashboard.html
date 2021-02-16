@@ -282,6 +282,7 @@
              * Build efficiency per month chart
              * @param data
              */
+            console.log(data["efficiency"]);
             Highcharts.chart("user_compute_efficiency_chart", {
                 chart: {
                     type: "spline",
@@ -309,7 +310,6 @@
                     title: {
                         text: "Efficiency",
                     },
-                    max: 100,
                     minorGridLineWidth: 0,
                     gridLineWidth: 0,
                     alternateGridColor: null,
