@@ -1,124 +1,124 @@
 body {
-  background-color: #edf2f9;
-  font-family: "Lato", sans-serif;
-  font-size: 15px;
-  line-height: 1.5;
-  color: #5e6e82;
+    background-color: #edf2f9;
+    font-family: "Lato", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #5e6e82;
 }
 
 main {
-  margin-bottom: 70px;
+    margin-bottom: 70px;
 }
 
 .box-shadow {
-  box-shadow: 0 1px 2.5px 0 rgba(0, 0, 0, 0.09);
+    box-shadow: 0 1px 2.5px 0 rgba(0, 0, 0, 0.09);
 }
 
 .navbar {
-  background-color: #243858;
+    background-color: #243858;
 }
 
 .navbar-dark .navbar-nav .nav-link {
-  color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .navbar-dark .navbar-nav .nav-link:hover {
-  color: rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, 1);
 }
 
 .language-select {
-  float: right;
-  margin-right: 24px;
+    float: right;
+    margin-right: 24px;
 }
 
 .form-logo {
-  max-width: 420px;
+    max-width: 420px;
 }
 
 .form-signin {
-  max-width: 420px;
-  padding: 15px;
-  box-shadow: 0 1px 2.5px 0 rgba(0, 0, 0, 0.09);
-  background-color: #ffffff;
+    max-width: 420px;
+    padding: 15px;
+    box-shadow: 0 1px 2.5px 0 rgba(0, 0, 0, 0.09);
+    background-color: #ffffff;
 }
 
 .form-signin .checkbox {
-  font-weight: 400;
+    font-weight: 400;
 }
 
 .form-signin .form-control {
-  position: relative;
-  box-sizing: border-box;
-  height: auto;
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
 }
 
 .form-signin .form-control:focus {
-  z-index: 2;
+    z-index: 2;
 }
 
 .password_reset {
-  margin-top: 65px;
+    margin-top: 65px;
 }
 
 .list-group img {
-  height: 50px;
+    height: 50px;
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 60px;
-  line-height: 30px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    line-height: 30px;
 }
 
 .card {
-  -moz-box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
-  -webkit-box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
-  box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
-  border: 0.0625rem solid rgba(231, 234, 243, 0.7);
-  background-color: #fff;
-  background-clip: border-box;
-  border: 0 solid #edf2f9;
-  border-radius: 0.375rem;
+    -moz-box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+    -webkit-box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+    box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+    border: 0.0625rem solid rgba(231, 234, 243, 0.7);
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0 solid #edf2f9;
+    border-radius: 0.375rem;
 }
 
 .card-header,
 .modal-header {
-  padding: 1rem 1.25rem;
-  padding-bottom: 1rem;
-  margin-bottom: 0;
-  background-color: #f9fafd;
-  border-bottom: 0 solid #f9fafd;
+    padding: 1rem 1.25rem;
+    padding-bottom: 1rem;
+    margin-bottom: 0;
+    background-color: #f9fafd;
+    border-bottom: 0 solid #f9fafd;
 }
 
 .card-header:first-child {
-  border-radius: 0.375rem 0.375rem 0 0;
+    border-radius: 0.375rem 0.375rem 0 0;
 }
 
 .table thead {
-  border-top: hidden;
-  border-left: hidden;
-  border-right: hidden;
+    border-top: hidden;
+    border-left: hidden;
+    border-right: hidden;
 }
 
 .table-borderless td {
-  border: 0;
+    border: 0;
 }
 
 .list-group-item {
-  border: none;
-  background-color: transparent;
+    border: none;
+    background-color: transparent;
 }
 
 a {
-  color: #377dff;
+    color: #377dff;
 }
 
 a:hover,
 a:focus {
-  text-decoration: none;
-  color: #377dff;
+    text-decoration: none;
+    color: #377dff;
 }
 
 .h1,
@@ -133,42 +133,45 @@ h3,
 h4,
 h5,
 h6 {
-  color: #1e2022;
+    color: #1e2022;
 }
 
 .row,
 .col {
-  border: none;
+    border: none;
 }
 
 .dark_blue {
-  color: #5e6e82;
+    color: #5e6e82;
 }
 
 .sidebar {
-  -ms-flex: 0 0 300px;
-  flex: 0 0 300px;
+    -ms-flex: 0 0 300px;
+    flex: 0 0 300px;
 }
 
 @media (max-width: 768px) {
-  .sidebar {
-    -ms-flex: 0 0 100%;
-    flex: 0 0 100%;
-  }
+    .sidebar {
+        -ms-flex: 0 0 100%;
+        flex: 0 0 100%;
+    }
 }
 
 .badge {
-  display: inline-block;
-  padding: 0.25em 0.4em;
-  font-size: 80%;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 0.25rem;
+    display: inline-block;
+    padding: 0.25em 0.4em;
+    font-size: 80%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
 }
 
+.grey-border {
+    border: 1px solid #ced4da;
+}
 /*
 .row{
 	border:1px solid red;
