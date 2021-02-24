@@ -393,7 +393,7 @@ class ProjectStatsParser:
 
     def top_users_usage(self):
         '''
-        Return top users usage for a date range.
+        Return top users usage and efficency for a date range.
         '''
         n_users = 10
         try:
@@ -404,20 +404,26 @@ class ProjectStatsParser:
                 date__range=[self.start_date, self.end_date],
             ).annotate(Count('user', distinct=True)).values('user__first_name', 'user__last_name').annotate(
                 c=Count('id'),
+                cpu_time=Sum('cpu_time'),
                 wall_time=Sum('wall_time'),
             ).order_by('-wall_time')[:n_users]
 
             # Parse result
             usernames = []
             wall_time = []
+            efficiencies = []
             for row in result:
                 usernames.append(f"{row['user__first_name'].title()} {row['user__last_name'].title()}")
                 wall_time.append(seconds_to_hours(row['wall_time'].total_seconds()))
+                efficiencies.append(
+                    round((row['cpu_time'].total_seconds() / row['wall_time'].total_seconds()) * 100, 2),
+                )
 
             # Build response
             data = {
                 'usernames': usernames,
-                'wall_time': wall_time,
+                'wall_times': wall_time,
+                'efficiencies': efficiencies,
             }
         except Exception:
             data = {}

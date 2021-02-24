@@ -412,13 +412,9 @@
              * Top users chart.
              * @param data
              */
-            // Build data series
-            var data_series = [];
-            for (var i = 0; i < data["usernames"].length; i++) {
-                data_series.push([data["usernames"][i], data["wall_time"][i]]);
-            }
             Highcharts.chart("top_users_usage_chart", {
                 chart: {
+                    zoomType: "xy",
                     type: "column",
                     //height: (1.5 / 4) * 100 + "%",
                 },
@@ -433,13 +429,41 @@
                 subtitle: {
                     text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
                 },
-                yAxis: {
-                    title: {
-                        text: "Wall Time",
+                yAxis: [
+                    {
+                        // Primary yAxis
+                        labels: {
+                            style: {
+                                color: Highcharts.getOptions().colors[4],
+                            },
+                        },
+                        title: {
+                            text: "Efficiency",
+                            style: {
+                                color: Highcharts.getOptions().colors[4],
+                            },
+                        },
+                        opposite: true,
                     },
-                },
+                    {
+                        // Secondary yAxis
+                        gridLineWidth: 0,
+                        title: {
+                            text: "Wall Time",
+                            style: {
+                                color: Highcharts.getOptions().colors[1],
+                            },
+                        },
+                        labels: {
+                            style: {
+                                color: Highcharts.getOptions().colors[1],
+                            },
+                        },
+                    },
+                ],
                 xAxis: {
                     type: "category",
+                    categories: data["usernames"],
                     labels: {
                         rotation: -45,
                     },
@@ -457,13 +481,24 @@
                 series: [
                     {
                         name: "Wall Time",
-                        data: data_series,
+                        data: data["wall_times"],
+                        yAxis: 1,
                         dataLabels: {
                             enabled: true,
                             color: "#FFFFFF",
                             align: "center",
                             format: "{point.y:.2f}",
                             y: 30,
+                        },
+                    },
+                    {
+                        name: "Efficiency",
+                        type: "spline",
+                        data: data["efficiencies"],
+                        marker: {
+                            lineWidth: 2,
+                            lineColor: Highcharts.getOptions().colors[3],
+                            fillColor: "white",
                         },
                     },
                 ],
