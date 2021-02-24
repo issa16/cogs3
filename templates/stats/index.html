@@ -126,7 +126,7 @@
             var id = $(e.target).attr("href");
             localStorage.setItem("selectedTab", id);
         });
-        var selectedTab = localStorage.getItem("selectedTab") || "#overview";
+        var selectedTab = localStorage.getItem("selectedTab") || "#nav-overview";
         if (selectedTab != null) {
             $('a[data-toggle="tab"][href="' + selectedTab + '"]').tab("show");
         }
