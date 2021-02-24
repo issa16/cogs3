@@ -72,13 +72,17 @@
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                                 <a class="nav-item nav-link" id="overview-tab" data-toggle="tab" href="#nav-overview" role="tab" aria-controls="overview" aria-selected="true"> {% trans "Overview" %} </a>
                                 <a class="nav-item nav-link" id="nav-compute-tab" data-toggle="tab" href="#nav-compute" role="tab" aria-controls="nav-compute" aria-selected="false"> {% trans "Compute" %} </a>
+                                {% if user.profile.institution.is_hawk or user.is_staff %}
                                 <a class="nav-item nav-link" id="nav-storage-tab" data-toggle="tab" href="#nav-storage" role="tab" aria-controls="nav-storage" aria-selected="false"> {% trans "Storage"%} </a>
+                                {% endif %}
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
                             <div class="tab-pane fade" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">{% include 'stats/overview.html' %}</div>
                             <div class="tab-pane fade" id="nav-compute" role="tabpanel" aria-labelledby="nav-compute-tab">{% include 'stats/compute.html' %}</div>
+                            {% if user.profile.institution.is_hawk or user.is_staff %}
                             <div class="tab-pane fade" id="nav-storage" role="tabpanel" aria-labelledby="nav-storage-tab">{% include 'stats/storage.html' %}</div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
