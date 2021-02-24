@@ -413,11 +413,15 @@ class ProjectStatsParser:
             wall_time = []
             efficiencies = []
             for row in result:
-                usernames.append(f"{row['user__first_name'].title()} {row['user__last_name'].title()}")
-                wall_time.append(seconds_to_hours(row['wall_time'].total_seconds()))
-                efficiencies.append(
-                    round((row['cpu_time'].total_seconds() / row['wall_time'].total_seconds()) * 100, 2),
-                )
+                try:
+                    # May throw ZeroDivisionError
+                    efficiencies.append(
+                        round((row['cpu_time'].total_seconds() / row['wall_time'].total_seconds()) * 100, 2),
+                    )
+                    usernames.append(f"{row['user__first_name'].title()} {row['user__last_name'].title()}")
+                    wall_time.append(seconds_to_hours(row['wall_time'].total_seconds()))
+                except ZeroDivisionError:
+                    pass
 
             # Build response
             data = {
