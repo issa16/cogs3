@@ -23,17 +23,17 @@ class Command(BaseCommand):
                 raise Exception(f'{output_dir} does not exist.')
 
             # Process csv files
-            for file in os.listdir(input_dir):
-                if file.endswith('csv') and 'home' in file:
-                    self.stdout.write(self.style.SUCCESS(f'Processing {os.path.join(input_dir, file)}'))
+            for filename in os.listdir(input_dir):
+                if filename.endswith('csv') and 'home' in filename:
+                    self.stdout.write(self.style.SUCCESS(f'Processing {os.path.join(input_dir, filename)}'))
 
                     # Parse data attributes
-                    home_file = os.path.join(input_dir, file)
+                    home_file = os.path.join(input_dir, filename)
                     scratch_file = os.path.join(
                         input_dir,
-                        file.replace('home', 'scratch'),
+                        filename.replace('home', 'scratch'),
                     )
-                    data = file.split('_')
+                    data = filename.split('_')
                     date = data[4]
                     day = date[6:8]
                     month = date[4:6]
@@ -55,14 +55,14 @@ class Command(BaseCommand):
                     # input_dir to output_dir.
                     shutil.move(
                         home_file,
-                        os.path.join(output_dir, home_file),
+                        os.path.join(output_dir, filename),
                     )
                     shutil.move(
                         scratch_file,
-                        os.path.join(output_dir, scratch_file),
+                        os.path.join(output_dir, filename),
                     )
 
-                    self.stdout.write(self.style.SUCCESS(f'Finished processing {os.path.join(input_dir, file)}'))
+                    self.stdout.write(self.style.SUCCESS(f'Finished processing {os.path.join(input_dir, filename)}'))
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(e))
