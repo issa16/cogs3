@@ -27,7 +27,7 @@ class Command(BaseCommand):
                     filepath = os.path.join(input_dir, filename)
 
                     data = filename.split('_')
-                    code = data[3]
+                    code = data[0]
                     system = None
 
                     if code == 'hawk':
