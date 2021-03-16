@@ -2,7 +2,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-# Usage: python3 manage.py import_weekly_storage {input_dir}
+# Usage: python3 manage.py import_historical_weekly_storage {input_dir}
 
 class Command(BaseCommand):
     help = 'Import historical weekly storage stats from csv files.'
