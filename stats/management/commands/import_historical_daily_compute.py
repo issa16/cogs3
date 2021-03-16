@@ -33,7 +33,7 @@ class Command(BaseCommand):
                     if code == 'hawk':
                         system = 'CF'
                     elif code == 'sunbird':
-                        sytem = 'SW'
+                        system = 'SW'
                     else:
                         self.stderr.write(self.style.ERROR(f'Invalid system code for {filepath}'))
                         continue
