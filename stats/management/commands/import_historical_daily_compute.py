@@ -49,7 +49,7 @@ class Command(BaseCommand):
 
                             # Call daily compute import script
                             os.system(
-                                f"python3 manage.py import_daily_compute.py  \
+                                f"python3 manage.py import_daily_compute  \
                                     --file={filepath} \
                                     -d {day} \
                                     -m {data[1]} \
