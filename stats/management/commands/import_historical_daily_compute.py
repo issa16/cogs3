@@ -29,6 +29,8 @@ class Command(BaseCommand):
                     data = filename.split('_')
                     code = data[0]
                     system = None
+                    month = data[1]
+                    year = data[2][:4]
 
                     if code == 'hawk':
                         system = 'CF'
@@ -43,8 +45,8 @@ class Command(BaseCommand):
                         os.system(f'bzip2 -d {filepath}')
 
                         # Process extracted file
+                        filepath = filepath[:-4] # Remove .bz2 extension
                         for day in range(1, 32):
-                            filepath = filepath[:-4] # Remove .bz2 extension
                             self.stdout.write(self.style.SUCCESS(f'Processing day {day} of {filepath}'))
 
                             # Call daily compute import script
@@ -52,8 +54,8 @@ class Command(BaseCommand):
                                 f"python3 manage.py import_daily_compute  \
                                     --file={filepath} \
                                     -d {day} \
-                                    -m {data[1]} \
-                                    -y {data[2][:4]} \
+                                    -m {month} \
+                                    -y {year} \
                                     -s {system}"
                             )
                         self.stdout.write(self.style.SUCCESS(f'Finished processing {filepath}'))
