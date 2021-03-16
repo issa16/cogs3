@@ -13,12 +13,6 @@ class Command(BaseCommand):
     
     def parse_file(self, filepath, day, month, year, system):
         try:
-            # Extract file
-            os.system(f'bzip2 -d {filepath}')
-
-            # Process extracted file
-            filepath = filepath[:-4]  # Remove .bz2 extension
-
             self.stdout.write(self.style.SUCCESS(f'Processing day {day} of {filepath}'))
 
             # Call daily compute ligo import script
@@ -48,6 +42,12 @@ class Command(BaseCommand):
 
                 system = 'CF'
                 filepath = os.path.join(input_dir, filename)
+                
+                # Extract file
+                os.system(f'bzip2 -d {filepath}')
+
+                # Process extracted file
+                filepath = filepath[:-4]  # Remove .bz2 extension
 
                 # Edge case
                 if filename == 'all_20190702_20191204.tsv.bz2':
