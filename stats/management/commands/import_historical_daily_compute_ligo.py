@@ -54,7 +54,7 @@ class Command(BaseCommand):
                     year = 2019
                     for month in range(7, 12+1):
                         for day in range(1, 31 + 1):
-                            parse_file(filepath, day, month, year, system)
+                            self.parse_file(filepath, day, month, year, system)
                 
                 # Normal cases
                 elif filename.endswith('bz2') and 'merge' in filename:
@@ -67,7 +67,7 @@ class Command(BaseCommand):
                     month = data[0]
                     year = data[1]
                     for day in range(1, 31 + 1):
-                        parse_file(filepath, day, month, year, system)
+                        self.parse_file(filepath, day, month, year, system)
 
         except Exception as e:
             self.stderr.write(self.style.ERROR(e))
