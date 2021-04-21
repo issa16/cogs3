@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 
 # Usage: python3 manage.py import_historical_daily_compute --input_dir {input_dir}
 
+
 class Command(BaseCommand):
     help = 'Import historical daily compute stats from bz2 files.'
 
@@ -45,14 +46,14 @@ class Command(BaseCommand):
                         os.system(f'bzip2 -d {filepath}')
 
                         # Process extracted file
-                        filepath = filepath[:-4] # Remove .bz2 extension
+                        filepath = filepath[:-4]  # Remove .bz2 extension
                         for day in range(1, 32):
                             self.stdout.write(self.style.SUCCESS(f'Processing day {day} of {filepath}'))
 
                             # Call daily compute import script
                             os.system(
                                 f"python3 manage.py import_daily_compute  \
-                                    --file={filepath} \
+                                    --file {filepath} \
                                     -d {day} \
                                     -m {month} \
                                     -y {year} \

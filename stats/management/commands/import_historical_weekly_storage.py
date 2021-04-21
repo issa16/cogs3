@@ -38,8 +38,8 @@ class Command(BaseCommand):
                     # Call weekly storage import script
                     os.system(
                         f"python3 manage.py import_weekly_storage \
-                            --homefile={home_file} \
-                            --scratchfile={scratch_file} \
+                            --homefile {home_file} \
+                            --scratchfile {scratch_file} \
                             -d {day} \
                             -m {month} \
                             -y {year} \
