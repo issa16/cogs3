@@ -2,7 +2,6 @@ import os
 
 from django.core.management.base import BaseCommand
 
-# Usage: python3 manage.py import_historical_weekly_storage --input_dir {input_dir}
 
 class Command(BaseCommand):
     help = 'Import historical weekly storage stats from csv files.'
@@ -20,7 +19,7 @@ class Command(BaseCommand):
 
             # Process csv files
             for filename in os.listdir(input_dir):
-                if filename.endswith('csv') and 'home' in filename:
+                if filename.endswith('.csv') and 'home' in filename:
                     self.stdout.write(self.style.SUCCESS(f'Processing {os.path.join(input_dir, filename)}'))
 
                     # Parse data attributes
@@ -34,7 +33,7 @@ class Command(BaseCommand):
                     day = date[6:8]
                     month = date[4:6]
                     year = date[0:4]
-                    code = 'CF'  # Double check
+                    code = 'CF'  # No storage stats for Swansea (SW)
 
                     # Call weekly storage import script
                     os.system(

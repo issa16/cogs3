@@ -27,9 +27,7 @@ class Command(BaseCommand):
                 if filename.endswith(".csv"):
                     filepath = os.path.join(input_dir, filename)
                     self.stdout.write(self.style.SUCCESS(f'Processing {filepath}'))
-                    os.system(
-                        f'python3 manage.py import_user_last_login --file={filepath} | tee -a user_last_login_output.log'
-                    )
+                    os.system(f'python3 manage.py import_user_last_login --file={filepath}')
         except Exception as e:
             self.stderr.write(self.style.ERROR(e))
 
