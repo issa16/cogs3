@@ -387,3 +387,6 @@ LOGGING = {
 # Selenium testing
 SELENIUM_WEBDRIVER = webdriver.Firefox
 SELENIUM_WEBDRIVER_PROFILE = webdriver.FirefoxProfile
+
+# Data analytics
+DISPLAY_DATA_ANALYTICS = ast.literal_eval(os.environ.get('DISPLAY_DATA_ANALYTICS', 'True'))

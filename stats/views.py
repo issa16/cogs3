@@ -1,6 +1,7 @@
 from datetime import date, datetime, timedelta
 
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, JsonResponse
@@ -31,84 +32,86 @@ class IndexView(
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        try:
-            # Which projects is this user a technical lead of?
-            projects = Project.objects.filter(tech_lead=user).order_by('-start_date')
-            context['project_codes'] = [project.code for project in projects]
+        display_data_analytics = settings.DISPLAY_DATA_ANALYTICS
+        if display_data_analytics:
+            try:
+                # Which projects is this user a technical lead of?
+                projects = Project.objects.filter(tech_lead=user).order_by('-start_date')
+                context['project_codes'] = [project.code for project in projects]
 
-            # Parse the query date range.
-            start_date, end_date = parse_date_range(self.request)
+                # Parse the query date range.
+                start_date, end_date = parse_date_range(self.request)
 
-            # Add to the context to maintain search range between requests.
-            context['query_start_date'] = start_date
-            context['query_end_date'] = end_date
+                # Add to the context to maintain search range between requests.
+                context['query_start_date'] = start_date
+                context['query_end_date'] = end_date
 
-            # Parse the project within the query params and verify.
-            project_code = self.request.GET.get('code', '')
+                # Parse the project within the query params and verify.
+                project_code = self.request.GET.get('code', '')
 
-            if user.is_staff:
-                # Staff have the ability to query any project stats data.
-                selected_project = Project.objects.get(code=project_code)
-            else:
-                # Verify non staff member is the tech lead of the project.
-                selected_project = Project.objects.get(
-                    code=project_code,
-                    tech_lead=user,
+                if user.is_staff:
+                    # Staff have the ability to query any project stats data.
+                    selected_project = Project.objects.get(code=project_code)
+                else:
+                    # Verify non staff member is the tech lead of the project.
+                    selected_project = Project.objects.get(
+                        code=project_code,
+                        tech_lead=user,
+                    )
+
+                context['selected_project'] = selected_project
+
+                # Query the relevant data from the stats tables.
+                stats_parser = ProjectStatsParser(
+                    selected_project,
+                    'all',
+                    start_date,
+                    end_date,
                 )
 
-            context['selected_project'] = selected_project
+                # Build project stats and add to request context.
+                context = build_project_stats(stats_parser, context)
 
-            # Query the relevant data from the stats tables.
-            stats_parser = ProjectStatsParser(
-                selected_project,
-                'all',
-                start_date,
-                end_date,
-            )
+                # Check home and scratch storage allocation usage
+                try:
+                    latest_stats_usage = StorageWeekly.objects.filter(project=selected_project).latest()
 
-            # Build project stats and add to request context.
-            context = build_project_stats(stats_parser, context)
+                    # Home
+                    home_space_used = kb_to_gb(latest_stats_usage.home_space_used)  # kb to gb
+                    home_space_allocation = selected_project.allocation_storage_home  # gb
+                    home_space_used_percentage = round((home_space_used / home_space_allocation), 2) * 100
+                    notify_limit = 75
+                    if home_space_used_percentage > notify_limit:
+                        msg = f'{selected_project.code} is currently using more than {notify_limit}% of its home storage allocation.'
+                        messages.add_message(self.request, messages.ERROR, msg)
 
-            # Check home and scratch storage allocation usage
-            try:
-                latest_stats_usage = StorageWeekly.objects.filter(project=selected_project).latest()
+                    # Scratch
+                    scratch_space_used = kb_to_gb(latest_stats_usage.scratch_space_used)  # kb to gb
+                    scratch_space_allocation = selected_project.allocation_storage_scratch  # gb
+                    scratch_space_used_percentage = round((scratch_space_used / scratch_space_allocation), 2) * 100
+                    notify_limit = 75
+                    if scratch_space_used_percentage > notify_limit:
+                        msg = f'{selected_project.code} is currently using more than {notify_limit}% of its scratch storage allocation.'
+                        messages.add_message(self.request, messages.ERROR, msg)
+                except Exception:
+                    pass
 
-                # Home
-                home_space_used = kb_to_gb(latest_stats_usage.home_space_used)  # kb to gb
-                home_space_allocation = selected_project.allocation_storage_home  # gb
-                home_space_used_percentage = round((home_space_used / home_space_allocation), 2) * 100
-                notify_limit = 75
-                if home_space_used_percentage > notify_limit:
-                    msg = f'{selected_project.code} is currently using more than {notify_limit}% of its home storage allocation.'
-                    messages.add_message(self.request, messages.ERROR, msg)
+                # Check allocated core hours usage
+                try:
+                    usage = stats_parser.total_core_hours().total_seconds()
+                    allocation = timedelta(hours=selected_project.allocation_cputime).total_seconds()
+                    usage_percentage = round((usage / allocation), 2) * 100
+                    context['allocation_usage_percentage'] = usage_percentage
+                    notify_limit = 75
+                    if usage_percentage > notify_limit:
+                        msg = f'{selected_project.code} is currently using more than {notify_limit}% of its core hours allocation.'
+                        messages.add_message(self.request, messages.ERROR, msg)
+                except Exception:
+                    pass
 
-                # Scratch
-                scratch_space_used = kb_to_gb(latest_stats_usage.scratch_space_used)  # kb to gb
-                scratch_space_allocation = selected_project.allocation_storage_scratch  # gb
-                scratch_space_used_percentage = round((scratch_space_used / scratch_space_allocation), 2) * 100
-                notify_limit = 75
-                if scratch_space_used_percentage > notify_limit:
-                    msg = f'{selected_project.code} is currently using more than {notify_limit}% of its scratch storage allocation.'
-                    messages.add_message(self.request, messages.ERROR, msg)
             except Exception:
-                pass
-
-            # Check allocated core hours usage
-            try:
-                usage = stats_parser.total_core_hours().total_seconds()
-                allocation = timedelta(hours=selected_project.allocation_cputime).total_seconds()
-                usage_percentage = round((usage / allocation), 2) * 100
-                context['allocation_usage_percentage'] = usage_percentage
-                notify_limit = 75
-                if usage_percentage > notify_limit:
-                    msg = f'{selected_project.code} is currently using more than {notify_limit}% of its core hours allocation.'
-                    messages.add_message(self.request, messages.ERROR, msg)
-            except Exception:
-                pass
-
-        except Exception:
-            if user.is_staff and project_code:
-                messages.add_message(self.request, messages.ERROR, 'Project does not exist.')
+                if user.is_staff and project_code:
+                    messages.add_message(self.request, messages.ERROR, 'Project does not exist.')
         return context
 
 
