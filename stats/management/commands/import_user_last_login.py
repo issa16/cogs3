@@ -26,12 +26,12 @@ class Command(BaseCommand):
             if not os.path.isfile(login_file):
                 raise Exception(f'{login_file} not found')
 
-            msg = (
-                f'Last Login Sync, running on {os.uname()[1]} at {datetime.datetime.now()}',
+            msg = '''
+                f'Last Login Sync, running on {os.uname()[1]} at {datetime.datetime.now()}'
                 f'\tReading file {login_file}'
-            )
-            self.stdout.write(self.style.SUCCESS(msg))
+            '''
 
+            self.stdout.write(self.style.SUCCESS(msg))
             # Read each line of file
             with open(login_file, newline='') as myFile:
                 llreader = csv.reader(myFile)

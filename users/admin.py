@@ -181,3 +181,6 @@ class UserLastLoginAdmin(admin.ModelAdmin):
         'last_login_host',
         'modified_time',
     )
+    autocomplete_fields = [
+        'user',
+    ]
