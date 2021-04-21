@@ -1,16 +1,11 @@
 from django.conf import settings
 from django.test import TestCase, override_settings
 
-from institution.exceptions import (InvalidInstitutionalEmailAddress,
-                                    InvalidInstitutionalIndentityProvider)
+from institution.exceptions import (InvalidInstitutionalEmailAddress, InvalidInstitutionalIndentityProvider)
 from institution.models import Institution
 
 
 class InstitutionTests(TestCase):
-
-    fixtures = [
-        'institution/fixtures/institutions.json',
-    ]
 
     def _check_institution_system(self, institution):
         inst_name = institution.base_domain.split('.')[0]
@@ -29,7 +24,7 @@ class InstitutionTests(TestCase):
         """
         Ensure institutional methods (e.g. is_swan, is_swan_system etc) return correct values
         """
-        institutions = Institution.objects.all()
+        institutions = Institution.objects.filter(name__in=['swan', 'aber', 'cardiff', 'bangor'])
         for institution in institutions:
             for institution_predicate in institutions:
                 cond = institution.id == institution_predicate.id

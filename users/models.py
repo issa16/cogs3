@@ -309,3 +309,27 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             last_name=self.last_name,
             email=self.email,
         )
+
+
+class UserLastLogin(models.Model):
+    """
+    Represents the users last login details for login host (cluster).
+    """
+
+    class Meta:
+        verbose_name_plural = 'Users Last Login'
+
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    last_login_time = models.DateTimeField()
+    last_login_unix_time = models.PositiveIntegerField()
+    last_login_host = models.CharField(max_length=100)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.user}:{self.last_login_time}:{self.last_login_host}:{self.created_time}'

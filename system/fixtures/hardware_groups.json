@@ -1,0 +1,288 @@
+[
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "SW-SUNBIRD-COMPUTE-CHEM",
+            "description": "Swansea Sunbird compute-chem Partition",
+            "total_number_of_cores": 80,
+            "system": 2,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE-AMD",
+            "description": "Cardiff Hawk AMD Epyc 7502 Partition CORE",
+            "total_number_of_cores": 4096,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-GPU-V100",
+            "description": "Cardiff Hawk GPU V100 Partition CORE",
+            "total_number_of_cores": 600,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE-LIGO2",
+            "description": "Cardiff Hawk ligo2 Partition",
+            "total_number_of_cores": 1440,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE-HUYGENS",
+            "description": "Cardiff Hawk huygens Partition",
+            "total_number_of_cores": 336,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE-WGP",
+            "description": "Cardiff Hawk wgp Partition",
+            "total_number_of_cores": 288,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE-DRI1",
+            "description": "Cardiff Hawk compute-dri1 Partition",
+            "total_number_of_cores": 360,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE-CHEMY2",
+            "description": "Cardiff Hawk chemy2 Partition",
+            "total_number_of_cores": 240,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE-NEURO1",
+            "description": "Cardiff Hawk neuro1 Partition",
+            "total_number_of_cores": 320,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-HIGHMEM-DRI1",
+            "description": "Cardiff Hawk highmem-dri1 Partition",
+            "total_number_of_cores": 360,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-VHIGHMEM-DRI1",
+            "description": "Cardiff Hawk vhighmem-dri1 Partition",
+            "total_number_of_cores": 16,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-GPU-LIGO1",
+            "description": "Cardiff Hawk gpu-ligo1 Partition",
+            "total_number_of_cores": 80,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE-LIGO1",
+            "description": "Cardiff Hawk ligo1 Partition",
+            "total_number_of_cores": 2800,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-EXTERNAL",
+            "description": "Cardiff Hawk xexternal nodes Partition",
+            "total_number_of_cores": 200,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-GPU-DIRI1",
+            "description": "Cardiff Hawk gpu-diri1 Partition",
+            "total_number_of_cores": 80,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-GPU-COMSC1",
+            "description": "Cardiff Hawk gpu-comsc1 Partition",
+            "total_number_of_cores": 40,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE-MDI1",
+            "description": "Cardiff Hawk mdi1 Partition",
+            "total_number_of_cores": 80,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE-CHEMY1",
+            "description": "Cardiff Hawk chemy1 Partition",
+            "total_number_of_cores": 40,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "SW-SUNBIRD-GPU",
+            "description": "Swansea Sunbird GPU Partition CORE",
+            "total_number_of_cores": 160,
+            "system": 2,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "SW-SUNBIRD-COMPUTE",
+            "description": "Swansea Sunbird Compute Partition CORE",
+            "total_number_of_cores": 4880,
+            "system": 2,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-DEV",
+            "description": "Cardiff Hawk Dev Partition CORE",
+            "total_number_of_cores": 80,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-GPU",
+            "description": "Cardiff Hawk GPU Partition CORE",
+            "total_number_of_cores": 520,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-HTC",
+            "description": "Cardiff Hawk HTC Partition CORE",
+            "total_number_of_cores": 1040,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-HIGHMEM",
+            "description": "Cardiff Hawk Highmem Partition CORE",
+            "total_number_of_cores": 1040,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "CF-HAWK-COMPUTE",
+            "description": "Cardiff Hawk Compute Partition CORE",
+            "total_number_of_cores": 5360,
+            "system": 1,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    },
+    {
+        "model": "system.hardwaregroup",
+        "fields": {
+            "name": "SW-SUNBIRD-GPU-ENG",
+            "description": "Swansea Sunbird GPU ENG Partition",
+            "total_number_of_cores": 24,
+            "system": 2,
+            "created_time": "2018-05-15T13:38:05.966Z",
+            "modified_time": "2018-05-17T14:34:03.106Z"
+        }
+    }
+]

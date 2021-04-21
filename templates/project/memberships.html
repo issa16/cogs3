@@ -5,66 +5,69 @@
 {% load widget_tweaks %}
 {% block title %}{% trans "Project Memberships" %}{% endblock %}
 {% block content %}
-	<div class="my-3 p-3 bg-white rounded box-shadow">
-		<div class="row">
-			<div class="col">
-				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-					<h4>{% trans "Project Memberships" %}</h4>
+
+<div class="row pb-3">
+	<div class="col">
+		<div class="card">
+			<h6 class="card-header border-bottom font-weight-bold">{% trans "Project Memberships" %}</h6>
+			<div class="card-body">
+				<div class="row">
+					<div class="col">
+						{% include 'includes/errors.html'%}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						{% include 'includes/messages.html'%}
+					</div>
+				</div>
+				<div class="table-responsive">
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col" style="width:20%">{% trans "Project Code" %}</th>
+								<th scope="col" style="width:40%">{% trans "Title" %}</th>
+								<th scope="col" style="width:20%">{% trans "Institution" %}</th>
+								<th scope="col" style="width:20%">{% trans "Membership Status" %}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for project_membership in project_memberships %}
+							<tr>
+								<td>
+									{{project_membership.project.code}}
+									{% if project_membership.project.legacy_hpcw_id %}
+									</br>
+									<small class="text-muted">{% trans "HPCW" %}:
+										{{project_membership.project.legacy_hpcw_id}}</small>
+									{% endif %}
+									{% if project_membership.project.legacy_arcca_id %}
+									</br>
+									<small class="text-muted">{% trans "ARRCA"%}:
+										{{project_membership.project.legacy_arcca_id}}</small>
+									{% endif %}
+								</td>
+								<td>{{project_membership.project.title}}</td>
+								<td>{{project_membership.project.tech_lead.profile.institution}}</td>
+								<td>
+									{% if project_membership.project.tech_lead == user %}
+									{% trans "Project Owner" %}
+									{% else %}
+									{{project_membership.get_status_display}}
+									{% endif %}
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				<div class="row">
+					<div class="col">
+						{% include 'includes/pagination.html'%}
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col">
-				{% include 'includes/errors.html'%}
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">
-				{% include 'includes/messages.html'%}
-			</div>
-		</div>
-		<div class="table-responsive">
-			<table class="table table-bordered">
-				<thead class="thead-light">
-					<tr>
-						<th scope="col" style="width:20%">{% trans "Project Code" %}</th>
-						<th scope="col" style="width:40%">{% trans "Title" %}</th>
-						<th scope="col" style="width:20%">{% trans "Institution" %}</th>
-						<th scope="col" style="width:20%">{% trans "Membership Status" %}</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for project_membership in project_memberships %}
-						<tr>
-							<td>
-								{{project_membership.project.code}}
-								{% if project_membership.project.legacy_hpcw_id %}
-									</br>
-									<small class="text-muted">{% trans "HPCW" %}: {{project_membership.project.legacy_hpcw_id}}</small>
-								{% endif %}
-								{% if project_membership.project.legacy_arcca_id %}
-									</br>
-									<small class="text-muted">{% trans "ARRCA"%}: {{project_membership.project.legacy_arcca_id}}</small>
-								{% endif %}
-							</td>
-							<td>{{project_membership.project.title}}</td>
-							<td>{{project_membership.project.tech_lead.profile.institution}}</td>
-							<td>
-								{% if project_membership.project.tech_lead == user %}
-									{% trans "Project Owner" %}
-								{% else %}
-									{{project_membership.get_status_display}}
-								{% endif %}
-							</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
-		<div class="row">
-			<div class="col">
-				{% include 'includes/pagination.html'%}
-			</div>
-		</div>
 	</div>
+</div>
 {% endblock %}

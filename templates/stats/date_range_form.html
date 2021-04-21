@@ -1,0 +1,23 @@
+<!-- templates/stats/date_range_form.html -->
+<form url="{% url 'data-analytics' %}">
+    <div class="form-row">
+        <div class="col-5">
+            <div class="input-group mr-sm-2">
+                <input type="hidden" name="code" value="{{request.GET.code}}">
+                    <div class="input-group-text">Start Date</div>
+                <input type="text" class="form-control datepicker ml-2 rounded" name="start_date"
+                    value={{query_start_date|date:"Y-m-d"}}>
+            </div>
+        </div>
+        <div class="col-5">
+            <div class="input-group mr-sm-2">
+                <div class="input-group-text">End Date</div>
+                <input type="text" class="form-control datepicker ml-2 rounded" name="end_date"
+                    value={{query_end_date|date:"Y-m-d"}}>
+            </div>
+        </div>
+        <div class="col-2">
+            <button type="submit" class="btn btn-block btn-primary">Submit</button>
+        </div>
+    </div>
+</form>

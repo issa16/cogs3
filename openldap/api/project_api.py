@@ -1,17 +1,13 @@
 import jsonschema
 import requests
-
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django_rq import job
-
 from openldap.schemas.project.activate_project import activate_project_json
 from openldap.schemas.project.create_project import create_project_json
 from openldap.schemas.project.get_project import get_project_json
 from openldap.schemas.project.list_projects import list_projects_json
-from openldap.util import decode_response
-from openldap.util import raise_for_data_error
-from openldap.util import verify_payload_data
+from openldap.util import (decode_response, raise_for_data_error, verify_payload_data)
 from users.notifications import email_user
 
 
@@ -76,8 +72,13 @@ def create_project(project, notify_user=True):
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cache-Control': 'no-cache',
     }
+    pi = '{name}, {position}, {email}'.format(
+        name=project.pi_name,
+        position=project.pi_position,
+        email=project.pi_email,
+    )
     title = '{title} (Principal Investigator = {pi}, Technical Lead = {tech_lead})'.format(
-        pi=project.pi,
+        pi=pi,
         tech_lead=project.tech_lead.email,
         title=project.title,
     )

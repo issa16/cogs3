@@ -4,46 +4,26 @@ import os
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.contrib.auth.views import redirect_to_login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.http import JsonResponse
-from django.urls import reverse
-from django.urls import reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
 
-from project.forms import ProjectCreationForm
-from project.forms import ProjectUserMembershipCreationForm
-from project.models import Project
-from project.models import ProjectUserMembership
-from project.notifications import project_membership_created
-from project.openldap import update_openldap_project_membership
+from .forms import ProjectCreationForm, ProjectUserMembershipCreationForm
+from .mixins import PermissionAndLoginRequiredMixin
+from .models import Project, ProjectUserMembership
+from .notifications import project_membership_created
+from .openldap import update_openldap_project_membership
 
 
-class PermissionAndLoginRequiredMixin(PermissionRequiredMixin):
-    """
-    CBV mixin which extends the PermissionRequiredMixin to verify
-    that the user is logged in and performs a separate action if not
-    """
-
-    def handle_no_permission(self):
-        return HttpResponseRedirect(reverse('home'))
-
-    def handle_not_logged_in(self):
-        return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
-
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return self.handle_not_logged_in()
-        return super(PermissionAndLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
-
-
-class ProjectCreateView(PermissionAndLoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
+class ProjectCreateView(
+    PermissionAndLoginRequiredMixin,
+    SuccessMessageMixin,
+    generic.CreateView,
+):
     form_class = ProjectCreationForm
     success_url = reverse_lazy('project-application-list')
     success_message = _('Successfully submitted a project application.')

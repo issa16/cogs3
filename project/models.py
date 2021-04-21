@@ -1,14 +1,15 @@
 import datetime
 import logging
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from system.models import System
 
 from openldap.api import project_membership_api
 from project.notifications import project_created_notification
-from system.models import System
 
 logger = logging.getLogger('apps')
 
@@ -17,7 +18,7 @@ class ProjectCategory(models.Model):
 
     class Meta:
         verbose_name_plural = _('Project Categories')
-        ordering = ('name', )
+        ordering = ('name',)
 
     name = models.CharField(
         max_length=128,
@@ -35,7 +36,7 @@ class ProjectFundingSource(models.Model):
 
     class Meta:
         verbose_name_plural = _('Project Funding Sources')
-        ordering = ('name', )
+        ordering = ('name',)
 
     name = models.CharField(
         max_length=128,
@@ -52,13 +53,17 @@ class ProjectFundingSource(models.Model):
 class ProjectManager(models.Manager):
 
     def awaiting_approval(self, user):
-        return Project.objects.filter(tech_lead=user, status=Project.AWAITING_APPROVAL)
+        return Project.objects.filter(
+            tech_lead=user,
+            status=Project.AWAITING_APPROVAL,
+        )
 
 
 class Project(models.Model):
 
     class Meta:
         verbose_name_plural = _('Projects')
+        get_latest_by = 'created_time'
 
     title = models.CharField(
         max_length=256,
@@ -101,7 +106,23 @@ class Project(models.Model):
     )
     pi = models.CharField(
         max_length=256,
-        verbose_name=_("Principal Investigator's name, position and email"),
+        blank=True,
+        verbose_name=_("(obsolete) Principal Investigator's name, position and email"),
+    )
+    pi_name = models.CharField(
+        max_length=128,
+        blank=True,
+        verbose_name=_("Principal Investigator's name"),
+    )
+    pi_position = models.CharField(
+        max_length=128,
+        blank=True,
+        verbose_name=_("Principal Investigator's position"),
+    )
+    pi_email = models.EmailField(
+        max_length=100,
+        blank=True,
+        verbose_name=_("Principal Investigator's email"),
     )
     tech_lead = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -275,7 +296,7 @@ class Project(models.Model):
 
     def _generate_project_code(self):
         prefix = 'scw'
-        last_project = Project.objects.order_by('id').last()
+        last_project = Project.objects.exclude(code="scw0001").exclude(code="scw0002").order_by('id').last()
         if not last_project:
             if self.legacy_arcca_id or self.legacy_hpcw_id:
                 return prefix + '0000'
@@ -286,12 +307,19 @@ class Project(models.Model):
             return prefix + str(int(code) + 1).zfill(4)
 
     def save(self, *args, **kwargs):
-        if self.code is '':
+        if self.code == '':
             self.code = self._generate_project_code()
             project_created_notification.delay(self)
         if self.status == Project.APPROVED:
             self._assign_project_owner_project_membership()
         super(Project, self).save(*args, **kwargs)
+
+    @classmethod
+    def latest_project(cls, tech_lead):
+        '''
+        Return the tech lead's latest project.
+        '''
+        return cls.objects.filter(tech_lead=tech_lead).latest()
 
     def __str__(self):
         return self.code
@@ -301,7 +329,7 @@ class ProjectSystemAllocation(models.Model):
 
     class Meta:
         verbose_name_plural = _('Project System Allocations')
-        unique_together = (('project', 'system'), )
+        unique_together = (('project', 'system'),)
 
     project = models.ForeignKey(
         Project,

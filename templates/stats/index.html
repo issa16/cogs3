@@ -1,0 +1,1153 @@
+<!-- templates/stats/index.html -->
+{% extends 'base.html' %} {% load static %}{% load data_analytics_tags %} {% load i18n %} {% block title %}{% trans "Data Analytics" %}{% endblock %} {% block content %}
+<div class="row no-gutters pb-3">
+    <div class="col">
+        <div class="card">
+            <h6 class="card-header border-bottom"><b>{% trans "Data Analytics" %}</b></h6>
+            <div class="card-body">
+                {% if request.user.is_staff %}
+                <div class="row no-gutters pb-0">
+                    <div class="col">
+                        <div class="alert alert-info mb-0" role="alert">
+                            <h5 class="alert-heading">{% trans "SCW Administration" %}</h5>
+                            <hr />
+                            <form class="form-row" method="GET" action="{% url 'data-analytics' %}" novalidate>
+                                <div class="input-group">
+                                    <input type="text" class="form-control col-12" name="code" placeholder="{% trans 'SCW, HPCW or ARCCA project code' %}" value="{{request.GET.code}}" />
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-primary">{% trans "Find" %}</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="row no-gutters">
+                    <div class="col">
+                        <div class="form-row">
+                            <div class="col-5">
+                                <div class="input-group mb-3">
+                                    <label class="input-group-text" for="inputGroupSelect01">{% trans "Project Filter" %}</label>
+                                    <div class="dropdown ml-2" id="project_filter">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="project_filter_button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{selected_project.code}}</button>
+                                        {% if project_codes|length > 1 %}
+                                        <div id="project_filter" class="dropdown-menu" aria-labelledby="project_filter_button">
+                                            {% for project_code in project_codes %} {% if project_code != selected_project.code %}
+                                            <a class="dropdown-item" href="{% url 'data-analytics' %}?code={{ project_code }}">{{project_code}}</a>
+                                            {% endif %} {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="my-3">
+                    {% if messages %} {% for message in messages %}
+                    <div {% if message.tags %} class="alert {{ message.tags }}" {% endif %} role="alert"><span class="oi oi-flag pr-3"></span>{{ message }}</div>
+                    {% endfor %} {% endif %}
+                </div>
+                {% if project_codes or selected_project %}
+                <div class="row no-gutters pt-4">
+                    <div class="pl-2 col-9" id="project-title">
+                        <h6 class="font-weight-bold">{{selected_project.code}} : {{selected_project.title}}</h6>
+                    </div>
+                    <div class="col-3 text-right">
+                        <a class="btn btn-light ml-3 grey-border" href="https://unifi-dev.github.io/cogs3/" role="button">
+                            <span class="oi oi-browser pr-2 dark_blue"></span>
+                            User Guide
+                        </a>
+                        <a class="btn btn-light grey-border ml-3" href="{% url 'data-analytics-generate-pdf' %}?code={{request.GET.code}}&start_date={{request.GET.start_date}}&end_date={{request.GET.end_date}}" role="button">
+                            <span class="oi oi-document pr-2 dark_blue"></span>
+                            Export to PDF
+                        </a>
+                    </div>
+                </div>
+                <div class="row no-gutters pt-3">
+                    <div class="col">
+                        <nav>
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link" id="overview-tab" data-toggle="tab" href="#nav-overview" role="tab" aria-controls="overview" aria-selected="true"> {% trans "Overview" %} </a>
+                                <a class="nav-item nav-link" id="nav-compute-tab" data-toggle="tab" href="#nav-compute" role="tab" aria-controls="nav-compute" aria-selected="false"> {% trans "Compute" %} </a>
+                                {% if user.profile.institution.is_hawk or user.is_staff %}
+                                <a class="nav-item nav-link" id="nav-storage-tab" data-toggle="tab" href="#nav-storage" role="tab" aria-controls="nav-storage" aria-selected="false"> {% trans "Storage"%} </a>
+                                {% endif %}
+                            </div>
+                        </nav>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">{% include 'stats/overview.html' %}</div>
+                            <div class="tab-pane fade" id="nav-compute" role="tabpanel" aria-labelledby="nav-compute-tab">{% include 'stats/compute.html' %}</div>
+                            {% if user.profile.institution.is_hawk or user.is_staff %}
+                            <div class="tab-pane fade" id="nav-storage" role="tabpanel" aria-labelledby="nav-storage-tab">{% include 'stats/storage.html' %}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block custom_js %}
+<script>
+    $(document).ready(function () {
+        /**
+         * Compute and return sum of an array.
+         * @param arr
+         */
+        function sum(arr) {
+            var total = 0;
+            for (var i = 0; i < arr.length; i++) {
+                total += arr[i];
+            }
+            return total;
+        }
+
+        /**
+         * Compute and return average of an array.
+         * @param arr
+         */
+        function avg(arr) {
+            var total = sum(arr);
+            return Math.round(total / arr.length);
+        }
+
+        /**
+         * Manage data analytics tabs between page refresh.
+         */
+        $('a[data-toggle="tab"]').click(function (e) {
+            e.preventDefault();
+            $(this).tab("show");
+        });
+        $('a[data-toggle="tab"]').on("shown.bs.tab", function (e) {
+            var id = $(e.target).attr("href");
+            localStorage.setItem("selectedTab", id);
+        });
+        var selectedTab = localStorage.getItem("selectedTab") || "#nav-overview";
+        if (selectedTab != null) {
+            $('a[data-toggle="tab"][href="' + selectedTab + '"]').tab("show");
+        }
+
+        /**
+         * Dispatch an ajax request to download data required for charts.
+         * @param partition_id
+         */
+        function update_charts(project_code, partition_id) {
+            var partition_id = `&partition=${partition_id}`;
+            $.ajax({
+                url: "{% url 'data-analytics-project-json' %}" + "?code=" + project_code + '&start_date={{query_start_date|date:"Y-m-d"}}&end_date={{query_end_date|date:"Y-m-d"}}' + partition_id,
+                dataType: "json",
+                success: function (data) {
+                    build_overview_charts(data);
+                    build_compute_charts(data);
+                    build_storage_charts(data);
+                },
+            });
+        }
+
+        /**
+         * Update charts on page load.
+         */
+        var selected_project_code = "{{selected_project.code}}";
+        if (selected_project_code) {
+            update_charts(selected_project_code, "all");
+        }
+
+        /**
+         * Refresh charts when a user selects a partition filter.
+         */
+        $("#partition_filter a").click(function () {
+            event.preventDefault();
+            // Parse selected partition id
+            var partition_id = $(this).attr("data-partition-id");
+            // Update button text
+            $("#partition_filter_button").text($(this).text().trim());
+            // Update charts
+            update_charts(selected_project_code, partition_id);
+        });
+
+        /**
+         * Default menu options for charts.
+         */
+        var default_menu_options = ["viewFullscreen", "printChart", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG", "separator", "downloadCSV"];
+
+        /**
+         * Generate html table rows for each data record.
+         * @param table
+         * @param data
+         */
+        function generate_table_rows(table, data) {
+            $(table).empty();
+            $.each(data, function (key, value) {
+                var row = `
+                <tr>
+                    <td>${value[0]}</td>
+                    <td class="text-center">${value[1]}</td>
+                </tr>`;
+                table.append(row);
+            });
+        }
+
+        function build_pi_projects_chart(data) {
+            /**
+             * Principal Investigator's Projects chart.
+             * @param data
+             */
+            chart = Highcharts.chart("pi_projects_chart", {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: "pie",
+                },
+                title: {
+                    text: "Principal Investigator's Projects",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        type: "pie",
+                        name: "Total",
+                        data: data,
+                    },
+                ],
+                exporting: {
+                    filename: "principal-investigators-projects-{{selected_project.code}}",
+                    csv: {
+                        dateFormat: "%Y-%m-%d",
+                        columnHeaderFormatter: function (item, key) {
+                            if (!key) {
+                                return "Status";
+                            }
+                            return false;
+                        },
+                    },
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+            generate_table_rows($("#pi_projects > tbody"), data);
+        }
+
+        function build_users_status_chart(data) {
+            /**
+             * User Status chart.
+             * @param data
+             */
+            Highcharts.chart("project_users_chart", {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: "pie",
+                },
+                title: {
+                    text: "Users status",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        type: "pie",
+                        name: "Total",
+                        data: data,
+                    },
+                ],
+                exporting: {
+                    filename: "user-status-{{selected_project.code}}",
+                    csv: {
+                        dateFormat: "%Y-%m-%d",
+                        columnHeaderFormatter: function (item, key) {
+                            if (!key) {
+                                return "Status";
+                            }
+                            return false;
+                        },
+                    },
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+            generate_table_rows($("#user_status > tbody"), data);
+        }
+
+        function build_rate_of_usage_per_month_chart(data) {
+            /**
+             * Build rate of usage chart.
+             * @param data
+             */
+            Highcharts.chart("rate_of_usage_chart", {
+                title: {
+                    text: "Rate of usage per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
+                yAxis: {
+                    title: {
+                        text: "Hours",
+                    },
+                },
+                xAxis: {
+                    categories: data["dates"],
+                    title: {
+                        text: "Month",
+                    },
+                    crosshair: true,
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        name: "CPU Time",
+                        data: data["cpu_time"],
+                    },
+                    {
+                        name: "Wait Time",
+                        data: data["wait_time"],
+                    },
+                    {
+                        name: "Wall Time",
+                        data: data["wall_time"],
+                    },
+                ],
+                exporting: {
+                    filename: "rate-of-usage-{{selected_project.code}}",
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+        }
+
+        function build_cumulative_total_usage_per_month_chart(data) {
+            /**
+             * Build cumulative total chart.
+             * @param data
+             */
+            Highcharts.chart("cumulative_total_usage_chart", {
+                title: {
+                    text: "Cumulative total usage per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
+                yAxis: {
+                    title: {
+                        text: "Hours",
+                    },
+                },
+                xAxis: {
+                    categories: data["dates"],
+                    title: {
+                        text: "Month",
+                    },
+                    crosshair: true,
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        name: "CPU Time",
+                        data: data["cpu_time"],
+                    },
+                    {
+                        name: "Wait TIme",
+                        data: data["wait_time"],
+                    },
+                    {
+                        name: "Wall Time",
+                        data: data["wall_time"],
+                    },
+                ],
+                exporting: {
+                    filename: "cumulative-total-usage-{{selected_project.code}}",
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+        }
+
+        function build_top_users_usage_chart(data) {
+            /**
+             * Top users chart.
+             * @param data
+             */
+            Highcharts.chart("top_users_usage_chart", {
+                chart: {
+                    zoomType: "xy",
+                    type: "column",
+                    alignTicks: false,
+                    //height: (1.5 / 4) * 100 + "%",
+                },
+                title: {
+                    text: "Top 10 users usage",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
+                yAxis: [
+                    {
+                        // Primary yAxis
+                        labels: {
+                            style: {
+                                color: Highcharts.getOptions().colors[4],
+                            },
+                        },
+                        title: {
+                            text: "Efficiency",
+                            style: {
+                                color: Highcharts.getOptions().colors[4],
+                            },
+                        },
+                        opposite: true,
+                    },
+                    {
+                        // Secondary yAxis
+                        gridLineWidth: 0,
+                        title: {
+                            text: "Wall Time",
+                            style: {
+                                color: Highcharts.getOptions().colors[1],
+                            },
+                        },
+                        labels: {
+                            style: {
+                                color: Highcharts.getOptions().colors[1],
+                            },
+                        },
+                    },
+                ],
+                xAxis: {
+                    type: "category",
+                    categories: data["usernames"],
+                    labels: {
+                        rotation: -45,
+                    },
+                    title: {
+                        text: "User",
+                    },
+                    crosshair: true,
+                },
+                legend: {
+                    enabled: false,
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        name: "Wall Time",
+                        data: data["wall_times"],
+                        yAxis: 1,
+                        dataLabels: {
+                            enabled: true,
+                            color: "#FFFFFF",
+                            align: "center",
+                            format: "{point.y:.2f}",
+                            y: 30,
+                        },
+                    },
+                    {
+                        name: "Efficiency",
+                        type: "spline",
+                        data: data["efficiencies"],
+                        marker: {
+                            lineWidth: 2,
+                            lineColor: Highcharts.getOptions().colors[3],
+                            fillColor: "white",
+                        },
+                    },
+                ],
+                exporting: {
+                    filename: "top-users-usage-chart-{{selected_project.code}}",
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+        }
+
+        function build_usage_by_partition_chart(data) {
+            /**
+             * Build usage by partition.
+             * @param data
+             */
+            // Build data series
+            var data_series = [];
+            for (var i = 0; i < data["parition_names"].length; i++) {
+                data_series.push({
+                    name: data["parition_names"][i],
+                    y: data["partition_percentages"][i],
+                });
+            }
+            Highcharts.chart("usage_by_partition_chart", {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: "pie",
+                },
+                title: {
+                    text: "Usage by partition",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
+                tooltip: {
+                    pointFormat: "{series.name}: <b>{point.percentage:.2f}%</b>",
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: "%",
+                    },
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: "pointer",
+                        dataLabels: {
+                            enabled: false,
+                        },
+                        showInLegend: true,
+                    },
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        name: "Percentage",
+                        colorByPoint: true,
+                        data: data_series,
+                    },
+                ],
+                exporting: {
+                    filename: "usage-by-partition-{{selected_project.code}}",
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+        }
+
+        function build_efficiency_per_month_chart(data) {
+            /**
+             * Build efficiency per month chart.
+             * @param data
+             */
+            Highcharts.chart("compute_efficiency_chart", {
+                chart: {
+                    type: "spline",
+                    alignTicks: false,
+                },
+                title: {
+                    text: "Efficiency per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
+                xAxis: {
+                    type: "datetime",
+                    categories: data["dates"],
+                    title: {
+                        text: "Month",
+                    },
+                    crosshair: true,
+                },
+                yAxis: {
+                    title: {
+                        text: "Efficiency",
+                    },
+                    minorGridLineWidth: 0,
+                    gridLineWidth: 0,
+                    alternateGridColor: null,
+                    plotBands: [
+                        {
+                            from: 0,
+                            to: 40,
+                            color: "rgba(68, 170, 213, 0.1)",
+                            label: {
+                                text: "Poor",
+                                style: {
+                                    color: "#606060",
+                                },
+                            },
+                        },
+                        {
+                            from: 40,
+                            to: 50,
+                            color: "rgba(0, 0, 0, 0)",
+                            label: {
+                                text: "Fair",
+                                style: {
+                                    color: "#606060",
+                                },
+                            },
+                        },
+                        {
+                            from: 50,
+                            to: 75,
+                            color: "rgba(68, 170, 213, 0.1)",
+                            label: {
+                                text: "Good",
+                                style: {
+                                    color: "#606060",
+                                },
+                            },
+                        },
+                        {
+                            from: 75,
+                            to: 100,
+                            color: "rgba(0, 0, 0, 0)",
+                            label: {
+                                text: "Excellent",
+                                style: {
+                                    color: "#606060",
+                                },
+                            },
+                        },
+                    ],
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        name: "Efficiency",
+                        data: data["efficiency"],
+                    },
+                ],
+                exporting: {
+                    filename: "efficiency-per-month-{{selected_project.code}}",
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+            // Set table values
+            var avg_efficiency_in_date_range = data["avg_efficiency_in_date_range"];
+            if (avg_efficiency_in_date_range) {
+                $("#avg_efficiency_in_date_range").text(avg_efficiency_in_date_range + " %");
+            }
+            var avg_efficiency_to_present = data["avg_efficiency_to_present"];
+            if (avg_efficiency_to_present) {
+                $("#avg_efficiency_to_present").text(avg_efficiency_to_present + " %");
+            }
+        }
+
+        function build_number_of_jobs_per_month_chart(data) {
+            /**
+             * Number of jobs per month.
+             * @param data
+             */
+            Highcharts.chart("num_slurm_jobs_chart", {
+                title: {
+                    text: "Number of jobs per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
+                yAxis: {
+                    title: {
+                        text: "Number of jobs",
+                    },
+                },
+                xAxis: {
+                    categories: data["dates"],
+                    title: {
+                        text: "Month",
+                    },
+                    crosshair: true,
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        type: "column",
+                        name: "Number of jobs",
+                        data: data["number_jobs"],
+                    },
+                ],
+                exporting: {
+                    filename: "number-of-jobs-per-month-{{selected_project.code}}",
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+            // Set table values
+            $("#number_jobs_in_date_range").text(data["number_jobs_in_date_range"]);
+            $("#number_jobs_to_present").text(data["number_jobs_to_present"]);
+        }
+
+        function build_per_job_average_stats_per_month_chart(data) {
+            /**
+             * Per-job average stats per month.
+             * @param data
+             */
+            Highcharts.chart("per_job_average_chart", {
+                title: {
+                    text: "Per-Job average stats per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
+                yAxis: {
+                    title: {
+                        text: "Hours",
+                    },
+                },
+                xAxis: {
+                    categories: data["dates"],
+                    title: {
+                        text: "Month",
+                    },
+                    crosshair: true,
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        type: "column",
+                        name: "CPU Time",
+                        data: data["cpu_time"],
+                    },
+                    {
+                        type: "column",
+                        name: "Wait Time",
+                        data: data["wait_time"],
+                    },
+                    {
+                        type: "column",
+                        name: "Wall Time",
+                        data: data["wall_time"],
+                    },
+                ],
+                exporting: {
+                    filename: "per-job-average-stats-per-month-{{selected_project.code}}",
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+            // Set table values
+            $("#avg_cpu_time_in_date_range").text(data["avg_cpu_time_in_date_range"]);
+            $("#avg_wait_time_in_date_range").text(data["avg_wait_time_in_date_range"]);
+            $("#avg_wall_time_in_date_range").text(data["avg_wall_time_in_date_range"]);
+            $("#avg_cpu_time_to_present").text(data["avg_cpu_time_to_present"]);
+            $("#avg_wait_time_to_present").text(data["avg_wait_time_to_present"]);
+            $("#avg_wall_time_to_present").text(data["avg_wall_time_to_present"]);
+        }
+
+        function build_core_count_and_node_utilisation_chart(data) {
+            /**
+             * Core count and node utilisation.
+             * @param data
+             */
+
+            Highcharts.chart("number_of_processors_chart", {
+                chart: {
+                    zoomType: "xy",
+                },
+                title: {
+                    text: "Core count and node utilisation per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
+                xAxis: [
+                    {
+                        categories: data["dates"],
+                        title: {
+                            text: "Month",
+                        },
+                        crosshair: true,
+                    },
+                ],
+                yAxis: [
+                    {
+                        // Primary yAxis
+                        labels: {
+                            style: {
+                                color: Highcharts.getOptions().colors[4],
+                            },
+                        },
+                        title: {
+                            text: "Avg cores per job",
+                            style: {
+                                color: Highcharts.getOptions().colors[4],
+                            },
+                        },
+                        opposite: true,
+                    },
+                    {
+                        // Secondary yAxis
+                        gridLineWidth: 0,
+                        title: {
+                            text: "Number of cores",
+                            style: {
+                                color: Highcharts.getOptions().colors[1],
+                            },
+                        },
+                        labels: {
+                            style: {
+                                color: Highcharts.getOptions().colors[1],
+                            },
+                        },
+                    },
+                ],
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        name: "Number of cores",
+                        type: "column",
+                        yAxis: 1,
+                        data: data["num_processors"],
+                    },
+                    {
+                        name: "Average cores per job",
+                        type: "spline",
+                        data: data["avg_cores_per_job"],
+                        marker: {
+                            lineWidth: 2,
+                            lineColor: Highcharts.getOptions().colors[3],
+                            fillColor: "white",
+                        },
+                    },
+                ],
+                exporting: {
+                    filename: "core-count-and-node-utilisation-per-month-{{selected_project.code}}",
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+            // Set table values
+            $("#num_processors_in_date_range").text(data["num_processors_in_date_range"]);
+            $("#avg_cores_per_job_in_date_range").text(data["avg_cores_per_job_in_date_range"]);
+            $("#num_processors_to_present").text(data["num_processors_to_present"]);
+            $("#avg_cores_per_job_to_present").text(data["avg_cores_per_job_to_present"]);
+        }
+
+        /**
+         * Generate html table rows for each data storage record.
+         * @param table
+         * @param data
+         */
+        function generate_storage_table_rows(table, data) {
+            $(table).empty();
+            $.each(data["dates"], function (key, value) {
+                var row = `
+                <tr class="text-center">
+                    <td class="text-left">${value}</td>
+                    <td class=>${data["home"][key].toLocaleString("en")}</td>
+                    <td class=>${data["scratch"][key].toLocaleString("en")}</td>
+                    <td class=>${data["total"][key].toLocaleString("en")}</td>
+                </tr>`;
+                table.prepend(row);
+            });
+        }
+
+        function build_disk_space_chart(data) {
+            /**
+             * Disk Space chart.
+             * @param data
+             */
+            // Calculate disk space averages
+            var home_disk_space_avg = avg(data["home"]);
+            var scratch_disk_space_avg = avg(data["scratch"]);
+
+            Highcharts.chart("disk_space_storage_chart", {
+                title: {
+                    text: "Disk space per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
+                yAxis: {
+                    title: {
+                        text: "Disk space (GB)",
+                    },
+                    plotLines: [
+                        {
+                            color: "#7cb5ec",
+                            width: 2,
+                            value: home_disk_space_avg,
+                            zIndex: 1,
+                            label: {
+                                text: home_disk_space_avg + " GB",
+                                align: "left",
+                            },
+                        },
+                        {
+                            color: "#434348",
+                            width: 2,
+                            value: scratch_disk_space_avg,
+                            zIndex: 1,
+                            label: {
+                                text: scratch_disk_space_avg + " GB",
+                                align: "left",
+                            },
+                        },
+                    ],
+                },
+                xAxis: {
+                    title: {
+                        text: "Month",
+                    },
+                    categories: data["dates"],
+                    crosshair: true,
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        type: "column",
+                        name: "Home",
+                        data: data["home"],
+                    },
+                    {
+                        type: "column",
+                        name: "Scratch",
+                        data: data["scratch"],
+                    },
+                ],
+                exporting: {
+                    filename: "disk-space-{{selected_project.code}}",
+                    csv: {
+                        dateFormat: "%Y-%m-%d",
+                        columnHeaderFormatter: function (item, key) {
+                            if (!key) {
+                                return "Date";
+                            }
+                            return false;
+                        },
+                    },
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+            generate_storage_table_rows($("#disk_space > tbody"), data);
+        }
+
+        function build_file_count_chart(data) {
+            /**
+             * File count chart.
+             * @param data
+             */
+            // Calculate file count averages
+            var home_file_count_avg = avg(data["home"]);
+            var scratch_file_count_avg = avg(data["scratch"]);
+
+            Highcharts.chart("file_count_storage_chart", {
+                title: {
+                    text: "File count per month",
+                    style: {
+                        color: "#5e6e82F",
+                        fontSize: "16px",
+                        fontFamily: "Lato",
+                    },
+                },
+                subtitle: {
+                    text: "{{query_start_date|date:'Y-m-d'}} to {{query_end_date|date:'Y-m-d'}}",
+                },
+                yAxis: {
+                    title: {
+                        text: "Number of files",
+                    },
+                    plotLines: [
+                        {
+                            color: "#7cb5ec",
+                            width: 2,
+                            value: home_file_count_avg,
+                            zIndex: 1,
+                            label: {
+                                text: home_file_count_avg,
+                                align: "left",
+                            },
+                        },
+                        {
+                            color: "#434348",
+                            width: 2,
+                            value: scratch_file_count_avg,
+                            zIndex: 1,
+                            label: {
+                                text: scratch_file_count_avg,
+                                align: "left",
+                            },
+                        },
+                    ],
+                },
+                xAxis: {
+                    title: {
+                        text: "Month",
+                    },
+                    categories: data["dates"],
+                    crosshair: true,
+                },
+                tooltip: {
+                    shared: true,
+                },
+                series: [
+                    {
+                        type: "column",
+                        name: "Home",
+                        data: data["home"],
+                    },
+                    {
+                        type: "column",
+                        name: "Scratch",
+                        data: data["scratch"],
+                    },
+                ],
+                exporting: {
+                    filename: "file-count-{{selected_project.code}}",
+                    csv: {
+                        dateFormat: "%Y-%m-%d",
+                        columnHeaderFormatter: function (item, key) {
+                            if (!key) {
+                                return "Date";
+                            }
+                            return false;
+                        },
+                    },
+                    buttons: {
+                        contextButton: {
+                            menuItems: default_menu_options,
+                        },
+                    },
+                },
+            });
+            generate_storage_table_rows($("#file_count > tbody"), data);
+        }
+
+        function build_overview_charts(data) {
+            /**
+             * Build overview charts.
+             * @param data
+             */
+            build_pi_projects_chart(data["pi_projects"]);
+            build_users_status_chart(data["user_status"]);
+        }
+
+        function build_compute_charts(data) {
+            /**
+             * Build compute charts.
+             * @param data
+             */
+            build_rate_of_usage_per_month_chart(data["rate_of_usage"]);
+            build_cumulative_total_usage_per_month_chart(data["cumulative_total_usage"]);
+            build_top_users_usage_chart(data["top_users_usage"]);
+            build_usage_by_partition_chart(data["usage_by_partition"]);
+            build_efficiency_per_month_chart(data["efficiency_per_month"]);
+            build_number_of_jobs_per_month_chart(data["num_jobs_per_month"]);
+            build_per_job_average_stats_per_month_chart(data["per_job_avg_stats"]);
+            build_core_count_and_node_utilisation_chart(data["core_count_node_utilisation"]);
+        }
+
+        function build_storage_charts(data) {
+            /**
+             * Build storage charts.
+             * @param data
+             */
+            build_disk_space_chart(data["disk_space"]);
+            build_file_count_chart(data["file_count"]);
+        }
+    });
+</script>
+{% endblock %}

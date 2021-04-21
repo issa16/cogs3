@@ -15,7 +15,6 @@ import os
 
 import dj_database_url
 from django.contrib.messages import constants as messages
-
 from dotenv import load_dotenv
 from selenium import webdriver
 
@@ -79,6 +78,7 @@ INSTALLED_APPS = [
     'system.apps.SystemConfig',
     'users.apps.UsersConfig',
     'widget_tweaks',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -93,6 +93,7 @@ MIDDLEWARE = [
     'users.middleware.TermsOfServiceMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'maintenance_mode.middleware.MaintenanceModeMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -149,8 +150,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 LANGUAGE_CODE = 'en-gb'
-LOCALE_PATHS = ('locale', )
-TEMPLATE_CONTEXT_PROCESSORS = ('django.template.context_processors.i18n', )
+LOCALE_PATHS = ('locale',)
+TEMPLATE_CONTEXT_PROCESSORS = ('django.template.context_processors.i18n',)
 
 TIME_ZONE = 'Europe/London'
 
@@ -165,8 +166,10 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
@@ -243,24 +246,21 @@ LOGGING = {
     'formatters': {
         'general': {
             'format':
-            '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
-            '(EXCEPTION: %(exc_info)s)',
-            'datefmt':
-            '%d/%b/%Y %H:%M:%S'
+                '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
+                '(EXCEPTION: %(exc_info)s)',
+            'datefmt': '%d/%b/%Y %H:%M:%S'
         },
         'request': {
             'format':
-            '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
-            '(STATUS: %(status_code)s; REQUEST: %(request)s; EXCEPTION: %(exc_info)s)',
-            'datefmt':
-            '%d/%b/%Y %H:%M:%S'
+                '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
+                '(STATUS: %(status_code)s; REQUEST: %(request)s; EXCEPTION: %(exc_info)s)',
+            'datefmt': '%d/%b/%Y %H:%M:%S'
         },
         'db': {
             'format':
-            '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
-            '(DURATION: %(duration)s; SQL: %(sql)s; PARAMS: %(params)s; EXCEPTION: %(exc_info)s)',
-            'datefmt':
-            '%d/%b/%Y %H:%M:%S'
+                '[%(asctime)s] %(levelname)s [%(name)s - %(filename)s:%(lineno)s] %(message)s '
+                '(DURATION: %(duration)s; SQL: %(sql)s; PARAMS: %(params)s; EXCEPTION: %(exc_info)s)',
+            'datefmt': '%d/%b/%Y %H:%M:%S'
         },
     },
     'handlers': {
@@ -387,3 +387,6 @@ LOGGING = {
 # Selenium testing
 SELENIUM_WEBDRIVER = webdriver.Firefox
 SELENIUM_WEBDRIVER_PROFILE = webdriver.FirefoxProfile
+
+# Data analytics
+DISPLAY_DATA_ANALYTICS = ast.literal_eval(os.environ.get('DISPLAY_DATA_ANALYTICS', 'True'))

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+python3 manage.py loaddata \
+    institutions.json \
+    systems.json \
+    access_methods.json \
+    applications.json \
+    clusters.json

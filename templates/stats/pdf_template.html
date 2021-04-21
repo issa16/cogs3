@@ -1,0 +1,302 @@
+<!-- templates/stats/pdf_template.html -->
+{% load static %}
+{% load i18n %}
+{% load hreflang %}
+{% load cookielaw_tags %}
+{% get_current_language as LANGUAGE_CODE %}
+{% load data_analytics_tags %}
+{% load humanize %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>{% block title %}{% trans 'Supercomputing Wales' %}{% endblock %}</title>
+        <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+        <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/jquery-ui.min.css' %}" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+        <link href="{% static 'cookielaw/css/cookielaw.css' %}" rel="stylesheet">
+        <link href="{% static 'css/open-iconic-bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/style.css' %}" rel="stylesheet">
+        {% block custom_css %}
+        <style>
+            body { 
+                background-color: white;
+                font-size: 13px;
+            }
+        </style>
+	    {% endblock %}
+    </head>
+    <body>
+        <div class="row no-gutters pb-3 m-4">
+        <div class="col">
+        <div class="row no-gutters py-3 px-3">
+            <div class="col" id="project-title">
+                <h6 class="font-weight-bold mb-3">{{project.code}}</h6>
+                <h6 class="font-weight-bold">{{project.title}}</h6>
+            </div>
+        </div>
+        <div class="row no-gutters py-3 px-3">
+            <div class="col"">
+                <b>Report Date Range:</b> {{query_start_date}} to {{query_end_date}}</h3>
+            </div>
+        </div>
+        <div class="row no-gutters my-3">
+            <div class="col">
+                <h6 class="card-header rounded p-3 font-weight-bold">Overview</h6>
+            </div>
+        </div>
+        <div class="row no-gutters">
+            <div class="col-6">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td style="width: 50%;" class="text-dark">
+                                <b>{% trans "Principal Investigator" %}</b>
+                            </td>
+                            <td style="width: 60%">{{ project.pi_name }} {{ project.pi_email|institution }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-dark">
+                                <b>{% trans "Technical Lead" %}</b>
+                            </td>
+                            <td>{{ project.tech_lead.first_name|title }} {{ project.tech_lead.last_name|title }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-dark">
+                                <b>{% trans "Start Date" %}</b>
+                            </td>
+                            <td>{{ project.start_date }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-dark">
+                                <b>{% trans "End Date" %}</b>
+                            </td>
+                            <td>{{ project.end_date }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-dark">
+                                <b>{% trans "Institution" %}</b>
+                            </td>
+                            <td>{{ project.tech_lead.profile.institution }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-dark">
+                                <b>{% trans "Efficiency" %}</b>
+                            </td>
+                            <td>
+                                {% efficiency_as_percentage efficiency %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-6">
+                <table class="table table-borderless">
+                    <tbody style="border-top:0;">
+                        <tr>
+                            <td style="width: 40%;" class="text-dark">
+                                <b>{% trans "Home storage allocation" %}</b>
+                            </td>
+                            <td style="width: 60%;">
+                                {{ project.allocation_storage_home|gb_to_tb }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-dark">
+                                <b>{% trans "Scratch storage allocation" %}</b>
+                            </td>
+                            <td>
+                                {{ project.allocation_storage_scratch|gb_to_tb }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-dark">
+                                <b>{% trans "Total allocated core hours" %}</b>
+                            </td>
+                            <td>
+                                {{ project.allocation_cputime }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-dark">
+                                <b>{% trans "Total number of core hours" %}</b>
+                            </td>
+                            <td>{{ total_core_hours|in_hours }}&nbsp;&nbsp;&nbsp;&nbsp;{% if allocation_usage_percentage %} ({% percentage_color allocation_usage_percentage %} of allocation) {% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-dark">
+                                <b>{% trans "Total number of CPU hours" %}</b>
+                            </td>
+                            <td>{{ total_cpu_hours|in_hours }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-dark">
+                                <b>{% trans "Total number of Slurm jobs" %}</b>
+                            </td>
+                            <td>{{ total_slurm_jobs|default_if_none:0 }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row no-gutters my-3">
+            <div class="col">
+                <h6 class="card-header rounded p-3 font-weight-bold">Compute</h6>
+            </div>
+        </div>
+        <div class="row no-gutters">
+            <div class="col mt-3">
+                <table class="table m-0">
+                    <thead class="text-dark text-center font-weight-bold">
+                        <tr>
+                            <td style="width:50%;"></td>
+                            <td>{% trans "CPU Time (hrs)" %}</td>
+                            <td>{% trans "Wait Time (hrs)" %}</td>
+                            <td>{% trans "Wall Time (hrs)" %}</td>
+                            <td>{% trans "Efficiency" %}</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-center">
+                            <td colspan=5 class="font-weight-bold text-left text-primary">Core Partitions</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td class="text-left px-5">
+                                {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
+                            </td>
+                            <td>{{ core_partitions_in_date_range.cpu_time|in_hours }}</td>
+                            <td>{{ core_partitions_in_date_range.wait_time|in_hours }}</td>
+                            <td>{{ core_partitions_in_date_range.wall_time|in_hours }}</td>
+                            <td>{% efficiency_as_percentage core_partitions_in_date_range.cpu_time|in_hours core_partitions_in_date_range.wall_time|in_hours %}</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td class="text-left px-5">{{ project.start_date|date:"Y-m-d" }} - Present</td>
+                            <td>{{ core_partitions_to_present.cpu_time|in_hours }}</td>
+                            <td>{{ core_partitions_to_present.wait_time|in_hours }}</td>
+                            <td>{{ core_partitions_to_present.wall_time|in_hours }}</td>
+                            <td>{% efficiency_as_percentage core_partitions_to_present.cpu_time|in_hours core_partitions_to_present.wall_time|in_hours %}</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td colspan=5 class="font-weight-bold text-left text-primary">
+                                {% trans "Researcher Funded Partitions " %}
+                            </td>
+                        </tr>
+                        <tr class="text-center">
+                            <td class="text-left px-5">
+                                {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
+                            </td>
+                            <td>{{ researcher_partitions_in_date_range.cpu_time|in_hours }}</td>
+                            <td>{{ researcher_partitions_in_date_range.wait_time|in_hours }}</td>
+                            <td>{{ researcher_partitions_in_date_range.wall_time|in_hours }}</td>
+                            <td>{% efficiency_as_percentage researcher_partitions_in_date_range.cpu_time|in_hours researcher_partitions_in_date_range.wall_time|in_hours %}</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td class="text-left px-5">{{ project.start_date|date:"Y-m-d" }} - Present</td>
+                            <td>{{ researcher_partitions_to_present.cpu_time|in_hours }}</td>
+                            <td>{{ researcher_partitions_to_present.wait_time|in_hours }}</td>
+                            <td>{{ researcher_partitions_to_present.wall_time|in_hours }}</td>
+                            <td>{% efficiency_as_percentage researcher_partitions_to_present.cpu_time|in_hours researcher_partitions_to_present.wall_time|in_hours %}</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td colspan=5 class="font-weight-bold text-left text-primary">
+                                {% trans "Total" %}
+                            </td>
+                        </tr>
+                        <tr class="text-center">
+                            <td class="text-left px-5">
+                                {{query_start_date|date:"Y-m-d"}} to {{query_end_date|date:"Y-m-d"}}
+                            </td>
+                            <td>{{ compute_totals_in_date_range.cpu_time|in_hours }}</td>
+                            <td>{{ compute_totals_in_date_range.wait_time|in_hours }}</td>
+                            <td>{{ compute_totals_in_date_range.wall_time|in_hours }}</td>
+                            <td>{% efficiency_as_percentage compute_totals_in_date_range.cpu_time|in_hours compute_totals_in_date_range.wall_time|in_hours %}</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td class="text-left px-5">{{ project.start_date|date:"Y-m-d" }} - Present</td>
+                            <td>{{ compute_totals_to_present.cpu_time|in_hours }}</td>
+                            <td>{{ compute_totals_to_present.wait_time|in_hours }}</td>
+                            <td>{{ compute_totals_to_present.wall_time|in_hours }}</td>
+                            <td>{% efficiency_as_percentage compute_totals_to_present.cpu_time|in_hours compute_totals_to_present.wall_time|in_hours %}</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-dark font-weight-bold">
+                                {% trans "Total Charge" %}
+                            </td>
+                            <td>N/A</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row no-gutters my-3">
+            <div class="col">
+                <h6 class="card-header rounded p-3 font-weight-bold">Storage</h6>
+            </div>
+        </div>
+        <div class="row no-gutters mb-4">
+            <div class="col mt-3">
+                <table class="table m-0">
+                    <thead class="text-dark text-center font-weight-bold">
+                        <tr>
+                            <td></td>
+                            <td>
+                                {% trans "Home" %}
+                            </td>
+                            <td>
+                                {% trans "Scratch" %}
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-center">
+                            <td class="text-left font-weight-bold text-dark">
+                                {% trans "Average disk space usage per week" %}
+                            </td>
+                            <td>{{storage_stats.home_space_used_avg|floatformat|intcomma|default:0}} GB</td>
+                            <td>{{storage_stats.scratch_space_used_avg|floatformat|intcomma|default:0}} GB</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td class="text-left font-weight-bold text-dark">
+                                {% trans "Average file count per week" %}
+                            </td>
+                            <td>{{storage_stats.home_files_used_avg|floatformat:0|intcomma|default:0}}</td>
+                            <td>{{storage_stats.scratch_files_used_avg|floatformat:0|intcomma|default:0}}</td>
+                        </tr>
+                        <tr class="text-center">
+                            <td></td>
+                            <td class="text-dark font-weight-bold">
+                                {% trans "Total Charge" %}
+                            </td>
+                            <td>N/A</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row no-gutters">
+            <div class="col text-right">
+                Generated on the {% now "jS \o\f F" %} by {{ user }}
+            </div>
+        </div>
+        <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+        <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+        <script src="{% static 'js/popper.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/highcharts/highstock.js' %}"></script>
+        <script src="{% static 'js/highcharts/data.js' %}"></script>
+        <script src="{% static 'js/highcharts/exporting.js' %}"></script>
+        <script src="{% static 'js/highcharts/export-data.js' %}"></script>
+        <script src="{% static 'js/highcharts/series-label.js' %}"></script>
+        <script src="{% static 'js/highcharts/drilldown.js' %}"></script>
+        <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+    </body>
+</html>

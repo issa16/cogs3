@@ -1,0 +1,162 @@
+[
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "burst.allsky.cwboffline",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.waveform.precmatches",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.pe.lalinferenceonline",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.pe.lpsd",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.uber.pycbcoffline",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "detchar.explore.test",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.grb.cohptfonline",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "sgwb.explore.test",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cw.targeted.population",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.testgr.tiger",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.explore.gpu-test",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cw.explore.test",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.pe.lalinferencerapid",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "False",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.pe.3g",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.bbh.pycbcoffline",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.pe.lalinference",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.explore.test",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "cbc.grb.cohptfoffline",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    },
+    {
+        "model": "system.application",
+        "fields": {
+            "name": "Default",
+            "created_time": "2020-11-16T00:00:00Z",
+            "modified_time": "2020-11-16T00:00:00Z"
+        }
+    }
+]
