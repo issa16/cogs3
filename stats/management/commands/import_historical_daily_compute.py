@@ -2,8 +2,6 @@ import os
 
 from django.core.management.base import BaseCommand
 
-# Usage: python3 manage.py import_historical_daily_compute --input_dir {input_dir}
-
 
 class Command(BaseCommand):
     help = 'Import historical daily compute stats from bz2 files.'

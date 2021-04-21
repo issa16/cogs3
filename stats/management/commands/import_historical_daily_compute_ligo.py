@@ -17,7 +17,7 @@ class Command(BaseCommand):
             type=str,
         )
 
-    def parse_file(self, filepath, start_date, end_date):
+    def parse_file(self, filepath):
         try:
             # Call daily compute ligo import script
             os.system(f"python3 manage.py import_daily_compute_ligo --file {filepath}")

@@ -45,13 +45,13 @@ class Command(BaseCommand):
 
             # Find the date range of the stats file
             count, start_date, end_date = find_date_range_of_ligo_file.parse_file(stats_file)
-            start_date = datetime.utcfromtimestamp(start_date).strftime('%Y-%m-%d')
-            end_date = datetime.utcfromtimestamp(end_date).strftime('%Y-%m-%d')
+            start_date = datetime.datetime.utcfromtimestamp(start_date).strftime('%Y-%m-%d')
+            end_date = datetime.datetime.utcfromtimestamp(end_date).strftime('%Y-%m-%d')
             daterange = pd.date_range(start_date, end_date)
 
             self.stdout.write(self.style.SUCCESS(f'Total jobs: {count}'))
-            self.stdout.write(self.style.SUCCESS(f'Earliest: {datetime.utcfromtimestamp(earliest)}'))
-            self.stdout.write(self.style.SUCCESS(f'Latest: {datetime.utcfromtimestamp(latest)}'))
+            self.stdout.write(self.style.SUCCESS(f'Earliest: {start_date}'))
+            self.stdout.write(self.style.SUCCESS(f'Latest: {end_date}'))
 
             for date in daterange:
                 msg = f'DailyStatsParserLigo started for {date} file {stats_file}'
