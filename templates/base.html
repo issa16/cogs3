@@ -176,6 +176,7 @@
         <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>
         <script src="{% static 'js/main.js' %}"></script>
 	{% block custom_js %}
+	    <script>
 	    $(document).ready(function () {
 		$("#password-reset").submit(function (event) {
 		    event.preventDefault();
@@ -218,6 +219,7 @@
 		    }
 		});
 	    });
+	    </script>
         {% endblock %}
     </body>
 </html>
