@@ -176,6 +176,7 @@
         <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>
         <script src="{% static 'js/main.js' %}"></script>
 	{% block custom_js %}
+	    $(document).ready(function () {
 		$("#password-reset").submit(function (event) {
 		    event.preventDefault();
 		    var csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -216,6 +217,7 @@
 			});
 		    }
 		});
+	    });
         {% endblock %}
     </body>
 </html>
