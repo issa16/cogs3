@@ -11,7 +11,6 @@ dj-database-url==0.5.0
 Django==2.2.13
 django-classy-tags==0.8.0
 django-cookie-law==1.0.13
-django-extensions==2.0.5
 django-heroku==0.3.1
 django-hreflang==2.2
 django-import-export==1.0.1
