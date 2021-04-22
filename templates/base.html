@@ -63,24 +63,27 @@
                         <span class="oi oi-home pr-3 dark_blue"></span>
                         <span>{% trans 'Home' %}</span>
                     </a>
-                    {% if user.profile.is_approved and DISPLAY_DATA_ANALYTICS %} {% if perms.project.change_project or user.is_staff %}
-                    <a class="js-nav-tooltip-link nav-link py-3" href="{% url 'data-analytics'%}?code={{request.session.latest_project_code}}">
-                        <span class="oi oi-signal pr-3 dark_blue"></span>
-                        <span
-                            >{% trans 'Data Analytics' %}
-                            <span class="badge badge-danger badge-pill ml-1">{% trans 'New'%}</span>
-                        </span>
-                    </a>
-                    {% endif %}
-                    <a class="js-nav-tooltip-link nav-link py-3" href="https://portal.supercomputing.wales/index.php/index/accessing-the-system/">
-                        <span class="oi oi-account-login pr-3 dark_blue"></span>
-                        <span>{% trans 'Access SCW System' %}</span>
-                    </a>
-                    <a class="js-nav-tooltip-link nav-link py-3" href="#" data-toggle="modal" data-target="#password-reset-modal">
-                        <span class="oi oi-key pr-3 dark_blue"></span>
-                        <span>{% trans 'Reset SCW Password' %}</span>
-                    </a>
-                    {% endif %} {% if perms.project.add_project %}
+                    {% if user.profile.is_approved %}
+                        {% if DISPLAY_DATA_ANALYTICS %}
+                            {% if perms.project.change_project or user.is_staff %}
+                            <a class="js-nav-tooltip-link nav-link py-3" href="{% url 'data-analytics'%}?code={{request.session.latest_project_code}}">
+                                <span class="oi oi-signal pr-3 dark_blue"></span>
+                                <span>{% trans 'Data Analytics' %}
+                                    <span class="badge badge-danger badge-pill ml-1">{% trans 'New'%}</span>
+                                </span>
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                        <a class="js-nav-tooltip-link nav-link py-3" href="https://portal.supercomputing.wales/index.php/index/accessing-the-system/">
+                            <span class="oi oi-account-login pr-3 dark_blue"></span>
+                            <span>{% trans 'Access SCW System' %}</span>
+                        </a>
+                        <a class="js-nav-tooltip-link nav-link py-3" href="#" data-toggle="modal" data-target="#password-reset-modal">
+                            <span class="oi oi-key pr-3 dark_blue"></span>
+                            <span>{% trans 'Reset SCW Password' %}</span>
+                        </a>
+                    {% endif %} 
+                    {% if perms.project.add_project %}
                     <a class="js-nav-tooltip-link nav-link py-3" href="{% url 'create-project' %}">
                         <span class="oi oi-document pr-3 dark_blue"></span>
                         <span>{% trans 'Create Project Application' %}</span>
