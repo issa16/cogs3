@@ -45,8 +45,9 @@ $(document).ready(function () {
                 // Submit a password reset request
                 $.ajax({
                     type: 'POST',
-                    url: "{% url 'scw-password-reset' %}",
-                    data: {
+                    //url: "{% url 'scw-password-reset' %}", // Fix
+                    url: window.location.origin + '/accounts/scw/password-reset/',
+		    data: {
                         'password': password,
                         'password_confirm': password_confirm,
                         'csrfmiddlewaretoken': csrfmiddlewaretoken,
