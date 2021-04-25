@@ -200,6 +200,9 @@ class Command(BaseCommand):
 
                 msg = f'MAX WALL TIME={datetime.timedelta(hours=(24 * ((40 * 60) + (24 * 60))))}'
                 self.stdout.write(self.style.SUCCESS(msg))
-
+            
+            # Remove file after processing
+            os.remove(stats_file)
+            
         except Exception as e:
             self.stdout.write(self.style.ERROR(e))
