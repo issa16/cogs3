@@ -28,6 +28,7 @@ class Command(BaseCommand):
                     data = filename.split('_')
                     code = data[0]
                     system = None
+                    day = 1
                     month = data[1]
                     year = data[2][:4]
 
@@ -45,18 +46,17 @@ class Command(BaseCommand):
 
                         # Process extracted file
                         filepath = filepath[:-4]  # Remove .bz2 extension
-                        for day in range(1, 32):
-                            self.stdout.write(self.style.SUCCESS(f'Processing day {day} of {filepath}'))
+                        self.stdout.write(self.style.SUCCESS(f'Processing day {day} of {filepath}'))
 
-                            # Call daily compute import script
-                            os.system(
-                                f"python3 manage.py import_daily_compute  \
-                                    --file {filepath} \
-                                    -d {day} \
-                                    -m {month} \
-                                    -y {year} \
-                                    -s {system}"
-                            )
+                        # Call daily compute import script
+                        os.system(
+                            f"python3 manage.py import_daily_compute  \
+                                --file {filepath} \
+                                -d {day} \
+                                -m {month} \
+                                -y {year} \
+                                -s {system}"
+                        )
                         self.stdout.write(self.style.SUCCESS(f'Finished processing {filepath}'))
                     except Exception as e:
                         self.stderr.write(self.style.ERROR(e))
