@@ -33,7 +33,7 @@ class IndexView(
         context = super().get_context_data(**kwargs)
         user = self.request.user
         display_data_analytics = settings.DISPLAY_DATA_ANALYTICS
-        if display_data_analytics:
+        if display_data_analytics or user.is_staff:
             try:
                 # Which projects is this user a technical lead of?
                 projects = Project.objects.filter(tech_lead=user).order_by('-start_date')
