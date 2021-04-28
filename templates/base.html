@@ -167,50 +167,50 @@
         <script src="{% static 'js/jquery-ui.min.js' %}"></script>
         <script src="{% static 'js/popper.min.js' %}"></script>
         <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script>
-    $(document).ready(function () {
-	$("#password-reset").submit(function (event) {
-	    event.preventDefault();
-	    var csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
-	    // Ensure password fields match
-	    var password = $('input[name=password]').val();
-	    var password_confirm = $('input[name=password-confirm]').val();
-	    if (password != password_confirm) {
-		$('#form-errors').text('{% trans "The passwords you have entered do not match." %}');
-		$('#form-errors').removeClass('d-none');
-	    } else {
-		$('#form-errors').addClass('d-none');
-		// Submit a password reset request
-		$.ajax({
-		    type: 'POST',
-		    url: "{% url 'scw-password-reset' %}",
-		    data: {
-			'password': password,
-			'password_confirm': password_confirm,
-			'csrfmiddlewaretoken': csrfmiddlewaretoken,
-		    },
-		    dataType: 'json',
-		    encode: true,
-		    success: function (msg) {
-			// Hide password reset form
-			$('#password-policy').addClass('d-none');
-			$('#password-reset > .modal-footer > .btn-primary').addClass('d-none');
-			// Show success message
-			$('#form-success').text(msg.data);
-			$('#form-success').removeClass('d-none');
-		    },
-		    error: function (XMLHttpRequest, textStatus, errorThrown) {
-			// Hide any success messages
-			$('#form-success').addClass('d-none');
-			// Show error message
-			$('#form-errors').text('Invalid password reset request.');
+    	<script>
+	    $(document).ready(function () {
+		$("#password-reset").submit(function (event) {
+		    event.preventDefault();
+		    var csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+		    // Ensure password fields match
+		    var password = $('input[name=password]').val();
+		    var password_confirm = $('input[name=password-confirm]').val();
+		    if (password != password_confirm) {
+			$('#form-errors').text('{% trans "The passwords you have entered do not match." %}');
 			$('#form-errors').removeClass('d-none');
-		    },
+		    } else {
+			$('#form-errors').addClass('d-none');
+			// Submit a password reset request
+			$.ajax({
+			    type: 'POST',
+			    url: "{% url 'scw-password-reset' %}",
+			    data: {
+				'password': password,
+				'password_confirm': password_confirm,
+				'csrfmiddlewaretoken': csrfmiddlewaretoken,
+			    },
+			    dataType: 'json',
+			    encode: true,
+			    success: function (msg) {
+				// Hide password reset form
+				$('#password-policy').addClass('d-none');
+				$('#password-reset > .modal-footer > .btn-primary').addClass('d-none');
+				// Show success message
+				$('#form-success').text(msg.data);
+				$('#form-success').removeClass('d-none');
+			    },
+			    error: function (XMLHttpRequest, textStatus, errorThrown) {
+				// Hide any success messages
+				$('#form-success').addClass('d-none');
+				// Show error message
+				$('#form-errors').text('Invalid password reset request.');
+				$('#form-errors').removeClass('d-none');
+			    },
+			});
+		    }
 		});
-	    }
-	});
-    });
-    </script>
+	    });
+	</script>
         <script src="{% static 'js/highcharts/highstock.js' %}"></script>
         <script src="{% static 'js/highcharts/data.js' %}"></script>
         <script src="{% static 'js/highcharts/exporting.js' %}"></script>
@@ -219,5 +219,7 @@
         <script src="{% static 'js/highcharts/drilldown.js' %}"></script>
         <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>
         <script src="{% static 'js/main.js' %}"></script>
+	{% block custom_js %}
+	{% endblock %}
     </body>
 </html>
