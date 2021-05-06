@@ -22,7 +22,7 @@ class Command(BaseCommand):
                 except Exception as e:
                     msg = f'{project.code} {e}'
                     self.stdout.write(self.style.ERROR(msg))
-            elif ',' in project:
+            elif ',' in project.pi:
                 # Handle single PI format: Name, Position, Email
                 try:
                     name, position, email = project.pi.split(',')
