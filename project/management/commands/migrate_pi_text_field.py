@@ -5,6 +5,7 @@ from project.models import Project
 class Command(BaseCommand):
     help = 'Copy project PI text field to new PI format fields.'    def handle(self, *args, **options):
 
+    def handle(self, *args, **options):
         for project in Project.objects.all():
             if ' and ' in project.pi:
                 # Handle multiple PIs format: Name, Position, Email and Name, Position, Email
