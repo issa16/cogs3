@@ -3,7 +3,7 @@ from project.models import Project
 
 
 class Command(BaseCommand):
-    help = 'Copy project PI text field to new PI format fields.'    def handle(self, *args, **options):
+    help = 'Copy project PI text field to new PI format fields.'
 
     def handle(self, *args, **options):
         for project in Project.objects.all():
