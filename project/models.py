@@ -119,8 +119,8 @@ class Project(models.Model):
         blank=True,
         verbose_name=_("Principal Investigator's position"),
     )
-    pi_email = models.EmailField(
-        max_length=100,
+    pi_email = models.CharField(
+        max_length=256,
         blank=True,
         verbose_name=_("Principal Investigator's email"),
     )
