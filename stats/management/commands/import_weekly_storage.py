@@ -112,7 +112,11 @@ class Command(BaseCommand):
                     created_count += 1
                 else:
                     updated_count += 1
-
+                    
+            # Remove files after processing
+            os.remove(home_file)
+            os.remove(scratch_file)
+            
         except Exception as e:
             self.stdout.write(self.style.ERROR(e))
 

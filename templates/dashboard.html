@@ -1,5 +1,9 @@
 <!-- templates/dashboard.html -->
-{% extends 'base.html' %} {% load static %} {% load i18n %} {% block title %}{% trans "Dashboard" %}{% endblock %} {% block content %}
+{% extends 'base.html' %} 
+{% load static %} 
+{% load i18n %} 
+{% block title %}{% trans "Dashboard" %}{% endblock %} 
+{% block content %}
 <div class="row pb-3">
     <div class="col">
         {% if user.profile.is_approved %}

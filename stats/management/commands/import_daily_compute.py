@@ -93,7 +93,7 @@ class Command(BaseCommand):
                         modParitionName = system + "-" + i['execQueue']
                         myParition = Partition.objects.get(name__iexact=modParitionName)
                     except Partition.DoesNotExist:
-                        msg = f"No matching partition entry: {i['modParitionName']}"
+                        msg = f"No matching partition entry: {modParitionName}"
                         self.stdout.write(msg)
                         continue
                     # Check for existing record for the matching dimensions of measurement
@@ -135,6 +135,9 @@ class Command(BaseCommand):
 
                 msg = f'END - {countNew} new records, {countUpdated} updated records'
                 self.stdout.write(self.style.SUCCESS(msg))
-
+            
+            # Remove file after processing
+            os.remove(stats_file)
+            
         except Exception as e:
             self.stdout.write(self.style.ERROR(e))

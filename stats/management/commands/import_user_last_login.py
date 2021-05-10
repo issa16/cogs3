@@ -87,6 +87,10 @@ class Command(BaseCommand):
                         except ObjectDoesNotExist:
                             msg = f'\t\t\tCould not find user {luser}'
                             self.stdout.write(self.style.ERROR(msg))
+                            
+            # Remove file after processing
+            os.remove(login_file)
+            
         except Exception as e:
             self.stdout.write(self.style.ERROR(e))
 
