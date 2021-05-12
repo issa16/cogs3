@@ -19,7 +19,7 @@ $(document).ready(function () {
             };
             $.ajax({
                 type: "POST",
-                url: $(location).attr('href') + "update/" + request_id + "/",
+                url: "{% url 'project-user-membership-request-update' %}" + request_id + "/",
                 data: data,
                 dataType: "json",
                 success: function () {
