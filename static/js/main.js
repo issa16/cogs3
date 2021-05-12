@@ -19,7 +19,7 @@ $(document).ready(function () {
             };
             $.ajax({
                 type: "POST",
-                url: location.protocol + '//' + location.host + location.pathname + request_id + "/",
+                url: location.protocol + '//' + location.host + location.pathname + "update/" + request_id + "/",
                 data: data,
                 dataType: "json",
                 success: function () {
