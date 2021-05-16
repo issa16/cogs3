@@ -56,10 +56,6 @@
                         <h6 class="font-weight-bold">{{selected_project.code}} : {{selected_project.title}}</h6>
                     </div>
                     <div class="col-3 text-right">
-                        <a class="btn btn-light ml-3 grey-border" href="https://issa16.github.io/cogs3/" role="button">
-                            <span class="oi oi-browser pr-2 dark_blue"></span>
-                            User Guide
-                        </a>
                         <a class="btn btn-light grey-border ml-3" href="{% url 'data-analytics-generate-pdf' %}?code={{request.GET.code}}&start_date={{request.GET.start_date}}&end_date={{request.GET.end_date}}" role="button">
                             <span class="oi oi-document pr-2 dark_blue"></span>
                             Export to PDF
