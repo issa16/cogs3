@@ -23,7 +23,7 @@ class ComputeDaily(admin.ModelAdmin):
     ]
     search_fields = (
         'project__code', 
-        'user',
+        'user__profile__scw_username',
     )
 
 
