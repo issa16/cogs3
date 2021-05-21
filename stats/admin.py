@@ -21,7 +21,10 @@ class ComputeDaily(admin.ModelAdmin):
         'user',
         'project',
     ]
-    search_fields = ('project__code',)
+    search_fields = (
+        'project__code', 
+        'user',
+    )
 
 
 @admin.register(StorageWeekly)
