@@ -1,8 +1,11 @@
+import numpy as np
+
+
 def seconds_to_hours(seconds):
     '''
     Convert seconds to hours.
     '''
-    return round(seconds // 3600, 2)
+    return np.round(seconds / 3600, 2)
 
 
 def parse_efficiency_result_set(result_set):
