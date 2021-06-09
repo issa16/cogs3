@@ -8,7 +8,7 @@ codecov==2.0.15
 coverage==4.5.1
 cryptography==3.3.2
 dj-database-url==0.5.0
-Django==2.2.20
+Django==2.2.22
 django-classy-tags==0.8.0
 django-cookie-law==1.0.13
 django-hreflang==2.2
