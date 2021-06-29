@@ -136,8 +136,5 @@ class Command(BaseCommand):
                 msg = f'END - {countNew} new records, {countUpdated} updated records'
                 self.stdout.write(self.style.SUCCESS(msg))
             
-            # Remove file after processing
-            os.remove(stats_file)
-            
         except Exception as e:
             self.stdout.write(self.style.ERROR(e))
