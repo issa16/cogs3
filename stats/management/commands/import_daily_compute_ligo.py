@@ -97,7 +97,7 @@ class Command(BaseCommand):
                             user=user,
                             project=myProject,
                             status=ProjectUserMembership.AUTHORISED,
-                            date_joined=date.today(),
+                            date_joined=datetime.date.today(),
                         )
                         project_user_membership.save()
 
@@ -158,7 +158,7 @@ class Command(BaseCommand):
                     application=myExecApp,
                     access_method=mySubMethod,
                     number_processors=myExecNCPU,
-                    date=date,
+                    date=my_date,
                     defaults={
                         'number_jobs': i['nJobs'],
                         'wait_time': i['waitTime'],
