@@ -174,13 +174,13 @@ class Command(BaseCommand):
                     obj.save()
                     countUpdated += 1
                     msg = (
-                        f"INFO: Updated: {obj.id} {date} {obj.user} {obj.project} {obj.partition} {obj.application} {obj.access_method}"
+                        f"INFO: Updated: {obj.id} {obj.date} {obj.user} {obj.project} {obj.partition} {obj.application} {obj.access_method}"
                         f" {obj.number_processors} {i['waitTime']} {i['cpuTime']} {i['wallTime']} {i['nJobs']}"
                     )
                 else:
                     countNew += 1
                     msg = (
-                        f"INFO: Added new: {obj.id} {date} {obj.user} {obj.project} {obj.partition} {obj.application} {obj.access_method}"
+                        f"INFO: Added new: {obj.id} {obj.date} {obj.user} {obj.project} {obj.partition} {obj.application} {obj.access_method}"
                         f" {obj.number_processors} {i['waitTime']} {i['cpuTime']} {i['wallTime']} {i['nJobs']}"
                     )
                 self.stdout.write(self.style.SUCCESS(msg))
