@@ -35,9 +35,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             acctf = options['acctf'].strip()
-            sday = options['sday'].strip()
-            smonth = options['smonth'].strip()
-            syear = options['syear'].strip()
+            sday = options['sday']
+            smonth = options['smonth']
+            syear = options['syear']
             ssys = options['ssys'].strip()
 
             if not os.path.isfile(acctf):
