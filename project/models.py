@@ -67,6 +67,7 @@ class Project(models.Model):
 
     title = models.CharField(
         max_length=256,
+        help_text="This is help for the project title..... blah de blah!"
         verbose_name=_('Project Title'),
     )
     description = models.TextField(
