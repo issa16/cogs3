@@ -9,6 +9,15 @@
 	<div class="col">
 		<div class="card">
 			<h6 class="card-header border-bottom font-weight-bold">{% trans "Project Application" %}</h6>
+			<div class="card-body border-secondary bg-secondary">
+                        <p class="card-text text-white font-weight-600">
+ACKNOWLEDGEMENTS: Supercomputing Wales (SCW) users must acknowledge the use of the system in any publication that contains results obtained using its resources.  
+
+The SCW facilities aim to maintain a bibliographic database of all publications that have benefited from use of its resources. Users must notify the SCW team of all appropriate publications, by emailing the full bibliographic references to support@supercomputingwales.ac.uk.</p>
+                        </div>
+			<div class="card-body">
+                            <p class="card-text text-right">For help filling this guide please <a href="https://portal.supercomputing.wales/index.php/getting-access/guidance-for-completing-the-project-application-form-on-myscw/">follow this link</a> or hover over the question mark symbols <a><img src="/static/img/question-circle-solid.svg" height="18"/></a>. </p>
+                        </div>
 			<div class="card-body">
 				<form method="post" enctype="multipart/form-data" novalidate>
 					{% csrf_token %}

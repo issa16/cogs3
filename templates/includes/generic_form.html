@@ -13,6 +13,9 @@
 {% for field in form.visible_fields %}
     <div class="form-group">
         {{ field.label_tag }}
+        {% if field.help_text %}
+        <a><img src="/static/img/question-circle-solid.svg" title='{{ field.help_text }}' height="18" alt="help message" /></a>
+        {% endif %}
         {% if form.is_bound %}
             {% if field.errors %}
                 {% render_field field class="form-control is-invalid" %}
@@ -33,8 +36,10 @@
                {% render_field field class="form-control"%}
             {% endif %}
         {% endif %}
+        {% comment %}
         {% if field.help_text %}
             <small class="form-text text-muted">{{ field.help_text }}</small>
         {% endif %}
+        {% endcomment %}
     </div>
 {% endfor %}
