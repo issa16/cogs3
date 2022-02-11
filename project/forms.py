@@ -154,8 +154,6 @@ class ProjectCreationForm(forms.ModelForm):
         fields = [
             'title',
             'description',
-            'legacy_hpcw_id',
-            'legacy_arcca_id',
             'institution_reference',
             'department',
             'pi_name',
@@ -165,9 +163,10 @@ class ProjectCreationForm(forms.ModelForm):
             'start_date',
             'end_date',
             'requirements_software',
-            'requirements_gateways',
+            #'requirements_gateways',
             'requirements_training',
             'requirements_onboarding',
+            #'allocation_gpus',
             'allocation_cputime',
             'allocation_memory',
             'allocation_storage_home',
@@ -190,8 +189,8 @@ class ProjectCreationForm(forms.ModelForm):
 
     def clean(self):
         self.instance.tech_lead = self.user
-        if self.instance.tech_lead.profile.institution is None:
-            raise ValidationError('Only users which belong to an institution can create projects.')
+        #if self.instance.tech_lead.profile.institution is None:
+        #    raise ValidationError('Only users which belong to an institution can create projects.')
 
 
 class ProjectUserMembershipCreationForm(forms.Form):
