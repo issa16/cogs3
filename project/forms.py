@@ -4,7 +4,8 @@ from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from project.models import Project, ProjectUserMembership
-from project.openldap import (update_openldap_project, update_openldap_project_membership)
+from project.openldap import (update_openldap_project,
+                              update_openldap_project_membership)
 
 PROJECT_CODE_PREFIX = "scw"
 
@@ -189,8 +190,8 @@ class ProjectCreationForm(forms.ModelForm):
 
     def clean(self):
         self.instance.tech_lead = self.user
-        #if self.instance.tech_lead.profile.institution is None:
-        #    raise ValidationError('Only users which belong to an institution can create projects.')
+        if self.instance.tech_lead.profile.institution is None:
+            raise ValidationError('Only users which belong to an institution can create projects.')
 
 
 class ProjectUserMembershipCreationForm(forms.Form):
