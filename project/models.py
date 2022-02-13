@@ -187,10 +187,12 @@ class Project(models.Model):
         default=False,
         verbose_name=_('RSE available to?'),
     )
-    allocation_gpus = models.BooleanField(
-        default=False,
-        verbose_name=_('Does the project requires access to GPUs?'),
-    )
+    # commenting out for now but would be good to agree some method to find out if project will be GPU
+    # based and then if it makes sense to ask about CPU core hours
+    #allocation_gpus = models.BooleanField(
+    #    default=False,
+    #    verbose_name=_('Does the project requires access to GPUs?'),
+    #)
     allocation_cputime = models.PositiveIntegerField(
         null=True,
         blank=True,
