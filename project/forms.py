@@ -155,6 +155,8 @@ class ProjectCreationForm(forms.ModelForm):
         fields = [
             'title',
             'description',
+            'legacy_hpcw_id',
+            'legacy_arcca_id',
             'institution_reference',
             'department',
             'pi_name',
