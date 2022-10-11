@@ -215,7 +215,7 @@ class Project(models.Model):
         null=True,
         blank=False,
         verbose_name=_('High performance transient (scratch) storage in Gigabytes'),
-        help_text=_('Scratch storage is short-term, high-performance parallel file storage used for intermediary data you need temporarily but will either delete or move off the system once it is no longer needed. There is a 5 TBytes user quota on Hawk and 20 TBytes on Sunbird. When the scratch filesystem approaches full capacity, old unused files will be deleted.'),
+        help_text=_('Scratch storage is short-term, high-performance parallel file storage used for intermediary data you need temporarily but will either delete or move off the system once it is no longer needed. There is a 3 TBytes user quota on Hawk and 20 TBytes on Sunbird. When the scratch filesystem approaches full capacity, old unused files will be deleted.'),
     )
     document = models.FileField(
         verbose_name=_('Upload Supporting Documents'),
