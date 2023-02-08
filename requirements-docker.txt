@@ -6,7 +6,7 @@ chardet==3.0.4
 click==6.7
 codecov==2.0.16
 coverage==4.5.1
-cryptography==3.3.2
+cryptography==39.0.1
 dj-database-url==0.5.0
 Django==2.2.28
 django-classy-tags==0.8.0
