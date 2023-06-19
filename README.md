@@ -5,20 +5,10 @@
    Project Management System
 </p>
 
----
-   [![Build Status](https://travis-ci.org/issa16/cogs3.svg?branch=master)](https://travis-ci.org/issa16/cogs3)
-   [![codecov](https://codecov.io/gh/issa16/cogs3/branch/master/graph/badge.svg)](https://codecov.io/gh/issa16/cogs3)
-   [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/issa16/cogs3/blob/master/LICENSE.md)
----
-
 - [Development](#development)
 - [Sequence Diagrams](#sequence-diagrams)
 
----
-
-#### Development
-
----
+## Development
 
 1. Checkout the source code.
 
@@ -82,11 +72,8 @@
 
 10. Enter ```http://localhost:5000/``` in a browser to see the application running.
 
----
 
-#### Sequence Diagrams
-
----
+## Sequence Diagrams
 
 - [User Role Sequences](https://github.com/issa16/cogs3/blob/master/docs/sequences/COGS3%20User%20Role%20Sequences.pdf)
 - [Tech Lead Role Sequences](https://github.com/issa16/cogs3/blob/master/docs/sequences/COGS3%20Tech%20Lead%20Role%20Sequences.pdf)
