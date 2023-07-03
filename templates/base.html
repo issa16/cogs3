@@ -1,10 +1,9 @@
 <!-- templates/base.html -->
 {% load static %} 
 {% load i18n %} 
-{% load hreflang %} 
+{% load url_translate %}
 {% load cookielaw_tags %} 
 {% get_current_language as LANGUAGE_CODE %}
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -39,11 +38,11 @@
                     <ul class="navbar-nav ml-auto">
                         {% if LANGUAGE_CODE == 'cy' %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% translate_url 'en' %}" hreflang="en">English</a>
+                            <a class="nav-link" href="{% translate_url en %}" hreflang="en">English</a>
                         </li>
                         {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% translate_url 'cy' %}" hreflang="cy">Cymraeg</a>
+                            <a class="nav-link" href="{% translate_url cy %}" hreflang="cy">Cymraeg</a>
                         </li>
                         {% endif %}
                         <li class="nav-item">

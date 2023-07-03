@@ -3,6 +3,7 @@ FROM python:3.8.6
 
 # Install additional software packages
 RUN apt-get update && apt-get install -y vim
+RUN pip install --upgrade pip
 
 # Prevent Python from writing out pyc files
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -17,8 +18,8 @@ RUN mkdir /app
 WORKDIR /app
 
 # Install the required software packages
-COPY requirements-docker.txt /app/
-RUN pip install -r requirements-docker.txt
+COPY requirements.txt /app/
+RUN pip install -r requirements.txt
 
 # Copy the application's source code to the working directory
 COPY . /app/
